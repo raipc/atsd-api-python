@@ -146,13 +146,18 @@ class Series(_Model):
         return res
 
     def __init__(self, entity, metric, data=None, tags=None, type=None):
+        """
+        :param entity: `str`
+        :param metric: `str`
+        :param data: use add `value()` method instead of setting data directly
+        :param tags:
+        :param type:
+        :return:
+        """
         self.entity = entity
         self.metric = metric
 
-        if data is None:
-            self.data = []
-        else:
-            self.data = data
+        self.data = data
 
         self.tags = tags
         self.type = type
@@ -190,7 +195,10 @@ class Series(_Model):
         if not isinstance(t, numbers.Number):
             raise ValueError('data "t" should be either number or str')
 
-        self.data.append({'v': v, 't': t})
+        try:
+            self.data.append({'v': v, 't': t})
+        except AttributeError:
+            self.data = [{'v': v, 't': t}]
 
     def values(self):
         return [item['v'] for item in self.data]

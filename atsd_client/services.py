@@ -61,7 +61,7 @@ class SeriesService(_Service):
         :return: True if success
         """
         for s in series:
-            if len(s.data) == 0:
+            if s.data is None:
                 raise DataParseException('data', Series,
                                          'inserting empty series')
 
@@ -76,6 +76,7 @@ class PropertiesService(_Service):
         :param queries: :class:`.PropertiesQuery`
         :return: list of :class:`.Property` objects
         """
+
         data = {'queries': queries}
         resp = self.conn.post('properties', data)
 
@@ -372,13 +373,13 @@ class EntityGroupsService(_Service):
             BatchEntitiesCommand.create_add_command(*entities, **kwargs)
         return self.batch_update_group_entities(group_name, add_command)
 
-    def delete_group_entities(self, group_name, *entities):
+    def delete_group_entities(self, group_name, *entity_names):
         """
         :param group_name: str
-        :param entities: :class:`.Entity` objects
+        :param entity_names: list of `str`
         :return: True if success
         """
-        delete_command = BatchEntitiesCommand.create_delete_command(*entities)
+        delete_command = BatchEntitiesCommand.create_delete_command(*entity_names)
         return self.batch_update_group_entities(group_name, delete_command)
 
     def batch_update_group_entities(self, group_name, *commands):

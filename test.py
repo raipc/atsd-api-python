@@ -664,7 +664,8 @@ class TestEntityGroupsService(unittest.TestCase):
 
     def test_add_delete_group_entities(self):
         entities = self.svc.retrieve_group_entities(GROUP_NAME)
-        successful = self.svc.delete_group_entities(GROUP_NAME, *entities)
+        entity_names = [e.name for e in entities]
+        successful = self.svc.delete_group_entities(GROUP_NAME, *entity_names)
         entities = self.svc.retrieve_group_entities(GROUP_NAME)
 
         self.assertTrue(successful)
@@ -685,7 +686,7 @@ class TestEntityGroupsService(unittest.TestCase):
             Entity(not_entity_name),
             createEntities=False
         )
-        delete = BatchEntitiesCommand.create_delete_command(Entity(TEST_NAME))
+        delete = BatchEntitiesCommand.create_delete_command(TEST_NAME)
         delete_all = BatchEntitiesCommand.create_delete_all_command()
 
         successful = self.svc \

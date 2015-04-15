@@ -34,39 +34,67 @@ class Metric(_Model):
                       'tags')
     _required_props = ('name',)
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name,
+                 label=None,
+                 enabled=None,
+                 dataType=None,
+                 timePrecision=None,
+                 persistent=None,
+                 counter=None,
+                 filter=None,
+                 minValue=None,
+                 maxValue=None,
+                 invalidAction=None,
+                 description=None,
+                 retentionInterval=None,
+                 lastInsertTime=None,
+                 tags=None):
         """
         :param name: `str` metric name
         """
         self.name = name
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.label = label
+        self.enabled = enabled
+        self.dataType = dataType
+        self.timePrecision = timePrecision
+        self.persistent = persistent
+        self.counter = counter
+        self.filter = filter
+        self.minValue = minValue
+        self.maxValue = maxValue
+        self.invalidAction = invalidAction
+        self.description = description
+        self.retentionInterval = retentionInterval
+        self.lastInsertTime = lastInsertTime
+        self.tags = tags
 
 
 class Entity(_Model):
     _allowed_props = ('enabled', 'lastInsertTime', 'tags')
     _required_props = ('name',)
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name,
+                 enabled=None, lastInsertTime=None, tags=None):
         """
         :param name: str entity name
         """
         self.name = name
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.enabled = enabled
+        self.lastInsertTime = lastInsertTime
+        self.tags = tags
 
 
 class EntityGroup(_Model):
     _allowed_props = ('expression', 'tags')
     _required_props = ('name',)
 
-    def __init__(self, name, **kwargs):
+    def __init__(self, name, expression=None, tags=None):
         """
         :param name: str group name
         """
         self.name = name
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.expression = expression
+        self.tags = tags

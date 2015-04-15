@@ -14,6 +14,8 @@ permissions and limitations under the License.
 """
 
 
+from ._meta_models import Entity
+
 _CREATE_ENTITIES = 'createEntities'
 
 
@@ -48,14 +50,14 @@ class BatchEntitiesCommand(object):
         return data
 
     @staticmethod
-    def create_delete_command(*entities):
+    def create_delete_command(*entity_names):
         """
-        :param entities: :class:`.Entity` objects
+        :param entity_names: list of str
         :return: :class:`.BatchEntitiesCommand` instance
         """
         return BatchEntitiesCommand(
             'delete',
-            entities=entities
+            entities=[Entity(name) for name in entity_names]
         )
 
     @staticmethod
