@@ -298,12 +298,17 @@ class AlertsQuery(_Model):
                       'minSeverity')
     _required_props = ()
 
-    def __init__(self, **kwargs):
-        """
-        :param kwargs: see _allowed_props, should be json-serializable
-        """
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+    def __init__(self,
+                 metrics=None,
+                 entities=None,
+                 rules=None,
+                 severities=None,
+                 minSeverity=None):
+        self.metrics = metrics
+        self.entities = entities
+        self.rules = rules
+        self.severities = severities
+        self.minSeverity = minSeverity
 
 
 class PropertiesQuery(_Model):
@@ -314,47 +319,56 @@ class PropertiesQuery(_Model):
                       'keyExpression')
     _required_props = ('entity', 'type')
 
-    def __init__(self, type, entity, **kwargs):
+    def __init__(self, type, entity,
+                 startTime=None,
+                 endTime=None,
+                 limit=None,
+                 key=None,
+                 keyExpression=None):
         """
         :param type: str
         :param entity: str
-        :param kwargs: see _allowed_props, should be json-serializable
-        :return:
         """
         self.entity = entity
         self.type = type
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.startTime = startTime
+        self.endTime = endTime
+        self.limit = limit
+        self.key = key
+        self.keyExpression = keyExpression
 
 
 class PropertiesMatcher(_Model):
     _allowed_props = ('entity', 'key', 'createdBeforeTime')
     _required_props = ('type',)
 
-    def __init__(self, type, **kwargs):
+    def __init__(self, type,
+                 entity=None,
+                 key=None,
+                 createdBeforeTime=None):
         """
         :param type: str
-        :param kwargs: see _allowed_props, should be json-serializable
         """
         self.type = type
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
-
+        self.entity = entity
+        self.key = key
+        self.createdBeforeTime = createdBeforeTime
 
 class AlertHistoryQuery(_Model):
     _allowed_props = ('entityGroup', 'limit')
     _required_props = ('entity', 'metric', 'startTime', 'endTime', 'rule')
 
-    def __init__(self, entity, metric, startTime, endTime, rule, **kwargs):
+    def __init__(self, entity, metric, startTime, endTime, rule,
+                 entityGroup=None,
+                 limit=None):
         """
         :param entity: str
         :param metric: str
         :param startTime: long int
         :param endTime: long int
         :param rule: str
-        :param kwargs: see _allowed_props, should be json-serializable
         """
         self.entity = entity
         self.metric = metric
@@ -362,8 +376,8 @@ class AlertHistoryQuery(_Model):
         self.endTime = endTime
         self.rule = rule
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.entityGroup = entityGroup
+        self.limit = limit
 
 
 class BatchPropertyCommand(object):
