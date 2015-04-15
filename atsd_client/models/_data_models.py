@@ -145,10 +145,14 @@ class Series(_Model):
 
         return res
 
-    def __init__(self, entity, metric, tags=None, type=None):
+    def __init__(self, entity, metric, data=None, tags=None, type=None):
         self.entity = entity
         self.metric = metric
-        self.data = []
+
+        if data is None:
+            self.data = []
+        else:
+            self.data = data
 
         self.tags = tags
         self.type = type
@@ -302,7 +306,6 @@ class AlertHistory(_Model):
                  type=None,
                  value=None,
                  window=None):
-
         self.alert = alert
         self.alertDuration = alertDuration
         self.alertOpenTime = alertOpenTime

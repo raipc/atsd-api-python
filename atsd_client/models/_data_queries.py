@@ -74,9 +74,9 @@ class _Rate(_Model):
     _required_props = ()
     _allowed_props = ('interval', 'counter')
 
-    def __init__(self, **kwargs):
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+    def __init__(self, interval=None, counter=None):
+        self.interval = interval
+        self.counter = counter
 
     def set_interval(self, count, unit=TimeUnit.SECOND):
         """
@@ -98,11 +98,12 @@ class _Group(_Model):
     _required_props = ('type',)
     _allowed_props = ('interpolate', 'truncate', 'interval')
 
-    def __init__(self, type, **kwargs):
+    def __init__(self, type, interpolate=None, truncate=None, interval=None):
         self.type = type
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.interpolate = interpolate
+        self.truncate = truncate
+        self.interval = interval
 
     def set_interval(self, count, unit=TimeUnit.SECOND):
         """
@@ -128,13 +129,21 @@ class _Aggregator(_Model):
                       'workingMinutes',
                       'counter')
 
-    def __init__(self, types, interval, **kwargs):
+    def __init__(self, types, interval,
+                 interpolate=None,
+                 threshold=None,
+                 calendar=None,
+                 workingMinutes=None,
+                 counter=None):
 
         self.interval = interval
         self.types = types
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.interpolate = interpolate
+        self.threshold = threshold
+        self.calendar = calendar
+        self.workingMinutes = workingMinutes
+        self.counter = counter
 
     def set_types(self, *types):
         """specified aggregation types
@@ -182,7 +191,7 @@ class SeriesQuery(_Model):
                       'requestId')
     _required_props = ('entity', 'metric')
 
-    def rate(self):
+    def rate(self, interval=None, counter=None):
         """add empty rate property to series query
 
         :return: :class:`._Rate` object
@@ -195,10 +204,15 @@ class SeriesQuery(_Model):
             >>>series = svc.retrieve_series(query)
 
         """
-        self._rate = _Rate()
+        self._rate = _Rate(interval, counter)
         return self._rate
 
-    def aggregate(self):
+    def aggregate(self, types=None, interval=None,
+                  interpolate=None,
+                  threshold=None,
+                  calendar=None,
+                  workingMinutes=None,
+                  counter=None):
         """add aggregate property to series query
         by default types = [AggregateType.DETAIL], interval = 1 sec
 
@@ -213,12 +227,20 @@ class SeriesQuery(_Model):
             >>>series = svc.retrieve_series(query)
 
         """
-        self._aggregate = _Aggregator(types=[AggregateType.DETAIL],
-                                      interval={'count': 1,
-                                                'unit': TimeUnit.SECOND})
+        if types is None:
+            types = [AggregateType.DETAIL]
+        if interval is None:
+            interval = {'count': 1, 'unit': TimeUnit.SECOND}
+
+        self._aggregate = _Aggregator(types, interval,
+                                      interpolate,
+                                      threshold,
+                                      calendar,
+                                      workingMinutes,
+                                      counter)
         return self._aggregate
 
-    def group(self, type):
+    def group(self, type, interpolate=None, truncate=None, interval=None):
         """add group property to series query
 
         :param type: :class:`.AggregateType` enum
@@ -232,20 +254,40 @@ class SeriesQuery(_Model):
             >>>series = svc.retrieve_series(query)
 
         """
-        self._group = _Group(type)
+        self._group = _Group(type, interpolate, truncate, interval)
         return self._group
 
-    def __init__(self, entity, metric, **kwargs):
+    def __init__(self, entity, metric,
+                 startTime=None,
+                 endTime=None,
+                 limit=None,
+                 last=None,
+                 tags=None,
+                 type=None,
+                 group=None,
+                 rate=None,
+                 aggregate=None,
+                 requestId=None):
         """
         :param entity: str entity name
         :param metric: str metric name
-        :param kwargs: _allowed_props, should be json-serializable
+        :param group: use group() method to set property
+        :param rate: use rate() method to set property
+        :param aggregate: use aggregate() method to set property
         """
         self.entity = entity
         self.metric = metric
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.startTime = startTime
+        self.endTime = endTime
+        self.limit = limit
+        self.last = last
+        self.tags = tags
+        self.type = type
+        self._group = group
+        self._rate = rate
+        self._aggregate = aggregate
+        self.requestId = requestId
 
 
 class AlertsQuery(_Model):
