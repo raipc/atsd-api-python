@@ -147,11 +147,11 @@ class MetricsService(_Service):
                          tags=None,
                          limit=None):
         """
-        :param expression: str
-        :param active:
-        :param tags: str
-        :param limit:
-        :return:
+        :param expression: `str`
+        :param active: `bool`
+        :param tags: `str`
+        :param limit: `int`
+        :return: :class:`.Metric` objects
         """
         params = {}
         if expression is not None:
@@ -168,7 +168,7 @@ class MetricsService(_Service):
 
     def retrieve_metric(self, name):
         """
-        :param name: str metric name
+        :param name: `str` metric name
         :return: :class:`.Metric`
         """
         _check_name(name)
@@ -214,11 +214,11 @@ class EntitiesService(_Service):
                           tags=None,
                           limit=None):
         """
-        :param expression: str
-        :param active: bool
-        :param tags: str
-        :param limit: int
-        :return: list of :class:`.Entity` objects
+        :param expression: `str`
+        :param active: `bool`
+        :param tags: `str`
+        :param limit: `int`
+        :return: `list` of :class:`.Entity` objects
         """
         params = {}
         if expression is not None:
@@ -235,7 +235,7 @@ class EntitiesService(_Service):
 
     def retrieve_entity(self, name):
         """
-        :param name: str entity name
+        :param name: `str` entity name
         :return: :class:`.Entity`
         """
         _check_name(name)
@@ -277,10 +277,10 @@ class EntitiesService(_Service):
 class EntityGroupsService(_Service):
     def retrieve_entity_groups(self, expression=None, tags=None, limit=None):
         """
-        :param expression: str
-        :param tags: str
-        :param limit: int
-        :return: list of :class:`.EntityGroup` objects
+        :param expression: `str`
+        :param tags: `str`
+        :param limit: `int`
+        :return: `list` of :class:`.EntityGroup` objects
         """
         params = {}
         if expression is not None:
@@ -295,7 +295,7 @@ class EntityGroupsService(_Service):
 
     def retrieve_entity_group(self, name):
         """
-        :param name: str entity group name
+        :param name: `str` entity group name
         :return: :class:`.EntityGroup`
         """
         _check_name(name)
@@ -340,12 +340,12 @@ class EntityGroupsService(_Service):
                                 tags=None,
                                 limit=None):
         """
-        :param group_name: str
-        :param active: bool
-        :param expression: str
-        :param tags: str
-        :param limit: int
-        :return:
+        :param group_name: `str`
+        :param active: `bool`
+        :param expression: `str`
+        :param tags: `str`
+        :param limit: `int`
+        :return: `list` of :class:`.Entity` objects
         """
         params = {}
         if active is not None:
@@ -363,7 +363,7 @@ class EntityGroupsService(_Service):
 
     def add_group_entities(self, group_name, *entities, **kwargs):
         """
-        :param group_name: str
+        :param group_name: `str`
         :param entities: :class:`.Entity` objects
         :param kwargs: createEntities=bool
         :return: True if success
@@ -375,8 +375,8 @@ class EntityGroupsService(_Service):
 
     def delete_group_entities(self, group_name, *entity_names):
         """
-        :param group_name: str
-        :param entity_names: list of `str`
+        :param group_name: `str`
+        :param entity_names: `str` objects
         :return: True if success
         """
         delete_command = BatchEntitiesCommand.create_delete_command(*entity_names)
@@ -384,7 +384,7 @@ class EntityGroupsService(_Service):
 
     def batch_update_group_entities(self, group_name, *commands):
         """
-        :param group_name: str
+        :param group_name: `str`
         :param commands: :class:`.BatchEntitiesCommand` objects
         :return: True if success
         """

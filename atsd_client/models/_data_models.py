@@ -170,7 +170,6 @@ class Alert(Serializable):
                  entity=None,
                  metric=None,
                  lastEventTime=None,
-                 openValues=None,
                  openTime=None,
                  value=None,
                  message=None,
@@ -182,19 +181,30 @@ class Alert(Serializable):
                  openValue=None):
         self.id = id
 
+        #: `str`
         self.rule = rule
+        #: `str`
         self.entity = entity
+        #: `str`
         self.metric = metric
+        #: `long`
         self.lastEventTime = lastEventTime
-        self.openValues = openValues
+        #: `long`
         self.openTime = openTime
+        #: `Number`
         self.value = value
         self.message = message
+        #: `dict`
         self.tags = tags
+        #: `str`
         self.textValue = textValue
+        #: :class:`.Severity`
         self.severity = severity
+        #: `int`
         self.repeatCount = repeatCount
+        #: `bool`
         self.acknowledged = acknowledged
+        #: `Number`
         self.openValue = openValue
 
 
@@ -218,20 +228,29 @@ class AlertHistory(Serializable):
                  value=None,
                  window=None):
         self.alert = alert
+        #: `number`
         self.alertDuration = alertDuration
+        #: `long` milliseconds
         self.alertOpenTime = alertOpenTime
+        #: `str`
         self.entity = entity
+        #: `str`
         self.metric = metric
+        #: `long` milliseconds
         self.receivedTime = receivedTime
         self.repeatCount = repeatCount
         self.rule = rule
+        #: `str`
         self.ruleExpression = ruleExpression
         self.ruleFilter = ruleFilter
         self.schedule = schedule
         self.severity = severity
+        #: `dict`
         self.tags = tags
+        #: `long` milliseconds
         self.time = time
         self.type = type
+        #: `Number`
         self.value = value
         self.window = window
 
