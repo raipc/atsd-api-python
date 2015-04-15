@@ -59,7 +59,7 @@ class Metric(Serializable):
         self.label = label
         #: `bool`
         self.enabled = enabled
-        #: :class:`.Datatype`
+        #: :class:`.DataType`
         self.dataType = dataType
         #: :class:`.TimePrecision`
         self.timePrecision = timePrecision
@@ -68,7 +68,7 @@ class Metric(Serializable):
         #: `bool`
         self.counter = counter
         #: If filter is specified,
-        #:  metric puts that do not match the filter are discarded
+        #: metric puts that do not match the filter are discarded
         self.filter = filter
         #: `Number`
         self.minValue = minValue

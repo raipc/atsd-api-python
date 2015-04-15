@@ -45,6 +45,18 @@ Constants
     :members:
     :undoc-members:
 
+.. autoclass:: atsd_client.models.DataType
+    :members:
+    :undoc-members:
+
+.. autoclass:: atsd_client.models.TimePrecision
+    :members:
+    :undoc-members:
+
+.. autoclass:: atsd_client.models.InvalidAction
+    :members:
+    :undoc-members:
+
 Queries
 -------
 
@@ -93,3 +105,11 @@ Data
 .. autoclass:: atsd_client.models.EntityGroup
     :members:
 
+.. autoclass:: atsd_client.models.Group
+    :members:
+
+.. autoclass:: atsd_client.models.Rate
+    :members:
+
+.. autoclass:: atsd_client.models.Aggregator
+    :members:

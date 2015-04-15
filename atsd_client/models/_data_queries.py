@@ -81,9 +81,13 @@ class Severity(object):
     FATAL = 7
 
 
-class _Rate(Serializable):
+class Rate(Serializable):
     def __init__(self, interval=None, counter=None):
+
+        #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
+        #: use ``set_interval`` method instead setting explicitly
         self.interval = interval
+        #: `bool`
         self.counter = counter
 
     def set_interval(self, count, unit=TimeUnit.SECOND):
@@ -99,15 +103,20 @@ class _Rate(Serializable):
         self.interval = {'count': count, 'unit': unit}
 
 
-class _Group(Serializable):
+class Group(Serializable):
     """
     represents aggregate param group
     """
     def __init__(self, type, interpolate=None, truncate=None, interval=None):
+        #: :class:`.AggregateType`
         self.type = type
 
+        #: :class:`.Interpolate`
         self.interpolate = interpolate
+        #: `bool` default False
         self.truncate = truncate
+        #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
+        #: use ``set_interval`` method instead setting explicitly
         self.interval = interval
 
     def set_interval(self, count, unit=TimeUnit.SECOND):
@@ -123,7 +132,7 @@ class _Group(Serializable):
         self.interval = {'count': count, 'unit': unit}
 
 
-class _Aggregator(Serializable):
+class Aggregator(Serializable):
     """
     represents aggregate param of :class:`.SeriesQuery`
     """
@@ -134,13 +143,24 @@ class _Aggregator(Serializable):
                  workingMinutes=None,
                  counter=None):
 
+        #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
+        #: use ``set_interval`` method instead setting explicitly
         self.interval = interval
+        #: `list` of :class:`.AggregateType` objects
         self.types = types
 
+        #: :class:`.Interpolate`
         self.interpolate = interpolate
+        #: `dict` {'min': `Number`, 'max': `Number`}
+        #: use ``set_threshold`` method instead setting explicitly
         self.threshold = threshold
+        #: `dict` {'name': `str`}
+        #: use ``set_threshold`` method instead setting explicitly
         self.calendar = calendar
+        #: `dict` {'start': `int`, 'end': `int`}
+        #: use ``set_workingMinutes`` method instead setting explicitly
         self.workingMinutes = workingMinutes
+        #: `bool`
         self.counter = counter
 
     def set_types(self, *types):
@@ -167,12 +187,23 @@ class _Aggregator(Serializable):
         self.interval = {'count': count, 'unit': unit}
 
     def set_threshold(self, min, max):
+        """
+        :param min: `Number`
+        :param max: `Number`
+        """
         self.threshold = {'min': min, 'max': max}
 
     def set_workingMinutes(self, start, end):
+        """
+        :param start: `int`
+        :param end: `int`
+        """
         self.workingMinutes = {'start': start, 'end': end}
 
     def set_calendar(self, name):
+        """
+        :param name: `str`
+        """
         self.calendar = {'name': name}
 
 
@@ -181,7 +212,7 @@ class SeriesQuery(Serializable):
         """add empty rate property to series query,
         use returned object methods to set parameters
 
-        :return: :class:`._Rate` object
+        :return: :class:`.Rate` object
 
         Usage::
 
@@ -191,7 +222,7 @@ class SeriesQuery(Serializable):
             >>>series = svc.retrieve_series(query)
 
         """
-        self._rate = _Rate()
+        self._rate = Rate()
         return self._rate
 
     def aggregate(self, *types):
@@ -199,7 +230,7 @@ class SeriesQuery(Serializable):
         use returned object methods to set parameters
 
         :param types: :class:`.InterpolateType` objects
-        :return: :class:`._Aggregator` object
+        :return: :class:`.Aggregator` object
 
         Usage::
 
@@ -211,8 +242,8 @@ class SeriesQuery(Serializable):
 
         """
 
-        self._aggregate = _Aggregator(types,
-                                      {'count': 1, 'unit': TimeUnit.SECOND})
+        self._aggregate = Aggregator(types,
+                                     {'count': 1, 'unit': TimeUnit.SECOND})
         return self._aggregate
 
     def group(self, type):
@@ -220,7 +251,7 @@ class SeriesQuery(Serializable):
         use returned object methods to set parameters
 
         :param type: :class:`.AggregateType` enum
-        :return: :class:`._Group` object
+        :return: :class:`.Group` object
 
         Usage::
 
@@ -230,7 +261,7 @@ class SeriesQuery(Serializable):
             >>>series = svc.retrieve_series(query)
 
         """
-        self._group = _Group(type)
+        self._group = Group(type)
         return self._group
 
     def __init__(self, entity, metric,
