@@ -16,6 +16,7 @@ permissions and limitations under the License.
 
 import numbers
 import json
+import inspect
 
 
 def serialize(o):
@@ -36,12 +37,27 @@ def serialize(o):
 def deserialize(o, model_class):
     if isinstance(o, (list, tuple)):
         return [deserialize(el, model_class) for el in o]
+
     try:
-        return model_class(**o)
+        args = inspect.getargspec(model_class.__init__).args
+        args.remove('self')
+
+        params = {}
+        for attr in o:
+            if attr in args:
+                params[attr] = o[attr]
+
+        res = model_class(**params)
+        for attr in o:
+            if not attr in args:
+                setattr(res, attr, o[attr])
+
     except:
         raise ValueError(str(o)
                          + ' could not be deserialised to '
                          + str(model_class))
+
+    return res
 
 
 def dumps(data):

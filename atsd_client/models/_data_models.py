@@ -60,6 +60,9 @@ def _getprop(model, prop):
         # try to get private if setter/getter is used
         attr = getattr(model, '_' + prop)
 
+    if attr is None:
+        raise AttributeError
+
     if isinstance(attr, _Model):
         return attr._serialize()
     else:
@@ -112,15 +115,16 @@ class Property(_Model):
     _allowed_props = ('key', 'timestamp')
     _required_props = ('type', 'entity', 'tags')
 
-    def __init__(self, type, entity, tags, **kwargs):
+    def __init__(self, type, entity, tags,
+                 key=None,
+                 timestamp=None):
         # tags=None in delete requests
         self.type = type
         self.entity = entity
         self.tags = tags
 
-        for prop in Property._allowed_props:
-            if prop in kwargs:
-                setattr(self, prop, kwargs[prop])
+        self.key = key
+        self.timestamp = timestamp
 
 
 class Series(_Model):
@@ -141,13 +145,13 @@ class Series(_Model):
 
         return res
 
-    def __init__(self, entity, metric, **kwargs):
+    def __init__(self, entity, metric, tags=None, type=None):
         self.entity = entity
         self.metric = metric
         self.data = []
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.tags = tags
+        self.type = type
 
     @staticmethod
     def from_pandas_series(entity, metric, ts, **kwargs):
@@ -227,11 +231,37 @@ class Alert(_Model):
                       'openValue')
     _required_props = ('id',)
 
-    def __init__(self, id, **kwargs):
+    def __init__(self, id,
+                 rule=None,
+                 entity=None,
+                 metric=None,
+                 lastEventTime=None,
+                 openValues=None,
+                 openTime=None,
+                 value=None,
+                 message=None,
+                 tags=None,
+                 textValue=None,
+                 severity=None,
+                 repeatCount=None,
+                 acknowledged=None,
+                 openValue=None):
         self.id = id
 
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+        self.rule = rule
+        self.entity = entity
+        self.metric = metric
+        self.lastEventTime = lastEventTime
+        self.openValues = openValues
+        self.openTime = openTime
+        self.value = value
+        self.message = message
+        self.tags = tags
+        self.textValue = textValue
+        self.severity = severity
+        self.repeatCount = repeatCount
+        self.acknowledged = acknowledged
+        self.openValue = openValue
 
 
 class AlertHistory(_Model):
@@ -254,9 +284,42 @@ class AlertHistory(_Model):
                       'window')
     _required_props = ()
 
-    def __init__(self, **kwargs):
-        for prop in kwargs:
-            setattr(self, prop, kwargs[prop])
+    def __init__(self,
+                 alert=None,
+                 alertDuration=None,
+                 alertOpenTime=None,
+                 entity=None,
+                 metric=None,
+                 receivedTime=None,
+                 repeatCount=None,
+                 rule=None,
+                 ruleExpression=None,
+                 ruleFilter=None,
+                 schedule=None,
+                 severity=None,
+                 tags=None,
+                 time=None,
+                 type=None,
+                 value=None,
+                 window=None):
+
+        self.alert = alert
+        self.alertDuration = alertDuration
+        self.alertOpenTime = alertOpenTime
+        self.entity = entity
+        self.metric = metric
+        self.receivedTime = receivedTime
+        self.repeatCount = repeatCount
+        self.rule = rule
+        self.ruleExpression = ruleExpression
+        self.ruleFilter = ruleFilter
+        self.schedule = schedule
+        self.severity = severity
+        self.tags = tags
+        self.time = time
+        self.type = type
+        self.value = value
+        self.window = window
 
 # if __name__ == '__main__':
 #     import pandas as pd

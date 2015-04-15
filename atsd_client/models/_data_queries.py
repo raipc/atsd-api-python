@@ -369,7 +369,7 @@ class BatchPropertyCommand(object):
         :param key: `dict`
         :return: :class:`BatchPropertyCommand` instance
         """
-        prop = Property(type, entity, None)
+        prop = Property(type, entity, {})
         if key is not None:
             prop.key = key
         return BatchPropertyCommand('delete', properties=(prop,))
