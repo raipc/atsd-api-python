@@ -155,7 +155,7 @@ class _Aggregator(Serializable):
             raise ValueError('wrong interval unit')
         self.interval = {'count': count, 'unit': unit}
 
-    def set_thresholds(self, min, max):
+    def set_threshold(self, min, max):
         self.threshold = {'min': min, 'max': max}
 
     def set_workingMinutes(self, start, end):
@@ -166,8 +166,9 @@ class _Aggregator(Serializable):
 
 
 class SeriesQuery(Serializable):
-    def rate(self, interval=None, counter=None):
-        """add empty rate property to series query
+    def rate(self):
+        """add empty rate property to series query,
+        use returned object methods to set parameters
 
         :return: :class:`._Rate` object
 
@@ -179,18 +180,14 @@ class SeriesQuery(Serializable):
             >>>series = svc.retrieve_series(query)
 
         """
-        self._rate = _Rate(interval, counter)
+        self._rate = _Rate()
         return self._rate
 
-    def aggregate(self, types=None, interval=None,
-                  interpolate=None,
-                  threshold=None,
-                  calendar=None,
-                  workingMinutes=None,
-                  counter=None):
-        """add aggregate property to series query
-        by default types = [AggregateType.DETAIL], interval = 1 sec
+    def aggregate(self, *types):
+        """add aggregate property to series query, default interval = 1 sec
+        use returned object methods to set parameters
 
+        :param types: :class:`.InterpolateType` objects
         :return: :class:`._Aggregator` object
 
         Usage::
@@ -202,21 +199,14 @@ class SeriesQuery(Serializable):
             >>>series = svc.retrieve_series(query)
 
         """
-        if types is None:
-            types = [AggregateType.DETAIL]
-        if interval is None:
-            interval = {'count': 1, 'unit': TimeUnit.SECOND}
 
-        self._aggregate = _Aggregator(types, interval,
-                                      interpolate,
-                                      threshold,
-                                      calendar,
-                                      workingMinutes,
-                                      counter)
+        self._aggregate = _Aggregator(types,
+                                      {'count': 1, 'unit': TimeUnit.SECOND})
         return self._aggregate
 
-    def group(self, type, interpolate=None, truncate=None, interval=None):
+    def group(self, type):
         """add group property to series query
+        use returned object methods to set parameters
 
         :param type: :class:`.AggregateType` enum
         :return: :class:`._Group` object
@@ -229,7 +219,7 @@ class SeriesQuery(Serializable):
             >>>series = svc.retrieve_series(query)
 
         """
-        self._group = _Group(type, interpolate, truncate, interval)
+        self._group = _Group(type)
         return self._group
 
     def __init__(self, entity, metric,
@@ -243,40 +233,30 @@ class SeriesQuery(Serializable):
                  rate=None,
                  aggregate=None,
                  requestId=None):
-        """
-        :param entity: str entity name
-        :param metric: str metric name
-        :param group: use group() method to set property
-        :param rate: use rate() method to set property
-        :param aggregate: use aggregate() method to set property
-        """
+        #:`str` entity name
         self.entity = entity
+        #:`str` metric name
         self.metric = metric
 
+        #:`long` Start of the selection interval in Unix milliseconds.
+        #:Default value: endTime - 1 hour
         self.startTime = startTime
+        #:`long` End of the selection interval in Unix milliseconds.
+        #:Default value: current server time
         self.endTime = endTime
+        #:`int` maximum number of data samples returned
         self.limit = limit
+        #:`bool` Retrieves only 1 most recent value
         self.last = last
+        #:`dict`
         self.tags = tags
+        #: :class:`.SeriesType`
         self.type = type
         self._group = group
         self._rate = rate
         self._aggregate = aggregate
+        #: `str`
         self.requestId = requestId
-
-
-class AlertsQuery(Serializable):
-    def __init__(self,
-                 metrics=None,
-                 entities=None,
-                 rules=None,
-                 severities=None,
-                 minSeverity=None):
-        self.metrics = metrics
-        self.entities = entities
-        self.rules = rules
-        self.severities = severities
-        self.minSeverity = minSeverity
 
 
 class PropertiesQuery(Serializable):
@@ -286,17 +266,24 @@ class PropertiesQuery(Serializable):
                  limit=None,
                  key=None,
                  keyExpression=None):
-        """
-        :param type: str
-        :param entity: str
-        """
+        #: `str` entity name
         self.entity = entity
+        #: `str` type of data properties
         self.type = type
 
+        #: `long` start of the selection interval.
+        #: default: ``endTime - 1 hour``
         self.startTime = startTime
+        #: `long` end of the selection interval.
+        #: default value: ``current server time``
         self.endTime = endTime
+        #: `int` maximum number of data samples returned.
+        #: default value: 0 (no limit)
         self.limit = limit
+        #:`dict` of ``name: value`` pairs that uniquely identify
+        #: the property record
         self.key = key
+        #: `str`
         self.keyExpression = keyExpression
 
 
@@ -313,6 +300,20 @@ class PropertiesMatcher(Serializable):
         self.entity = entity
         self.key = key
         self.createdBeforeTime = createdBeforeTime
+
+
+class AlertsQuery(Serializable):
+    def __init__(self,
+                 metrics=None,
+                 entities=None,
+                 rules=None,
+                 severities=None,
+                 minSeverity=None):
+        self.metrics = metrics
+        self.entities = entities
+        self.rules = rules
+        self.severities = severities
+        self.minSeverity = minSeverity
 
 
 class AlertHistoryQuery(Serializable):
