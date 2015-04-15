@@ -17,6 +17,25 @@ permissions and limitations under the License.
 from .._jsonutil import Serializable
 
 
+class DataType(object):
+    SHORT = 'SHORT'
+    INTEGER = 'INTEGER'
+    FLOAT = 'FLOAT'
+    LONG = 'LONG'
+    DOUBLE = 'DOUBLE'
+
+
+class TimePrecision(object):
+    SECONDS = 'SECONDS'
+    MILLISECONDS = 'MILLISECONDS'
+
+
+class InvalidAction(object):
+    NONE = 'NONE'
+    DISCARD = 'DISCARD'
+    TRANSFORM = 'TRANSFORM'
+
+
 class Metric(Serializable):
     def __init__(self, name,
                  label=None,
@@ -33,46 +52,60 @@ class Metric(Serializable):
                  retentionInterval=None,
                  lastInsertTime=None,
                  tags=None):
-        """
-        :param name: `str` metric name
-        """
+        #: `str` metric name
         self.name = name
 
+        #:`str`
         self.label = label
+        #: `bool`
         self.enabled = enabled
+        #: :class:`.Datatype`
         self.dataType = dataType
+        #: :class:`.TimePrecision`
         self.timePrecision = timePrecision
+        #: `bool`
         self.persistent = persistent
+        #: `bool`
         self.counter = counter
+        #: If filter is specified,
+        #:  metric puts that do not match the filter are discarded
         self.filter = filter
+        #: `Number`
         self.minValue = minValue
+        #: `Number`
         self.maxValue = maxValue
+        #: :class:`.InvalidAction`
         self.invalidAction = invalidAction
+        #: `str`
         self.description = description
+        #: `Number`
         self.retentionInterval = retentionInterval
+        #: `long` milliseconds
         self.lastInsertTime = lastInsertTime
+        #: `dict`
         self.tags = tags
 
 
 class Entity(Serializable):
     def __init__(self, name,
                  enabled=None, lastInsertTime=None, tags=None):
-        """
-        :param name: str entity name
-        """
+        # `str` entity name
         self.name = name
 
+        #: `bool`
         self.enabled = enabled
+        #: `long` milliseconds
         self.lastInsertTime = lastInsertTime
+        #: `dict`
         self.tags = tags
 
 
 class EntityGroup(Serializable):
     def __init__(self, name, expression=None, tags=None):
-        """
-        :param name: str group name
-        """
+        #: `str` group name
         self.name = name
 
+        #: `str`
         self.expression = expression
+        #: `dict`
         self.tags = tags

@@ -41,6 +41,10 @@ Constants
     :members:
     :undoc-members:
 
+.. autoclass:: atsd_client.models.Severity
+    :members:
+    :undoc-members:
+
 Queries
 -------
 

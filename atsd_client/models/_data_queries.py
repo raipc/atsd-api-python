@@ -70,6 +70,17 @@ class AggregateType(object):
     THRESHOLD_PERCENT = 'THRESHOLD_PERCENT'
 
 
+class Severity(object):
+    UNDEFINED = 0
+    UNKNOWN = 1
+    NORMAL = 2
+    WARNING = 3
+    MINOR = 4
+    MAJOR = 5
+    CRITICAL = 6
+    FATAL = 7
+
+
 class _Rate(Serializable):
     def __init__(self, interval=None, counter=None):
         self.interval = interval
@@ -292,13 +303,14 @@ class PropertiesMatcher(Serializable):
                  entity=None,
                  key=None,
                  createdBeforeTime=None):
-        """
-        :param type: str
-        """
+        #: `str`
         self.type = type
 
+        #: `str`
         self.entity = entity
+        #: `dict`
         self.key = key
+        #: `long` milliseconds
         self.createdBeforeTime = createdBeforeTime
 
 
@@ -309,10 +321,15 @@ class AlertsQuery(Serializable):
                  rules=None,
                  severities=None,
                  minSeverity=None):
+        #: `list` of metric names
         self.metrics = metrics
+        #: `list` of entity names
         self.entities = entities
+        #: `list` of rules
         self.rules = rules
+        #: `list` of :class:`.Severity` objects
         self.severities = severities
+        #: :class:`.Severity`
         self.minSeverity = minSeverity
 
 
@@ -320,20 +337,20 @@ class AlertHistoryQuery(Serializable):
     def __init__(self, entity, metric, startTime, endTime, rule,
                  entityGroup=None,
                  limit=None):
-        """
-        :param entity: str
-        :param metric: str
-        :param startTime: long int
-        :param endTime: long int
-        :param rule: str
-        """
+        #: `str` entity name
         self.entity = entity
+        #: `str` metric name
         self.metric = metric
+        #: `long` milliseconds, default 0
         self.startTime = startTime
+        #: `long` milliseconds, default ``Long.MAX_VALUE``
         self.endTime = endTime
+        #: `str`
         self.rule = rule
 
+        #: `str`
         self.entityGroup = entityGroup
+        #: `int`, default 1000
         self.limit = limit
 
 
@@ -391,7 +408,7 @@ class BatchPropertyCommand(object):
     def create_delete_match_command(*matchers):
         """
         :param matchers: :class:`.PropertiesMatcher` objects
-        :return: command instance
+        :return: :class:`BatchPropertyCommand` instance
         """
         for matcher in matchers:
             if not isinstance(matcher, PropertiesMatcher):
