@@ -69,7 +69,7 @@ Data
 ----
 
 .. autoclass:: atsd_client.models.Series
-    :inherited-members:
+    :members:
 
 .. autoclass:: atsd_client.models.Property
     :members:

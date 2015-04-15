@@ -57,7 +57,7 @@ class Property(Serializable):
         #:`dict` containing object keys
         self.tags = tags
 
-        #:`dict` containing ``name: value`` that uniquely identify
+        #:`dict` of ``name: value`` pairs that uniquely identify
         #: the property record
         self.key = key
         #:time in Unix milliseconds
@@ -65,9 +65,21 @@ class Property(Serializable):
 
 
 class Series(Serializable):
+    def __init__(self, entity, metric, data=None, tags=None):
+        #:`str` entity name
+        self.entity = entity
+        #:`str` metric name
+        self.metric = metric
+
+        #an array of {'t': time, 'v': value} objects
+        #use add value instead
+        self._data = data
+        #: `dict` of ``tag_name: tag_value`` pairs
+        self.tags = tags
+
     def __str__(self):
         try:
-            data = ['{t}\t{v}'.format(**item) for item in self.data]
+            data = ['{t}\t{v}'.format(**item) for item in self._data]
             res = '\n'.join(data)
         except TypeError:
             res = ''
@@ -79,32 +91,27 @@ class Series(Serializable):
 
         return res
 
-    def __init__(self, entity, metric, data=None, tags=None, type=None):
-
-        self.entity = entity
-        self.metric = metric
-
-        self.data = data
-
-        self.tags = tags
-        self.type = type
-
     @staticmethod
-    def from_pandas_series(entity, metric, ts, **kwargs):
+    def from_pandas_series(entity, metric, ts):
         """
         :param entity: str entity name
         :param metric: str metric name
         :param ts: pandas time series object
         :return: :class:`.Series` with data from pandas time series
         """
-        data = []
+        res = Series(entity, metric)
         for dt in ts.index:
-            data.append({
-                't': _to_posix_timestamp(dt),
-                'v': ts[dt]
-            })
+            res.add_value(ts[dt], _to_posix_timestamp(dt))
 
-        return Series(entity, metric, data, **kwargs)
+        return res
+
+    @property
+    def data(self):
+        """data getter, use ``add_value()`` method to set values
+
+        :return: an array of {'t': time, 'v': value} objects
+        """
+        return self._data
 
     def add_value(self, v, t=None):
         """add time-value pair to series
@@ -123,15 +130,19 @@ class Series(Serializable):
             raise ValueError('data "t" should be either number or str')
 
         try:
-            self.data.append({'v': v, 't': t})
+            self._data.append({'v': v, 't': t})
         except AttributeError:
-            self.data = [{'v': v, 't': t}]
+            self._data = [{'v': v, 't': t}]
 
     def values(self):
-        return [item['v'] for item in self.data]
+        if self._data is None:
+            return []
+        return [item['v'] for item in self._data]
 
     def times(self):
-        return [datetime.fromtimestamp(item['t'] * 0.001) for item in self.data]
+        if self._data is None:
+            return []
+        return [datetime.fromtimestamp(item['t'] * 0.001) for item in self._data]
 
     def to_pandas_series(self):
         """
