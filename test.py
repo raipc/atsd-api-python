@@ -172,7 +172,7 @@ class TestSeriesService(unittest.TestCase):
         query.tags = {TAG: [TAG_VALUE]}
 
         successful = self.svc.insert_series(series)
-        time.sleep(WAIT_TIME)
+        time.sleep(WAIT_TIME + 2)
         series = self.svc.retrieve_series(query)
         for s in series:
             print s
@@ -200,7 +200,7 @@ class TestSeriesService(unittest.TestCase):
         v1 = 5
         v2 = 3
         insert_series_sample(self.svc, v1, v2)
-        time.sleep(WAIT_TIME)
+        time.sleep(WAIT_TIME + 2)
 
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}

@@ -70,3 +70,53 @@ def dumps(data):
 class ModelEncoder(json.JSONEncoder):
     def default(self, o):
         return serialize(o)
+
+
+def _getprop(model, prop):
+    """
+    :raises: :class:`.AttributeError` in case of no prop found
+    :param model:
+    :param prop: prop name
+    :return: prop value
+    """
+    try:
+        # try to get strictly used prop
+        attr = model.__dict__[prop]
+    except KeyError:
+        # try to get private if setter/getter is used
+        attr = getattr(model, '_' + prop)
+
+    if attr is None:
+        raise AttributeError
+
+    try:
+        return attr._serialize()
+    except AttributeError:
+        return attr
+
+
+class Serializable(object):
+    """
+    implements default _serialize method
+    """
+
+    def __repr__(self):
+        return repr(self.__dict__)
+
+    def _serialize(self):
+        """serialize model to json-serializable object
+        keys: object __init__ args, values: not None object props
+
+        :return: json-serializable object
+        """
+        data = {}
+        props = inspect.getargspec(type(self).__init__).args
+        props.remove('self')
+
+        for prop in props:
+            try:
+                data[prop] = _getprop(self, prop)
+            except AttributeError:
+                pass
+
+        return data

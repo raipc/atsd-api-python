@@ -14,26 +14,10 @@ permissions and limitations under the License.
 """
 
 
-from ._data_models import _Model
+from .._jsonutil import Serializable
 
 
-class Metric(_Model):
-    _allowed_props = ('label',
-                      'enabled',
-                      'dataType',
-                      'timePrecision',
-                      'persistent',
-                      'counter',
-                      'filter',
-                      'minValue',
-                      'maxValue',
-                      'invalidAction',
-                      'description',
-                      'retentionInterval',
-                      'lastInsertTime',
-                      'tags')
-    _required_props = ('name',)
-
+class Metric(Serializable):
     def __init__(self, name,
                  label=None,
                  enabled=None,
@@ -70,10 +54,7 @@ class Metric(_Model):
         self.tags = tags
 
 
-class Entity(_Model):
-    _allowed_props = ('enabled', 'lastInsertTime', 'tags')
-    _required_props = ('name',)
-
+class Entity(Serializable):
     def __init__(self, name,
                  enabled=None, lastInsertTime=None, tags=None):
         """
@@ -86,10 +67,7 @@ class Entity(_Model):
         self.tags = tags
 
 
-class EntityGroup(_Model):
-    _allowed_props = ('expression', 'tags')
-    _required_props = ('name',)
-
+class EntityGroup(Serializable):
     def __init__(self, name, expression=None, tags=None):
         """
         :param name: str group name

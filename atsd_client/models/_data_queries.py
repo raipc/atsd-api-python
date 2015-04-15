@@ -17,7 +17,7 @@ permissions and limitations under the License.
 import numbers
 
 from ._data_models import Property
-from ._data_models import _Model
+from .._jsonutil import Serializable
 from ._data_models import Alert
 
 
@@ -70,10 +70,7 @@ class AggregateType(object):
     THRESHOLD_PERCENT = 'THRESHOLD_PERCENT'
 
 
-class _Rate(_Model):
-    _required_props = ()
-    _allowed_props = ('interval', 'counter')
-
+class _Rate(Serializable):
     def __init__(self, interval=None, counter=None):
         self.interval = interval
         self.counter = counter
@@ -91,13 +88,10 @@ class _Rate(_Model):
         self.interval = {'count': count, 'unit': unit}
 
 
-class _Group(_Model):
+class _Group(Serializable):
     """
     represents aggregate param group
     """
-    _required_props = ('type',)
-    _allowed_props = ('interpolate', 'truncate', 'interval')
-
     def __init__(self, type, interpolate=None, truncate=None, interval=None):
         self.type = type
 
@@ -118,17 +112,10 @@ class _Group(_Model):
         self.interval = {'count': count, 'unit': unit}
 
 
-class _Aggregator(_Model):
+class _Aggregator(Serializable):
     """
     represents aggregate param of :class:`.SeriesQuery`
     """
-    _required_props = ('types', 'interval')
-    _allowed_props = ('interpolate',
-                      'threshold',
-                      'calendar',
-                      'workingMinutes',
-                      'counter')
-
     def __init__(self, types, interval,
                  interpolate=None,
                  threshold=None,
@@ -178,19 +165,7 @@ class _Aggregator(_Model):
         self.calendar = {'name': name}
 
 
-class SeriesQuery(_Model):
-    _allowed_props = ('startTime',
-                      'endTime',
-                      'limit',
-                      'last',
-                      'tags',
-                      'type',
-                      'group',
-                      'rate',
-                      'aggregate',
-                      'requestId')
-    _required_props = ('entity', 'metric')
-
+class SeriesQuery(Serializable):
     def rate(self, interval=None, counter=None):
         """add empty rate property to series query
 
@@ -290,14 +265,7 @@ class SeriesQuery(_Model):
         self.requestId = requestId
 
 
-class AlertsQuery(_Model):
-    _allowed_props = ('metrics',
-                      'entities',
-                      'rules',
-                      'severities',
-                      'minSeverity')
-    _required_props = ()
-
+class AlertsQuery(Serializable):
     def __init__(self,
                  metrics=None,
                  entities=None,
@@ -311,14 +279,7 @@ class AlertsQuery(_Model):
         self.minSeverity = minSeverity
 
 
-class PropertiesQuery(_Model):
-    _allowed_props = ('startTime',
-                      'endTime',
-                      'limit',
-                      'key',
-                      'keyExpression')
-    _required_props = ('entity', 'type')
-
+class PropertiesQuery(Serializable):
     def __init__(self, type, entity,
                  startTime=None,
                  endTime=None,
@@ -339,10 +300,7 @@ class PropertiesQuery(_Model):
         self.keyExpression = keyExpression
 
 
-class PropertiesMatcher(_Model):
-    _allowed_props = ('entity', 'key', 'createdBeforeTime')
-    _required_props = ('type',)
-
+class PropertiesMatcher(Serializable):
     def __init__(self, type,
                  entity=None,
                  key=None,
@@ -356,10 +314,8 @@ class PropertiesMatcher(_Model):
         self.key = key
         self.createdBeforeTime = createdBeforeTime
 
-class AlertHistoryQuery(_Model):
-    _allowed_props = ('entityGroup', 'limit')
-    _required_props = ('entity', 'metric', 'startTime', 'endTime', 'rule')
 
+class AlertHistoryQuery(Serializable):
     def __init__(self, entity, metric, startTime, endTime, rule,
                  entityGroup=None,
                  limit=None):

@@ -14,10 +14,10 @@ permissions and limitations under the License.
 """
 
 
-from ..exceptions import DataParseException
 import time
 from datetime import datetime, timedelta
 import numbers
+from .._jsonutil import Serializable
 
 
 def _strp(time_str):
@@ -46,91 +46,25 @@ def _to_posix_timestamp(dt):
     return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
 
 
-def _getprop(model, prop):
-    """
-    :raises: :class:`.AttributeError` in case of no prop found
-    :param model:
-    :param prop: prop name
-    :return: prop value
-    """
-    try:
-        # try to get strictly used prop
-        attr = model.__dict__[prop]
-    except KeyError:
-        # try to get private if setter/getter is used
-        attr = getattr(model, '_' + prop)
-
-    if attr is None:
-        raise AttributeError
-
-    if isinstance(attr, _Model):
-        return attr._serialize()
-    else:
-        return attr
-
-
-class _Model(object):
-    """
-    subclass should overwrite _required_props & _allowed_props
-    all props should be json serializable or :class:`._Model` instance
-
-    when serializing non specified properties are ignored
-    when desirializing all properties are saved
-
-    props should be either public or use setter/getter in that case
-       prop should be available via underscore name (e.g. _prop).
-       It used to allow use implicit constructors
-    """
-
-    _required_props = ()
-    _allowed_props = ()
-
-    def __repr__(self):
-        return repr(self.__dict__)
-
-    def _serialize(self):
-        """
-        ignore non allowed props
-        :raises: :class:`.DataParseException` if required prop is absent
-        :return: json-serializable object
-        """
-        data = {}
-
-        for prop in self._required_props:
-            try:
-                data[prop] = _getprop(self, prop)
-            except AttributeError:
-                raise DataParseException(prop, type(self))
-
-        for prop in self._allowed_props:
-            try:
-                data[prop] = _getprop(self, prop)
-            except AttributeError:
-                pass
-
-        return data
-
-
-class Property(_Model):
-    _allowed_props = ('key', 'timestamp')
-    _required_props = ('type', 'entity', 'tags')
-
+class Property(Serializable):
     def __init__(self, type, entity, tags,
                  key=None,
                  timestamp=None):
-        # tags=None in delete requests
+        #:`str` property type name
         self.type = type
+        #:`str` entity name
         self.entity = entity
+        #:`dict` containing object keys
         self.tags = tags
 
+        #:`dict` containing ``name: value`` that uniquely identify
+        #: the property record
         self.key = key
+        #:time in Unix milliseconds
         self.timestamp = timestamp
 
 
-class Series(_Model):
-    _allowed_props = ('tags', 'type')
-    _required_props = ('entity', 'metric', 'data')
-
+class Series(Serializable):
     def __str__(self):
         try:
             data = ['{t}\t{v}'.format(**item) for item in self.data]
@@ -146,14 +80,7 @@ class Series(_Model):
         return res
 
     def __init__(self, entity, metric, data=None, tags=None, type=None):
-        """
-        :param entity: `str`
-        :param metric: `str`
-        :param data: use add `value()` method instead of setting data directly
-        :param tags:
-        :param type:
-        :return:
-        """
+
         self.entity = entity
         self.metric = metric
 
@@ -226,23 +153,7 @@ class Series(_Model):
             return plt.plot(self.values(), self.times())
 
 
-class Alert(_Model):
-    _allowed_props = ('rule',
-                      'entity',
-                      'metric',
-                      'lastEventTime',
-                      'openValues',
-                      'openTime',
-                      'value',
-                      'message',
-                      'tags',
-                      'textValue',
-                      'severity',
-                      'repeatCount',
-                      'acknowledged',
-                      'openValue')
-    _required_props = ('id',)
-
+class Alert(Serializable):
     def __init__(self, id,
                  rule=None,
                  entity=None,
@@ -276,26 +187,7 @@ class Alert(_Model):
         self.openValue = openValue
 
 
-class AlertHistory(_Model):
-    _allowed_props = ('alert',
-                      'alertDuration',
-                      'alertOpenTime',
-                      'entity',
-                      'metric',
-                      'receivedTime',
-                      'repeatCount',
-                      'rule',
-                      'ruleExpression',
-                      'ruleFilter',
-                      'schedule',
-                      'severity',
-                      'tags',
-                      'time',
-                      'type',
-                      'value',
-                      'window')
-    _required_props = ()
-
+class AlertHistory(Serializable):
     def __init__(self,
                  alert=None,
                  alertDuration=None,
