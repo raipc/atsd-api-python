@@ -58,8 +58,8 @@ ALERT_VALUE = 33333
 def get_time_str():
     t = time.localtime()
 
-    tz = (str(abs(time.timezone) / 60 / 60).zfill(2)
-          + str(abs(time.timezone) / 60 % 60).zfill(2))
+    tz = (str(int(abs(time.timezone) / 60 / 60)).zfill(2)
+          + str(int(abs(time.timezone) / 60 % 60)).zfill(2))
     if time.timezone < 0:
         tz = '-' + tz
 

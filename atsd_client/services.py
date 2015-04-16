@@ -26,11 +26,17 @@ from .exceptions import DataParseException
 from .exceptions import ServerException
 
 from ._client import Client
-import _jsonutil
+from . import _jsonutil
+
+
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
 
 
 def _check_name(name):
-    if not isinstance(name, basestring):
+    if not isinstance(name, (str, unicode)):
         raise TypeError('name should be str')
     if len(name) == 0:
         raise ValueError('name is empty')

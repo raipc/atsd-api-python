@@ -18,13 +18,21 @@ import numbers
 import json
 import inspect
 
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
+
 
 def serialize(o):
     if isinstance(o, dict):
-        return {key: serialize(o[key]) for key in o}
+        res = {}
+        for key in o:
+            res[key] = serialize(o[key])
+        return res
     if isinstance(o, (list, tuple)):
         return [serialize(el) for el in o]
-    if isinstance(o, (basestring, numbers.Number, bool)):
+    if isinstance(o, (str, unicode, numbers.Number, bool)):
         return o
     if o is None:
         return None

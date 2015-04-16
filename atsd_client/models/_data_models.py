@@ -23,7 +23,7 @@ from .._jsonutil import Serializable
 def _strp(time_str):
     """
     :param time_str: in format '%Y-%m-%dT%H:%M:%SZ%z'
-    :return: timestamp in msec
+    :return: timestamp in milliseconds
     """
     t, tz = time_str.split('Z')
 
