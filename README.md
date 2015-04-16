@@ -8,13 +8,13 @@ API documentation: https://axibase.com/atsd/api
 
 ## Installation
 
-clone repository, and install with pip
+Install atsd_client with pip
 
 ```
-pip install ./atsd-client-python
+pip install atsd_client
 ```
 
-or run
+or clone GitHub repository and run
 
 ```
 python setup.py install
@@ -114,9 +114,9 @@ which you can unpack using `series, = svc.retrieve_series` notation.
     >>>query.startTime = now
     >>>query.endTime = now - 100000
     >>>
-    >>>series = svc.retrieve_series(query)
+    >>>series, = svc.retrieve_series(query)
     >>>
-    >>>print series[0]
+    >>>print(series)
     1428675675832   28.0
     1428675704595   21.0
     1428675744048   11.0
@@ -140,7 +140,7 @@ and `from_pandas_series()` methods.
     >>>ts = series.to_pandas_series()
     >>>type(ts.index)
     <class 'pandas.tseries.index.DatetimeIndex'>
-    >>>print s
+    >>>print(s)
     2015-04-10 17:22:24.048000    11
     2015-04-10 17:23:14.893000    31
     2015-04-10 17:24:49.058000     7

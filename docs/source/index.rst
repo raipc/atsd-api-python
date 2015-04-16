@@ -62,7 +62,7 @@ objects, which you can unpack using ``series, = svc.retrieve_series`` syntax.
     >>>
     >>>series, = svc.retrieve_series(query)
     >>>
-    >>>print series
+    >>>print(series)
     1428675744048	11.0
     1428675794893	31.0
     1428675889058	7.0
@@ -86,7 +86,7 @@ and ``from_pandas_series()`` methods.
     >>>ts = series.to_pandas_series()
     >>>type(ts.index)
     <class 'pandas.tseries.index.DatetimeIndex'>
-    >>>print s
+    >>>print(s)
     2015-04-10 17:22:24.048000    11
     2015-04-10 17:23:14.893000    31
     2015-04-10 17:24:49.058000     7
