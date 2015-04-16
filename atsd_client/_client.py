@@ -15,7 +15,7 @@ permissions and limitations under the License.
 
 import urlparse
 import requests
-import _jsonutil
+from . import _jsonutil
 
 from .exceptions import ServerException
 

@@ -85,9 +85,8 @@ class Series(Serializable):
             res = ''
 
         for key in self.__dict__:
-            if key == 'data':
-                continue
-            res += '\n{0}: {1}'.format(key, getattr(self, key))
+            if not key.startswith('_'):
+                res += '\n{0}: {1}'.format(key, getattr(self, key))
 
         return res
 

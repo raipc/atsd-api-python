@@ -1,12 +1,20 @@
 # Axibase Time-Series Database Client for Python
 
-The ATSD Client for Python enables Python developers 
+The Axibase Time-Series Database API Client for Python enables developers 
 to easily read and write statistics and metadata 
 from Axibase Time-Series Database.
 
 API documentation: https://axibase.com/atsd/api
 
 ## Installation
+
+clone repository, and install with pip
+
+```
+pip install ./atsd-client-python
+```
+
+or run
 
 ```
 python setup.py install

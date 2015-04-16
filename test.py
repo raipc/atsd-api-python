@@ -93,7 +93,7 @@ def insert_alert_series_sample(data_service):
     series.add_value(ALERT_VALUE + 1)
     series.tags = {TAG: TAG_VALUE}
 
-    print 'insertion =', series
+    print('insertion =', series)
 
     return data_service.insert_series(series)
 
@@ -109,7 +109,7 @@ def insert_series_sample(data_service, val=None, *vals):
         for i, v in enumerate(vals):
             series.add_value(v, get_timestamp() + i + 1)
 
-    print 'insertion =', series
+    print('insertion =', series)
 
     return data_service.insert_series(series)
 
@@ -153,7 +153,7 @@ class TestSeriesService(unittest.TestCase):
         series = Series(entity=ENTITY,
                         metric=METRIC)
         series.tags = {TAG: TAG_VALUE}
-        print series
+        print(series)
 
         with self.assertRaises(DataParseException) as cm:
             self.svc.insert_series(series)
@@ -175,7 +175,7 @@ class TestSeriesService(unittest.TestCase):
         time.sleep(WAIT_TIME + 2)
         series = self.svc.retrieve_series(query)
         for s in series:
-            print s
+            print(s)
 
         self.assertTrue(successful)
         self.assertIsNotNone(series)
@@ -275,7 +275,7 @@ class TestPropertiesService(unittest.TestCase):
         successful = self.svc.insert_properties(prop)
         time.sleep(WAIT_TIME)
         properties = self.svc.retrieve_properties(query)
-        print properties
+        print(properties)
 
         self.assertTrue(successful)
         self.assertIsNotNone(properties)
@@ -344,7 +344,7 @@ class TestPropertiesService(unittest.TestCase):
         successful = self.svc.batch_update_properties(command)
         time.sleep(WAIT_TIME)
         properties = query_properties_sample(self.svc)
-        print properties
+        print(properties)
 
         self.assertTrue(successful)
         self.assertGreater(len(properties), 0)
@@ -365,7 +365,7 @@ class TestAlertsService(unittest.TestCase):
     def test_retrieve_alerts(self):
         query = AlertsQuery(entities=[ENTITY], metrics=[METRIC])
         alerts = self.svc.retrieve_alerts(query)
-        print alerts
+        print(alerts)
 
         self.assertIsNotNone(alerts)
         self.assertEqual(len(alerts), 1)
@@ -378,7 +378,7 @@ class TestAlertsService(unittest.TestCase):
                                   endTime=get_timestamp(),
                                   rule=RULE)
         alert_history = self.svc.retrieve_alert_history(query)
-        print alert_history
+        print(alert_history)
 
         self.assertIsNotNone(alert_history)
         self.assertGreater(len(alert_history), 0)
@@ -397,11 +397,11 @@ class TestAlertsService(unittest.TestCase):
         self.svc.batch_update_alerts(command)
 
         alerts = self.svc.retrieve_alerts(query)
-        is_all_acknowledged = reduce(
-            lambda prev, curr: prev and curr.acknowledged,
-            alerts,
-            True
-        )
+
+        is_all_acknowledged = True
+        for alert in alerts:
+            is_all_acknowledged = is_all_acknowledged and alert.acknowledged
+
         self.assertTrue(is_all_acknowledged)
 
         # clean alerts
@@ -430,7 +430,7 @@ class TestMetricsService(unittest.TestCase):
             tags='*',
             expression='tags.table like "py*est"'
         )
-        print metrics
+        print(metrics)
 
         self.assertIsNotNone(metrics)
         self.assertGreater(len(metrics), 0)
@@ -453,7 +453,7 @@ class TestMetricsService(unittest.TestCase):
     def test_replace_metric(self):
         metric = self.svc.retrieve_metric(TEST_NAME)
 
-        print metric
+        print(metric)
         old_counter = metric.counter
         metric.counter = not old_counter
         successful = self.svc.create_or_replace_metric(metric)
@@ -475,7 +475,7 @@ class TestMetricsService(unittest.TestCase):
         metric.tags = {'table': new_tag}
         self.svc.update_metric(metric)
         metric = self.svc.retrieve_metric(TEST_NAME)
-        print metric
+        print(metric)
 
         self.assertEqual(metric.tags['table'], new_tag)
 
@@ -511,7 +511,7 @@ class TestEntitiesService(unittest.TestCase):
             tags='*',
             expression='tags.environment like "py*est"'
         )
-        print entities
+        print(entities)
 
         self.assertIsNotNone(entities)
         self.assertGreater(len(entities), 0)
@@ -533,12 +533,12 @@ class TestEntitiesService(unittest.TestCase):
 
     def test_replace_entity(self):
         entity = self.svc.retrieve_entity(TEST_NAME)
-        print entity
+        print(entity)
 
         del entity.tags
         successful = self.svc.create_or_replace_entity(entity)
         entity = self.svc.retrieve_entity(TEST_NAME)
-        print entity
+        print(entity)
 
         self.assertTrue(successful)
         self.assertNotIn('environment', entity.tags)
@@ -554,7 +554,7 @@ class TestEntitiesService(unittest.TestCase):
         entity.tags = {'environment': new_tag}
         self.svc.update_entity(entity)
         entity = self.svc.retrieve_entity(TEST_NAME)
-        print entity
+        print(entity)
 
         self.assertEqual(entity.tags['environment'], new_tag)
 
@@ -591,7 +591,7 @@ class TestEntityGroupsService(unittest.TestCase):
             tags='*',
             expression='tags.pytag like "py*est"'
         )
-        print groups
+        print(groups)
 
         self.assertIsNotNone(groups)
         self.assertGreater(len(groups), 0)
@@ -613,12 +613,12 @@ class TestEntityGroupsService(unittest.TestCase):
 
     def test_replace_entity_group(self):
         group = self.svc.retrieve_entity_group(GROUP_NAME)
-        print group
+        print(group)
 
         del group.tags
         successful = self.svc.create_or_replace_entity_group(group)
         group = self.svc.retrieve_entity_group(GROUP_NAME)
-        print group
+        print(group)
 
         self.assertTrue(successful)
         self.assertNotIn('pytag', group.tags)
@@ -633,7 +633,7 @@ class TestEntityGroupsService(unittest.TestCase):
         group.tags = {'pytag': new_tag}
         self.svc.update_entity_group(group)
         group = self.svc.retrieve_entity_group(TEST_NAME)
-        print group
+        print(group)
 
         self.assertEqual(group.tags['pytag'], new_tag)
 
@@ -656,7 +656,7 @@ class TestEntityGroupsService(unittest.TestCase):
 
     def test_retrieve_group_entities(self):
         entities = self.svc.retrieve_group_entities(GROUP_NAME)
-        print entities
+        print(entities)
 
         self.assertIsNotNone(entities)
         self.assertGreater(len(entities), 0)
@@ -712,5 +712,5 @@ class TestEntityGroupsService(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    print 'python version: ', sys.version, '\n'
+    print('python version: ', sys.version, '\n')
     unittest.main()

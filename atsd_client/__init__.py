@@ -16,5 +16,5 @@ permissions and limitations under the License.
 __all__ = ['services', 'models']
 
 from .connection import connect, connect_url
-import models
-import services
+from . import models
+from . import services

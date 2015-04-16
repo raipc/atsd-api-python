@@ -19,15 +19,42 @@ try:
 except ImportError:
     from distutils.core import setup
 
+license_ = open('LICENSE').read()
 
 setup(
     name='atsd_client',
     packages=['atsd_client', 'atsd_client.models'],
-    version='1.0',
-    description='Python client for ATSD REST API',
+    version='1.0.0',
+    description='Axibase Time-Series Database API Client for Python',
+    url='https://github.com/axibase/atsd-api-python',
     author='Axibase Corporation',
     author_email='axibase-api@axibase.com',
-    license='Apache 2.0',
+    license=license_,
     install_requires=['requests'],
-    package_data={'atsd_client': ['connection.properties']}
+    package_data={'atsd_client': ['connection.properties']},
+    keywords = 'axibase, atsd, axibase time-series database, python',
+    classifiers=(
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Science/Research',
+        'Intended Audience :: Developers',
+        'Natural Language :: English',
+        'License :: OSI Approved :: Apache Software License',
+        'Programming Language :: Python :: 2',
+        'Programming Language :: Python :: 2.3',
+        'Programming Language :: Python :: 2.4',
+        'Programming Language :: Python :: 2.5',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.0',
+        'Programming Language :: Python :: 3.1',
+        'Programming Language :: Python :: 3.2',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Operating System :: OS Independent',
+        'Topic :: Database',
+        'Topic :: Database :: Database Engines/Servers',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: System :: Monitoring'
+    )
 )
