@@ -97,7 +97,7 @@ def _getprop(model, prop):
 
 class Serializable(object):
     """
-    implements default _serialize method
+    implements default ``_serialize()`` method
     """
 
     def __repr__(self):

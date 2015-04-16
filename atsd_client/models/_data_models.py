@@ -115,11 +115,11 @@ class Series(Serializable):
 
     def add_value(self, v, t=None):
         """add time-value pair to series
-        time could be specified either as `int` in milliseconds or as `str` in format %Y-%m-%dT%H:%M:%SZ%z
-        (e.g. 2015-04-14T07:03:31Z)
+        time could be specified either as `int` in milliseconds or as `str` in format
+        ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z)
 
         :param v: value number
-        :param t: time if not specified t = current_time
+        :param t: time if not specified t = current time
         """
         if t is None:
             t = int(time.time() * 1000)
