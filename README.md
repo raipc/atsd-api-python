@@ -4,7 +4,9 @@ The Axibase Time-Series Database API Client for Python enables developers
 to easily read and write statistics and metadata 
 from Axibase Time-Series Database.
 
-API documentation: https://axibase.com/atsd/api
+[API documentation](https://axibase.com/atsd/api)  
+[PyPI](https://pypi.python.org/pypi/atsd_client)  
+[Client documentation](http://pythonhosted.org/atsd_client)
 
 ## Installation
 
@@ -19,46 +21,6 @@ or clone GitHub repository and run
 ```
 python setup.py install
 ```
-
-## Implemented Methods
-
-### Data API
-- Series
-    - Query
-    - Insert
-- Properties
-    - Query
-    - Insert
-    - Batch
-- Alerts 
-    - Query
-    - Update
-    - History Query
-    
-### Meta API
-- Metrics 
-    - List
-    - Get
-    - Create or replace
-    - Update
-    - Delete
-    - Entities and tags
-- Entities
-    - List
-    - Get
-    - Create or replace
-    - Update
-    - Delete
-- Entity Group 
-    - List
-    - Get
-    - Create or replace
-    - Update
-    - Delete
-    - Get entities
-    - Add entities
-    - Set entities
-    - Delete entities
 
 ## Usage
 
@@ -159,3 +121,43 @@ To plot series with `matplotlib` use the built-in `plot()` method
     >>>series.plot()
     >>>plt.show()
 ```
+
+## Implemented Methods
+
+### Data API
+- Series
+    - Query
+    - Insert
+- Properties
+    - Query
+    - Insert
+    - Batch
+- Alerts 
+    - Query
+    - Update
+    - History Query
+    
+### Meta API
+- Metrics 
+    - List
+    - Get
+    - Create or replace
+    - Update
+    - Delete
+    - Entities and tags
+- Entities
+    - List
+    - Get
+    - Create or replace
+    - Update
+    - Delete
+- Entity Group 
+    - List
+    - Get
+    - Create or replace
+    - Update
+    - Delete
+    - Get entities
+    - Add entities
+    - Set entities
+    - Delete entities

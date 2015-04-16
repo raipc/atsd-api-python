@@ -104,8 +104,8 @@ To plot series with ``matplotlib`` use the built-in ``plot()`` method
     >>>series.plot()
     >>>plt.show()
 
-API Documentation
------------------
+Client Documentation
+====================
 
 .. toctree::
 

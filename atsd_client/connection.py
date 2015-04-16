@@ -42,8 +42,8 @@ def connect_url(base_url,
 
 
 def connect(file_name=None):
-
-    """connect to ATSD using parameters specified in file (default connection.properties).
+    """connect to ATSD using parameters specified in file
+    (default connection.properties)
 
     :param file_name: `str`
     """

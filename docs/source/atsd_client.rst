@@ -1,6 +1,17 @@
 atsd_client
 ===========
 
+connection parameters could be specified in property file
+(default `connection.properties`)
+
+For example:
+
+.. code-block:: python
+
+    base_url=http://atsd_server:8088
+    username=username
+    password=password
+
 connect to ATSD using parameters specified in `connection.properties` file
 
 .. code-block:: python
@@ -12,7 +23,7 @@ connect to atsd using credentials
 .. code-block:: python
 
     >>>atsd_client.connect_url('http://atsd_server:8088',
-                               username='user',
+                               username='username',
                                password='password')
 
 .. autofunction:: atsd_client.connect
