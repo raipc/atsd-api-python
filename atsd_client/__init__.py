@@ -14,6 +14,7 @@ permissions and limitations under the License.
 """
 
 __all__ = ['services', 'models']
+__version__ = '1.0.1'
 
 from .connection import connect, connect_url
 from . import models

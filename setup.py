@@ -19,12 +19,14 @@ try:
 except ImportError:
     from distutils.core import setup
 
+from .atsd_client import __version__
+
 license_ = open('LICENSE').read()
 
 setup(
     name='atsd_client',
     packages=['atsd_client', 'atsd_client.models'],
-    version='1.0.0',
+    version=__version__,
     description='Axibase Time-Series Database API Client for Python',
     url='https://github.com/axibase/atsd-api-python',
     author='Axibase Corporation',

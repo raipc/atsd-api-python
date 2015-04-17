@@ -40,7 +40,7 @@ def _strp(time_str):
     return timestamp
 
 
-def _to_posix_timestamp(dt):
+def to_posix_timestamp(dt):
     offset = dt.utcoffset() if dt.utcoffset() is not None else timedelta(seconds=-time.timezone)
     utc_naive = dt.replace(tzinfo=None) - offset
     return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
@@ -100,7 +100,7 @@ class Series(Serializable):
         """
         res = Series(entity, metric)
         for dt in ts.index:
-            res.add_value(ts[dt], _to_posix_timestamp(dt))
+            res.add_value(ts[dt], dt)
 
         return res
 
@@ -125,6 +125,8 @@ class Series(Serializable):
 
         if isinstance(t, str):
             t = _strp(t)
+        if isinstance(t, datetime):
+            t = to_posix_timestamp(t)
         if not isinstance(t, numbers.Number):
             raise ValueError('data "t" should be either number or str')
 

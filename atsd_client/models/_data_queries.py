@@ -15,8 +15,10 @@ permissions and limitations under the License.
 
 
 import numbers
+from datetime import datetime
 
 from ._data_models import Property
+from ._data_models import to_posix_timestamp
 from .._jsonutil import Serializable
 from ._data_models import Alert
 
@@ -282,10 +284,10 @@ class SeriesQuery(Serializable):
 
         #:`long` Start of the selection interval in Unix milliseconds.
         #:Default value: endTime - 1 hour
-        self.startTime = startTime
+        self._startTime = startTime
         #:`long` End of the selection interval in Unix milliseconds.
         #:Default value: current server time
-        self.endTime = endTime
+        self._endTime = endTime
         #:`int` maximum number of data samples returned
         self.limit = limit
         #:`bool` Retrieves only 1 most recent value
@@ -299,6 +301,32 @@ class SeriesQuery(Serializable):
         self._aggregate = aggregate
         #: `str`
         self.requestId = requestId
+
+    @property
+    def startTime(self):
+        return datetime.fromtimestamp(self._startTime / 1000)
+
+    @startTime.setter
+    def startTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._startTime = value
+        elif isinstance(value, datetime):
+            self._startTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('startTime should be either Number or datetime')
+
+    @property
+    def endTime(self):
+        return datetime.fromtimestamp(self._endTime / 1000)
+
+    @endTime.setter
+    def endTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._endTime = value
+        elif isinstance(value, datetime):
+            self._endTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('endTime should be either Number or datetime')
 
 
 class PropertiesQuery(Serializable):
