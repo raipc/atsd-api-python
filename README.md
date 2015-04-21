@@ -72,9 +72,9 @@ which you can unpack using `series, = svc.retrieve_series` notation.
     >>>import time
     >>>
     >>>query = models.SeriesQuery('sensor001', 'temperature')
-    >>>now = int(time.time() * 1000)
-    >>>query.endTime = now  # time in unix milliseconds
-    >>>query.startTime = now - 15 * 60 * 1000  # query data for 15 minutes
+    >>>now = int(time.time() * 1000)  # current time in unix milliseconds
+    >>>query.endTime = now
+    >>>query.startTime = now - 15 * 60 * 1000  # query data for the last 15 minutes
     >>>
     >>>series, = svc.retrieve_series(query)
     >>>
@@ -91,7 +91,7 @@ which you can unpack using `series, = svc.retrieve_series` notation.
     type: HISTORY
 ```
 
-Alternatively you can set `datetime` object to `startTime` and `endTime` properties
+Alternatively you can specify `startTime` and `endTime` properties using the built-in `datetime` object
 
 ```python
 
@@ -99,7 +99,7 @@ Alternatively you can set `datetime` object to `startTime` and `endTime` propert
     >>>from datetime import timedelta
     >>>
     >>>query.endTime = datetime.now()
-    >>>query.startTime = query.startTime - timedelta(minutes=15)
+    >>>query.startTime = query.endTime - timedelta(minutes=15)
 ```
 
 ###Exploring Results

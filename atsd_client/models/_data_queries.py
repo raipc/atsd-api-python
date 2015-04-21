@@ -282,12 +282,18 @@ class SeriesQuery(Serializable):
         #:`str` metric name
         self.metric = metric
 
-        #:`long` Start of the selection interval in Unix milliseconds.
-        #:Default value: endTime - 1 hour
+        if isinstance(startTime, datetime):
+            startTime = to_posix_timestamp(startTime)
+        #: `long` start of the selection interval.
+        #: default: ``endTime - 1 hour``
         self._startTime = startTime
-        #:`long` End of the selection interval in Unix milliseconds.
-        #:Default value: current server time
+
+        if isinstance(endTime, datetime):
+            endTime = to_posix_timestamp(endTime)
+        #: `long` end of the selection interval.
+        #: default value: ``current server time``
         self._endTime = endTime
+
         #:`int` maximum number of data samples returned
         self.limit = limit
         #:`bool` Retrieves only 1 most recent value
@@ -304,7 +310,11 @@ class SeriesQuery(Serializable):
 
     @property
     def startTime(self):
-        """ `long` milliseconds, or `datetime` """
+        """`datetime` Start of the selection interval
+        Default value: endTime - 1 hour
+        """
+        if self._startTime is None:
+            return None
         return datetime.fromtimestamp(self._startTime / 1000)
 
     @startTime.setter
@@ -318,7 +328,11 @@ class SeriesQuery(Serializable):
 
     @property
     def endTime(self):
-        """ `long` milliseconds, or `datetime` """
+        """ `datetime` End of the selection interval
+        Default value: current server time
+        """
+        if self._endTime is None:
+            return None
         return datetime.fromtimestamp(self._endTime / 1000)
 
     @endTime.setter
@@ -343,12 +357,18 @@ class PropertiesQuery(Serializable):
         #: `str` type of data properties
         self.type = type
 
+        if isinstance(startTime, datetime):
+            startTime = to_posix_timestamp(startTime)
         #: `long` start of the selection interval.
         #: default: ``endTime - 1 hour``
-        self.startTime = startTime
+        self._startTime = startTime
+
+        if isinstance(endTime, datetime):
+            endTime = to_posix_timestamp(endTime)
         #: `long` end of the selection interval.
         #: default value: ``current server time``
-        self.endTime = endTime
+        self._endTime = endTime
+
         #: `int` maximum number of data samples returned.
         #: default value: 0 (no limit)
         self.limit = limit
@@ -357,6 +377,42 @@ class PropertiesQuery(Serializable):
         self.key = key
         #: `str`
         self.keyExpression = keyExpression
+
+    @property
+    def startTime(self):
+        """`datetime` Start of the selection interval
+        Default value: endTime - 1 hour
+        """
+        if self._startTime is None:
+            return None
+        return datetime.fromtimestamp(self._startTime / 1000)
+
+    @startTime.setter
+    def startTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._startTime = value
+        elif isinstance(value, datetime):
+            self._startTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('startTime should be either Number or datetime')
+
+    @property
+    def endTime(self):
+        """ `datetime` End of the selection interval
+        Default value: current server time
+        """
+        if self._endTime is None:
+            return None
+        return datetime.fromtimestamp(self._endTime / 1000)
+
+    @endTime.setter
+    def endTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._endTime = value
+        elif isinstance(value, datetime):
+            self._endTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('endTime should be either Number or datetime')
 
 
 class PropertiesMatcher(Serializable):
@@ -402,10 +458,19 @@ class AlertHistoryQuery(Serializable):
         self.entity = entity
         #: `str` metric name
         self.metric = metric
-        #: `long` milliseconds, default 0
-        self.startTime = startTime
-        #: `long` milliseconds, default ``Long.MAX_VALUE``
-        self.endTime = endTime
+
+        if isinstance(startTime, datetime):
+            startTime = to_posix_timestamp(startTime)
+        #: `long` start of the selection interval.
+        #: default: ``endTime - 1 hour``
+        self._startTime = startTime
+
+        if isinstance(endTime, datetime):
+            endTime = to_posix_timestamp(endTime)
+        #: `long` end of the selection interval.
+        #: default value: ``current server time``
+        self._endTime = endTime
+
         #: `str`
         self.rule = rule
 
@@ -413,6 +478,42 @@ class AlertHistoryQuery(Serializable):
         self.entityGroup = entityGroup
         #: `int`, default 1000
         self.limit = limit
+
+    @property
+    def startTime(self):
+        """`datetime` Start of the selection interval
+        Default value: endTime - 1 hour
+        """
+        if self._startTime is None:
+            return None
+        return datetime.fromtimestamp(self._startTime / 1000)
+
+    @startTime.setter
+    def startTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._startTime = value
+        elif isinstance(value, datetime):
+            self._startTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('startTime should be either Number or datetime')
+
+    @property
+    def endTime(self):
+        """ `datetime` End of the selection interval
+        Default value: current server time
+        """
+        if self._endTime is None:
+            return None
+        return datetime.fromtimestamp(self._endTime / 1000)
+
+    @endTime.setter
+    def endTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._endTime = value
+        elif isinstance(value, datetime):
+            self._endTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('endTime should be either Number or datetime')
 
 
 class BatchPropertyCommand(object):
