@@ -56,23 +56,33 @@ objects, which you can unpack using ``series, = svc.retrieve_series`` syntax.
     >>>import time
     >>>
     >>>query = models.SeriesQuery('sensor001', 'temperature')
-    >>>now = int(time.time() * 1000)
-    >>>query.startTime = now
-    >>>query.endTime = now - 180000  # fetch data for the last 3 minutes
+    >>>now = int(time.time() * 1000)  # current time in unix milliseconds
+    >>>query.endTime = now
+    >>>query.startTime = now - 15 * 60 * 1000  # query data for the last 15 minutes
     >>>
     >>>series, = svc.retrieve_series(query)
     >>>
     >>>print(series)
-    1428675744048	11.0
-    1428675794893	31.0
-    1428675889058	7.0
-    1428675915567	22.0
-    1428922849285	9.0
-    1428926438000	3.0
+    1428675675832   28.0
+    1428675704595   21.0
+    1428675744048   11.0
+    1428675794893   31.0
+    1428675889058   7.0
+    1428675915567   22.0
     metric: temperature
     entity: sensor001
     aggregate: {u'type': u'DETAIL'}
     type: HISTORY
+
+Alternatively you can specify ``startTime`` and ``endTime`` properties using the built-in `datetime` object
+
+.. code-block:: python
+
+    >>>from datetime import datetime
+    >>>from datetime import timedelta
+    >>>
+    >>>query.endTime = datetime.now()
+    >>>query.startTime = query.endTime - timedelta(minutes=15)
 
 Exploring Results
 -----------------
