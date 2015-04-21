@@ -70,11 +70,11 @@ which you can unpack using `series, = svc.retrieve_series` notation.
 ```python
 
     >>>import time
-    >>>now = int(time.time() * 1000)
     >>>
     >>>query = models.SeriesQuery('sensor001', 'temperature')
-    >>>query.startTime = now
-    >>>query.endTime = now - 100000
+    >>>now = int(time.time() * 1000)
+    >>>query.endTime = now  # time in unix milliseconds
+    >>>query.startTime = now - 15 * 60 * 1000  # query data for 15 minutes
     >>>
     >>>series, = svc.retrieve_series(query)
     >>>
@@ -89,6 +89,17 @@ which you can unpack using `series, = svc.retrieve_series` notation.
     entity: sensor001
     aggregate: {u'type': u'DETAIL'}
     type: HISTORY
+```
+
+Alternatively you can set `datetime` object to `startTime` and `endTime` properties
+
+```python
+
+    >>>from datetime import datetime
+    >>>from datetime import timedelta
+    >>>
+    >>>query.endTime = datetime.now()
+    >>>query.startTime = query.startTime - timedelta(minutes=15)
 ```
 
 ###Exploring Results

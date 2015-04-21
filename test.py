@@ -17,6 +17,8 @@ permissions and limitations under the License.
 import sys
 import unittest
 import time
+from datetime import datetime
+from datetime import timedelta
 import random
 
 import atsd_client
@@ -170,6 +172,8 @@ class TestSeriesService(unittest.TestCase):
 
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}
+        query.endTime = datetime.now()
+        query.startTime = query.endTime - timedelta(days=5)
 
         successful = self.svc.insert_series(series)
         time.sleep(WAIT_TIME + 2)

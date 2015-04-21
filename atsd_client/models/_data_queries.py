@@ -304,6 +304,7 @@ class SeriesQuery(Serializable):
 
     @property
     def startTime(self):
+        """ `long` milliseconds, or `datetime` """
         return datetime.fromtimestamp(self._startTime / 1000)
 
     @startTime.setter
@@ -317,6 +318,7 @@ class SeriesQuery(Serializable):
 
     @property
     def endTime(self):
+        """ `long` milliseconds, or `datetime` """
         return datetime.fromtimestamp(self._endTime / 1000)
 
     @endTime.setter
