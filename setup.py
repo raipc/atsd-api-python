@@ -18,14 +18,22 @@ try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-
+import re
 
 license_ = open('LICENSE').read()
+
+version = ''
+with open('atsd_client/__init__.py', 'r') as fd:
+    # noinspection PyRedeclaration
+    version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
+                        fd.read(), re.MULTILINE).group(1)
+
+print('version:', version)
 
 setup(
     name='atsd_client',
     packages=['atsd_client', 'atsd_client.models'],
-    version='1.0.1',
+    version=version,
     description='Axibase Time-Series Database API Client for Python',
     url='https://github.com/axibase/atsd-api-python',
     author='Axibase Corporation',

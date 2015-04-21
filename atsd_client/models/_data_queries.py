@@ -209,7 +209,57 @@ class Aggregator(Serializable):
         self.calendar = {'name': name}
 
 
-class SeriesQuery(Serializable):
+class _TimeIntervalQuery(Serializable):
+    def __init__(self, startTime, endTime):
+
+        if isinstance(startTime, datetime):
+            startTime = to_posix_timestamp(startTime)
+        #: `long` start of the selection interval.
+        #: default: ``endTime - 1 hour``
+        self._startTime = startTime
+
+        if isinstance(endTime, datetime):
+            endTime = to_posix_timestamp(endTime)
+        #: `long` end of the selection interval.
+        #: default value: ``current server time``
+        self._endTime = endTime
+
+    @property
+    def startTime(self):
+        """`datetime` Start of the selection interval
+        """
+        if self._startTime is None:
+            return None
+        return datetime.fromtimestamp(self._startTime / 1000)
+
+    @startTime.setter
+    def startTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._startTime = value
+        elif isinstance(value, datetime):
+            self._startTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('startTime should be either Number or datetime')
+
+    @property
+    def endTime(self):
+        """ `datetime` End of the selection interval
+        """
+        if self._endTime is None:
+            return None
+        return datetime.fromtimestamp(self._endTime / 1000)
+
+    @endTime.setter
+    def endTime(self, value):
+        if isinstance(value, numbers.Number):
+            self._endTime = value
+        elif isinstance(value, datetime):
+            self._endTime = to_posix_timestamp(value)
+        else:
+            raise ValueError('endTime should be either Number or datetime')
+
+
+class SeriesQuery(_TimeIntervalQuery):
     def rate(self):
         """add empty rate property to series query,
         use returned object methods to set parameters
@@ -282,18 +332,6 @@ class SeriesQuery(Serializable):
         #:`str` metric name
         self.metric = metric
 
-        if isinstance(startTime, datetime):
-            startTime = to_posix_timestamp(startTime)
-        #: `long` start of the selection interval.
-        #: default: ``endTime - 1 hour``
-        self._startTime = startTime
-
-        if isinstance(endTime, datetime):
-            endTime = to_posix_timestamp(endTime)
-        #: `long` end of the selection interval.
-        #: default value: ``current server time``
-        self._endTime = endTime
-
         #:`int` maximum number of data samples returned
         self.limit = limit
         #:`bool` Retrieves only 1 most recent value
@@ -308,44 +346,10 @@ class SeriesQuery(Serializable):
         #: `str`
         self.requestId = requestId
 
-    @property
-    def startTime(self):
-        """`datetime` Start of the selection interval
-        Default value: endTime - 1 hour
-        """
-        if self._startTime is None:
-            return None
-        return datetime.fromtimestamp(self._startTime / 1000)
-
-    @startTime.setter
-    def startTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._startTime = value
-        elif isinstance(value, datetime):
-            self._startTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('startTime should be either Number or datetime')
-
-    @property
-    def endTime(self):
-        """ `datetime` End of the selection interval
-        Default value: current server time
-        """
-        if self._endTime is None:
-            return None
-        return datetime.fromtimestamp(self._endTime / 1000)
-
-    @endTime.setter
-    def endTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._endTime = value
-        elif isinstance(value, datetime):
-            self._endTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('endTime should be either Number or datetime')
+        super(SeriesQuery, self).__init__(startTime, endTime)
 
 
-class PropertiesQuery(Serializable):
+class PropertiesQuery(_TimeIntervalQuery):
     def __init__(self, type, entity,
                  startTime=None,
                  endTime=None,
@@ -357,18 +361,6 @@ class PropertiesQuery(Serializable):
         #: `str` type of data properties
         self.type = type
 
-        if isinstance(startTime, datetime):
-            startTime = to_posix_timestamp(startTime)
-        #: `long` start of the selection interval.
-        #: default: ``endTime - 1 hour``
-        self._startTime = startTime
-
-        if isinstance(endTime, datetime):
-            endTime = to_posix_timestamp(endTime)
-        #: `long` end of the selection interval.
-        #: default value: ``current server time``
-        self._endTime = endTime
-
         #: `int` maximum number of data samples returned.
         #: default value: 0 (no limit)
         self.limit = limit
@@ -378,41 +370,7 @@ class PropertiesQuery(Serializable):
         #: `str`
         self.keyExpression = keyExpression
 
-    @property
-    def startTime(self):
-        """`datetime` Start of the selection interval
-        Default value: endTime - 1 hour
-        """
-        if self._startTime is None:
-            return None
-        return datetime.fromtimestamp(self._startTime / 1000)
-
-    @startTime.setter
-    def startTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._startTime = value
-        elif isinstance(value, datetime):
-            self._startTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('startTime should be either Number or datetime')
-
-    @property
-    def endTime(self):
-        """ `datetime` End of the selection interval
-        Default value: current server time
-        """
-        if self._endTime is None:
-            return None
-        return datetime.fromtimestamp(self._endTime / 1000)
-
-    @endTime.setter
-    def endTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._endTime = value
-        elif isinstance(value, datetime):
-            self._endTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('endTime should be either Number or datetime')
+        super(PropertiesQuery, self).__init__(startTime, endTime)
 
 
 class PropertiesMatcher(Serializable):
@@ -450,7 +408,7 @@ class AlertsQuery(Serializable):
         self.minSeverity = minSeverity
 
 
-class AlertHistoryQuery(Serializable):
+class AlertHistoryQuery(_TimeIntervalQuery):
     def __init__(self, entity, metric, startTime, endTime, rule,
                  entityGroup=None,
                  limit=None):
@@ -458,19 +416,6 @@ class AlertHistoryQuery(Serializable):
         self.entity = entity
         #: `str` metric name
         self.metric = metric
-
-        if isinstance(startTime, datetime):
-            startTime = to_posix_timestamp(startTime)
-        #: `long` start of the selection interval.
-        #: default: ``endTime - 1 hour``
-        self._startTime = startTime
-
-        if isinstance(endTime, datetime):
-            endTime = to_posix_timestamp(endTime)
-        #: `long` end of the selection interval.
-        #: default value: ``current server time``
-        self._endTime = endTime
-
         #: `str`
         self.rule = rule
 
@@ -479,41 +424,7 @@ class AlertHistoryQuery(Serializable):
         #: `int`, default 1000
         self.limit = limit
 
-    @property
-    def startTime(self):
-        """`datetime` Start of the selection interval
-        Default value: endTime - 1 hour
-        """
-        if self._startTime is None:
-            return None
-        return datetime.fromtimestamp(self._startTime / 1000)
-
-    @startTime.setter
-    def startTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._startTime = value
-        elif isinstance(value, datetime):
-            self._startTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('startTime should be either Number or datetime')
-
-    @property
-    def endTime(self):
-        """ `datetime` End of the selection interval
-        Default value: current server time
-        """
-        if self._endTime is None:
-            return None
-        return datetime.fromtimestamp(self._endTime / 1000)
-
-    @endTime.setter
-    def endTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._endTime = value
-        elif isinstance(value, datetime):
-            self._endTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('endTime should be either Number or datetime')
+        super(AlertHistoryQuery, self).__init__(startTime, endTime)
 
 
 class BatchPropertyCommand(object):

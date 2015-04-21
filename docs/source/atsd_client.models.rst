@@ -62,15 +62,18 @@ Queries
 
 .. autoclass:: atsd_client.models.SeriesQuery
     :members:
+    :inherited-members:
 
 .. autoclass:: atsd_client.models.PropertiesQuery
     :members:
+    :inherited-members:
 
 .. autoclass:: atsd_client.models.AlertsQuery
     :members:
 
 .. autoclass:: atsd_client.models.AlertHistoryQuery
     :members:
+    :inherited-members:
 
 .. autoclass:: atsd_client.models.BatchPropertyCommand
     :members:
