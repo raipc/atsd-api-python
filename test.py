@@ -52,7 +52,7 @@ KEY = 'py.key'
 KEY_VALUE = 'py.key-value'
 RULE = 'py.rule'
 WAIT_TIME = 2
-TEST_NAME = 'py.test'
+TEST_NAME = 'py/test'
 GROUP_NAME = TEST_NAME
 ALERT_VALUE = 33333
 
@@ -196,6 +196,8 @@ class TestSeriesService(unittest.TestCase):
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}
         query.type = models.SeriesType.FORECAST
+        query.endTime = datetime.now()
+        query.startTime = query.endTime - timedelta(days=5)
 
         series = self.svc.retrieve_series(query)
         self.assertEqual(series[0].type, models.SeriesType.FORECAST)
@@ -208,7 +210,8 @@ class TestSeriesService(unittest.TestCase):
 
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}
-        query.startTime = 1
+        query.endTime = datetime.now()
+        query.startTime = query.endTime - timedelta(days=5)
 
         rate = query.rate()
         rate.counter = False
@@ -223,7 +226,8 @@ class TestSeriesService(unittest.TestCase):
 
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}
-        query.startTime = 1
+        query.endTime = datetime.now()
+        query.startTime = query.endTime - timedelta(days=5)
 
         group = query.group(AggregateType.COUNT)
         group.set_interval(1, TimeUnit.SECOND)
@@ -239,15 +243,18 @@ class TestSeriesService(unittest.TestCase):
 
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}
-        query.startTime = 1
+        query.endTime = datetime.now()
+        query.startTime = query.endTime - timedelta(days=5)
 
         aggr = query.aggregate()
-        aggr.set_interval(10, TimeUnit.DAY)
+        aggr.set_interval(10, TimeUnit.SECOND)
         aggr.set_types(AggregateType.MAX, AggregateType.MIN)
 
         series = self.svc.retrieve_series(query)
         self.assertEqual(len(series), 2)
 
+        for s in series:
+            print(s)
         if series[0].aggregate['type'] == 'MAX':
             max = series[0].data[-1]['v']
             min = series[1].data[-1]['v']
