@@ -55,7 +55,7 @@ a `Series` object and populate it with timestamped values.
 
 ```python
 
-    >>>series = Series('sensor001', 'temperature')
+    >>>series = models.Series('sensor001', 'temperature')
     >>>series.add_value(3, '2015-04-14T07:03:31Z')
     >>>
     >>>svc.insert_series(series)

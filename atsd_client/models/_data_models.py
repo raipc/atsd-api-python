@@ -17,6 +17,7 @@ permissions and limitations under the License.
 import time
 from datetime import datetime, timedelta
 import numbers
+import copy
 from .._jsonutil import Serializable
 
 
@@ -46,6 +47,27 @@ def to_posix_timestamp(dt):
     return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
 
 
+# class _Version(Serializable):
+#
+#     def __init__(self, source=None, status=None, time=None):
+#         #: `str`
+#         self.source = source
+#         #: `str`
+#         self.status = status
+#         #: `int` millis
+#         self.time = time
+#
+#     def __str__(self):
+#         res = []
+#         if self.source is not None:
+#             res.append('source=' + self.source)
+#         if self.status is not None:
+#             res.append('status=' + self.status)
+#         if self.time is not None:
+#             res.append('time=' + str(self.time))
+#         return '\t'.join(res)
+
+
 class Property(Serializable):
     def __init__(self, type, entity, tags,
                  key=None,
@@ -71,30 +93,37 @@ class Series(Serializable):
         #: `str` metric name
         self.metric = metric
 
-        # an array of {'t': time, 'v': value} objects
+        # an list of {'t': time, 'v': value} objects
         # use add value instead
-        self._data = data
+        self._data = []
+        if data is not None:
+            for sample in data:
+                sample_copy = copy.deepcopy(sample)
+                if sample_copy['v'] == 'NaN':
+                    sample_copy['v'] = float('nan')
+                self._data.append(sample_copy)
+
         #: `dict` of ``tag_name: tag_value`` pairs
         self.tags = tags
 
     def __str__(self):
 
-        try:
-            if len(self._data) > 20:
-                disp_data = self._data[:10] + self._data[10:]
+        if len(self._data) > 20:
+            disp_data = self._data[:10] + self._data[-10:]
+        else:
+            disp_data = self._data
+
+        rows = []
+        for sample in disp_data:
+            if 'version' in sample:
+                rows.append('{t}\t{v}\t{version}'.format(**sample))
             else:
-                disp_data = self._data
+                rows.append('{t}\t{v}'.format(**sample))
 
-            rows = []
-            for sample in disp_data:
-                if 'version' in sample:
-                    rows.append('{t}\t{v}\t{version}'.format(**sample))
-                else:
-                    rows.append('{t}\t{v}'.format(**sample))
-
+        if len(self._data) > 20:
+            res = '\n'.join(rows[:10]) + '\n...\n' + '\n'.join(rows[10:])
+        else:
             res = '\n'.join(rows)
-        except TypeError:
-            res = ''
 
         for key in self.__dict__:
             if not key.startswith('_'):
@@ -148,20 +177,35 @@ class Series(Serializable):
         else:
             sample = {'v': v, 't': t, 'version': version}
 
-        try:
-            self._data.append(sample)
-        except AttributeError:
-            self._data = [sample]
+        self._data.append(sample)
 
     def values(self):
-        if self._data is None:
-            return []
-        return [item['v'] for item in self._data]
+        """valid versions of series values
+        :return: [`Number`]
+        """
+
+        res = []
+        for num, sample in enumerate(self._data):
+            if num > 0 and sample['t'] == self._data[num - 1]['t']:
+                res[-1] = sample['v']
+            else:
+                res.append(sample['v'])
+
+        return res
 
     def times(self):
-        if self._data is None:
-            return []
-        return [datetime.fromtimestamp(item['t'] * 0.001) for item in self._data]
+        """valid versions of series times in seconds
+        :return: [`float`]
+        """
+
+        res = []
+        for num, sample in enumerate(self._data):
+            if num > 0 and sample['t'] == self._data[num - 1]['t']:
+                res[-1] = datetime.fromtimestamp(sample['t'] * 0.001)
+            else:
+                res.append(datetime.fromtimestamp(sample['t'] * 0.001))
+
+        return res
 
     def to_pandas_series(self):
         """
@@ -180,7 +224,7 @@ class Series(Serializable):
         except ImportError:
             import matplotlib.pyplot as plt
 
-            return plt.plot(self.values(), self.times())
+            return plt.plot(self.times(), self.values())
 
 
 class Alert(Serializable):

@@ -54,7 +54,10 @@ RULE = 'pyapi.rule'
 WAIT_TIME = 2
 TEST_NAME = 'pyapi/test'
 GROUP_NAME = TEST_NAME
+# should be add to alert rules and VERSION_METRIC restriction
 ALERT_VALUE = 33333
+# versioning should be enabled for this metric
+VERSION_METRIC = 'pyapi.versioning.metric'
 
 
 def get_time_str():
@@ -86,7 +89,8 @@ def get_desired_connection():
     props = open('auth').read().split(',')
     conn = atsd_client.connect_url(base_url=props[0],
                                    username=props[1],
-                                   password=props[2])
+                                   password=props[2],
+                                   verify=False)
     return conn
 
 
@@ -137,10 +141,40 @@ class TestSeriesService(unittest.TestCase):
             get_desired_connection()
         )
 
-    @unittest.skip("not supported in some environments")
+    def test_insert_retrieve_versioning(self):
+        """VERSION_METRIC versioning should be enabled in atsd
+        """
+
+        test_status = 'pyapi.status'
+        now = datetime.now()
+
+        series = Series(ENTITY, VERSION_METRIC)
+        val = random.randint(0, ALERT_VALUE - 1)
+        series.add_value(val, t=now - timedelta(seconds=2),
+                         version={'status': test_status})
+
+        query = SeriesQuery(ENTITY, VERSION_METRIC)
+        query.endTime = now
+        query.startTime = now - timedelta(days=1)
+        query.versioned = True
+
+        successful = self.svc.insert_series(series)
+        time.sleep(WAIT_TIME)
+        series, = self.svc.retrieve_series(query)
+        print(series)
+        last_sample = series.data[-1]
+
+        self.assertTrue(successful)
+        self.assertEquals(last_sample['v'], val)
+        self.assertTrue('version' in last_sample)
+        self.assertEquals(last_sample['version']['status'], test_status)
+
+    #@unittest.skip("not supported in some environments")
     def test_pandas_support(self):
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}
+        query.endTime = datetime.now()
+        query.startTime = query.endTime - timedelta(days=1)
         series, = self.svc.retrieve_series(query)
 
         ts = series.to_pandas_series()
@@ -148,7 +182,7 @@ class TestSeriesService(unittest.TestCase):
 
         self.assertGreater(str(type(ts)).find('pandas'), 0)
         self.assertIsInstance(s, Series)
-        self.assertGreater(str(type(series.plot())), 0)
+        self.assertGreater(str(type(series.plot())).find('matplotlib'), 0)
 
     def test_series_data_field_empty(self):
         # series with no data
@@ -363,6 +397,9 @@ class TestPropertiesService(unittest.TestCase):
 
 
 class TestAlertsService(unittest.TestCase):
+    """rule: value > ALERT_VALUE for metric = METRIC should be created in atsd
+    """
+
     def setUp(self):
         conn = get_desired_connection()
 

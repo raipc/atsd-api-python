@@ -72,7 +72,7 @@ class SeriesService(_Service):
         :return: True if success
         """
         for s in series:
-            if s.data is None:
+            if len(s.data) == 0:
                 raise DataParseException('data', Series,
                                          'inserting empty series')
 
