@@ -37,9 +37,9 @@ def serialize(o):
     if o is None:
         return None
     try:
-        return o._serialize()
+        return o.serialize()
     except AttributeError:
-        raise ValueError(str(o) + ' could not be serialised')
+        raise ValueError(unicode(o) + ' could not be serialised')
 
 
 def deserialize(o, model_class):
@@ -57,13 +57,13 @@ def deserialize(o, model_class):
 
         res = model_class(**params)
         for attr in o:
-            if not attr in args:
+            if attr not in args:
                 setattr(res, attr, o[attr])
 
     except:
-        raise ValueError(str(o)
+        raise ValueError(unicode(o)
                          + ' could not be deserialised to '
-                         + str(model_class))
+                         + unicode(model_class))
 
     return res
 
@@ -98,20 +98,20 @@ def _getprop(model, prop):
         raise AttributeError
 
     try:
-        return attr._serialize()
+        return attr.serialize()
     except AttributeError:
         return attr
 
 
 class Serializable(object):
     """
-    implements default ``_serialize()`` method
+    implements default ``serialize()`` method
     """
 
     def __repr__(self):
         return repr(self.__dict__)
 
-    def _serialize(self):
+    def serialize(self):
         """serialize model to json-serializable object
         keys: object __init__ args, values: not None object props
 

@@ -22,6 +22,11 @@ from ._data_models import to_posix_timestamp
 from .._jsonutil import Serializable
 from ._data_models import Alert
 
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
+
 
 class SeriesType(object):
     HISTORY = 'HISTORY'
@@ -99,7 +104,7 @@ class Rate(Serializable):
         """
         if not isinstance(count, numbers.Number):
             raise ValueError('interval count expected number, found: '
-                             + str(type(count)))
+                             + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('wrong interval unit')
         self.interval = {'count': count, 'unit': unit}
@@ -128,7 +133,7 @@ class Group(Serializable):
         """
         if not isinstance(count, numbers.Number):
             raise ValueError('interval count expected number, found: '
-                             + str(type(count)))
+                             + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('wrong interval unit')
         self.interval = {'count': count, 'unit': unit}
@@ -183,7 +188,7 @@ class Aggregator(Serializable):
         """
         if not isinstance(count, numbers.Number):
             raise ValueError('interval count expected number, found: '
-                             + str(type(count)))
+                             + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('wrong interval unit')
         self.interval = {'count': count, 'unit': unit}
@@ -327,16 +332,16 @@ class SeriesQuery(_TimeIntervalQuery):
                  rate=None,
                  aggregate=None,
                  requestId=None):
-        #:`str` entity name
+        #: `str` entity name
         self.entity = entity
-        #:`str` metric name
+        #: `str` metric name
         self.metric = metric
 
-        #:`int` maximum number of data samples returned
+        #: `int` maximum number of data samples returned
         self.limit = limit
-        #:`bool` Retrieves only 1 most recent value
+        #: `bool` Retrieves only 1 most recent value
         self.last = last
-        #:`dict`
+        #: `dict`
         self.tags = tags
         #: :class:`.SeriesType`
         self.type = type
@@ -364,7 +369,7 @@ class PropertiesQuery(_TimeIntervalQuery):
         #: `int` maximum number of data samples returned.
         #: default value: 0 (no limit)
         self.limit = limit
-        #:`dict` of ``name: value`` pairs that uniquely identify
+        #: `dict` of ``name: value`` pairs that uniquely identify
         #: the property record
         self.key = key
         #: `str`
@@ -434,15 +439,15 @@ class BatchPropertyCommand(object):
             if len(properties) is 0:
                 self.empty = True
             self.properties = properties
-            self._properties_data = [p._serialize() for p in properties]
+            self._properties_data = [p.serialize() for p in properties]
         else:
             if len(matchers) is 0:
                 self.empty = True
             self.matchers = matchers
-            self._matchers_data = [m._serialize() for m in matchers]
+            self._matchers_data = [m.serialize() for m in matchers]
         self.empty = False
 
-    def _serialize(self):
+    def serialize(self):
         data = {'action': self.action}
         try:
             data['properties'] = self._properties_data
@@ -501,9 +506,9 @@ class BatchAlertCommand(object):
         self.action = action
         self.alerts = alerts
         self.fields = fields
-        self._data_alerts = [alert._serialize() for alert in alerts]
+        self._data_alerts = [alert.serialize() for alert in alerts]
 
-    def _serialize(self):
+    def serialize(self):
         return {
             'action': self.action,
             'alerts': self._data_alerts,
@@ -522,6 +527,7 @@ class BatchAlertCommand(object):
     @staticmethod
     def create_update_command(acknowledge, *alert_ids):
         """
+        :param acknowledge: `boolean`
         :param alert_ids: str
         :return: :class:`.BatchAlertCommand` instance
         """

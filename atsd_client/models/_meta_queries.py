@@ -34,9 +34,9 @@ class BatchEntitiesCommand(object):
         if create_entities is not None:
             self.createEntities = create_entities
 
-        self._data_entities = [e._serialize() for e in entities]
+        self._data_entities = [e.serialize() for e in entities]
 
-    def _serialize(self):
+    def serialize(self):
         data = {'action': self.action}
 
         if self.action == 'delete-all':

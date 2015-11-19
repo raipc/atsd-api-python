@@ -51,7 +51,8 @@ class Metric(Serializable):
                  description=None,
                  retentionInterval=None,
                  lastInsertTime=None,
-                 tags=None):
+                 tags=None,
+                 versioned=None):
         #: `str` metric name
         self.name = name
 
@@ -84,6 +85,8 @@ class Metric(Serializable):
         self.lastInsertTime = lastInsertTime
         #: `dict`
         self.tags = tags
+        #: `boolean`
+        self.versioned = versioned
 
 
 class Entity(Serializable):
