@@ -331,7 +331,8 @@ class SeriesQuery(_TimeIntervalQuery):
                  group=None,
                  rate=None,
                  aggregate=None,
-                 requestId=None):
+                 requestId=None,
+                 versioned=None):
         #: `str` entity name
         self.entity = entity
         #: `str` metric name
@@ -350,6 +351,8 @@ class SeriesQuery(_TimeIntervalQuery):
         self._aggregate = aggregate
         #: `str`
         self.requestId = requestId
+        #: `boolean`
+        self.versioned = versioned
 
         super(SeriesQuery, self).__init__(startTime, endTime)
 

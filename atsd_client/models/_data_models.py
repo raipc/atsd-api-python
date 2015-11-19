@@ -50,37 +50,49 @@ class Property(Serializable):
     def __init__(self, type, entity, tags,
                  key=None,
                  timestamp=None):
-        #:`str` property type name
+        #: `str` property type name
         self.type = type
-        #:`str` entity name
+        #: `str` entity name
         self.entity = entity
-        #:`dict` containing object keys
+        #: `dict` containing object keys
         self.tags = tags
 
-        #:`dict` of ``name: value`` pairs that uniquely identify
+        #: `dict` of ``name: value`` pairs that uniquely identify
         #: the property record
         self.key = key
-        #:time in Unix milliseconds
+        #: time in Unix milliseconds
         self.timestamp = timestamp
 
 
 class Series(Serializable):
     def __init__(self, entity, metric, data=None, tags=None):
-        #:`str` entity name
+        #: `str` entity name
         self.entity = entity
-        #:`str` metric name
+        #: `str` metric name
         self.metric = metric
 
-        #an array of {'t': time, 'v': value} objects
-        #use add value instead
+        # an array of {'t': time, 'v': value} objects
+        # use add value instead
         self._data = data
         #: `dict` of ``tag_name: tag_value`` pairs
         self.tags = tags
 
     def __str__(self):
+
         try:
-            data = ['{t}\t{v}'.format(**item) for item in self._data]
-            res = '\n'.join(data)
+            if len(self._data) > 20:
+                disp_data = self._data[:10] + self._data[10:]
+            else:
+                disp_data = self._data
+
+            rows = []
+            for sample in disp_data:
+                if 'version' in sample:
+                    rows.append('{t}\t{v}\t{version}'.format(**sample))
+                else:
+                    rows.append('{t}\t{v}'.format(**sample))
+
+            res = '\n'.join(rows)
         except TypeError:
             res = ''
 
@@ -112,13 +124,14 @@ class Series(Serializable):
         """
         return self._data
 
-    def add_value(self, v, t=None):
+    def add_value(self, v, t=None, version=None):
         """add time-value pair to series
-        time could be specified either as `int` in milliseconds or as `str` in format
-        ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z)
+        time could be specified as `int` in milliseconds, as `str` in format
+        ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z), as `datetime`
 
+        :param version:
         :param v: value number
-        :param t: time if not specified t = current time
+        :param t: `int` | `str` | :class: `.datetime` (default t = current time)
         """
         if t is None:
             t = int(time.time() * 1000)
@@ -130,10 +143,15 @@ class Series(Serializable):
         if not isinstance(t, numbers.Number):
             raise ValueError('data "t" should be either number or str')
 
+        if version is None:
+            sample = {'v': v, 't': t}
+        else:
+            sample = {'v': v, 't': t, 'version': version}
+
         try:
-            self._data.append({'v': v, 't': t})
+            self._data.append(sample)
         except AttributeError:
-            self._data = [{'v': v, 't': t}]
+            self._data = [sample]
 
     def values(self):
         if self._data is None:
