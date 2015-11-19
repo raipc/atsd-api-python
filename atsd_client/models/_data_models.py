@@ -109,19 +109,48 @@ class Series(Serializable):
     def __str__(self):
 
         if len(self._data) > 20:
+            # display only firsts and lasts
             disp_data = self._data[:10] + self._data[-10:]
         else:
             disp_data = self._data
 
         rows = []
+        versioned = False
+
+        # create timestamp and value columns
         for sample in disp_data:
+
+            row = '{t}{v: >14}'.format(**sample)
+
+            # add version columns
             if 'version' in sample:
-                rows.append('{t}\t{v}\t{version}'.format(**sample))
-            else:
-                rows.append('{t}\t{v}'.format(**sample))
+                versioned = True
+                ver = sample['version']
+                src = ver['source'] if 'source' in ver else ''
+                sts = ver['status'] if 'status' in ver else ''
+                t = ver['t'] if 't' in ver else ''
+                row += '{0: >17}{1: >17}{2: >14}'.format(src, sts, t)
+
+            rows.append(row)
+
+        # add version columns
+        if versioned:
+            for num, sample in enumerate(disp_data):
+                if 'version' in sample:
+                    row = rows[num]
+                    ver = sample['version']
+                    src = ver['source'] if 'source' in ver else ''
+                    sts = ver['status'] if 'status' in ver else ''
+                    t = ver['t'] if 't' in ver else ''
+                    row += '{0: >17}{1: >17}{2: >14}'.format(src, sts, t)
+
+        if versioned:
+            # add column names
+            header = '    timestamp         value   version_source   version_status  version_time'
+            rows.insert(0, header)
 
         if len(self._data) > 20:
-            res = '\n'.join(rows[:10]) + '\n...\n' + '\n'.join(rows[10:])
+            res = '\n'.join(rows[:-10]) + '\n...\n' + '\n'.join(rows[-10:])
         else:
             res = '\n'.join(rows)
 
@@ -158,7 +187,7 @@ class Series(Serializable):
         time could be specified as `int` in milliseconds, as `str` in format
         ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z), as `datetime`
 
-        :param version:
+        :param version: `dict`
         :param v: value number
         :param t: `int` | `str` | :class: `.datetime` (default t = current time)
         """
