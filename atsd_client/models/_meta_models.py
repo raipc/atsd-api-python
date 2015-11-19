@@ -55,7 +55,7 @@ class Metric(Serializable):
         #: `str` metric name
         self.name = name
 
-        #:`str`
+        #: `str`
         self.label = label
         #: `bool`
         self.enabled = enabled

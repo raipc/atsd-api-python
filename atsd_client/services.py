@@ -27,7 +27,11 @@ from .exceptions import ServerException
 
 from ._client import Client
 from . import _jsonutil
-import urllib
+
+try:
+    from urllib import quote
+except ImportError:
+    from urllib.parse import quote
 
 
 try:
@@ -180,7 +184,7 @@ class MetricsService(_Service):
         """
         _check_name(name)
         try:
-            resp = self.conn.get('metrics/' + urllib.quote(name, ''))
+            resp = self.conn.get('metrics/' + quote(name, ''))
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -194,7 +198,7 @@ class MetricsService(_Service):
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.put('metrics/' + urllib.quote(metric.name, ''), metric)
+        self.conn.put('metrics/' + quote(metric.name, ''), metric)
         return True
 
     def update_metric(self, metric):
@@ -202,7 +206,7 @@ class MetricsService(_Service):
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.patch('metrics/' + urllib.quote(metric.name, ''), metric)
+        self.conn.patch('metrics/' + quote(metric.name, ''), metric)
         return True
 
     def delete_metric(self, metric):
@@ -210,7 +214,7 @@ class MetricsService(_Service):
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.delete('metrics/' + urllib.quote(metric.name, ''))
+        self.conn.delete('metrics/' + quote(metric.name, ''))
         return True
 
 
@@ -247,7 +251,7 @@ class EntitiesService(_Service):
         """
         _check_name(name)
         try:
-            resp = self.conn.get('entities/' + urllib.quote(name, ''))
+            resp = self.conn.get('entities/' + quote(name, ''))
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -261,7 +265,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.put('entities/' + urllib.quote(entity.name, ''), entity)
+        self.conn.put('entities/' + quote(entity.name, ''), entity)
         return True
 
     def update_entity(self, entity):
@@ -269,7 +273,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.patch('entities/' + urllib.quote(entity.name, ''), entity)
+        self.conn.patch('entities/' + quote(entity.name, ''), entity)
         return True
 
     def delete_entity(self, entity):
@@ -277,7 +281,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.delete('entities/' + urllib.quote(entity.name, ''))
+        self.conn.delete('entities/' + quote(entity.name, ''))
         return True
 
 
@@ -307,7 +311,7 @@ class EntityGroupsService(_Service):
         """
         _check_name(name)
         try:
-            resp = self.conn.get('entity-groups/' + urllib.quote(name, ''))
+            resp = self.conn.get('entity-groups/' + quote(name, ''))
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -321,7 +325,7 @@ class EntityGroupsService(_Service):
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.put('entity-groups/' + urllib.quote(group.name, ''), group)
+        self.conn.put('entity-groups/' + quote(group.name, ''), group)
         return True
 
     def update_entity_group(self, group):
@@ -329,7 +333,7 @@ class EntityGroupsService(_Service):
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.patch('entity-groups/' + urllib.quote(group.name, ''), group)
+        self.conn.patch('entity-groups/' + quote(group.name, ''), group)
         return True
 
     def delete_entity_group(self, group):
@@ -337,7 +341,7 @@ class EntityGroupsService(_Service):
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.delete('entity-groups/' + urllib.quote(group.name, ''))
+        self.conn.delete('entity-groups/' + quote(group.name, ''))
         return True
 
     def retrieve_group_entities(self,
@@ -364,7 +368,7 @@ class EntityGroupsService(_Service):
         if limit is not None:
             params['limit'] = limit
 
-        resp = self.conn.get('entity-groups/' + urllib.quote(group_name, '') + '/entities',
+        resp = self.conn.get('entity-groups/' + quote(group_name, '') + '/entities',
                              params)
         return _jsonutil.deserialize(resp, Entity)
 
@@ -398,6 +402,6 @@ class EntityGroupsService(_Service):
         commands = [c for c in commands if not c.empty]
 
         if len(commands):
-            self.conn.patch('entity-groups/' + urllib.quote(group_name, '') + '/entities', commands)
+            self.conn.patch('entity-groups/' + quote(group_name, '') + '/entities', commands)
             return True
         return False

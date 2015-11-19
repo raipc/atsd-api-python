@@ -43,16 +43,16 @@ from atsd_client.exceptions import DataParseException
 from atsd_client.exceptions import ServerException
 
 
-TYPE = 'py.type'
-ENTITY = 'py.entity'
-METRIC = 'py.metric'
-TAG = 'py.tag'
-TAG_VALUE = 'py.tag-value'
-KEY = 'py.key'
-KEY_VALUE = 'py.key-value'
-RULE = 'py.rule'
+TYPE = 'pyapi.type'
+ENTITY = 'pyapi.entity'
+METRIC = 'pyapi.metric'
+TAG = 'pyapi.tag'
+TAG_VALUE = 'pyapi.tag-value'
+KEY = 'pyapi.key'
+KEY_VALUE = 'pyapi.key-value'
+RULE = 'pyapi.rule'
 WAIT_TIME = 2
-TEST_NAME = 'py/test'
+TEST_NAME = 'pyapi/test'
 GROUP_NAME = TEST_NAME
 ALERT_VALUE = 33333
 
@@ -432,7 +432,7 @@ class TestMetricsService(unittest.TestCase):
         self.svc = services.MetricsService(
             get_desired_connection()
         )
-        metric = Metric(TEST_NAME, tags={'table': 'py.test'})
+        metric = Metric(TEST_NAME, tags={'table': 'pyapi.test'})
         self.svc.create_or_replace_metric(metric)
         time.sleep(WAIT_TIME)
 
@@ -447,7 +447,7 @@ class TestMetricsService(unittest.TestCase):
         self.assertGreater(len(metrics), 0)
         self.assertIsInstance(metrics[0], Metric)
         self.assertIn('table', metrics[0].tags)
-        self.assertEqual(metrics[0].tags['table'], 'py.test')
+        self.assertEqual(metrics[0].tags['table'], 'pyapi.test')
         self.assertEqual(metrics[0].name, TEST_NAME)
 
     def test_retrieve_metric(self):
@@ -480,7 +480,7 @@ class TestMetricsService(unittest.TestCase):
         metric = self.svc.retrieve_metric(TEST_NAME)
 
         old_tag = metric.tags['table']
-        new_tag = 'new_' + old_tag
+        new_tag = old_tag + '_new'
 
         # update tag
         metric.tags = {'table': new_tag}
@@ -493,6 +493,7 @@ class TestMetricsService(unittest.TestCase):
         del metric.tags
         self.svc.update_metric(metric)
         metric = self.svc.retrieve_metric(TEST_NAME)
+        print(metric)
         self.assertEqual(metric.tags['table'], new_tag)
 
     def test_delete_create_metric(self):
@@ -513,7 +514,7 @@ class TestEntitiesService(unittest.TestCase):
         self.svc = services.EntitiesService(
             get_desired_connection()
         )
-        entity = Entity(TEST_NAME, tags={'environment': 'py.test'})
+        entity = Entity(TEST_NAME, tags={'environment': 'pyapi.test'})
         self.svc.create_or_replace_entity(entity)
         time.sleep(WAIT_TIME)
 
@@ -528,7 +529,7 @@ class TestEntitiesService(unittest.TestCase):
         self.assertGreater(len(entities), 0)
         self.assertIsInstance(entities[0], Entity)
         self.assertIn('environment', entities[0].tags)
-        self.assertEqual(entities[0].tags['environment'], 'py.test')
+        self.assertEqual(entities[0].tags['environment'], 'pyapi.test')
         self.assertEqual(entities[0].name, TEST_NAME)
 
     def test_retrieve_entity(self):
@@ -559,7 +560,7 @@ class TestEntitiesService(unittest.TestCase):
         entity = self.svc.retrieve_entity(TEST_NAME)
 
         old_tag = entity.tags['environment']
-        new_tag = 'new_' + old_tag
+        new_tag = old_tag + '_new'
 
         # update tag
         entity.tags = {'environment': new_tag}
@@ -572,6 +573,7 @@ class TestEntitiesService(unittest.TestCase):
         del entity.tags
         self.svc.update_entity(entity)
         entity = self.svc.retrieve_entity(TEST_NAME)
+        print(entity)
         self.assertEqual(entity.tags['environment'], new_tag)
 
     def test_delete_create_entity(self):
@@ -592,7 +594,7 @@ class TestEntityGroupsService(unittest.TestCase):
         conn = get_desired_connection()
         self.svc = services.EntityGroupsService(conn)
 
-        group = EntityGroup(GROUP_NAME, tags={'pytag': 'py.test'})
+        group = EntityGroup(GROUP_NAME, tags={'pytag': 'pyapi.test'})
         self.svc.create_or_replace_entity_group(group)
         self.svc.add_group_entities(GROUP_NAME, Entity(TEST_NAME))
         time.sleep(WAIT_TIME)
@@ -608,7 +610,7 @@ class TestEntityGroupsService(unittest.TestCase):
         self.assertGreater(len(groups), 0)
         self.assertIsInstance(groups[0], EntityGroup)
         self.assertIn('pytag', groups[0].tags)
-        self.assertEqual(groups[0].tags['pytag'], 'py.test')
+        self.assertEqual(groups[0].tags['pytag'], 'pyapi.test')
         self.assertEqual(groups[0].name, GROUP_NAME)
 
     def test_retrieve_entity_group(self):
@@ -690,7 +692,7 @@ class TestEntityGroupsService(unittest.TestCase):
         self.assertEqual(entities[0].name, TEST_NAME)
 
     def test_group_entities_batch_commands(self):
-        not_entity_name = 'py.not-exists'
+        not_entity_name = 'pyapi.not-exists'
 
         add = BatchEntitiesCommand.create_add_command(Entity(TEST_NAME))
         add_non_exist = BatchEntitiesCommand.create_add_command(
