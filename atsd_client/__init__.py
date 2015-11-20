@@ -18,4 +18,4 @@ from . import models
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '1.1.0.dev'
+__version__ = '1.1.0'

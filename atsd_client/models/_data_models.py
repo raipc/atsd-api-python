@@ -198,7 +198,7 @@ class Series(Serializable):
 
         self._data.append(sample)
 
-    def sort(self, key=None, reverse=False):
+    def sort(self, key=cmp_to_key(series_version_comparator), reverse=False):
         """sort series data in place
 
         :param key:
