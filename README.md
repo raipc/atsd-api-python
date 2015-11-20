@@ -74,17 +74,33 @@ which you can unpack using `series, = svc.retrieve_series` notation.
     >>>query = models.SeriesQuery('sensor001', 'temperature')
     >>>now = int(time.time() * 1000)  # current time in unix milliseconds
     >>>query.endTime = now
-    >>>query.startTime = now - 15 * 60 * 1000  # query data for the last 15 minutes
+    >>>query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
     >>>
     >>>series, = svc.retrieve_series(query)
     >>>
     >>>print(series)
-    1428675675832   28.0
-    1428675704595   21.0
-    1428675744048   11.0
-    1428675794893   31.0
-    1428675889058   7.0
-    1428675915567   22.0
+              timestamp         value   version_source   version_status        version_time
+    2015-11-19 12:05:44           2.0        gateway-1               OK 2015-11-19 12:14:32
+    2015-11-19 12:08:19           2.0        gateway-1               OK 2015-11-19 12:09:59
+    2015-11-19 12:08:19          34.0        gateway-1               OK 2015-11-19 12:10:27
+    2015-11-19 12:08:19           3.0        gateway-1               OK 2015-11-19 12:12:58
+    2015-11-19 12:15:44           4.0        gateway-1               OK 2015-11-19 12:15:56
+    2015-11-19 14:34:36          15.0        gateway-1               OK 2015-11-19 14:35:54
+    2015-11-19 15:20:07          36.0        gateway-1               OK 2015-11-19 15:20:06
+    2015-11-19 15:20:33          11.0        gateway-1               OK 2015-11-19 15:20:32
+    2015-11-19 15:20:55          40.0        gateway-1               OK 2015-11-19 15:20:53
+    2015-11-19 15:21:13          45.0        gateway-1               OK 2015-11-19 15:21:12
+    ...
+    2015-11-19 16:46:10          55.0        gateway-1               OK 2015-11-19 16:46:11
+    2015-11-19 17:24:34          62.0        gateway-1               OK 2015-11-19 17:24:35
+    2015-11-19 17:38:14          42.0        gateway-1               OK 2015-11-19 17:38:15
+    2015-11-19 18:38:58        1094.0        gateway-1               OK 2015-11-19 18:38:59
+    2015-11-19 18:38:58           nan      form/manual               OK 2015-11-20 18:39:43
+    2015-11-19 18:43:58          14.0        gateway-1               OK 2015-11-19 18:43:59
+    2015-11-20 09:42:02          24.0        gateway-1               OK 2015-11-20 09:42:03
+    2015-11-20 10:36:03          35.0        gateway-1               OK 2015-11-20 10:36:05
+    2015-11-20 10:49:53          11.0        gateway-1               OK 2015-11-20 10:49:54
+    2015-11-20 11:09:06          33.0        gateway-1               OK 2015-11-20 11:09:39
     metric: temperature
     entity: sensor001
     aggregate: {u'type': u'DETAIL'}
@@ -99,7 +115,7 @@ Alternatively you can specify `startTime` and `endTime` properties using the bui
     >>>from datetime import timedelta
     >>>
     >>>query.endTime = datetime.now()
-    >>>query.startTime = query.endTime - timedelta(minutes=15)
+    >>>query.startTime = query.endTime - timedelta(hours=12)
 ```
 
 ###Exploring Results
