@@ -98,7 +98,7 @@ class Series(Serializable):
 
         # create timestamp and value columns
         for sample in disp_data:
-            t = datetime.fromtimestamp(sample['t'] * 0.001).strftime('%Y-%m-%d %H:%M:%S')
+            t = datetime.utcfromtimestamp(sample['t'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
             v = sample['v']
             row = '{0}{1: >14}'.format(t, v)
 
@@ -109,7 +109,7 @@ class Series(Serializable):
                 src = ver['source'] if 'source' in ver else ''
                 sts = ver['status'] if 'status' in ver else ''
                 if 't' in ver:
-                    t = datetime.fromtimestamp(ver['t'] * 0.001).strftime('%Y-%m-%d %H:%M:%S')
+                    t = datetime.utcfromtimestamp(ver['t'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
                 else:
                     t = ''
                 row += '{0: >17}{1: >17}{2: >20}'.format(src, sts, t)

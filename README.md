@@ -31,10 +31,10 @@ to establish a connection with atsd_client module.
 
 ```python
 
-    >>>import atsd_client
-    >>>from atsd_client import services, models
+    >>> import atsd_client
+    >>> from atsd_client import services, models
     >>>
-    >>>conn = atsd_client.connect()
+    >>> conn = atsd_client.connect()
 ```
 
 ###Initializing the Service
@@ -45,7 +45,7 @@ type of data, for example, `Series`, `Property`,
 
 ```python
 
-    >>>svc = services.SeriesService(conn)
+    >>> svc = services.SeriesService(conn)
 ```
 
 ###Inserting Series Values
@@ -55,10 +55,17 @@ a `Series` object and populate it with timestamped values.
 
 ```python
 
-    >>>series = models.Series('sensor001', 'temperature')
-    >>>series.add_value(3, '2015-04-14T07:03:31Z')
+    >>> series = models.Series('sensor001', 'temperature')
+    >>> series.add_value(3, '2015-04-14T07:03:31Z')
     >>>
-    >>>svc.insert_series(series)
+    >>> svc.insert_series(series)
+```
+
+add version information with `version` argument
+
+```python
+
+    >>> series.add_value(3, '2015-04-14T07:03:31Z', version={'source': 'manual'})
 ```
 
 ###Querying Series Values
@@ -69,38 +76,37 @@ which you can unpack using `series, = svc.retrieve_series` notation.
 
 ```python
 
-    >>>import time
+    >>> import time
     >>>
-    >>>query = models.SeriesQuery('sensor001', 'temperature')
-    >>>now = int(time.time() * 1000)  # current time in unix milliseconds
-    >>>query.endTime = now
-    >>>query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
+    >>> query = models.SeriesQuery('sensor001', 'temperature')
+    >>> now = int(time.time() * 1000)  # current time in unix milliseconds
+    >>> query.endTime = now
+    >>> query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
     >>>
-    >>>series, = svc.retrieve_series(query)
+    >>> series, = svc.retrieve_series(query)
     >>>
-    >>>print(series)
-              timestamp         value   version_source   version_status        version_time
-    2015-11-19 12:05:44           2.0        gateway-1               OK 2015-11-19 12:14:32
-    2015-11-19 12:08:19           2.0        gateway-1               OK 2015-11-19 12:09:59
-    2015-11-19 12:08:19          34.0        gateway-1               OK 2015-11-19 12:10:27
-    2015-11-19 12:08:19           3.0        gateway-1               OK 2015-11-19 12:12:58
-    2015-11-19 12:15:44           4.0        gateway-1               OK 2015-11-19 12:15:56
-    2015-11-19 14:34:36          15.0        gateway-1               OK 2015-11-19 14:35:54
-    2015-11-19 15:20:07          36.0        gateway-1               OK 2015-11-19 15:20:06
-    2015-11-19 15:20:33          11.0        gateway-1               OK 2015-11-19 15:20:32
-    2015-11-19 15:20:55          40.0        gateway-1               OK 2015-11-19 15:20:53
-    2015-11-19 15:21:13          45.0        gateway-1               OK 2015-11-19 15:21:12
+    >>> print(series)
+    2015-11-19T12:05:44Z          2.0
+    2015-11-19T12:08:19Z          2.0
+    2015-11-19T12:08:19Z         34.0
+    2015-11-19T12:08:19Z          3.0
+    2015-11-19T12:15:44Z          4.0
+    2015-11-19T14:34:36Z         15.0
+    2015-11-19T15:20:07Z         36.0
+    2015-11-19T15:20:33Z         11.0
+    2015-11-19T15:20:55Z         40.0
+    2015-11-19T15:21:13Z         45.0
     ...
-    2015-11-19 16:46:10          55.0        gateway-1               OK 2015-11-19 16:46:11
-    2015-11-19 17:24:34          62.0        gateway-1               OK 2015-11-19 17:24:35
-    2015-11-19 17:38:14          42.0        gateway-1               OK 2015-11-19 17:38:15
-    2015-11-19 18:38:58        1094.0        gateway-1               OK 2015-11-19 18:38:59
-    2015-11-19 18:38:58           nan      form/manual               OK 2015-11-20 18:39:43
-    2015-11-19 18:43:58          14.0        gateway-1               OK 2015-11-19 18:43:59
-    2015-11-20 09:42:02          24.0        gateway-1               OK 2015-11-20 09:42:03
-    2015-11-20 10:36:03          35.0        gateway-1               OK 2015-11-20 10:36:05
-    2015-11-20 10:49:53          11.0        gateway-1               OK 2015-11-20 10:49:54
-    2015-11-20 11:09:06          33.0        gateway-1               OK 2015-11-20 11:09:39
+    2015-11-19T16:20:17Z         45.0
+    2015-11-19T16:46:10Z         55.0
+    2015-11-19T17:24:34Z         62.0
+    2015-11-19T17:38:14Z         42.0
+    2015-11-19T18:38:58Z          nan
+    2015-11-19T18:43:58Z         14.0
+    2015-11-20T09:42:02Z         24.0
+    2015-11-20T10:36:03Z         35.0
+    2015-11-20T10:49:53Z         11.0
+    2015-11-20T11:09:06Z         33.0
     metric: temperature
     entity: sensor001
     aggregate: {u'type': u'DETAIL'}
@@ -111,11 +117,56 @@ Alternatively you can specify `startTime` and `endTime` properties using the bui
 
 ```python
 
-    >>>from datetime import datetime
-    >>>from datetime import timedelta
+    >>> from datetime import datetime
+    >>> from datetime import timedelta
     >>>
-    >>>query.endTime = datetime.now()
-    >>>query.startTime = query.endTime - timedelta(hours=12)
+    >>> query.endTime = datetime.now()
+    >>> query.startTime = query.endTime - timedelta(hours=12)
+```
+
+###Querying Versioned Series Values
+
+To query series with version information set `query.versioned = True`
+
+```python
+
+    >>> import time
+    >>>
+    >>> query = models.SeriesQuery('sensor001', 'temperature')
+    >>> now = int(time.time() * 1000)  # current time in unix milliseconds
+    >>> query.versioned = True
+    >>> query.endTime = now
+    >>> query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
+    >>>
+    >>> series, = svc.retrieve_series(query)
+    >>>
+    >>> print(series)
+              timestamp         value   version_source   version_status        version_time
+    2015-11-19T12:05:44Z          2.0        gateway-1               OK 2015-11-19T12:14:32Z
+    2015-11-19T12:08:19Z          2.0        gateway-1               OK 2015-11-19T12:09:59Z
+    2015-11-19T12:08:19Z         34.0        gateway-1               OK 2015-11-19T12:10:27Z
+    2015-11-19T12:08:19Z          3.0        gateway-1               OK 2015-11-19T12:12:58Z
+    2015-11-19T12:15:44Z          4.0        gateway-1               OK 2015-11-19T12:15:56Z
+    2015-11-19T14:34:36Z         15.0        gateway-1               OK 2015-11-19T14:35:54Z
+    2015-11-19T15:20:07Z         36.0        gateway-1               OK 2015-11-19T15:20:06Z
+    2015-11-19T15:20:33Z         11.0        gateway-1               OK 2015-11-19T15:20:32Z
+    2015-11-19T15:20:55Z         40.0        gateway-1               OK 2015-11-19T15:20:53Z
+    2015-11-19T15:21:13Z         45.0        gateway-1               OK 2015-11-19T15:21:12Z
+    ...
+    2015-11-19T16:46:10Z         55.0        gateway-1               OK 2015-11-19T16:46:11Z
+    2015-11-19T17:24:34Z         62.0        gateway-1               OK 2015-11-19T17:24:35Z
+    2015-11-19T17:38:14Z         42.0        gateway-1               OK 2015-11-19T17:38:15Z
+    2015-11-19T18:38:58Z       1094.0        gateway-1               OK 2015-11-19T18:38:59Z
+    2015-11-19T18:38:58Z          nan      form/manual               OK 2015-11-20T18:39:43Z
+    2015-11-19T18:43:58Z         14.0        gateway-1               OK 2015-11-19T18:43:59Z
+    2015-11-20T09:42:02Z         24.0        gateway-1               OK 2015-11-20T09:42:03Z
+    2015-11-20T10:36:03Z         35.0        gateway-1               OK 2015-11-20T10:36:05Z
+    2015-11-20T10:49:53Z         11.0        gateway-1               OK 2015-11-20T10:49:54Z
+    2015-11-20T11:09:06Z         33.0        gateway-1               OK 2015-11-20T11:09:39Z
+    metric: temperature
+    entity: sensor001
+    aggregate: {u'type': u'DETAIL'}
+    type: HISTORY
 ```
 
 ###Exploring Results
@@ -126,10 +177,10 @@ and `from_pandas_series()` methods.
 
 ```python
 
-    >>>ts = series.to_pandas_series()
-    >>>type(ts.index)
+    >>> ts = series.to_pandas_series()
+    >>> type(ts.index)
     <class 'pandas.tseries.index.DatetimeIndex'>
-    >>>print(s)
+    >>> print(s)
     2015-04-10 17:22:24.048000    11
     2015-04-10 17:23:14.893000    31
     2015-04-10 17:24:49.058000     7
@@ -144,9 +195,9 @@ To plot series with `matplotlib` use the built-in `plot()` method
 
 ```python
 
-    >>>import matplotlib.pyplot as plt
-    >>>series.plot()
-    >>>plt.show()
+    >>> import matplotlib.pyplot as plt
+    >>> series.plot()
+    >>> plt.show()
 ```
 
 ## Implemented Methods
