@@ -169,7 +169,7 @@ class TestSeriesService(unittest.TestCase):
         self.assertTrue('version' in last_sample)
         self.assertEquals(last_sample['version']['status'], test_status)
 
-    @unittest.skip("not supported in some environments")
+    #@unittest.skip("not supported in some environments")
     def test_pandas_support(self):
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}
@@ -179,9 +179,11 @@ class TestSeriesService(unittest.TestCase):
 
         ts = series.to_pandas_series()
         s = Series.from_pandas_series(ENTITY, METRIC, ts)
+        series.sort(key=lambda sample: sample['v'])
 
         self.assertGreater(str(type(ts)).find('pandas'), 0)
         self.assertIsInstance(s, Series)
+        self.assertListEqual(series.values(), s.values())
         self.assertGreater(str(type(series.plot())).find('matplotlib'), 0)
 
     def test_series_data_field_empty(self):

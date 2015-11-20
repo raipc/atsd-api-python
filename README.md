@@ -139,7 +139,7 @@ To query series with version information set `query.versioned = True`
     >>> query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
     >>>
     >>> series, = svc.retrieve_series(query)
-    >>>
+    >>> series.sort(key=lambda sample: sample['version']['t'])
     >>> print(series)
                timestamp        value   version_source    version_status        version_time
     2015-11-19T12:05:44Z          2.0        gateway-1               OK 2015-11-19T12:14:32Z
@@ -157,12 +157,12 @@ To query series with version information set `query.versioned = True`
     2015-11-19T17:24:34Z         62.0        gateway-1               OK 2015-11-19T17:24:35Z
     2015-11-19T17:38:14Z         42.0        gateway-1               OK 2015-11-19T17:38:15Z
     2015-11-19T18:38:58Z       1094.0        gateway-1               OK 2015-11-19T18:38:59Z
-    2015-11-19T18:38:58Z          nan      form/manual               OK 2015-11-20T18:39:43Z
     2015-11-19T18:43:58Z         14.0        gateway-1               OK 2015-11-19T18:43:59Z
     2015-11-20T09:42:02Z         24.0        gateway-1               OK 2015-11-20T09:42:03Z
     2015-11-20T10:36:03Z         35.0        gateway-1               OK 2015-11-20T10:36:05Z
     2015-11-20T10:49:53Z         11.0        gateway-1               OK 2015-11-20T10:49:54Z
     2015-11-20T11:09:06Z         33.0        gateway-1               OK 2015-11-20T11:09:39Z
+    2015-11-19T18:38:58Z          nan      form/manual               OK 2015-11-20T18:39:43Z
     metric: temperature
     entity: sensor001
     aggregate: {u'type': u'DETAIL'}

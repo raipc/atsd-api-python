@@ -15,10 +15,24 @@ permissions and limitations under the License.
 
 
 import time
-from datetime import datetime, timedelta
 import numbers
 import copy
+
+from functools import cmp_to_key
+from datetime import datetime, timedelta
+
 from .._jsonutil import Serializable
+
+
+def series_version_comparator(a, b):
+    if a['t'] == b['t']:
+        if ('version' not in a or 't' not in a['version']
+                or 'version' not in b or 't' not in b['version']):
+            return 0
+        else:
+            return a['version']['t'] - b['version']['t']
+    else:
+        return a['t'] - b['t']
 
 
 def _strp(time_str):
@@ -156,7 +170,7 @@ class Series(Serializable):
 
         :return: an array of {'t': time, 'v': value} objects
         """
-        return self._data
+        return self._data[:]
 
     def add_value(self, v, t=None, version=None):
         """add time-value pair to series
@@ -184,14 +198,23 @@ class Series(Serializable):
 
         self._data.append(sample)
 
+    def sort(self, key=None, reverse=False):
+        """sort series data in place
+
+        :param key:
+        :param reverse:
+        """
+        self._data.sort(key=key, reverse=reverse)
+
     def values(self):
         """valid versions of series values
         :return: [`Number`]
         """
 
+        data = sorted(self._data, key=cmp_to_key(series_version_comparator))
         res = []
-        for num, sample in enumerate(self._data):
-            if num > 0 and sample['t'] == self._data[num - 1]['t']:
+        for num, sample in enumerate(data):
+            if num > 0 and sample['t'] == data[num - 1]['t']:
                 res[-1] = sample['v']
             else:
                 res.append(sample['v'])
@@ -203,12 +226,14 @@ class Series(Serializable):
         :return: [`float`]
         """
 
+        data = sorted(self._data, key=cmp_to_key(series_version_comparator))
+
         res = []
-        for num, sample in enumerate(self._data):
-            if num > 0 and sample['t'] == self._data[num - 1]['t']:
-                res[-1] = datetime.fromtimestamp(sample['t'] * 0.001)
+        for num, sample in enumerate(data):
+            if num > 0 and sample['t'] == data[num - 1]['t']:
+                res[-1] = datetime.utcfromtimestamp(sample['t'] * 0.001)
             else:
-                res.append(datetime.fromtimestamp(sample['t'] * 0.001))
+                res.append(datetime.utcfromtimestamp(sample['t'] * 0.001))
 
         return res
 
