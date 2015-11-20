@@ -112,17 +112,17 @@ class Series(Serializable):
                     t = datetime.utcfromtimestamp(ver['t'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
                 else:
                     t = ''
-                row += '{0: >17}{1: >17}{2: >20}'.format(src, sts, t)
+                row += '{0: >17}{1: >17}{2: >21}'.format(src, sts, t)
 
             rows.append(row)
 
         if versioned:
             # add column names
-            header = ('          timestamp'
+            header = ('           timestamp'
                       '         value'
                       '   version_source'
                       '   version_status'
-                      '        version_time')
+                      '         version_time')
             rows.insert(0, header)
 
         if len(self._data) > 20:

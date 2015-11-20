@@ -117,7 +117,7 @@ To query series with version information set ``query.versioned = True``
     >>> series, = svc.retrieve_series(query)
     >>>
     >>> print(series)
-               timestamp         value   version_source   version_status        version_time
+               timestamp        value   version_source   version_status         version_time
     2015-11-19T12:05:44Z          2.0        gateway-1               OK 2015-11-19T12:14:32Z
     2015-11-19T12:08:19Z          2.0        gateway-1               OK 2015-11-19T12:09:59Z
     2015-11-19T12:08:19Z         34.0        gateway-1               OK 2015-11-19T12:10:27Z
