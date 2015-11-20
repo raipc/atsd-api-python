@@ -26,8 +26,7 @@ python setup.py install
 
 ###Connecting to ATSD
 
-In order to retrieve data from the Axibase Time-Series Database (ATSD) you need
-to establish a connection with atsd_client module.
+To retrieve data from the Axibase Time-Series Database (ATSD), establish a connection with atsd_client module as follows:
 
 ```python
 
@@ -38,10 +37,11 @@ to establish a connection with atsd_client module.
 ```
 
 ###Initializing the Service
-The Service implements a collection of methods for interacting with a particular
-type of data, for example, `Series`, `Property`,
-`Alert` objects as well as with metadata such as `Entity`,
-`Metric`, `EntityGroup` objects
+
+The Service implements a set of methods for interacting with a particular type of
+objects in ATSD, for example, `Series`, `Property`,
+`Alert` objects as well as with metadata objects such as `Entity`,
+`Metric`, `EntityGroup`.
 
 ```python
 
@@ -50,7 +50,7 @@ type of data, for example, `Series`, `Property`,
 
 ###Inserting Series Values
 
-In order to insert series values (observations) into ATSD you need to initialize
+To insert series values into ATSD initialize
 a `Series` object and populate it with timestamped values.
 
 ```python
@@ -61,7 +61,7 @@ a `Series` object and populate it with timestamped values.
     >>> svc.insert_series(series)
 ```
 
-add version information with `version` argument
+add version information with an optional `version` argument
 
 ```python
 
@@ -70,9 +70,9 @@ add version information with `version` argument
 
 ###Querying Series Values
 
-When querying ATSD for data you need to specify metric, entity, as well as start
+When querying series values from ATSD you need to specify metric, entity, as well as start
 and end time. The `retrieve_series` method returns a list of Series objects, 
-which you can unpack using `series, = svc.retrieve_series` notation.
+which you can unpack using `series, = svc.retrieve_series` function.
 
 ```python
 
@@ -126,7 +126,7 @@ Alternatively you can specify `startTime` and `endTime` properties using the bui
 
 ###Querying Versioned Series Values
 
-To query series with version information set `query.versioned = True`
+To fetch series values with version information add `query.versioned = True`
 
 ```python
 
