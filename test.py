@@ -169,7 +169,7 @@ class TestSeriesService(unittest.TestCase):
         self.assertTrue('version' in last_sample)
         self.assertEquals(last_sample['version']['status'], test_status)
 
-    #@unittest.skip("not supported in some environments")
+    @unittest.skip("not supported in some environments")
     def test_pandas_support(self):
         query = SeriesQuery(ENTITY, METRIC)
         query.tags = {TAG: [TAG_VALUE]}

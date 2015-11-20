@@ -47,27 +47,6 @@ def to_posix_timestamp(dt):
     return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
 
 
-# class _Version(Serializable):
-#
-#     def __init__(self, source=None, status=None, time=None):
-#         #: `str`
-#         self.source = source
-#         #: `str`
-#         self.status = status
-#         #: `int` millis
-#         self.time = time
-#
-#     def __str__(self):
-#         res = []
-#         if self.source is not None:
-#             res.append('source=' + self.source)
-#         if self.status is not None:
-#             res.append('status=' + self.status)
-#         if self.time is not None:
-#             res.append('time=' + str(self.time))
-#         return '\t'.join(res)
-
-
 class Property(Serializable):
     def __init__(self, type, entity, tags,
                  key=None,
@@ -119,8 +98,9 @@ class Series(Serializable):
 
         # create timestamp and value columns
         for sample in disp_data:
-
-            row = '{t}{v: >14}'.format(**sample)
+            t = datetime.fromtimestamp(sample['t'] * 0.001).strftime('%Y-%m-%d %H:%M:%S')
+            v = sample['v']
+            row = '{0}{1: >14}'.format(t, v)
 
             # add version columns
             if 'version' in sample:
@@ -128,25 +108,21 @@ class Series(Serializable):
                 ver = sample['version']
                 src = ver['source'] if 'source' in ver else ''
                 sts = ver['status'] if 'status' in ver else ''
-                t = ver['t'] if 't' in ver else ''
-                row += '{0: >17}{1: >17}{2: >14}'.format(src, sts, t)
+                if 't' in ver:
+                    t = datetime.fromtimestamp(ver['t'] * 0.001).strftime('%Y-%m-%d %H:%M:%S')
+                else:
+                    t = ''
+                row += '{0: >17}{1: >17}{2: >20}'.format(src, sts, t)
 
             rows.append(row)
 
-        # add version columns
-        if versioned:
-            for num, sample in enumerate(disp_data):
-                if 'version' in sample:
-                    row = rows[num]
-                    ver = sample['version']
-                    src = ver['source'] if 'source' in ver else ''
-                    sts = ver['status'] if 'status' in ver else ''
-                    t = ver['t'] if 't' in ver else ''
-                    row += '{0: >17}{1: >17}{2: >14}'.format(src, sts, t)
-
         if versioned:
             # add column names
-            header = '    timestamp         value   version_source   version_status  version_time'
+            header = ('          timestamp'
+                      '         value'
+                      '   version_source'
+                      '   version_status'
+                      '        version_time')
             rows.insert(0, header)
 
         if len(self._data) > 20:
