@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Copyright 2015 Axibase Corporation or its affiliates. All Rights Reserved.
 
@@ -58,25 +60,25 @@ class Client(object):
         request = requests.Request(
             method=method,
             url=urlparse.urljoin(self.context, path),
-            data=_jsonutil.dumps(data),
+            json=_jsonutil.serialize(data),
             params=params
         )
 
-        # print '============request=========='
-        # print '>>>method:', request.method
-        # print '>>>path:', request.url
-        # print '>>>data:', request.data
-        # print '>>>params:', request.params
-        # print '============================='
+        # print('============request==========')
+        # print('>>>method:', request.method)
+        # print('>>>url:', request.url)
+        # print('>>>json:', request.json)
+        # print('>>>params:', request.params)
+        # print('=============================')
 
         prepared_request = self.session.prepare_request(request)
         response = self.session.send(prepared_request, timeout=self.timeout)
 
-        # print '===========response=========='
-        # print '>>>status:', response.status_code
-        # print '>>>cookies:', response.cookies.items()
-        # print '>>>content:', response.text
-        # print '============================='
+        # print('===========response==========')
+        # print('>>>status:', response.status_code)
+        # print('>>>cookies:', response.cookies.items())
+        # print('>>>content:', response.text)
+        # print('=============================')
 
         if response.status_code is not 200:
             raise ServerException(response.status_code,

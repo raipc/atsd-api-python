@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Copyright 2015 Axibase Corporation or its affiliates. All Rights Reserved.
 
@@ -18,4 +20,4 @@ from . import models
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '1.1.0'
+__version__ = '1.1.2'
