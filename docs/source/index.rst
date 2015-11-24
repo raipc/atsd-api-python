@@ -9,22 +9,21 @@ ATSD API client for Python
 Connecting to ATSD
 ------------------
 
-In order to retrieve data from the Axibase Time-Series Database (ATSD) you need
-to establish a connection with atsd_client module.
+To retrieve data from the Axibase Time-Series Database (ATSD), establish a connection with atsd_client module as follows:
 
 .. code-block:: python
 
     >>> import atsd_client
     >>> from atsd_client import services, models
-    >>>
+
     >>> conn = atsd_client.connect()
 
 Initializing the Service
 ------------------------
 
-The Service implements a collection of methods for interacting with a particular
-type of data, for example, :class:`.Series`, :class:`.Property`,
-:class:`.Alert` objects as well as with metadata such as :class:`.Entity`,
+The Service implements a set of methods for interacting with a particular type of
+objects in ATSD, for example, :class:`.Series`, :class:`.Property`,
+:class:`.Alert` objects as well as with metadata objects such as :class:`.Entity`,
 :class:`.Metric`, :class:`.EntityGroup` objects
 
 .. code-block:: python
@@ -34,34 +33,40 @@ type of data, for example, :class:`.Series`, :class:`.Property`,
 Inserting Series Values
 -----------------------
 
-In order to insert series values (observations) into ATSD you need to initialize
+To insert series values into ATSD initialize
 a :class:`.Series` object and populate it with timestamped values.
 
 .. code-block:: python
 
     >>> series = models.Series('sensor001', 'temperature')
     >>> series.add_value(3, '2015-04-14T07:03:31Z')
-    >>>
+
     >>> svc.insert_series(series)
+
+add version information with an optional `version` argument
+
+.. code-block:: python
+
+    >>> series.add_value(3, '2015-04-14T07:03:31Z', version={'source': 'manual'})
 
 Querying Series Values
 ----------------------
 
-When querying ATSD for data you need to specify metric, entity, as well as start
-and end times. The ``retrieve_series`` method returns a list of :class:`.Series`
-objects, which you can unpack using ``series, = svc.retrieve_series`` syntax.
+When querying series values from ATSD you need to specify metric, entity, as well as start
+and end times. The ``retrieve_series`` method returns a list of :class:`.Series` objects,
+which you can unpack using ``series, = svc.retrieve_series`` function.
 
 .. code-block:: python
 
     >>> import time
-    >>>
+
     >>> query = models.SeriesQuery('sensor001', 'temperature')
     >>> now = int(time.time() * 1000)  # current time in unix milliseconds
     >>> query.endTime = now
     >>> query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
-    >>>
+
     >>> series, = svc.retrieve_series(query)
-    >>>
+
     >>> print(series)
     2015-11-19T12:05:44Z          2.0
     2015-11-19T12:08:19Z          2.0
@@ -95,7 +100,7 @@ Alternatively you can specify ``startTime`` and ``endTime`` properties using the
 
     >>> from datetime import datetime
     >>> from datetime import timedelta
-    >>>
+
     >>> query.endTime = datetime.now()
     >>> query.startTime = query.endTime - timedelta(hours=12)
 
@@ -107,13 +112,13 @@ To query series with version information set ``query.versioned = True``
 .. code-block:: python
 
     >>> import time
-    >>>
+
     >>> query = models.SeriesQuery('sensor001', 'temperature')
     >>> now = int(time.time() * 1000)  # current time in unix milliseconds
     >>> query.versioned = True
     >>> query.endTime = now
     >>> query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
-    >>>
+
     >>> series, = svc.retrieve_series(query)
     >>> series.sort(key=lambda sample: sample['version']['t'])
     >>> print(series)

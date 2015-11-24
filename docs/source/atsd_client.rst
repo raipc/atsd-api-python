@@ -16,15 +16,15 @@ connect to ATSD using parameters specified in `connection.properties` file
 
 .. code-block:: python
 
-    >>>atsd_client.connect()
+    >>> atsd_client.connect()
 
 connect to atsd using credentials
 
 .. code-block:: python
 
-    >>>atsd_client.connect_url('http://atsd_server:8088',
-                               username='username',
-                               password='password')
+    >>> atsd_client.connect_url('http://atsd_server:8088',
+                                username='username',
+                                password='password')
 
 .. autofunction:: atsd_client.connect
 

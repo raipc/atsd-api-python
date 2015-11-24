@@ -275,10 +275,10 @@ class SeriesQuery(_TimeIntervalQuery):
 
         Usage::
 
-            >>>query = SeriesQuery(ENTITY, METRIC)
-            >>>rate = query.rate()
-            >>>rate.counter = False
-            >>>series = svc.retrieve_series(query)
+            >>> query = SeriesQuery(ENTITY, METRIC)
+            >>> rate = query.rate()
+            >>> rate.counter = False
+            >>> series = svc.retrieve_series(query)
 
         """
         self._rate = Rate()
@@ -293,11 +293,11 @@ class SeriesQuery(_TimeIntervalQuery):
 
         Usage::
 
-            >>>query = SeriesQuery(ENTITY, METRIC)
-            >>>aggr = query.aggregate()
-            >>>aggr.set_interval(10, TimeUnit.DAY)
-            >>>aggr.set_types(AggregateType.MAX, AggregateType.MIN)
-            >>>series = svc.retrieve_series(query)
+            >>> query = SeriesQuery(ENTITY, METRIC)
+            >>> aggr = query.aggregate()
+            >>> aggr.set_interval(10, TimeUnit.DAY)
+            >>> aggr.set_types(AggregateType.MAX, AggregateType.MIN)
+            >>> series = svc.retrieve_series(query)
 
         """
 
@@ -314,10 +314,10 @@ class SeriesQuery(_TimeIntervalQuery):
 
         Usage::
 
-            >>>query = SeriesQuery(ENTITY, METRIC)
-            >>>group = query.group(AggregateType.COUNT)
-            >>>group.set_interval(1, TimeUnit.SECOND)
-            >>>series = svc.retrieve_series(query)
+            >>> query = SeriesQuery(ENTITY, METRIC)
+            >>> group = query.group(AggregateType.COUNT)
+            >>> group.set_interval(1, TimeUnit.SECOND)
+            >>> series = svc.retrieve_series(query)
 
         """
         self._group = Group(type)
