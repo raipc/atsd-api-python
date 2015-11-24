@@ -70,18 +70,6 @@ def deserialize(o, model_class):
     return res
 
 
-def dumps(data):
-    return json.dumps(data,
-                      cls=ModelEncoder,
-                      ensure_ascii=False,
-                      separators=(',', ':'))
-
-
-class ModelEncoder(json.JSONEncoder):
-    def default(self, o):
-        return serialize(o)
-
-
 def _getprop(model, prop):
     """
     :raises: :class:`.AttributeError` in case of no prop found
