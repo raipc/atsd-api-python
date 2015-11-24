@@ -17,7 +17,6 @@ permissions and limitations under the License.
 
 
 import numbers
-import json
 import inspect
 
 try:
@@ -64,7 +63,7 @@ def deserialize(o, model_class):
 
     except:
         raise ValueError(unicode(o)
-                         + ' could not be deserialised to '
+                         + ' could not be deserialized to '
                          + unicode(model_class))
 
     return res
