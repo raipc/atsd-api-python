@@ -20,21 +20,47 @@ import time
 import numbers
 import copy
 
-from functools import cmp_to_key
 from datetime import datetime, timedelta
 
 from .._jsonutil import Serializable
 
 
-def series_version_comparator(a, b):
-    if a['t'] == b['t']:
-        if ('version' not in a or 't' not in a['version']
-                or 'version' not in b or 't' not in b['version']):
-            return 0
+class SeriesVersionKey(object):
+    """actual version after old versions
+    key from comparator
+    """
+
+    @staticmethod
+    def cmp(a, b):
+        if a['t'] == b['t']:
+            if ('version' not in a or 't' not in a['version']
+                    or 'version' not in b or 't' not in b['version']):
+                return 0
+            else:
+                return a['version']['t'] - b['version']['t']
         else:
-            return a['version']['t'] - b['version']['t']
-    else:
-        return a['t'] - b['t']
+            return a['t'] - b['t']
+
+    def __init__(self, obj):
+        self.obj = obj
+
+    def __lt__(self, other):
+        return SeriesVersionKey.cmp(self.obj, other.obj) < 0
+
+    def __gt__(self, other):
+        return SeriesVersionKey.cmp(self.obj, other.obj) > 0
+
+    def __eq__(self, other):
+        return SeriesVersionKey.cmp(self.obj, other.obj) == 0
+
+    def __le__(self, other):
+        return SeriesVersionKey.cmp(self.obj, other.obj) <= 0
+
+    def __ge__(self, other):
+        return SeriesVersionKey.cmp(self.obj, other.obj) >= 0
+
+    def __ne__(self, other):
+        return SeriesVersionKey.cmp(self.obj, other.obj) != 0
 
 
 def _strp(time_str):
@@ -200,7 +226,7 @@ class Series(Serializable):
 
         self._data.append(sample)
 
-    def sort(self, key=cmp_to_key(series_version_comparator), reverse=False):
+    def sort(self, key=SeriesVersionKey, reverse=False):
         """sort series data in place
 
         :param key:
@@ -213,7 +239,7 @@ class Series(Serializable):
         :return: [`Number`]
         """
 
-        data = sorted(self._data, key=cmp_to_key(series_version_comparator))
+        data = sorted(self._data, key=SeriesVersionKey)
         res = []
         for num, sample in enumerate(data):
             if num > 0 and sample['t'] == data[num - 1]['t']:
@@ -228,7 +254,7 @@ class Series(Serializable):
         :return: [`float`]
         """
 
-        data = sorted(self._data, key=cmp_to_key(series_version_comparator))
+        data = sorted(self._data, key=SeriesVersionKey)
 
         res = []
         for num, sample in enumerate(data):

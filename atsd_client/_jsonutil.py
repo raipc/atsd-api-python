@@ -97,9 +97,6 @@ class Serializable(object):
     implements default ``serialize()`` method
     """
 
-    def __repr__(self):
-        return repr(self.__dict__)
-
     def serialize(self):
         """serialize model to json-serializable object
         keys: object __init__ args, values: not None object props
