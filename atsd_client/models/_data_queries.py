@@ -91,32 +91,32 @@ class Severity(object):
 
 
 class Rate(Serializable):
-    def __init__(self, interval=None, counter=None):
+    def __init__(self, period=None, counter=None):
 
         #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
-        #: use ``set_interval`` method instead setting explicitly
-        self.interval = interval
+        #: use ``set_period`` method instead setting explicitly
+        self.period = period
         #: `bool`
         self.counter = counter
 
-    def set_interval(self, count, unit=TimeUnit.SECOND):
+    def set_period(self, count, unit=TimeUnit.SECOND):
         """
         :param count: number
         :param unit: use :class:`.TimeUnit` enum, default TimeUnit.SECOND
         """
         if not isinstance(count, numbers.Number):
-            raise ValueError('interval count expected number, found: '
+            raise ValueError('period count expected number, found: '
                              + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong interval unit')
-        self.interval = {'count': count, 'unit': unit}
+            raise ValueError('wrong period unit')
+        self.period = {'count': count, 'unit': unit}
 
 
 class Group(Serializable):
     """
     represents aggregate param group
     """
-    def __init__(self, type, interpolate=None, truncate=None, interval=None):
+    def __init__(self, type, interpolate=None, truncate=None, period=None):
         #: :class:`.AggregateType`
         self.type = type
 
@@ -125,27 +125,27 @@ class Group(Serializable):
         #: `bool` default False
         self.truncate = truncate
         #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
-        #: use ``set_interval`` method instead setting explicitly
-        self.interval = interval
+        #: use ``set_period`` method instead setting explicitly
+        self.period = period
 
-    def set_interval(self, count, unit=TimeUnit.SECOND):
+    def set_period(self, count, unit=TimeUnit.SECOND):
         """
         :param count: number
         :param unit: use :class:`.TimeUnit` enum, default TimeUnit.SECOND
         """
         if not isinstance(count, numbers.Number):
-            raise ValueError('interval count expected number, found: '
+            raise ValueError('period count expected number, found: '
                              + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong interval unit')
-        self.interval = {'count': count, 'unit': unit}
+            raise ValueError('wrong period unit')
+        self.period = {'count': count, 'unit': unit}
 
 
 class Aggregator(Serializable):
     """
     represents aggregate param of :class:`.SeriesQuery`
     """
-    def __init__(self, types, interval,
+    def __init__(self, types, period,
                  interpolate=None,
                  threshold=None,
                  calendar=None,
@@ -153,8 +153,8 @@ class Aggregator(Serializable):
                  counter=None):
 
         #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
-        #: use ``set_interval`` method instead setting explicitly
-        self.interval = interval
+        #: use ``set_period`` method instead setting explicitly
+        self.period = period
         #: `list` of :class:`.AggregateType` objects
         self.types = types
 
@@ -183,17 +183,17 @@ class Aggregator(Serializable):
                 raise ValueError('wrong aggregate type')
             self.types.append(typ)
 
-    def set_interval(self, count, unit=TimeUnit.SECOND):
+    def set_period(self, count, unit=TimeUnit.SECOND):
         """
         :param count: number
         :param unit: use :class:`.TimeUnit` enum, default TimeUnit.SECOND
         """
         if not isinstance(count, numbers.Number):
-            raise ValueError('interval count expected number, found: '
+            raise ValueError('period count expected number, found: '
                              + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong interval unit')
-        self.interval = {'count': count, 'unit': unit}
+            raise ValueError('wrong period unit')
+        self.period = {'count': count, 'unit': unit}
 
     def set_threshold(self, min, max):
         """
@@ -216,24 +216,24 @@ class Aggregator(Serializable):
         self.calendar = {'name': name}
 
 
-class _TimeIntervalQuery(Serializable):
+class _TimePeriodQuery(Serializable):
     def __init__(self, startTime, endTime):
 
         if isinstance(startTime, datetime):
             startTime = to_posix_timestamp(startTime)
-        #: `long` start of the selection interval.
+        #: `long` start of the selection period.
         #: default: ``endTime - 1 hour``
         self._startTime = startTime
 
         if isinstance(endTime, datetime):
             endTime = to_posix_timestamp(endTime)
-        #: `long` end of the selection interval.
+        #: `long` end of the selection period.
         #: default value: ``current server time``
         self._endTime = endTime
 
     @property
     def startTime(self):
-        """`datetime` Start of the selection interval
+        """`datetime` Start of the selection period
         """
         if self._startTime is None:
             return None
@@ -250,7 +250,7 @@ class _TimeIntervalQuery(Serializable):
 
     @property
     def endTime(self):
-        """ `datetime` End of the selection interval
+        """ `datetime` End of the selection period
         """
         if self._endTime is None:
             return None
@@ -266,7 +266,7 @@ class _TimeIntervalQuery(Serializable):
             raise ValueError('endTime should be either Number or datetime')
 
 
-class SeriesQuery(_TimeIntervalQuery):
+class SeriesQuery(_TimePeriodQuery):
     def rate(self):
         """add empty rate property to series query,
         use returned object methods to set parameters
@@ -285,7 +285,7 @@ class SeriesQuery(_TimeIntervalQuery):
         return self._rate
 
     def aggregate(self, *types):
-        """add aggregate property to series query, default interval = 1 sec
+        """add aggregate property to series query, default period = 1 sec
         use returned object methods to set parameters
 
         :param types: :class:`.InterpolateType` objects
@@ -295,7 +295,7 @@ class SeriesQuery(_TimeIntervalQuery):
 
             >>> query = SeriesQuery(ENTITY, METRIC)
             >>> aggr = query.aggregate()
-            >>> aggr.set_interval(10, TimeUnit.DAY)
+            >>> aggr.set_period(10, TimeUnit.DAY)
             >>> aggr.set_types(AggregateType.MAX, AggregateType.MIN)
             >>> series = svc.retrieve_series(query)
 
@@ -316,7 +316,7 @@ class SeriesQuery(_TimeIntervalQuery):
 
             >>> query = SeriesQuery(ENTITY, METRIC)
             >>> group = query.group(AggregateType.COUNT)
-            >>> group.set_interval(1, TimeUnit.SECOND)
+            >>> group.set_period(1, TimeUnit.SECOND)
             >>> series = svc.retrieve_series(query)
 
         """
@@ -359,7 +359,7 @@ class SeriesQuery(_TimeIntervalQuery):
         super(SeriesQuery, self).__init__(startTime, endTime)
 
 
-class PropertiesQuery(_TimeIntervalQuery):
+class PropertiesQuery(_TimePeriodQuery):
     def __init__(self, type, entity,
                  startTime=None,
                  endTime=None,
@@ -418,7 +418,7 @@ class AlertsQuery(Serializable):
         self.minSeverity = minSeverity
 
 
-class AlertHistoryQuery(_TimeIntervalQuery):
+class AlertHistoryQuery(_TimePeriodQuery):
     def __init__(self, entity, metric, startTime, endTime, rule,
                  entityGroup=None,
                  limit=None):

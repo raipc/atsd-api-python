@@ -282,7 +282,7 @@ class TestSeriesService(unittest.TestCase):
         query.startTime = query.endTime - timedelta(days=5)
 
         group = query.group(AggregateType.COUNT)
-        group.set_interval(1, TimeUnit.SECOND)
+        group.set_period(1, TimeUnit.SECOND)
 
         series = self.svc.retrieve_series(query)
         self.assertEqual(series[0].data[-1]['v'], 1)
@@ -299,7 +299,7 @@ class TestSeriesService(unittest.TestCase):
         query.startTime = query.endTime - timedelta(days=5)
 
         aggr = query.aggregate()
-        aggr.set_interval(10, TimeUnit.SECOND)
+        aggr.set_period(10, TimeUnit.SECOND)
         aggr.set_types(AggregateType.MAX, AggregateType.MIN)
 
         series = self.svc.retrieve_series(query)
