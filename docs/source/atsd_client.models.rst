@@ -10,15 +10,15 @@ Two code blocks are equivalent:
 
 .. code-block:: python
 
-    >>>prop = Property(TYPE, ENTITY)
-    >>>prop.tags = {TAG: tag_value}
-    >>>prop.key = {KEY: KEY_VALUE}
+    >>> prop = Property(TYPE, ENTITY)
+    >>> prop.tags = {TAG: tag_value}
+    >>> prop.key = {KEY: KEY_VALUE}
 
 .. code-block:: python
 
-    >>>prop = Property(TYPE, ENTITY,
-                       tags={TAG: tag_value}
-                       key={KEY: KEY_VALUE})
+    >>> prop = Property(TYPE, ENTITY,
+                        tags={TAG: tag_value}
+                        key={KEY: KEY_VALUE})
 
 .. module:: atsd_client.models
 

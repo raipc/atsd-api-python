@@ -236,7 +236,8 @@ class Series(Serializable):
 
     def values(self):
         """valid versions of series values
-        :return: [`Number`]
+
+        :return: list of `Number`
         """
 
         data = sorted(self._data, key=SeriesVersionKey)
@@ -251,7 +252,8 @@ class Series(Serializable):
 
     def times(self):
         """valid versions of series times in seconds
-        :return: [`float`]
+
+        :return: list of `float`
         """
 
         data = sorted(self._data, key=SeriesVersionKey)
