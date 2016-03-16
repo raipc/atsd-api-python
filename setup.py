@@ -20,8 +20,6 @@ except ImportError:
     from distutils.core import setup
 import re
 
-license_ = open('LICENSE').read()
-
 version = ''
 with open('atsd_client/__init__.py', 'r') as fd:
     # noinspection PyRedeclaration
@@ -38,10 +36,10 @@ setup(
     url='https://github.com/axibase/atsd-api-python',
     author='Axibase Corporation',
     author_email='axibase-api@axibase.com',
-    license=license_,
+    license='Apache 2.0',
     install_requires=['requests'],
     package_data={'atsd_client': ['connection.properties']},
-    keywords = 'axibase, atsd, axibase time-series database, python',
+    keywords='axibase, atsd, axibase time-series database, python',
     classifiers=(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Science/Research',
