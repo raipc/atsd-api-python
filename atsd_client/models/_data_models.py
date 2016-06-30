@@ -69,18 +69,15 @@ def _strp(time_str):
     :return: timestamp in milliseconds
     """
     t, tz = time_str.split('Z')
-
     t = time.strptime(t, '%Y-%m-%dT%H:%M:%S')
-
-    sig, hour, min = tz[0], tz[1:3], tz[3:5]
-
-    tz_offset = int(sig + hour) * 60 * 60 + int(sig + min) * 60
-    loc_offset = time.timezone
-    offset = loc_offset - tz_offset
-
-    timestamp = int((time.mktime(t) + offset) * 1000)
-
-    return timestamp
+    if tz:
+        sig, hour, min = tz[0], tz[1:3], tz[3:5]
+        tz_offset = int(sig + hour) * 60 * 60 + int(sig + min) * 60
+        loc_offset = time.timezone
+        offset = loc_offset - tz_offset
+        return int((time.mktime(t) + offset) * 1000)
+    else:
+        return int(time.mktime(t)) * 1000
 
 
 def to_posix_timestamp(dt):
@@ -211,19 +208,19 @@ class Series(Serializable):
         """
         if t is None:
             t = int(time.time() * 1000)
-
+ 
         if isinstance(t, str):
             t = _strp(t)
         if isinstance(t, datetime):
             t = to_posix_timestamp(t)
         if not isinstance(t, numbers.Number):
             raise ValueError('data "t" should be either number or str')
-
+ 
         if version is None:
             sample = {'v': v, 't': t}
         else:
             sample = {'v': v, 't': t, 'version': version}
-
+ 
         self._data.append(sample)
 
     def sort(self, key=SeriesVersionKey, reverse=False):

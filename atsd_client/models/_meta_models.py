@@ -39,7 +39,8 @@ class InvalidAction(object):
 
 
 class Metric(Serializable):
-    def __init__(self, name,
+    def __init__(self, 
+                 name,
                  label=None,
                  enabled=None,
                  dataType=None,
