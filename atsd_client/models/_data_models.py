@@ -68,16 +68,16 @@ def _strp(time_str):
     :param time_str: in format '%Y-%m-%dT%H:%M:%SZ%z'
     :return: timestamp in milliseconds
     """
-    t, tz = time_str.split('Z')
-    t = time.strptime(t, '%Y-%m-%dT%H:%M:%S')
-    if tz:
-        sig, hour, min = tz[0], tz[1:3], tz[3:5]
+    time_part, timezone_part = time_str.split('Z')
+    time_part = time.strptime(time_part, '%Y-%m-%dT%H:%M:%S')
+    if timezone_part:
+        sig, hour, min = timezone_part[0], timezone_part[1:3], timezone_part[3:5]
         tz_offset = int(sig + hour) * 60 * 60 + int(sig + min) * 60
         loc_offset = time.timezone
         offset = loc_offset - tz_offset
-        return int((time.mktime(t) + offset) * 1000)
+        return int((time.mktime(time_part) + offset) * 1000)
     else:
-        return int(time.mktime(t)) * 1000
+        return int(time.mktime(time_part)) * 1000
 
 
 def to_posix_timestamp(dt):
@@ -269,7 +269,6 @@ class Series(Serializable):
         :return: pandas time series object
         """
         import pandas as pd
-
         return pd.Series(self.values(), index=self.times())
 
     def plot(self):

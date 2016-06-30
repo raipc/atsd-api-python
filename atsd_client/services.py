@@ -103,7 +103,16 @@ class PropertiesService(_Service):
 
         self.conn.post('properties/insert', properties)
         return True
-
+    
+    def delete_properties(self, *properties):
+        #TODO
+        return True
+    
+    def get_types_of_properties(self, entity):
+        #TODO
+        response = self.conn.get('properties/{entity}/types'.format(entity=entity))
+        return response
+    
     def batch_update_properties(self, *commands):
         """
         :param commands: :class:`.BatchPropertyCommand`

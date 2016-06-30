@@ -22,6 +22,10 @@ docs/build/
 .metadata/
 *.project
 *.pydevproject
+*.settings
 
 # Property files
-*.properties
+*_test.properties
+
+# Debug utilities
+*_debug_*
