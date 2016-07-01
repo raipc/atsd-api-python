@@ -94,6 +94,14 @@ class PropertiesService(_Service):
         resp = self.conn.post('properties', data)
 
         return _jsonutil.deserialize(resp, Property)
+    
+    def get_types_of_properties(self, entity):
+        """
+        :param entity: :class:`.Entity`
+        :return: list of properties' types
+        """
+        response = self.conn.get('properties/{entity}/types'.format(entity=entity.name))
+        return response
 
     def insert_properties(self, *properties):
         """
@@ -108,11 +116,7 @@ class PropertiesService(_Service):
         #TODO
         return True
     
-    def get_types_of_properties(self, entity):
-        #TODO
-        response = self.conn.get('properties/{entity}/types'.format(entity=entity))
-        return response
-    
+    ####### REMAIN UNTOUCHED?    
     def batch_update_properties(self, *commands):
         """
         :param commands: :class:`.BatchPropertyCommand`
