@@ -100,7 +100,7 @@ class PropertiesService(_Service):
         :param entity: :class:`.Entity`
         :return: list of properties' types
         """
-        response = self.conn.get('properties/{entity}/types'.format(entity=entity.name))
+        response = self.conn.get('properties/{entity}/types'.format(entity=quote(entity.name, '')))
         return response
 
     def insert_properties(self, *properties):
@@ -112,8 +112,19 @@ class PropertiesService(_Service):
         self.conn.post('properties/insert', properties)
         return True
     
-    def delete_properties(self, *properties):
-        #TODO
+    def delete_properties(self, filters):
+        """Delete property records that match specified filters.
+        Each filter is an object which consists of the following fields:
+            type: `str` (required)
+            entity: `str` (required)
+            startDate: `str`
+            endDate: `str`
+            key: `dict`
+            exactMatch: `bool`
+        :param filters: `list`
+        :return: True if success
+        """
+        response = self.conn.post('properties/delete', filters)
         return True
     
     ####### REMAIN UNTOUCHED?    
