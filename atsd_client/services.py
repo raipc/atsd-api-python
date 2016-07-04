@@ -15,11 +15,9 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-
 from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, BatchEntitiesCommand, Message
 from .exceptions import DataParseException
 from .exceptions import ServerException
-
 from ._client import Client
 from . import _jsonutil
 
@@ -27,8 +25,6 @@ try:
     from urllib import quote
 except ImportError:
     from urllib.parse import quote
-
-
 try:
     unicode = unicode
 except NameError:
@@ -50,29 +46,42 @@ class _Service(object):
 
 #------------------------------------------------------------------------ SERIES
 class SeriesService(_Service):
-    def retrieve_series(self, *queries):
+    def insert(self, *series_objects):
+        """
+        :param series_objects: :class:`.Series` objects
+        :return: True if success
+        """
+        for series in series_objects:
+            if len(series.data) == 0:
+                raise DataParseException('data', Series, 'Inserting empty series')
+        self.conn.post('series/insert', series_objects)
+        return True
+    
+    def csv_insert(self, *csvs):
+        """TODO
+        :param csvs: 
+        :return: True if success
+        """
+        pass
+        return True
+    
+    def query(self, *queries):
         """retrieve series for each query
-
         :param queries: :class:`.SeriesQuery` objects
         :return: list of :class:`.Series` objects
         """
         data = {'queries': queries}
         resp = self.conn.post('series', data)
-
         return [_jsonutil.deserialize(r, Series) for r in resp['series']]
 
-    def insert_series(self, *series):
+    def url_query(self, *queries):
+        """TODO
+        :param queries: :class:`.SOMECLASS` objects
+        :return: list of :class:`.SOMECLASS` objects
         """
-        :param series: :class:`.Series` objects
-        :return: True if success
-        """
-        for s in series:
-            if len(s.data) == 0:
-                raise DataParseException('data', Series,
-                                         'inserting empty series')
-
-        self.conn.post('series/insert', series)
-        return True
+        data = {'queries': queries}
+        resp = self.conn.post('series', data)
+        return [_jsonutil.deserialize(r, Series) for r in resp['series']]
 
 
 #-------------------------------------------------------------------- PROPERTIES
@@ -172,12 +181,12 @@ class MessageService(_Service):
         resp = self.conn.post('messages/query', queries)
         return _jsonutil.deserialize(resp, Message)
 
-    def statistics(self, *filters):
-        """retrieve alert for each query
+    def statistics(self, *params):
+        """TODO
         :param queries: :class:`.AlertsDeleteFilter`
         :return: True if success
         """
-        response = self.conn.post('alerts/delete', filters)
+        response = self.conn.post('messages/statistics', params)
         return True
 
 
