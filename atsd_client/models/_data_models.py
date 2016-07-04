@@ -96,7 +96,6 @@ class Property(Serializable):
         self.entity = entity
         #: `dict` containing object keys
         self.tags = tags
-
         #: `dict` of ``name: value`` pairs that uniquely identify
         #: the property record
         self.key = key
@@ -110,37 +109,30 @@ class Series(Serializable):
         self.entity = entity
         #: `str` metric name
         self.metric = metric
-
-        # an list of {'t': time, 'v': value} objects
-        # use add value instead
-        self._data = []
+        # an list of {'t': time, 'v': value} objects. Use add value instead
+        self.data = []
         if data is not None:
             for sample in data:
                 sample_copy = copy.deepcopy(sample)
                 if sample_copy['v'] == 'NaN':
                     sample_copy['v'] = float('nan')
-                self._data.append(sample_copy)
-
+                self.data.append(sample_copy)
         #: `dict` of ``tag_name: tag_value`` pairs
         self.tags = tags
 
     def __str__(self):
-
-        if len(self._data) > 20:
+        if len(self.data) > 20:
             # display only firsts and lasts
-            disp_data = self._data[:10] + self._data[-10:]
+            disp_data = self.data[:10] + self.data[-10:]
         else:
-            disp_data = self._data
-
+            disp_data = self.data
         rows = []
         versioned = False
-
         # create timestamp and value columns
         for sample in disp_data:
             t = datetime.utcfromtimestamp(sample['t'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
             v = sample['v']
             row = '{0}{1: >14}'.format(t, v)
-
             # add version columns
             if 'version' in sample:
                 versioned = True
@@ -152,9 +144,7 @@ class Series(Serializable):
                 else:
                     t = ''
                 row += '{0: >17}{1: >17}{2: >21}'.format(src, sts, t)
-
             rows.append(row)
-
         if versioned:
             # add column names
             header = ('           timestamp'
@@ -163,16 +153,13 @@ class Series(Serializable):
                       '   version_status'
                       '         version_time')
             rows.insert(0, header)
-
-        if len(self._data) > 20:
+        if len(self.data) > 20:
             res = '\n'.join(rows[:-10]) + '\n...\n' + '\n'.join(rows[-10:])
         else:
             res = '\n'.join(rows)
-
         for key in self.__dict__:
             if not key.startswith('_'):
                 res += '\n{0}: {1}'.format(key, getattr(self, key))
-
         return res
 
     @staticmethod
@@ -186,22 +173,12 @@ class Series(Serializable):
         res = Series(entity, metric)
         for dt in ts.index:
             res.add_value(ts[dt], dt)
-
         return res
-
-    @property
-    def data(self):
-        """data getter, use ``add_value()`` method to set values
-
-        :return: an array of {'t': time, 'v': value} objects
-        """
-        return self._data[:]
 
     def add_value(self, v, t=None, version=None):
         """add time-value pair to series
         time could be specified as `int` in milliseconds, as `str` in format
         ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z), as `datetime`
-
         :param version: `dict`
         :param v: value number
         :param t: `int` | `str` | :class: `.datetime` (default t = current time)
@@ -221,15 +198,14 @@ class Series(Serializable):
         else:
             sample = {'v': v, 't': t, 'version': version}
  
-        self._data.append(sample)
+        self.data.append(sample)
 
     def sort(self, key=SeriesVersionKey, reverse=False):
         """sort series data in place
-
         :param key:
         :param reverse:
         """
-        self._data.sort(key=key, reverse=reverse)
+        self.data.sort(key=key, reverse=reverse)
 
     def values(self):
         """valid versions of series values
@@ -237,7 +213,7 @@ class Series(Serializable):
         :return: list of `Number`
         """
 
-        data = sorted(self._data, key=SeriesVersionKey)
+        data = sorted(self.data, key=SeriesVersionKey)
         res = []
         for num, sample in enumerate(data):
             if num > 0 and sample['t'] == data[num - 1]['t']:
@@ -253,7 +229,7 @@ class Series(Serializable):
         :return: list of `float`
         """
 
-        data = sorted(self._data, key=SeriesVersionKey)
+        data = sorted(self.data, key=SeriesVersionKey)
 
         res = []
         for num, sample in enumerate(data):
@@ -378,10 +354,7 @@ class AlertHistory(Serializable):
 #     now = int(time.time() * 1000)
 #     dt = datetime.fromtimestamp(now * 0.001)
 #     print now, dt, _to_posix_timestamp(dt)
-#
 #     ts = pd.Series([1], index=[datetime.fromtimestamp(now * 0.001)])
-#
 #     res = _to_posix_timestamp(ts.index[0])
 #     dt = datetime.fromtimestamp(res * 0.001)
-#
 #     print res, dt

@@ -18,6 +18,7 @@ permissions and limitations under the License.
 
 import numbers
 from datetime import datetime
+from ..utilities import copy_not_empty_attrs
 
 from ._data_models import Property
 from ._data_models import to_posix_timestamp
@@ -359,28 +360,7 @@ class SeriesQuery(_TimePeriodQuery):
         super(SeriesQuery, self).__init__(startTime, endTime)
 
 
-class PropertiesQuery(_TimePeriodQuery):
-    def __init__(self, type, entity,
-                 startTime=None,
-                 endTime=None,
-                 limit=None,
-                 key=None,
-                 keyExpression=None):
-        #: `str` entity name
-        self.entity = entity
-        #: `str` type of data properties
-        self.type = type
 
-        #: `int` maximum number of data samples returned.
-        #: default value: 0 (no limit)
-        self.limit = limit
-        #: `dict` of ``name: value`` pairs that uniquely identify
-        #: the property record
-        self.key = key
-        #: `str`
-        self.keyExpression = keyExpression
-
-        super(PropertiesQuery, self).__init__(startTime, endTime)
 
 
 class PropertiesMatcher(Serializable):
@@ -399,42 +379,6 @@ class PropertiesMatcher(Serializable):
         self.createdBeforeTime = createdBeforeTime
 
 
-class AlertsQuery(Serializable):
-    def __init__(self,
-                 metrics=None,
-                 entities=None,
-                 rules=None,
-                 severities=None,
-                 minSeverity=None):
-        #: `list` of metric names
-        self.metrics = metrics
-        #: `list` of entity names
-        self.entities = entities
-        #: `list` of rules
-        self.rules = rules
-        #: `list` of :class:`.Severity` objects
-        self.severities = severities
-        #: :class:`.Severity`
-        self.minSeverity = minSeverity
-
-
-class AlertHistoryQuery(_TimePeriodQuery):
-    def __init__(self, entity, metric, startTime, endTime, rule,
-                 entityGroup=None,
-                 limit=None):
-        #: `str` entity name
-        self.entity = entity
-        #: `str` metric name
-        self.metric = metric
-        #: `str`
-        self.rule = rule
-
-        #: `str`
-        self.entityGroup = entityGroup
-        #: `int`, default 1000
-        self.limit = limit
-
-        super(AlertHistoryQuery, self).__init__(startTime, endTime)
 
 
 class BatchPropertyCommand(object):
@@ -539,3 +483,80 @@ class BatchAlertCommand(object):
         return BatchAlertCommand('update',
                                  alerts=[Alert(id) for id in alert_ids],
                                  fields={'acknowledge': acknowledge})
+
+
+###################################################################################################
+class EntityFilter(Serializable):
+    def __init__(self, entity="", entities=[], entity_group="", entity_expression=""):
+        if (entity or entities or entity_group or entity_expression):
+            self.entity = entity
+            self.entities = entities
+            self.entity_group=entity_group
+            self.entity_expression=entity_expression
+        else:
+            raise ValueError("Not enough arguments")
+    def get_trimmed_dict_repr(self):
+        return dict((k, v) for k, v in self.__dict__.items() if v)
+        
+class DateFilter(Serializable):
+    def __init__(self, startDate="", endDate="", interval={}):
+        if interval or (startDate and endDate):
+            self.startDate = startDate 
+            self.endDate = endDate 
+            self.interval = interval
+        else:
+            raise ValueError("Not enough arguments")
+    def get_trimmed_dict_repr(self):
+        return dict((k, v) for k, v in self.__dict__.items() if v)
+        
+#################       PROPERTIES        ##############################
+class PropertiesQuery(_TimePeriodQuery):
+    def __init__(self, type, entity,
+                 startTime=None,
+                 endTime=None,
+                 limit=None,
+                 key=None,
+                 keyExpression=None):
+        #: `str` entity name
+        self.entity = entity
+        #: `str` type of data properties
+        self.type = type
+        #: `int` maximum number of data samples returned.
+        #: default value: 0 (no limit)
+        self.limit = limit
+        #: `dict` of ``name: value`` pairs that uniquely identify
+        #: the property record
+        self.key = key
+        #: `str`
+        self.keyExpression = keyExpression
+        super(PropertiesQuery, self).__init__(startTime, endTime)
+        
+class PropertiesFilterDelete(PropertiesQuery):
+    def __init__(self, type, entity, startTime=None, endTime=None, key=None, exactMatch=False):
+        #: `bool` key match operator. Exact match if true, partial match if false. 
+        self.exactMatch = exactMatch
+        super(PropertiesFilterDelete, self).__init__(type, entity, startTime=startTime, endTime=endTime, limit=None, key=key, keyExpression=None)
+        
+#################       ALERTS        ##############################
+class AlertHistoryQuery():
+    def __init__(self, entity_filter, date_filter, result_limit, rule, metric):
+        copy_not_empty_attrs(src=entity_filter, dst=self)
+        copy_not_empty_attrs(src=date_filter, dst=self)
+        self.result_limit = result_limit
+        self.rule = rule
+        self.metric = metric
+
+class AlertsQuery(Serializable):
+    def __init__(self, entity_filter, date_filter, rules=None, metrics=None, severities=None, minSeverity=None, acknowledged=None):
+        copy_not_empty_attrs(src=entity_filter, dst=self)
+        copy_not_empty_attrs(src=date_filter,   dst=self)
+        self.metrics = metrics
+        self.rules = rules
+        self.severities = severities
+        self.minSeverity = minSeverity
+        self.acknowledged = acknowledged
+        
+class AlertDeleteFilter(Serializable):
+    def __init__(self, id):
+        self.id = id
+    

@@ -99,18 +99,15 @@ class Serializable(object):
 
     def serialize(self):
         """serialize model to json-serializable object
-        keys: object __init__ args, values: not None object props
+        keys: object attrs, values: not None object props
 
         :return: json-serializable object
         """
         data = {}
-        props = inspect.getargspec(type(self).__init__).args
-        props.remove('self')
-
+        props = self.__dict__.keys() #inspect.getargspec(type(self).__init__).args ; props.remove('self')
         for prop in props:
             try:
                 data[prop] = _getprop(self, prop)
             except AttributeError:
                 pass
-
         return data

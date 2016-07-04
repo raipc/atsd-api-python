@@ -37,7 +37,6 @@ class Client(object):
                  username=None, password=None,
                  verify=None, timeout=None):
         """
-
         :param base_url: atsd url
         :param username: login
         :param password:
@@ -45,14 +44,11 @@ class Client(object):
         :param timeout: request timeout
         """
         self.context = urlparse.urljoin(base_url, 'api/v1/')
-
         session = requests.Session()
-
         if verify is False:
             session.verify = False
         if username is not None and password is not None:
             session.auth = (username, password)
-
         self.session = session
         self.timeout = timeout
 
@@ -63,27 +59,21 @@ class Client(object):
             json=_jsonutil.serialize(data),
             params=params
         )
-
-        # print('============request==========')
-        # print('>>>method:', request.method)
-        # print('>>>url:', request.url)
-        # print('>>>json:', request.json)
-        # print('>>>params:', request.params)
-        # print('=============================')
-
+        print('============request==========')
+        print('>>>method:', request.method)
+        print('>>>url:', request.url)
+        print('>>>json:', request.json)
+        print('>>>params:', request.params)
+        print('_____________________________')
         prepared_request = self.session.prepare_request(request)
         response = self.session.send(prepared_request, timeout=self.timeout)
-
-        # print('===========response==========')
-        # print('>>>status:', response.status_code)
-        # print('>>>cookies:', response.cookies.items())
-        # print('>>>content:', response.text)
-        # print('=============================')
-
+        print('===========response==========')
+        print('>>>status:', response.status_code)
+        print('>>>cookies:', response.cookies.items())
+        print('>>>content:', response.text)
+        print('_____________________________')
         if response.status_code is not 200:
-            raise ServerException(response.status_code,
-                                  response.text)
-
+            raise ServerException(response.status_code, response.text)
         try:
             return response.json()
         except ValueError:

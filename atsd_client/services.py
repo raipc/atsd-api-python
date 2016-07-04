@@ -82,20 +82,22 @@ class SeriesService(_Service):
         return True
 
 
+#===============================================================================
+#-------------------------------------------------------------------- PROPERTIES
+#===============================================================================
+
 class PropertiesService(_Service):
-    def retrieve_properties(self, *queries):
+    def query(self, *queries):
         """retrieve property for each query
 
         :param queries: :class:`.PropertiesQuery`
         :return: list of :class:`.Property` objects
         """
-
         data = {'queries': queries}
         resp = self.conn.post('properties', data)
-
         return _jsonutil.deserialize(resp, Property)
     
-    def get_types_of_properties(self, entity):
+    def type_query(self, entity):
         """
         :param entity: :class:`.Entity`
         :return: list of properties' types
@@ -103,80 +105,56 @@ class PropertiesService(_Service):
         response = self.conn.get('properties/{entity}/types'.format(entity=quote(entity.name, '')))
         return response
 
-    def insert_properties(self, *properties):
+    def insert(self, *properties):
         """
         :param properties: :class:`.Property`
         :return: True if success
         """
-
         self.conn.post('properties/insert', properties)
         return True
     
-    def delete_properties(self, filters):
-        """Delete property records that match specified filters.
-        Each filter is an object which consists of the following fields:
-            type: `str` (required)
-            entity: `str` (required)
-            startDate: `str`
-            endDate: `str`
-            key: `dict`
-            exactMatch: `bool`
-        :param filters: `list`
+    def delete_properties(self, *filters):
+        """Delete property for each query
+        :param filters: :class:`.PropertyDeleteFilter`
         :return: True if success
         """
         response = self.conn.post('properties/delete', filters)
         return True
-    
-    ####### REMAIN UNTOUCHED?    
-    def batch_update_properties(self, *commands):
-        """
-        :param commands: :class:`.BatchPropertyCommand`
-        :return: True if success
-        """
-        commands = [c for c in commands if not c.empty]
-
-        if len(commands):
-            self.conn.patch('properties', commands)
-            return True
-        return False
 
 
+#===============================================================================
+#------------------------------------------------------------------------ ALERTS
+#===============================================================================
 class AlertsService(_Service):
-    def retrieve_alerts(self, *queries):
+    def query(self, *queries):
         """retrieve alert for each query
-
         :param queries: :class:`.AlertsQuery`
         :return: list of :class:`.Alert` objects
         """
-        data = {'queries': queries}
-        resp = self.conn.post('alerts', data)
-
+        resp = self.conn.post('alerts/query', queries)
         return _jsonutil.deserialize(resp, Alert)
 
-    def retrieve_alert_history(self, *queries):
+    def history_query(self, *queries):
         """retrieve history for each query
-
         :param queries: :class:`.AlertHistoryQuery`
         :return: list of :class:`.AlertHistory` objects
         """
         data = {'queries': queries}
         resp = self.conn.post('alerts/history', data)
-
         return _jsonutil.deserialize(resp, AlertHistory)
 
-    def batch_update_alerts(self, *commands):
+    def delete(self, *filters):
+        """retrieve alert for each query
+        :param queries: :class:`.AlertsDeleteFilter`
+        :return: True if success
         """
-        :param commands: :class:`.BatchAlertCommand`
-        :return: True is success
-        """
-        commands = [c for c in commands if not c.empty]
-
-        if len(commands):
-            self.conn.patch('alerts', commands)
-            return True
-        return False
-
-
+        response = self.conn.post('alerts/delete', filters)
+        return True
+    
+    
+#===============================================================================
+#----------------------------------------------------------------------- METRICS
+#===============================================================================
 class MetricsService(_Service):
     def retrieve_metrics(self,
                          expression=None,
