@@ -91,91 +91,126 @@ class Severity(object):
     FATAL = 7
 
 
-class Rate(Serializable):
-    def __init__(self, period=None, counter=None):
+###################################################################################################
+###################################################################################################
 
-        #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
-        #: use ``set_period`` method instead setting explicitly
+#===============================================================================
+################# GLOBALS
+#===============================================================================
+class EntityFilter(Serializable):
+    def __init__(self, entity="", entities=[], entity_group="", entity_expression=""):
+        if (entity or entities or entity_group or entity_expression):
+            self.entity = entity
+            self.entities = entities
+            self.entity_group=entity_group
+            self.entity_expression=entity_expression
+        else:
+            raise ValueError("Not enough arguments")
+        
+class DateFilter(Serializable):
+    def __init__(self, startDate="", endDate="", interval={}):
+        if interval or (startDate and endDate):
+            self.startDate = startDate 
+            self.endDate = endDate 
+            self.interval = interval
+        else:
+            raise ValueError("Not enough arguments")
+#===============================================================================
+################# SERIES
+#===============================================================================
+class SeriesQuery(Serializable):
+    def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None, control_filter=None, transformation_filter=None):
+        copy_not_empty_attrs(series_filter, self)
+        copy_not_empty_attrs(entity_filter, self)
+        copy_not_empty_attrs(date_filter, self)
+        copy_not_empty_attrs(forecast_filter, self)
+        copy_not_empty_attrs(versioning_filter, self)
+        copy_not_empty_attrs(transformation_filter, self)
+                
+class SeriesFilter(Serializable):
+    def __init__(self, metric, tags={}, type="HISTORY"):
+        if metric:
+            self.metric = metric 
+            self.tags = tags 
+            self.type = type
+        else:
+            raise ValueError("No metric supplied!")
+        
+class ForecastFilter(Serializable):
+    def __init__(self, forecastName=""):
+        self.forecastName = forecastName
+        
+class VersioningFilter(Serializable):
+    def __init__(self,versioned=False, versionFilter=""):
+        self.versioned = versioned
+        self.versionFilter = versionFilter
+        
+class  ControlFilter(Serializable):
+    def __init__(self,limit=0, direction="DESC", last=False, cache=False, requestId="", timeFormat="iso"):
+        self.limit=limit
+        self.direction=direction
+        self.last=last
+        self.cache=cache
+        self.requestId=requestId
+        self.timeFormat=timeFormat
+
+class TransformationFilter(Serializable):
+    def __init__(self, aggregate, group, rate):
+        self.aggregate = aggregate
+        self.group = group
+        self.rate = rate
+        
+class Transformator(Serializable):
+    def __init__(self, period=None):
         self.period = period
-        #: `bool`
-        self.counter = counter
-
+        
     def set_period(self, count, unit=TimeUnit.SECOND):
         """
         :param count: number
         :param unit: use :class:`.TimeUnit` enum, default TimeUnit.SECOND
         """
         if not isinstance(count, numbers.Number):
-            raise ValueError('period count expected number, found: '
-                             + unicode(type(count)))
+            raise ValueError('period count expected number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('wrong period unit')
         self.period = {'count': count, 'unit': unit}
+        
+class Rate(Transformator):
+    """
+    represents aggregate param rate
+    """
+    def __init__(self, period=None, counter=True):
+        self.counter = counter
+        super(Rate, self).__init__(period)
 
-
-class Group(Serializable):
+class Group(Transformator):
     """
     represents aggregate param group
     """
-    def __init__(self, type, interpolate=None, truncate=None, period=None):
-        #: :class:`.AggregateType`
+    def __init__(self, type, period=None, interpolate=None, truncate=None, order=0):
         self.type = type
-
-        #: :class:`.Interpolate`
         self.interpolate = interpolate
-        #: `bool` default False
         self.truncate = truncate
-        #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
-        #: use ``set_period`` method instead setting explicitly
         self.period = period
-
-    def set_period(self, count, unit=TimeUnit.SECOND):
-        """
-        :param count: number
-        :param unit: use :class:`.TimeUnit` enum, default TimeUnit.SECOND
-        """
-        if not isinstance(count, numbers.Number):
-            raise ValueError('period count expected number, found: '
-                             + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong period unit')
-        self.period = {'count': count, 'unit': unit}
-
+        self.order=order
+        super(Group, self).__init__(period)
 
 class Aggregator(Serializable):
     """
     represents aggregate param of :class:`.SeriesQuery`
     """
-    def __init__(self, types, period,
-                 interpolate=None,
-                 threshold=None,
-                 calendar=None,
-                 workingMinutes=None,
-                 counter=None):
-
-        #: `dict` {'count': `Number`, 'unit': :class:`.TimeUnit`},
-        #: use ``set_period`` method instead setting explicitly
+    def __init__(self, types, period, interpolate=None, threshold=None, calendar=None, workingMinutes=None, counter=None):
         self.period = period
-        #: `list` of :class:`.AggregateType` objects
         self.types = types
-
-        #: :class:`.Interpolate`
         self.interpolate = interpolate
-        #: `dict` {'min': `Number`, 'max': `Number`}
-        #: use ``set_threshold`` method instead setting explicitly
         self.threshold = threshold
-        #: `dict` {'name': `str`}
-        #: use ``set_threshold`` method instead setting explicitly
         self.calendar = calendar
-        #: `dict` {'start': `int`, 'end': `int`}
-        #: use ``set_workingMinutes`` method instead setting explicitly
         self.workingMinutes = workingMinutes
-        #: `bool`
         self.counter = counter
+        super(Aggregator, self).__init__(period)
 
     def set_types(self, *types):
         """specified aggregation types
-
         :param types: use :class:`.AggregateType` enum objects
         """
         self.types = []
@@ -183,18 +218,6 @@ class Aggregator(Serializable):
             if not hasattr(AggregateType, typ):
                 raise ValueError('wrong aggregate type')
             self.types.append(typ)
-
-    def set_period(self, count, unit=TimeUnit.SECOND):
-        """
-        :param count: number
-        :param unit: use :class:`.TimeUnit` enum, default TimeUnit.SECOND
-        """
-        if not isinstance(count, numbers.Number):
-            raise ValueError('period count expected number, found: '
-                             + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong period unit')
-        self.period = {'count': count, 'unit': unit}
 
     def set_threshold(self, min, max):
         """
@@ -215,188 +238,19 @@ class Aggregator(Serializable):
         :param name: `str`
         """
         self.calendar = {'name': name}
-
-
-class _TimePeriodQuery(Serializable):
-    def __init__(self, startTime, endTime):
-
-        if isinstance(startTime, datetime):
-            startTime = to_posix_timestamp(startTime)
-        #: `long` start of the selection period.
-        #: default: ``endTime - 1 hour``
-        self._startTime = startTime
-
-        if isinstance(endTime, datetime):
-            endTime = to_posix_timestamp(endTime)
-        #: `long` end of the selection period.
-        #: default value: ``current server time``
-        self._endTime = endTime
-
-    @property
-    def startTime(self):
-        """`datetime` Start of the selection period
-        """
-        if self._startTime is None:
-            return None
-        return datetime.fromtimestamp(self._startTime / 1000)
-
-    @startTime.setter
-    def startTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._startTime = value
-        elif isinstance(value, datetime):
-            self._startTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('startTime should be either Number or datetime')
-
-    @property
-    def endTime(self):
-        """ `datetime` End of the selection period
-        """
-        if self._endTime is None:
-            return None
-        return datetime.fromtimestamp(self._endTime / 1000)
-
-    @endTime.setter
-    def endTime(self, value):
-        if isinstance(value, numbers.Number):
-            self._endTime = value
-        elif isinstance(value, datetime):
-            self._endTime = to_posix_timestamp(value)
-        else:
-            raise ValueError('endTime should be either Number or datetime')
-
-
-class SeriesQuery(_TimePeriodQuery):
-    def rate(self):
-        """add empty rate property to series query,
-        use returned object methods to set parameters
-
-        :return: :class:`.Rate` object
-
-        Usage::
-
-            >>> query = SeriesQuery(ENTITY, METRIC)
-            >>> rate = query.rate()
-            >>> rate.counter = False
-            >>> series = svc.retrieve_series(query)
-
-        """
-        self._rate = Rate()
-        return self._rate
-
-    def aggregate(self, *types):
-        """add aggregate property to series query, default period = 1 sec
-        use returned object methods to set parameters
-
-        :param types: :class:`.InterpolateType` objects
-        :return: :class:`.Aggregator` object
-
-        Usage::
-
-            >>> query = SeriesQuery(ENTITY, METRIC)
-            >>> aggr = query.aggregate()
-            >>> aggr.set_period(10, TimeUnit.DAY)
-            >>> aggr.set_types(AggregateType.MAX, AggregateType.MIN)
-            >>> series = svc.retrieve_series(query)
-
-        """
-
-        self._aggregate = Aggregator(types,
-                                     {'count': 1, 'unit': TimeUnit.SECOND})
-        return self._aggregate
-
-    def group(self, type):
-        """add group property to series query
-        use returned object methods to set parameters
-
-        :param type: :class:`.AggregateType` enum
-        :return: :class:`.Group` object
-
-        Usage::
-
-            >>> query = SeriesQuery(ENTITY, METRIC)
-            >>> group = query.group(AggregateType.COUNT)
-            >>> group.set_period(1, TimeUnit.SECOND)
-            >>> series = svc.retrieve_series(query)
-
-        """
-        self._group = Group(type)
-        return self._group
-
-    def __init__(self, entity, metric,
-                 startTime=None,
-                 endTime=None,
-                 limit=None,
-                 last=None,
-                 tags=None,
-                 type=None,
-                 group=None,
-                 rate=None,
-                 aggregate=None,
-                 requestId=None,
-                 versioned=None):
-        #: `str` entity name
-        self.entity = entity
-        #: `str` metric name
-        self.metric = metric
-
-        #: `int` maximum number of data samples returned
-        self.limit = limit
-        #: `bool` Retrieves only 1 most recent value
-        self.last = last
-        #: `dict`
-        self.tags = tags
-        #: :class:`.SeriesType`
-        self.type = type
-        self._group = group
-        self._rate = rate
-        self._aggregate = aggregate
-        #: `str`
-        self.requestId = requestId
-        #: `boolean`
-        self.versioned = versioned
-
-        super(SeriesQuery, self).__init__(startTime, endTime)
-###################################################################################################
-###################################################################################################
-
-#===============================================================================
-################# GLOBALS
-#===============================================================================
-
-class EntityFilter(Serializable):
-    def __init__(self, entity="", entities=[], entity_group="", entity_expression=""):
-        if (entity or entities or entity_group or entity_expression):
-            self.entity = entity
-            self.entities = entities
-            self.entity_group=entity_group
-            self.entity_expression=entity_expression
-        else:
-            raise ValueError("Not enough arguments")
-    def get_trimmed_dict_repr(self):
-        return dict((k, v) for k, v in self.__dict__.items() if v)
-        
-class DateFilter(Serializable):
-    def __init__(self, startDate="", endDate="", interval={}):
-        if interval or (startDate and endDate):
-            self.startDate = startDate 
-            self.endDate = endDate 
-            self.interval = interval
-        else:
-            raise ValueError("Not enough arguments")
         
 #===============================================================================
 ################# PROPERTIES
 #===============================================================================
-class PropertiesQuery(_TimePeriodQuery):
-    def __init__(self, type, entity, startTime=None, endTime=None, limit=None, key=None, keyExpression=None):
-        self.entity = entity
+class PropertiesQuery(Serializable):
+    #TODO
+    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=False, keyTagExpression=None):
+        copy_not_empty_attrs(entity_filter)
+        copy_not_empty_attrs(date_filter)
         self.type = type
-        self.limit = limit
         self.key = key
         self.keyExpression = keyExpression
-        super(PropertiesQuery, self).__init__(startTime, endTime)
+        self.limit = limit
         
 class PropertiesDeleteFilter(PropertiesQuery):
     def __init__(self, type, entity, startTime=None, endTime=None, key=None, exactMatch=False):
