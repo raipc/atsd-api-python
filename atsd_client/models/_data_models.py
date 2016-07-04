@@ -24,6 +24,27 @@ from datetime import datetime, timedelta
 
 from .._jsonutil import Serializable
 
+def _strp(time_str):
+    """
+    :param time_str: in format '%Y-%m-%dT%H:%M:%SZ%z'
+    :return: timestamp in milliseconds
+    """
+    time_part, timezone_part = time_str.split('Z')
+    time_part = time.strptime(time_part, '%Y-%m-%dT%H:%M:%S')
+    if timezone_part:
+        sig, hour, min = timezone_part[0], timezone_part[1:3], timezone_part[3:5]
+        tz_offset = int(sig + hour) * 60 * 60 + int(sig + min) * 60
+        loc_offset = time.timezone
+        offset = loc_offset - tz_offset
+        return int((time.mktime(time_part) + offset) * 1000)
+    else:
+        return int(time.mktime(time_part)) * 1000
+
+
+def to_posix_timestamp(dt):
+    offset = dt.utcoffset() if dt.utcoffset() is not None else timedelta(seconds=-time.timezone)
+    utc_naive = dt.replace(tzinfo=None) - offset
+    return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
 
 class SeriesVersionKey(object):
     """actual version after old versions
@@ -62,47 +83,7 @@ class SeriesVersionKey(object):
     def __ne__(self, other):
         return SeriesVersionKey.cmp(self.obj, other.obj) != 0
 
-
-def _strp(time_str):
-    """
-    :param time_str: in format '%Y-%m-%dT%H:%M:%SZ%z'
-    :return: timestamp in milliseconds
-    """
-    time_part, timezone_part = time_str.split('Z')
-    time_part = time.strptime(time_part, '%Y-%m-%dT%H:%M:%S')
-    if timezone_part:
-        sig, hour, min = timezone_part[0], timezone_part[1:3], timezone_part[3:5]
-        tz_offset = int(sig + hour) * 60 * 60 + int(sig + min) * 60
-        loc_offset = time.timezone
-        offset = loc_offset - tz_offset
-        return int((time.mktime(time_part) + offset) * 1000)
-    else:
-        return int(time.mktime(time_part)) * 1000
-
-
-def to_posix_timestamp(dt):
-    offset = dt.utcoffset() if dt.utcoffset() is not None else timedelta(seconds=-time.timezone)
-    utc_naive = dt.replace(tzinfo=None) - offset
-    return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
-
-
-class Property(Serializable):
-    def __init__(self, type, entity, tags,
-                 key=None,
-                 timestamp=None):
-        #: `str` property type name
-        self.type = type
-        #: `str` entity name
-        self.entity = entity
-        #: `dict` containing object keys
-        self.tags = tags
-        #: `dict` of ``name: value`` pairs that uniquely identify
-        #: the property record
-        self.key = key
-        #: time in Unix milliseconds
-        self.timestamp = timestamp
-
-
+#------------------------------------------------------------------------------ 
 class Series(Serializable):
     def __init__(self, entity, metric, data=None, tags=None):
         #: `str` entity name
@@ -209,10 +190,8 @@ class Series(Serializable):
 
     def values(self):
         """valid versions of series values
-
         :return: list of `Number`
         """
-
         data = sorted(self.data, key=SeriesVersionKey)
         res = []
         for num, sample in enumerate(data):
@@ -220,24 +199,19 @@ class Series(Serializable):
                 res[-1] = sample['v']
             else:
                 res.append(sample['v'])
-
         return res
 
     def times(self):
         """valid versions of series times in seconds
-
         :return: list of `float`
         """
-
         data = sorted(self.data, key=SeriesVersionKey)
-
         res = []
         for num, sample in enumerate(data):
             if num > 0 and sample['t'] == data[num - 1]['t']:
                 res[-1] = datetime.utcfromtimestamp(sample['t'] * 0.001)
             else:
                 res.append(datetime.utcfromtimestamp(sample['t'] * 0.001))
-
         return res
 
     def to_pandas_series(self):
@@ -258,96 +232,73 @@ class Series(Serializable):
 
             return plt.plot(self.times(), self.values())
 
-
-class Alert(Serializable):
-    def __init__(self, id,
-                 rule=None,
-                 entity=None,
-                 metric=None,
-                 lastEventTime=None,
-                 openTime=None,
-                 value=None,
-                 message=None,
-                 tags=None,
-                 textValue=None,
-                 severity=None,
-                 repeatCount=None,
-                 acknowledged=None,
-                 openValue=None):
-        self.id = id
-
-        #: `str`
-        self.rule = rule
-        #: `str`
+#------------------------------------------------------------------------------ 
+class Property(Serializable):
+    def __init__(self, type, entity, tags, key=None, timestamp=None):
+        """
+        :param type: str  Property type name 
+        :param entity: str  Entity name
+        :param key: dict  Object containing name=value fields that uniquely identify the property record. 
+        :param tags: dict Object containing name=value fields that are not part of the key and contain descriptive information about the property record. 
+        :param date: str  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
+        """
+        self.type = type
         self.entity = entity
-        #: `str`
+        self.tags = tags
+        self.key = key
+        self.timestamp = timestamp
+        
+#------------------------------------------------------------------------------ 
+class Alert(Serializable):
+    def __init__(self, id, rule=None, entity=None, metric=None, lastEventTime=None, openTime=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
+        self.id = id
+        self.rule = rule
+        self.entity = entity
         self.metric = metric
-        #: `long`
         self.lastEventTime = lastEventTime
-        #: `long`
         self.openTime = openTime
-        #: `Number`
         self.value = value
         self.message = message
-        #: `dict`
         self.tags = tags
-        #: `str`
         self.textValue = textValue
-        #: :class:`.Severity`
         self.severity = severity
-        #: `int`
         self.repeatCount = repeatCount
-        #: `bool`
         self.acknowledged = acknowledged
-        #: `Number`
         self.openValue = openValue
-
-
+        
+#------------------------------------------------------------------------------ 
 class AlertHistory(Serializable):
-    def __init__(self,
-                 alert=None,
-                 alertDuration=None,
-                 alertOpenTime=None,
-                 entity=None,
-                 metric=None,
-                 receivedTime=None,
-                 repeatCount=None,
-                 rule=None,
-                 ruleExpression=None,
-                 ruleFilter=None,
-                 schedule=None,
-                 severity=None,
-                 tags=None,
-                 time=None,
-                 type=None,
-                 value=None,
-                 window=None):
+    def __init__(self, alert=None, alertDuration=None, alertOpenTime=None, entity=None, metric=None, receivedTime=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, schedule=None, severity=None, tags=None, time=None, type=None, value=None, window=None):
         self.alert = alert
-        #: `number`
         self.alertDuration = alertDuration
-        #: `long` milliseconds
         self.alertOpenTime = alertOpenTime
-        #: `str`
         self.entity = entity
-        #: `str`
         self.metric = metric
-        #: `long` milliseconds
         self.receivedTime = receivedTime
         self.repeatCount = repeatCount
         self.rule = rule
-        #: `str`
         self.ruleExpression = ruleExpression
         self.ruleFilter = ruleFilter
         self.schedule = schedule
         self.severity = severity
-        #: `dict`
         self.tags = tags
-        #: `long` milliseconds
         self.time = time
         self.type = type
-        #: `Number`
         self.value = value
         self.window = window
+        
+#------------------------------------------------------------------------------ 
+class Message(Serializable):
+    def __init__(self, type, source, entity, date, severity, tags, message, persist=True):
+        self.type=type
+        self.source=source
+        self.entity=entity
+        self.date=date
+        self.severity=severity
+        self.tags=tags
+        self.message=message
+        self.persist=persist
+
 
 # if __name__ == '__main__':
 #     import pandas as pd

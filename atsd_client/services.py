@@ -16,14 +16,7 @@ permissions and limitations under the License.
 """
 
 
-from .models import Series
-from .models import Property
-from .models import Alert
-from .models import AlertHistory
-from .models import Metric
-from .models import Entity
-from .models import EntityGroup
-from .models import BatchEntitiesCommand
+from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, BatchEntitiesCommand, Message
 from .exceptions import DataParseException
 from .exceptions import ServerException
 
@@ -55,7 +48,7 @@ class _Service(object):
             raise ValueError('conn should be Client instance')
         self.conn = conn
 
-
+#------------------------------------------------------------------------ SERIES
 class SeriesService(_Service):
     def retrieve_series(self, *queries):
         """retrieve series for each query
@@ -82,11 +75,16 @@ class SeriesService(_Service):
         return True
 
 
-#===============================================================================
 #-------------------------------------------------------------------- PROPERTIES
-#===============================================================================
-
 class PropertiesService(_Service):
+    def insert(self, *properties):
+        """
+        :param properties: :class:`.Property`
+        :return: True if success
+        """
+        self.conn.post('properties/insert', properties)
+        return True
+    
     def query(self, *queries):
         """retrieve property for each query
 
@@ -105,15 +103,14 @@ class PropertiesService(_Service):
         response = self.conn.get('properties/{entity}/types'.format(entity=quote(entity.name, '')))
         return response
 
-    def insert(self, *properties):
+    def url_query(self, *queries):
+        """TODO
+        :param
+        :return: 
         """
-        :param properties: :class:`.Property`
-        :return: True if success
-        """
-        self.conn.post('properties/insert', properties)
-        return True
+        pass
     
-    def delete_properties(self, *filters):
+    def delete(self, *filters):
         """Delete property for each query
         :param filters: :class:`.PropertyDeleteFilter`
         :return: True if success
@@ -122,9 +119,7 @@ class PropertiesService(_Service):
         return True
 
 
-#===============================================================================
 #------------------------------------------------------------------------ ALERTS
-#===============================================================================
 class AlertsService(_Service):
     def query(self, *queries):
         """retrieve alert for each query
@@ -133,6 +128,14 @@ class AlertsService(_Service):
         """
         resp = self.conn.post('alerts/query', queries)
         return _jsonutil.deserialize(resp, Alert)
+    
+    def update(self, *filters):
+        """ TODO
+        :param 
+        :return: 
+        """
+        response = self.conn.post('alerts/update', filters)
+        return True
 
     def history_query(self, *queries):
         """retrieve history for each query
@@ -150,11 +153,40 @@ class AlertsService(_Service):
         """
         response = self.conn.post('alerts/delete', filters)
         return True
+
+#---------------------------------------------------------------------- MESSAGES
+class MessageService(_Service):
+    def insert(self, *messages):
+        """insert specified messages
+        :param messages: :class:`.Message`
+        :return: True if success
+        """
+        resp = self.conn.post('messages/insert', messages)
+        return True
     
-    
+    def query(self, *queries):
+        """retrieve alert for each query
+        :param queries: :class:`.AlertsQuery`
+        :return: list of :class:`.Alert` objects
+        """
+        resp = self.conn.post('messages/query', queries)
+        return _jsonutil.deserialize(resp, Message)
+
+    def statistics(self, *filters):
+        """retrieve alert for each query
+        :param queries: :class:`.AlertsDeleteFilter`
+        :return: True if success
+        """
+        response = self.conn.post('alerts/delete', filters)
+        return True
+
+
+
 #===============================================================================
+#################################  META   #####################################
+#===============================================================================
+
 #----------------------------------------------------------------------- METRICS
-#===============================================================================
 class MetricsService(_Service):
     def retrieve_metrics(self,
                          expression=None,

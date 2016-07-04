@@ -358,134 +358,13 @@ class SeriesQuery(_TimePeriodQuery):
         self.versioned = versioned
 
         super(SeriesQuery, self).__init__(startTime, endTime)
-
-
-
-
-
-class PropertiesMatcher(Serializable):
-    def __init__(self, type,
-                 entity=None,
-                 key=None,
-                 createdBeforeTime=None):
-        #: `str`
-        self.type = type
-
-        #: `str`
-        self.entity = entity
-        #: `dict`
-        self.key = key
-        #: `long` milliseconds
-        self.createdBeforeTime = createdBeforeTime
-
-
-
-
-class BatchPropertyCommand(object):
-    def __init__(self, action, properties=None, matchers=None):
-        self.action = action
-        if properties:
-            if len(properties) is 0:
-                self.empty = True
-            self.properties = properties
-            self._properties_data = [p.serialize() for p in properties]
-        else:
-            if len(matchers) is 0:
-                self.empty = True
-            self.matchers = matchers
-            self._matchers_data = [m.serialize() for m in matchers]
-        self.empty = False
-
-    def serialize(self):
-        data = {'action': self.action}
-        try:
-            data['properties'] = self._properties_data
-        except AttributeError:
-            data['matchers'] = self._matchers_data
-
-        return data
-
-    @staticmethod
-    def create_insert_command(*insertions):
-        """
-        :param insertions: :class:`.Property` objects
-        :return: :class:`BatchPropertyCommand` instance
-        """
-        for insertion in insertions:
-            if not isinstance(insertion, Property):
-                raise TypeError('expected:' + repr(Property)
-                                + ', found:' + repr(type(insertion)))
-
-        return BatchPropertyCommand('insert', properties=insertions)
-
-    @staticmethod
-    def create_delete_command(type, entity, key=None):
-        """
-        :param type: `str`
-        :param entity: `str`
-        :param key: `dict`
-        :return: :class:`BatchPropertyCommand` instance
-        """
-        prop = Property(type, entity, {})
-        if key is not None:
-            prop.key = key
-        return BatchPropertyCommand('delete', properties=(prop,))
-
-    @staticmethod
-    def create_delete_match_command(*matchers):
-        """
-        :param matchers: :class:`.PropertiesMatcher` objects
-        :return: :class:`BatchPropertyCommand` instance
-        """
-        for matcher in matchers:
-            if not isinstance(matcher, PropertiesMatcher):
-                raise TypeError('expected:' + repr(PropertiesMatcher)
-                                + ', found:' + repr(type(matcher)))
-
-        return BatchPropertyCommand('delete-match', matchers=matchers)
-
-
-class BatchAlertCommand(object):
-    def __init__(self, action, alerts, fields=None):
-        if len(alerts) is 0:
-            self.empty = True
-            return
-
-        self.empty = False
-        self.action = action
-        self.alerts = alerts
-        self.fields = fields
-        self._data_alerts = [alert.serialize() for alert in alerts]
-
-    def serialize(self):
-        return {
-            'action': self.action,
-            'alerts': self._data_alerts,
-            'fields': self.fields
-        }
-
-    @staticmethod
-    def create_delete_command(*alert_ids):
-        """
-        :param alert_ids: str
-        :return: :class:`.BatchAlertCommand` instance
-        """
-        return BatchAlertCommand('delete',
-                                 alerts=[Alert(i) for i in alert_ids])
-
-    @staticmethod
-    def create_update_command(acknowledge, *alert_ids):
-        """
-        :param acknowledge: `boolean`
-        :param alert_ids: str
-        :return: :class:`.BatchAlertCommand` instance
-        """
-        return BatchAlertCommand('update',
-                                 alerts=[Alert(id) for id in alert_ids],
-                                 fields={'acknowledge': acknowledge})
-
-
 ###################################################################################################
+###################################################################################################
+
+#===============================================================================
+################# GLOBALS
+#===============================================================================
+
 class EntityFilter(Serializable):
     def __init__(self, entity="", entities=[], entity_group="", entity_expression=""):
         if (entity or entities or entity_group or entity_expression):
@@ -506,57 +385,68 @@ class DateFilter(Serializable):
             self.interval = interval
         else:
             raise ValueError("Not enough arguments")
-    def get_trimmed_dict_repr(self):
-        return dict((k, v) for k, v in self.__dict__.items() if v)
         
-#################       PROPERTIES        ##############################
+#===============================================================================
+################# PROPERTIES
+#===============================================================================
 class PropertiesQuery(_TimePeriodQuery):
-    def __init__(self, type, entity,
-                 startTime=None,
-                 endTime=None,
-                 limit=None,
-                 key=None,
-                 keyExpression=None):
-        #: `str` entity name
+    def __init__(self, type, entity, startTime=None, endTime=None, limit=None, key=None, keyExpression=None):
         self.entity = entity
-        #: `str` type of data properties
         self.type = type
-        #: `int` maximum number of data samples returned.
-        #: default value: 0 (no limit)
         self.limit = limit
-        #: `dict` of ``name: value`` pairs that uniquely identify
-        #: the property record
         self.key = key
-        #: `str`
         self.keyExpression = keyExpression
         super(PropertiesQuery, self).__init__(startTime, endTime)
         
-class PropertiesFilterDelete(PropertiesQuery):
+class PropertiesDeleteFilter(PropertiesQuery):
     def __init__(self, type, entity, startTime=None, endTime=None, key=None, exactMatch=False):
-        #: `bool` key match operator. Exact match if true, partial match if false. 
         self.exactMatch = exactMatch
-        super(PropertiesFilterDelete, self).__init__(type, entity, startTime=startTime, endTime=endTime, limit=None, key=key, keyExpression=None)
-        
-#################       ALERTS        ##############################
-class AlertHistoryQuery():
-    def __init__(self, entity_filter, date_filter, result_limit, rule, metric):
-        copy_not_empty_attrs(src=entity_filter, dst=self)
-        copy_not_empty_attrs(src=date_filter, dst=self)
-        self.result_limit = result_limit
-        self.rule = rule
-        self.metric = metric
+        super(PropertiesDeleteFilter, self).__init__(type, entity, startTime=startTime, endTime=endTime, limit=None, key=key, keyExpression=None)
 
+
+#===============================================================================
+################# ALERTS
+#===============================================================================
 class AlertsQuery(Serializable):
-    def __init__(self, entity_filter, date_filter, rules=None, metrics=None, severities=None, minSeverity=None, acknowledged=None):
+    def __init__(self, entity_filter, date_filter, alert_rules=None, alert_metrics=None, alert_severities=None, alert_minSeverity=None, alert_acknowledged=None):
         copy_not_empty_attrs(src=entity_filter, dst=self)
         copy_not_empty_attrs(src=date_filter,   dst=self)
-        self.metrics = metrics
-        self.rules = rules
-        self.severities = severities
-        self.minSeverity = minSeverity
-        self.acknowledged = acknowledged
+        self.metrics = alert_metrics
+        self.rules = alert_rules
+        self.severities = alert_severities
+        self.minSeverity = alert_minSeverity
+        self.acknowledged = alert_acknowledged
+        
+class AlertHistoryQuery(Serializable):
+    def __init__(self, entity_filter, date_filter, alert_rule, alert_metric, result_limit):
+        copy_not_empty_attrs(src=entity_filter, dst=self)
+        copy_not_empty_attrs(src=date_filter, dst=self)
+        self.limit = result_limit
+        self.rule = alert_rule
+        self.metric = alert_metric
         
 class AlertDeleteFilter(Serializable):
-    def __init__(self, id):
-        self.id = id
-    
+    def __init__(self, alert_id):
+        self.id = alert_id
+
+#===============================================================================
+################# MESSAGES
+#===============================================================================
+class MessageQuery(Serializable):
+    def __init__(self,entity_filter, date_filter, msg_type, msg_source, msg_tags, msg_severities, msg_minSeverity=Severity.UNDEFINED, result_limit=1000):
+        """
+        :param msg_type: str  Message msg_type.
+        :param msg_source: str  Message msg_source.
+        :param msg_tags: dict Object with name=value fields. 
+        :param msg_severity: class .Severity  Severity name. 
+        :param msg_severities:  An array of msg_severity codes or names. 
+        :param msg_minSeverity: class .Severity  Minimum code or name msg_severity filter.
+        """
+        copy_not_empty_attrs(entity_filter, self)
+        copy_not_empty_attrs(date_filter, self)
+        self.type=msg_type
+        self.source=msg_source
+        self.tags=msg_tags
+        self.severities=msg_severities
+        self.minSeverity=msg_minSeverity
+
