@@ -18,10 +18,9 @@ permissions and limitations under the License.
 
 import numbers
 from datetime import datetime
-from ..utilities import copy_not_empty_attrs
+from .._utilities import copy_not_empty_attrs, to_posix_timestamp
 
 from ._data_models import Property
-from ._data_models import to_posix_timestamp
 from .._jsonutil import Serializable
 from ._data_models import Alert
 

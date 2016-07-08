@@ -16,35 +16,14 @@ permissions and limitations under the License.
 """
 
 
-import time
 import numbers
 import copy
 
 from datetime import datetime, timedelta
 
 from .._jsonutil import Serializable
+from .._utilities import utc_to_milliseconds 
 
-def _strp(time_str):
-    """
-    :param time_str: in format '%Y-%m-%dT%H:%M:%SZ%z'
-    :return: timestamp in milliseconds
-    """
-    time_part, timezone_part = time_str.split('Z')
-    time_part = time.strptime(time_part, '%Y-%m-%dT%H:%M:%S')
-    if timezone_part:
-        sig, hour, min = timezone_part[0], timezone_part[1:3], timezone_part[3:5]
-        tz_offset = int(sig + hour) * 60 * 60 + int(sig + min) * 60
-        loc_offset = time.timezone
-        offset = loc_offset - tz_offset
-        return int((time.mktime(time_part) + offset) * 1000)
-    else:
-        return int(time.mktime(time_part)) * 1000
-
-
-def to_posix_timestamp(dt):
-    offset = dt.utcoffset() if dt.utcoffset() is not None else timedelta(seconds=-time.timezone)
-    utc_naive = dt.replace(tzinfo=None) - offset
-    return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
 
 class SeriesVersionKey(object):
     """actual version after old versions
@@ -105,7 +84,7 @@ class Series(Serializable):
         rows = []
         versioned = False
         for sample in displayed_data:
-            t = datetime.utcfromtimestamp(sample['d'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
+            t = sample['d']
             v = sample['v']
             row = '{0}{1: >14}'.format(t, v)
             # add version columns
@@ -160,14 +139,12 @@ class Series(Serializable):
         """
         if t is None:
             t = int(time.time() * 1000)
- 
         if isinstance(t, str):
-            t = _strp(t)
+            t = utc_to_milliseconds(t)
         if isinstance(t, datetime):
             t = to_posix_timestamp(t)
         if not isinstance(t, numbers.Number):
             raise ValueError('data "t" should be either number or str')
- 
         if version is None:
             sample = {'v': v, 't': t}
         else:
