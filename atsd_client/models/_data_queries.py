@@ -189,7 +189,7 @@ class Group(Serializable):
         self.type = type
         if period is not None:
             self.set_period(**period)
-        if self.interpolate is not None:
+        if interpolate is not None:
             self.set_interpolate(**interpolate)
         self.truncate = truncate
         self.set_truncate(truncate)
@@ -227,12 +227,12 @@ class Group(Serializable):
         self.truncate = value
 
     def set_order(self, value):
-        if not isinstance(count, numbers.Number):
+        if not isinstance(value, numbers.Number):
             raise ValueError("wrong order parameter; should be number, found: " + unicode(type(value))) 
         self.order = value
 
 
-class Aggregator(Serializable):
+class Aggregate(Serializable):
     def __init__(self, period, types=[AggregateType.DETAIL], interpolate=None, threshold=None, calendar=None, workingMinutes=None, order=1):
         self.set_types(*types)
         if interpolate is not None:
