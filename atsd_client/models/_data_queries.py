@@ -30,18 +30,18 @@ try:
 except NameError:
     unicode = str
 
-
+#===============================================================================
+# ###################################### Constants
+#===============================================================================
 class SeriesType(object):
     HISTORY = 'HISTORY'
     FORECAST = 'FORECAST'
     FORECAST_DEVIATION = 'FORECAST_DEVIATION'
 
-
 class Interpolate(object):
     NONE = 'NONE'
     LINEAR = 'LINEAR'
     STEP = 'STEP'
-
 
 class TimeUnit(object):
     MILLISECOND = 'MILLISECOND'
@@ -54,6 +54,11 @@ class TimeUnit(object):
     QUARTER = 'QUARTER'
     YEAR = 'YEAR'
 
+class PeriodAlign(object):
+    CALENDAR = "CALENDAR"
+    START_TIME = "START_TIME"
+    FIRST_VALUE_TIME = "FIRST_VALUE_TIME"
+    END_TIME = "END_TIME"
 
 class AggregateType(object):
     DETAIL = 'DETAIL'
@@ -79,7 +84,6 @@ class AggregateType(object):
     THRESHOLD_DURATION = 'THRESHOLD_DURATION'
     THRESHOLD_PERCENT = 'THRESHOLD_PERCENT'
 
-
 class Severity(object):
     UNDEFINED = 0
     UNKNOWN = 1
@@ -90,12 +94,8 @@ class Severity(object):
     CRITICAL = 6
     FATAL = 7
 
-
-###################################################################################################
-###################################################################################################
-
 #===============================================================================
-################# GLOBALS
+################# General Filters
 #===============================================================================
 class EntityFilter(Serializable):
     def __init__(self, entity="", entities=[], entity_group="", entity_expression=""):
@@ -105,7 +105,7 @@ class EntityFilter(Serializable):
             self.entity_group=entity_group
             self.entity_expression=entity_expression
         else:
-            raise ValueError("Not enough arguments")
+            raise ValueError("Not enough arguments for entity filter")
         
 class DateFilter(Serializable):
     def __init__(self, startDate="", endDate="", interval={}):
@@ -114,9 +114,9 @@ class DateFilter(Serializable):
             self.endDate = endDate 
             self.interval = interval
         else:
-            raise ValueError("Not enough arguments")
+            raise ValueError("Not enough arguments for date filter")
 #===============================================================================
-################# SERIES
+################# Series Queries
 #===============================================================================
 class SeriesQuery(Serializable):
     def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None, control_filter=None, transformation_filter=None):
@@ -154,112 +154,172 @@ class  ControlFilter(Serializable):
         self.requestId=requestId
         self.timeFormat=timeFormat
 
+#=======================================================================
+# Transformations 
+#=======================================================================
 class TransformationFilter(Serializable):
     def __init__(self, aggregate, group, rate):
         self.aggregate = aggregate
         self.group = group
         self.rate = rate
         
-class Transformator(Serializable):
-    def __init__(self, period=None):
+class Rate(Serializable):
+    """
+    represents aggregate param rate
+    """
+    def __init__(self, period, counter=True):
+        self.counter = counter
         self.period = period
         
     def set_period(self, count, unit=TimeUnit.SECOND):
-        """
-        :param count: number
-        :param unit: use :class:`.TimeUnit` enum, default TimeUnit.SECOND
-        """
         if not isinstance(count, numbers.Number):
             raise ValueError('period count expected number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('wrong period unit')
-        self.period = {'count': count, 'unit': unit}
-        
-class Rate(Transformator):
-    """
-    represents aggregate param rate
-    """
-    def __init__(self, period=None, counter=True):
-        self.counter = counter
-        super(Rate, self).__init__(period)
+        self.period = {'count' : count, 'unit' : unit}
+    
+    def set_counter(self, counter):
+        if isinstance(counter, bool):
+            self.counter = counter
+        else:
+            raise ValueError('wrong counter')
 
-class Group(Transformator):
-    """
-    represents aggregate param group
-    """
-    def __init__(self, type, period=None, interpolate=None, truncate=None, order=0):
+class Group(Serializable):
+    def __init__(self, type, period=None, interpolate=None, truncate=False, order=0):
         self.type = type
-        self.interpolate = interpolate
+        if period is not None:
+            self.set_period(**period)
+        if self.interpolate is not None:
+            self.set_interpolate(**interpolate)
         self.truncate = truncate
-        self.period = period
-        self.order=order
-        super(Group, self).__init__(period)
+        self.set_truncate(truncate)
+        self.set_order(order)
+
+    def set_type(self, value):
+        if not hasattr(AggregateType, value):
+            raise ValueError('wrong type parameter, expected Interpolate, found: ' + unicode(type(value)))
+        self.type = value
+
+    def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('period count expected number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('wrong period unit parameter; should be TimeUnit, found: ' + unicode(type(value)))
+        if not hasattr(PeriodAlign, align):
+            raise ValueError('wrong align parameter; should be PeriodAlign, found: ' + unicode(type(value)))
+        self.period = {'count' : count, 'unit' : unit, 'align' : align}
+
+    def set_interpolate(self, type, value=None, extend=False):
+        if not isinstance(type, numbers.Number):
+            raise ValueError('wrong interpolate parameter, expected number, found: ' + unicode(type(type)))
+        self.interpolate = {'type' : type}
+        if value is not None:
+            if not isinstance(value, numbers.Number):
+                raise ValueError('wrong value parameter, expected number, found: ' + unicode(type(value)))
+            self.interpolate['value'] = value
+        if not isinstance(extend, bool):
+            raise ValueError('wrong extend parameter, expected boolean, found: ' + unicode(type(extend)))
+        self.interpolate['extend'] = extend
+
+    def set_truncate(self, value):
+        if not isinstance(value, bool):
+            raise ValueError("wrong truncate parameter; should be boolean, found: " + unicode(type(value))) 
+        self.truncate = value
+
+    def set_order(self, value):
+        if not isinstance(count, numbers.Number):
+            raise ValueError("wrong order parameter; should be number, found: " + unicode(type(value))) 
+        self.order = value
+
 
 class Aggregator(Serializable):
-    """
-    represents aggregate param of :class:`.SeriesQuery`
-    """
-    def __init__(self, types, period, interpolate=None, threshold=None, calendar=None, workingMinutes=None, counter=None):
-        self.period = period
-        self.types = types
-        self.interpolate = interpolate
-        self.threshold = threshold
-        self.calendar = calendar
-        self.workingMinutes = workingMinutes
-        self.counter = counter
-        super(Aggregator, self).__init__(period)
+    def __init__(self, period, types=[AggregateType.DETAIL], interpolate=None, threshold=None, calendar=None, workingMinutes=None, order=1):
+        self.set_types(*types)
+        if interpolate is not None:
+            self.set_interpolate(**interpolate)
+        if calendar is not None:
+            self.set_calendar(**calendar)
+        if workingMinutes is not None:
+            self.set_workingMinutes(**workingMinutes)
+        if threshold is not None:
+            self.set_threshold(**threshold)
+        if period is not None:
+            self.set_period(**period)
+        if order is not None:
+            self.set_order(order)
 
     def set_types(self, *types):
-        """specified aggregation types
-        :param types: use :class:`.AggregateType` enum objects
-        """
         self.types = []
         for typ in types:
             if not hasattr(AggregateType, typ):
-                raise ValueError('wrong aggregate type')
+                raise ValueError('wrong aggregate type; should be AggregateType, found: ' + unicode(type(value)))
             self.types.append(typ)
 
     def set_threshold(self, min, max):
-        """
-        :param min: `Number`
-        :param max: `Number`
-        """
+        if not isinstance(min, numbers.Number) or not isinstance(max, numbers.Number):
+            raise ValueError('wrong threshold parameters; should be numbers, found: min(' + unicode(type(min)) + ') end(' + unicode(type(max)))
         self.threshold = {'min': min, 'max': max}
 
     def set_workingMinutes(self, start, end):
-        """
-        :param start: `int`
-        :param end: `int`
-        """
+        if not isinstance(start, numbers.Number) or not isinstance(end, numbers.Number):
+            raise ValueError('wrong workinMinutes parameters; should be numbers, found: start(' + unicode(type(start)) + ') end(' + unicode(type(end)))
         self.workingMinutes = {'start': start, 'end': end}
 
     def set_calendar(self, name):
-        """
-        :param name: `str`
-        """
+        if not isinstance(name, str):
+            raise ValueError("wrong name parameter; should be string, found: " + unicode(type(name)))
         self.calendar = {'name': name}
-        
+    
+    def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('period count expected number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('wrong period unit')
+        self.period = {'count' : count, 'unit' : unit}
+        if align is not None:
+            self.period['align'] = align
+            
+    def set_interpolate(self, type, value=None, extend=False):
+        if not hasattr(Interpolate, type) and not isinstance(value, numbers.Number):
+            raise ValueError('wrong type parameter, expected Interpolate, found: ' + unicode(type(type)))
+        self.interpolate = {'type' : type}
+        if value is not None:
+            if not isinstance(value, numbers.Number):
+                raise ValueError('wrong value parameter, expected number, found: ' + unicode(type(value)))
+            self.interpolate['value'] = value
+        if not isinstance(extend, bool):
+            raise ValueError('wrong extend parameter, expected boolean, found: ' + unicode(type(extend)))
+        self.interpolate['extend'] = extend
+                
+    def set_order(self, order):
+        if not isinstance(order, numbers.Number):
+            raise ValueError('wrong order, expected number, found: ' + unicode(type(order)))
 #===============================================================================
-################# PROPERTIES
+################# Properties
 #===============================================================================
 class PropertiesQuery(Serializable):
-    #TODO
-    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=False, keyTagExpression=None):
-        copy_not_empty_attrs(entity_filter)
-        copy_not_empty_attrs(date_filter)
-        self.type = type
-        self.key = key
-        self.keyExpression = keyExpression
-        self.limit = limit
+    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=False, keyTagExpression=None, limit=0, last=False, offset=-1):
+        copy_not_empty_attrs(entity_filter, self)
+        copy_not_empty_attrs(date_filter, self)
+        self.type=type
+        self.key=key
+        self.exactMatch=exactMatch
+        self.keyTagExpression=keyTagExpression
+        self.limit=limit
+        self.last=last
+        self.offset=offset
         
-class PropertiesDeleteFilter(PropertiesQuery):
+class PropertiesDeleteFilter(Serializable):
     def __init__(self, type, entity, startTime=None, endTime=None, key=None, exactMatch=False):
-        self.exactMatch = exactMatch
-        super(PropertiesDeleteFilter, self).__init__(type, entity, startTime=startTime, endTime=endTime, limit=None, key=key, keyExpression=None)
-
+        self.type=type
+        self.entity=entity
+        self.startTime=startTime
+        self.endTime=endTime
+        self.key=key
+        self.exactMatch=exactMatch
 
 #===============================================================================
-################# ALERTS
+################# Alerts
 #===============================================================================
 class AlertsQuery(Serializable):
     def __init__(self, entity_filter, date_filter, alert_rules=None, alert_metrics=None, alert_severities=None, alert_minSeverity=None, alert_acknowledged=None):
@@ -284,7 +344,7 @@ class AlertDeleteFilter(Serializable):
         self.id = alert_id
 
 #===============================================================================
-################# MESSAGES
+################# Messages
 #===============================================================================
 class MessageQuery(Serializable):
     def __init__(self,entity_filter, date_filter, msg_type, msg_source, msg_tags, msg_severities, msg_minSeverity=Severity.UNDEFINED, result_limit=1000):
@@ -303,4 +363,3 @@ class MessageQuery(Serializable):
         self.tags=msg_tags
         self.severities=msg_severities
         self.minSeverity=msg_minSeverity
-
