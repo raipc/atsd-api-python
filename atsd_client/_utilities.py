@@ -25,8 +25,8 @@ def utc_to_milliseconds(time_str):
         return int(time.mktime(time_part)) * 1000
 
 
-def to_posix_timestamp(dt):
-    offset = dt.utcoffset() if dt.utcoffset() is not None else timedelta(seconds=-time.timezone)
-    utc_naive = dt.replace(tzinfo=None) - offset
+def to_posix_timestamp(datetime_obj):
+    offset = datetime_obj.utcoffset() if datetime_obj.utcoffset() is not None else timedelta(seconds=-time.timezone)
+    utc_naive = datetime_obj.replace(tzinfo=None) - offset
     return int((utc_naive - datetime(1970, 1, 1)).total_seconds() * 1000)
 

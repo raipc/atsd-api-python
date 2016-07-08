@@ -18,6 +18,7 @@ permissions and limitations under the License.
 
 import numbers
 import copy
+from _constants import display_series_threshold, display_series_part, utc_format
 
 from datetime import datetime, timedelta
 
@@ -33,8 +34,7 @@ class SeriesVersionKey(object):
     @staticmethod
     def cmp(a, b):
         if a['t'] == b['t']:
-            if ('version' not in a or 't' not in a['version']
-                    or 'version' not in b or 't' not in b['version']):
+            if ('version' not in a or 't' not in a['version']  or 'version' not in b or 't' not in b['version']):
                 return 0
             else:
                 return a['version']['t'] - b['version']['t']
@@ -77,30 +77,25 @@ class Series(Serializable):
         self.tags = tags
 
     def __str__(self):
-        if len(self.data) > 20:
-            displayed_data = self.data[:10] + self.data[-10:]
+        if len(self.data) > display_series_threshold:
+            displayed_data = self.data[:display_series_part] + self.data[-display_series_part:]
         else:
             displayed_data = self.data
         rows = []
         versioned = False
         for sample in displayed_data:
-            t = sample['d']
-            v = sample['v']
-            row = '{0}{1: >14}'.format(t, v)
-            # add version columns
+            time = sample['d']
+            value = sample['v']
+            row = '{0}{1: >14}'.format(time, value)
             if 'version' in sample:
                 versioned = True
-                ver = sample['version']
-                src = ver['source'] if 'source' in ver else ''
-                sts = ver['status'] if 'status' in ver else ''
-                if 't' in ver:
-                    t = datetime.utcfromtimestamp(ver['t'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
-                else:
-                    t = ''
-                row += '{0: >17}{1: >17}{2: >21}'.format(src, sts, t)
+                version = sample['version']
+                source = version['source'] if 'source' in version else ''
+                status = version['status'] if 'status' in version else ''
+                t = datetime.utcfromtimestamp(version['t'] * 0.001).strftime(utc_format) if 't' in version else ''
+                row += '{0: >17}{1: >17}{2: >21}'.format(source, status, t)
             rows.append(row)
         if versioned:
-            # add column names
             header = ('           timestamp'
                       '         value'
                       '   version_source'
@@ -108,13 +103,13 @@ class Series(Serializable):
                       '         version_time')
             rows.insert(0, header)
         if len(self.data) > 20:
-            res = '\n'.join(rows[:-10]) + '\n...\n' + '\n'.join(rows[-10:])
+            result = '\n'.join(rows[:-display_series_part]) + '\n...\n' + '\n'.join(rows[-display_series_part:])
         else:
-            res = '\n'.join(rows)
-        for key in self.__dict__:
-            if not key.startswith('_'):
-                res += '\n{0}: {1}'.format(key, getattr(self, key))
-        return res
+            result = '\n'.join(rows)
+        for attr_name in self.__dict__:
+            if not attr_name.startswith('_'):
+                result += '\n{0}: {1}'.format(attr_name, getattr(self, attr_name))
+        return result
 
     @staticmethod
     def from_pandas_series(entity, metric, ts):
@@ -145,11 +140,9 @@ class Series(Serializable):
             t = to_posix_timestamp(t)
         if not isinstance(t, numbers.Number):
             raise ValueError('data "t" should be either number or str')
-        if version is None:
-            sample = {'v': v, 't': t}
-        else:
-            sample = {'v': v, 't': t, 'version': version}
- 
+        sample = {'v': v, 't': t}
+        if version is not None:
+            sample['version'] = version
         self.data.append(sample)
 
     def sort(self, key=SeriesVersionKey, reverse=False):
