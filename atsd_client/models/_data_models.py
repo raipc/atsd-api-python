@@ -86,11 +86,8 @@ class SeriesVersionKey(object):
 #------------------------------------------------------------------------------ 
 class Series(Serializable):
     def __init__(self, entity, metric, data=None, tags=None):
-        #: `str` entity name
         self.entity = entity
-        #: `str` metric name
         self.metric = metric
-        # an list of {'t': time, 'v': value} objects. Use add value instead
         self.data = []
         if data is not None:
             for sample in data:
@@ -98,20 +95,17 @@ class Series(Serializable):
                 if sample_copy['v'] == 'NaN':
                     sample_copy['v'] = float('nan')
                 self.data.append(sample_copy)
-        #: `dict` of ``tag_name: tag_value`` pairs
         self.tags = tags
 
     def __str__(self):
         if len(self.data) > 20:
-            # display only firsts and lasts
-            disp_data = self.data[:10] + self.data[-10:]
+            displayed_data = self.data[:10] + self.data[-10:]
         else:
-            disp_data = self.data
+            displayed_data = self.data
         rows = []
         versioned = False
-        # create timestamp and value columns
-        for sample in disp_data:
-            t = datetime.utcfromtimestamp(sample['t'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
+        for sample in displayed_data:
+            t = datetime.utcfromtimestamp(sample['d'] * 0.001).strftime('%Y-%m-%dT%H:%M:%SZ')
             v = sample['v']
             row = '{0}{1: >14}'.format(t, v)
             # add version columns
@@ -229,7 +223,6 @@ class Series(Serializable):
             return self.to_pandas_series().plot()
         except ImportError:
             import matplotlib.pyplot as plt
-
             return plt.plot(self.times(), self.values())
 
 #------------------------------------------------------------------------------ 

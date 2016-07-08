@@ -71,7 +71,7 @@ class SeriesService(_Service):
         :return: list of :class:`.Series` objects
         """
         response = self.conn.post('series/query', queries)
-        return [_jsonutil.deserialize(element, Series) for element in response['series']]
+        return [_jsonutil.deserialize(element, Series) for element in response]
 
     def url_query(self, *queries):
         """TODO
