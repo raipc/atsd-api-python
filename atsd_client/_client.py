@@ -64,14 +64,14 @@ class Client(object):
         print('>>>url:', request.url)
         print('>>>json:', request.json)
         print('>>>params:', request.params)
-        print('_____________________________')
+        print('=============================')
         prepared_request = self.session.prepare_request(request)
         response = self.session.send(prepared_request, timeout=self.timeout)
         print('===========response==========')
         print('>>>status:', response.status_code)
         print('>>>cookies:', response.cookies.items())
         print('>>>content:', response.text)
-        print('_____________________________')
+        print('=============================')
         if response.status_code is not 200:
             raise ServerException(response.status_code, response.text)
         try:

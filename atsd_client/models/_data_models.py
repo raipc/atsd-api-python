@@ -157,26 +157,26 @@ class Series(Serializable):
         :return: list of `Number`
         """
         data = sorted(self.data, key=SeriesVersionKey)
-        res = []
+        result = []
         for num, sample in enumerate(data):
             if num > 0 and sample['t'] == data[num - 1]['t']:
-                res[-1] = sample['v']
+                result[-1] = sample['v']
             else:
-                res.append(sample['v'])
-        return res
+                result.append(sample['v'])
+        return result
 
     def times(self):
         """valid versions of series times in seconds
         :return: list of `float`
         """
         data = sorted(self.data, key=SeriesVersionKey)
-        res = []
+        result = []
         for num, sample in enumerate(data):
             if num > 0 and sample['t'] == data[num - 1]['t']:
-                res[-1] = datetime.utcfromtimestamp(sample['t'] * 0.001)
+                result[-1] = datetime.utcfromtimestamp(sample['t'] * 0.001)
             else:
-                res.append(datetime.utcfromtimestamp(sample['t'] * 0.001))
-        return res
+                result.append(datetime.utcfromtimestamp(sample['t'] * 0.001))
+        return result
 
     def to_pandas_series(self):
         """
