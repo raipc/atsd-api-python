@@ -16,9 +16,6 @@ permissions and limitations under the License.
 """
 
 
-from .._jsonutil import Serializable
-
-
 class DataType(object):
     SHORT = 'SHORT'
     INTEGER = 'INTEGER'
@@ -38,7 +35,7 @@ class InvalidAction(object):
     TRANSFORM = 'TRANSFORM'
 
 
-class Metric(Serializable):
+class Metric():
     def __init__(self, 
                  name,
                  label=None,
@@ -92,7 +89,7 @@ class Metric(Serializable):
         self.versioned = versioned
 
 
-class Entity(Serializable):
+class Entity():
     def __init__(self, name,
                  enabled=None, lastInsertTime=None, tags=None):
         # `str` entity name
@@ -106,7 +103,7 @@ class Entity(Serializable):
         self.tags = tags
 
 
-class EntityGroup(Serializable):
+class EntityGroup():
     def __init__(self, name, expression=None, tags=None):
         #: `str` group name
         self.name = name

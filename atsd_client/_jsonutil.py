@@ -24,33 +24,34 @@ try:
 except NameError:
     unicode = str
 
-
-def serialize(o):
-    if isinstance(o, dict):
-        res = {}
-        for key in o:
-            res[key] = serialize(o[key])
-        return res
-    if isinstance(o, (list, tuple)):
-        return [serialize(el) for el in o]
-    if isinstance(o, (str, unicode, numbers.Number, bool)):
-        return o
-    if o is None:
+def serialize(target):
+    if isinstance(target, dict):
+        return {k:serialize(v) for k, v in target.items()}
+    elif isinstance(target, (list, tuple)):
+        return [serialize(el) for el in target]
+    elif isinstance(target, (str, unicode, numbers.Number, bool)):
+        return target
+    elif target is None:
         return None
-    try:
-        return o.serialize()
-    except AttributeError:
-        raise ValueError(unicode(o) + ' could not be serialised')
+    else:
+        try:
+            result = {}
+            props = target.__dict__.keys()
+            for prop in props:
+                serialized_property = serialize(target.__dict__[prop])
+                if serialized_property is not None:
+                    result[prop] = serialized_property
+            return result
+        except AttributeError:
+            raise ValueError(unicode(target) + ' could not be serialised')
 
 
 def deserialize(o, model_class):
     if isinstance(o, (list, tuple)):
         return [deserialize(el, model_class) for el in o]
-
     try:
         args = inspect.getargspec(model_class.__init__).args
         args.remove('self')
-
         params = {}
         for attr in o:
             if attr in args:
@@ -60,54 +61,7 @@ def deserialize(o, model_class):
         for attr in o:
             if attr not in args:
                 setattr(res, attr, o[attr])
-
     except:
-        raise ValueError(unicode(o)
-                         + ' could not be deserialized to '
-                         + unicode(model_class))
-
+        raise ValueError(unicode(o) + ' could not be deserialized to ' + unicode(model_class))
     return res
 
-
-def _getprop(model, prop):
-    """
-    :raises: :class:`.AttributeError` in case of no prop found
-    :param model:
-    :param prop: prop name
-    :return: prop value
-    """
-    try:
-        # try to get strictly used prop
-        attr = model.__dict__[prop]
-    except KeyError:
-        # try to get private if setter/getter is used
-        attr = getattr(model, '_' + prop)
-
-    if attr is None:
-        raise AttributeError
-
-    try:
-        return attr.serialize()
-    except AttributeError:
-        return attr
-
-
-class Serializable(object):
-    """
-    implements default ``serialize()`` method
-    """
-
-    def serialize(self):
-        """serialize model to json-serializable object
-        keys: object attrs, values: not None object props
-
-        :return: json-serializable object
-        """
-        data = {}
-        props = self.__dict__.keys() #inspect.getargspec(type(self).__init__).args ; props.remove('self')
-        for prop in props:
-            try:
-                data[prop] = _getprop(self, prop)
-            except AttributeError:
-                pass
-        return data

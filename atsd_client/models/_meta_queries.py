@@ -25,7 +25,6 @@ class BatchEntitiesCommand(object):
     def __init__(self, action, entities=None, create_entities=None):
         self.empty = False
         self.action = action
-
         if action == 'delete-all':
             return
         elif entities is not None and len(entities) > 0:

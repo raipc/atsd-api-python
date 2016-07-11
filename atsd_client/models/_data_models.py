@@ -21,61 +21,73 @@ import copy
 from _constants import display_series_threshold, display_series_part, utc_format
 
 from datetime import datetime, timedelta
-
-from .._jsonutil import Serializable
 from .._utilities import utc_to_milliseconds 
 
-
-class SeriesVersionKey(object):
-    """actual version after old versions
-    key from comparator
+class Sample():
     """
-
+        Class that represents a numeric value observed at some time with additional version information if provided.
+        :param value: value of sample
+        :param time: time of sample. time could be specified as `int` in milliseconds, as `str` in format ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z), as `datetime`
+        :param version: `dict`
+    """
+    def __init__(self, value, time=None, version=None):
+        self.v = copy.deepcopy(value) if not value == "Nan" else float("nan") 
+        self.version = version
+        time_to_set = copy.deepcopy(time)
+        if time is None:
+            time_to_set = int(time.time() * 1000)
+        elif isinstance(time, str):
+            time_to_set = utc_to_milliseconds(time_to_set)
+        elif isinstance(time, datetime):
+            time_to_set = to_posix_timestamp(time_to_set)
+        else:
+            raise ValueError('data "time" should be either number or str')
+        self.t = time_to_set
+        
     @staticmethod
-    def cmp(a, b):
-        if a['t'] == b['t']:
-            if ('version' not in a or 't' not in a['version']  or 'version' not in b or 't' not in b['version']):
+    def compare(first, second):
+        if first['t'] == second['t']:
+            if ('version' not in first or 't' not in first['version']  or 'version' not in second or 't' not in second['version']):
                 return 0
             else:
-                return a['version']['t'] - b['version']['t']
+                return first['version']['t'] - second['version']['t']
         else:
-            return a['t'] - b['t']
-
-    def __init__(self, obj):
-        self.obj = obj
+            return first['t'] - second['t']
 
     def __lt__(self, other):
-        return SeriesVersionKey.cmp(self.obj, other.obj) < 0
+        return SeriesVersionKey.compare(self, other) < 0
 
     def __gt__(self, other):
-        return SeriesVersionKey.cmp(self.obj, other.obj) > 0
+        return SeriesVersionKey.compare(self, other) > 0
 
     def __eq__(self, other):
-        return SeriesVersionKey.cmp(self.obj, other.obj) == 0
+        return SeriesVersionKey.compare(self, other) == 0
 
     def __le__(self, other):
-        return SeriesVersionKey.cmp(self.obj, other.obj) <= 0
+        return SeriesVersionKey.compare(self, other) <= 0
 
     def __ge__(self, other):
-        return SeriesVersionKey.cmp(self.obj, other.obj) >= 0
+        return SeriesVersionKey.compare(self, other) >= 0
 
     def __ne__(self, other):
-        return SeriesVersionKey.cmp(self.obj, other.obj) != 0
+        return SeriesVersionKey.compare(self, other) != 0
+  
 
 #------------------------------------------------------------------------------ 
-class Series(Serializable):
+class Series():
     def __init__(self, entity, metric, data=None, tags=None):
         self.entity = entity
         self.metric = metric
-        self.data = []
-        if data is not None:
-            for sample in data:
-                sample_copy = copy.deepcopy(sample)
-                if sample_copy['v'] == 'NaN':
-                    sample_copy['v'] = float('nan')
-                self.data.append(sample_copy)
         self.tags = tags
-
+        self.data = [] if data is None else data
+    
+    def add_samples(self, *samples):
+        """
+        add sample to series
+        """
+        for sample in samples:
+            self.data.append(sample)
+        
     def __str__(self):
         if len(self.data) > display_series_threshold:
             displayed_data = self.data[:display_series_part] + self.data[-display_series_part:]
@@ -121,32 +133,12 @@ class Series(Serializable):
         """
         res = Series(entity, metric)
         for dt in ts.index:
-            res.add_value(ts[dt], dt)
+            res.add_sample(ts[dt], dt)
         return res
 
-    def add_value(self, v, t=None, version=None):
-        """add time-value pair to series
-        time could be specified as `int` in milliseconds, as `str` in format
-        ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z), as `datetime`
-        :param version: `dict`
-        :param v: value number
-        :param t: `int` | `str` | :class: `.datetime` (default t = current time)
+    def sort(self, key=None, reverse=False):
         """
-        if t is None:
-            t = int(time.time() * 1000)
-        if isinstance(t, str):
-            t = utc_to_milliseconds(t)
-        if isinstance(t, datetime):
-            t = to_posix_timestamp(t)
-        if not isinstance(t, numbers.Number):
-            raise ValueError('data "t" should be either number or str')
-        sample = {'v': v, 't': t}
-        if version is not None:
-            sample['version'] = version
-        self.data.append(sample)
-
-    def sort(self, key=SeriesVersionKey, reverse=False):
-        """sort series data in place
+        Sort series data in place
         :param key:
         :param reverse:
         """
@@ -156,7 +148,7 @@ class Series(Serializable):
         """valid versions of series values
         :return: list of `Number`
         """
-        data = sorted(self.data, key=SeriesVersionKey)
+        data = sorted(self.data)
         result = []
         for num, sample in enumerate(data):
             if num > 0 and sample['t'] == data[num - 1]['t']:
@@ -169,7 +161,7 @@ class Series(Serializable):
         """valid versions of series times in seconds
         :return: list of `float`
         """
-        data = sorted(self.data, key=SeriesVersionKey)
+        data = sorted(self.data)
         result = []
         for num, sample in enumerate(data):
             if num > 0 and sample['t'] == data[num - 1]['t']:
@@ -196,7 +188,7 @@ class Series(Serializable):
             return plt.plot(self.times(), self.values())
 
 #------------------------------------------------------------------------------ 
-class Property(Serializable):
+class Property():
     def __init__(self, type, entity, tags, key=None, timestamp=None):
         """
         :param type: str  Property type name 
@@ -212,7 +204,7 @@ class Property(Serializable):
         self.timestamp = timestamp
         
 #------------------------------------------------------------------------------ 
-class Alert(Serializable):
+class Alert():
     def __init__(self, id, rule=None, entity=None, metric=None, lastEventTime=None, openTime=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
         self.id = id
         self.rule = rule
@@ -230,7 +222,7 @@ class Alert(Serializable):
         self.openValue = openValue
         
 #------------------------------------------------------------------------------ 
-class AlertHistory(Serializable):
+class AlertHistory():
     def __init__(self, alert=None, alertDuration=None, alertOpenTime=None, entity=None, metric=None, receivedTime=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, schedule=None, severity=None, tags=None, time=None, type=None, value=None, window=None):
         self.alert = alert
         self.alertDuration = alertDuration
@@ -251,7 +243,7 @@ class AlertHistory(Serializable):
         self.window = window
         
 #------------------------------------------------------------------------------ 
-class Message(Serializable):
+class Message():
     def __init__(self, type, source, entity, date, severity, tags, message, persist=True):
         self.type=type
         self.source=source

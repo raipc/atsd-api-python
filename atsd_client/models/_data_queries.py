@@ -21,7 +21,6 @@ from datetime import datetime
 from .._utilities import copy_not_empty_attrs, to_posix_timestamp
 
 from ._data_models import Property
-from .._jsonutil import Serializable
 from ._data_models import Alert
 
 try:
@@ -96,7 +95,7 @@ class Severity(object):
 #===============================================================================
 ################# General Filters
 #===============================================================================
-class EntityFilter(Serializable):
+class EntityFilter():
     def __init__(self, entity="", entities=[], entity_group="", entity_expression=""):
         if (entity or entities or entity_group or entity_expression):
             self.entity = entity
@@ -106,7 +105,7 @@ class EntityFilter(Serializable):
         else:
             raise ValueError("Not enough arguments for entity filter")
         
-class DateFilter(Serializable):
+class DateFilter():
     def __init__(self, startDate="", endDate="", interval={}):
         if interval or (startDate and endDate):
             self.startDate = startDate 
@@ -117,7 +116,7 @@ class DateFilter(Serializable):
 #===============================================================================
 ################# Series Queries
 #===============================================================================
-class SeriesQuery(Serializable):
+class SeriesQuery():
     def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None, control_filter=None, transformation_filter=None):
         copy_not_empty_attrs(series_filter, self)
         copy_not_empty_attrs(entity_filter, self)
@@ -126,7 +125,7 @@ class SeriesQuery(Serializable):
         copy_not_empty_attrs(versioning_filter, self)
         copy_not_empty_attrs(transformation_filter, self)
                 
-class SeriesFilter(Serializable):
+class SeriesFilter():
     def __init__(self, metric, tags={}, type="HISTORY"):
         if metric:
             self.metric = metric 
@@ -135,16 +134,16 @@ class SeriesFilter(Serializable):
         else:
             raise ValueError("No metric supplied!")
         
-class ForecastFilter(Serializable):
+class ForecastFilter():
     def __init__(self, forecastName=""):
         self.forecastName = forecastName
         
-class VersioningFilter(Serializable):
+class VersioningFilter():
     def __init__(self,versioned=False, versionFilter=""):
         self.versioned = versioned
         self.versionFilter = versionFilter
         
-class  ControlFilter(Serializable):
+class  ControlFilter():
     def __init__(self,limit=0, direction="DESC", last=False, cache=False, requestId="", timeFormat="iso"):
         self.limit=limit
         self.direction=direction
@@ -156,13 +155,13 @@ class  ControlFilter(Serializable):
 #=======================================================================
 # Transformations 
 #=======================================================================
-class TransformationFilter(Serializable):
+class TransformationFilter():
     def __init__(self, aggregate, group, rate):
         self.aggregate = aggregate
         self.group = group
         self.rate = rate
         
-class Rate(Serializable):
+class Rate():
     """
     represents aggregate param rate
     """
@@ -183,7 +182,7 @@ class Rate(Serializable):
         else:
             raise ValueError('wrong counter')
 
-class Group(Serializable):
+class Group():
     def __init__(self, type, period=None, interpolate=None, truncate=False, order=0):
         self.type = type
         if period is not None:
@@ -231,7 +230,7 @@ class Group(Serializable):
         self.order = value
 
 
-class Aggregate(Serializable):
+class Aggregate():
     def __init__(self, period, types=[AggregateType.DETAIL], interpolate=None, threshold=None, calendar=None, workingMinutes=None, order=1):
         self.set_types(*types)
         if interpolate is not None:
@@ -296,7 +295,7 @@ class Aggregate(Serializable):
 #===============================================================================
 ################# Properties
 #===============================================================================
-class PropertiesQuery(Serializable):
+class PropertiesQuery():
     def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=False, keyTagExpression=None, limit=0, last=False, offset=-1):
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
@@ -308,7 +307,7 @@ class PropertiesQuery(Serializable):
         self.last=last
         self.offset=offset
         
-class PropertiesDeleteFilter(Serializable):
+class PropertiesDeleteFilter():
     def __init__(self, type, entity, startTime=None, endTime=None, key=None, exactMatch=False):
         self.type=type
         self.entity=entity
@@ -320,7 +319,7 @@ class PropertiesDeleteFilter(Serializable):
 #===============================================================================
 ################# Alerts
 #===============================================================================
-class AlertsQuery(Serializable):
+class AlertsQuery():
     def __init__(self, entity_filter, date_filter, alert_rules=None, alert_metrics=None, alert_severities=None, alert_minSeverity=None, alert_acknowledged=None):
         copy_not_empty_attrs(src=entity_filter, dst=self)
         copy_not_empty_attrs(src=date_filter,   dst=self)
@@ -330,7 +329,7 @@ class AlertsQuery(Serializable):
         self.minSeverity = alert_minSeverity
         self.acknowledged = alert_acknowledged
         
-class AlertHistoryQuery(Serializable):
+class AlertHistoryQuery():
     def __init__(self, entity_filter, date_filter, alert_rule, alert_metric, result_limit):
         copy_not_empty_attrs(src=entity_filter, dst=self)
         copy_not_empty_attrs(src=date_filter, dst=self)
@@ -338,14 +337,14 @@ class AlertHistoryQuery(Serializable):
         self.rule = alert_rule
         self.metric = alert_metric
         
-class AlertDeleteFilter(Serializable):
+class AlertDeleteFilter():
     def __init__(self, alert_id):
         self.id = alert_id
 
 #===============================================================================
 ################# Messages
 #===============================================================================
-class MessageQuery(Serializable):
+class MessageQuery():
     def __init__(self,entity_filter, date_filter, msg_type, msg_source, msg_tags, msg_severities, msg_minSeverity=Severity.UNDEFINED, result_limit=1000):
         """
         :param msg_type: str  Message msg_type.
