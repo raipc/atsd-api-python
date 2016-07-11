@@ -46,22 +46,21 @@ def serialize(target):
             raise ValueError(unicode(target) + ' could not be serialised')
 
 
-def deserialize(o, model_class):
-    if isinstance(o, (list, tuple)):
-        return [deserialize(el, model_class) for el in o]
+def deserialize(target, model_class):
+    if isinstance(target, (list, tuple)):
+        return [deserialize(el, model_class) for el in target]
     try:
         args = inspect.getargspec(model_class.__init__).args
         args.remove('self')
         params = {}
-        for attr in o:
+        for attr in target:
             if attr in args:
-                params[attr] = o[attr]
-
-        res = model_class(**params)
-        for attr in o:
+                params[attr] = target[attr]
+        result_object = model_class(**params)
+        for attr in target:
             if attr not in args:
-                setattr(res, attr, o[attr])
+                setattr(result_object, attr, target[attr])
     except:
-        raise ValueError(unicode(o) + ' could not be deserialized to ' + unicode(model_class))
-    return res
+        raise ValueError(unicode(target) + ' could not be deserialized to ' + unicode(model_class))
+    return result_object
 

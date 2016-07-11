@@ -1,4 +1,6 @@
 import time
+import dateutil.parser
+from ._constants import utc_format
 
 def copy_not_empty_attrs(src, dst):
     if src is not None and dst is not None:
@@ -8,21 +10,13 @@ def copy_not_empty_attrs(src, dst):
                 setattr(dst, attribute, value)
 
 
-def utc_to_milliseconds(time_str):
+def utc_to_milliseconds(time_string):
     """
-    :param time_str: in format '%Y-%m-%dT%H:%M:%SZ%z'
+    :param time_string: in iso 8601 format'
     :return: timestamp in milliseconds
     """
-    time_part, timezone_part = time_str.split('Z')
-    time_part = time.strptime(time_part, '%Y-%m-%dT%H:%M:%S')
-    if timezone_part:
-        sig, hour, min = timezone_part[0], timezone_part[1:3], timezone_part[3:5]
-        tz_offset = int(sig + hour) * 60 * 60 + int(sig + min) * 60
-        loc_offset = time.timezone
-        offset = loc_offset - tz_offset
-        return int((time.mktime(time_part) + offset) * 1000)
-    else:
-        return int(time.mktime(time_part)) * 1000
+    dt = dateutil.parser.parse(time_string)
+    return dt.timestamp()
 
 
 def to_posix_timestamp(datetime_obj):

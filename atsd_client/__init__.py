@@ -20,4 +20,4 @@ from . import models, _constants
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '1.1.5'
+__version__ = '1.1.6'

@@ -79,7 +79,19 @@ class Series():
         self.entity = entity
         self.metric = metric
         self.tags = tags
-        self.data = [] if data is None else data
+        self.data = []
+        self.data = []
+        if data is not None:
+            for data_unit in data:
+                if isinstance(data_unit, dict):
+                    self.data.append(Sample(
+                                            value=data_unit['v'],
+                                            time=data_unit.get('t', data_unit.get('d', None)), 
+                                            version=data_unit.get('version', None)
+                                            )
+                                    )
+                else:
+                    self.data.append(data_unit)
     
     def add_samples(self, *samples):
         """
@@ -96,16 +108,16 @@ class Series():
         rows = []
         versioned = False
         for sample in displayed_data:
-            time = sample['d']
-            value = sample['v']
+            print(sample)
+            time = sample.t
+            value = sample.v
             row = '{0}{1: >14}'.format(time, value)
-            if 'version' in sample:
+            if sample.version is not None:
                 versioned = True
-                version = sample['version']
-                source = version['source'] if 'source' in version else ''
-                status = version['status'] if 'status' in version else ''
-                t = datetime.utcfromtimestamp(version['t'] * 0.001).strftime(utc_format) if 't' in version else ''
-                row += '{0: >17}{1: >17}{2: >21}'.format(source, status, t)
+                source = sample.version.get('source', '')
+                status = sample.version.get('status', '')
+                version_time = datetime.utcfromtimestamp(version['t'] * 0.001).strftime(utc_format) if 't' in version else ''
+                row += '{0: >17}{1: >17}{2: >21}'.format(source, status, version_time)
             rows.append(row)
         if versioned:
             header = ('           timestamp'
