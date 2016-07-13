@@ -21,7 +21,7 @@ import copy
 from _constants import display_series_threshold, display_series_part, utc_format
 
 from datetime import datetime, timedelta
-from .._utilities import utc_to_milliseconds 
+from .._time_utilities import iso_to_milliseconds, dt_to_milliseconds 
 
 class Sample():
     """
@@ -30,6 +30,13 @@ class Sample():
         :param time: time of sample. time could be specified as `int` in milliseconds, as `str` in format ``%Y-%m-%dT%H:%M:%SZ%z`` (e.g. 2015-04-14T07:03:31Z), as `datetime`
         :param version: `dict`
     """
+    
+    def __str__(self):
+        return "<{v}-{t}--{vv}>".format(v=self.v, t=self.t, vv=self.version)
+    
+    def __repr__(self):
+        return "<{v}-{t}--{vv}>".format(v=self.v, t=self.t, vv=self.version)
+    
     def __init__(self, value, time=None, version=None):
         self.v = copy.deepcopy(value) if not value == "Nan" else float("nan") 
         self.version = version
@@ -37,9 +44,9 @@ class Sample():
         if time is None:
             time_to_set = int(time.time() * 1000)
         elif isinstance(time, str):
-            time_to_set = utc_to_milliseconds(time_to_set)
+            time_to_set = iso_to_milliseconds(time_to_set)
         elif isinstance(time, datetime):
-            time_to_set = to_posix_timestamp(time_to_set)
+            time_to_set = dt_to_milliseconds(time_to_set)
         else:
             raise ValueError('data "time" should be either number or str')
         self.t = time_to_set
@@ -108,7 +115,7 @@ class Series():
         rows = []
         versioned = False
         for sample in displayed_data:
-            print(sample)
+            #print(sample)
             time = sample.t
             value = sample.v
             row = '{0}{1: >14}'.format(time, value)
@@ -116,7 +123,7 @@ class Series():
                 versioned = True
                 source = sample.version.get('source', '')
                 status = sample.version.get('status', '')
-                version_time = datetime.utcfromtimestamp(version['t'] * 0.001).strftime(utc_format) if 't' in version else ''
+                version_time = datetime.utcfromtimestamp(sample.version['t'] * 0.001).strftime(utc_format) if 't' in sample.version else ''
                 row += '{0: >17}{1: >17}{2: >21}'.format(source, status, version_time)
             rows.append(row)
         if versioned:
@@ -271,8 +278,8 @@ class Message():
 #     import pandas as pd
 #     now = int(time.time() * 1000)
 #     dt = datetime.fromtimestamp(now * 0.001)
-#     print now, dt, _to_posix_timestamp(dt)
+#     print now, dt, _dt_to_milliseconds(dt)
 #     ts = pd.Series([1], index=[datetime.fromtimestamp(now * 0.001)])
-#     res = _to_posix_timestamp(ts.index[0])
+#     res = _dt_to_milliseconds(ts.index[0])
 #     dt = datetime.fromtimestamp(res * 0.001)
 #     print res, dt

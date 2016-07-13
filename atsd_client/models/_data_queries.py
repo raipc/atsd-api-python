@@ -18,7 +18,8 @@ permissions and limitations under the License.
 
 import numbers
 from datetime import datetime
-from .._utilities import copy_not_empty_attrs, to_posix_timestamp
+from .._utilities import copy_not_empty_attrs
+from .._time_utilities import dt_to_milliseconds
 
 from ._data_models import Property
 from ._data_models import Alert

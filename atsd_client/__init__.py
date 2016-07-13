@@ -16,8 +16,8 @@ permissions and limitations under the License.
 """
 
 from .connection import connect, connect_url
-from . import models, _constants
+from . import models, _constants, _utilities, time_utilities
 from . import services
 
-__all__ = ['services', 'models']
-__version__ = '1.1.6'
+__all__ = ['services', 'models', 'time_utilities']
+__version__ = '1.1.7'
