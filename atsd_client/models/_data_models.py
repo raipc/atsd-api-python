@@ -225,7 +225,7 @@ class Property():
 #------------------------------------------------------------------------------ 
 class Alert():
     def __repr__(self):
-            return "<ALERT id={id}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self.id, entity=self.entity, metric=self.metric, openDate=self.openDate)
+            return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self.id, entity=self.entity, metric=self.metric, openDate=self.openDate, text=self.textValue)
     #Checked
     def __init__(self, id, rule=None, entity=None, metric=None, lastEventDate=None, openDate=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
         self.id = id
