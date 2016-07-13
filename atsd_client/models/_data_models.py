@@ -21,7 +21,7 @@ import copy
 from _constants import display_series_threshold, display_series_part, utc_format
 
 from datetime import datetime, timedelta
-from .._time_utilities import iso_to_milliseconds, dt_to_milliseconds 
+from ..time_utilities import iso_to_milliseconds, dt_to_milliseconds, milliseconds_to_utc 
 
 class Sample():
     """
@@ -48,33 +48,32 @@ class Sample():
             raise ValueError('data "time" should be either number or str')
         self.t = time_to_set
         
-    @staticmethod
-    def compare(first, second):
-        if first['t'] == second['t']:
-            if ('version' not in first or 't' not in first['version']  or 'version' not in second or 't' not in second['version']):
+    def compare(self, other):
+        if self.t == other.t:
+            if (self.version is None  or other.version is None):
                 return 0
             else:
-                return first['version']['t'] - second['version']['t']
+                return self.version.get('t', 0)  - other.version.get('t', 0)
         else:
-            return first['t'] - second['t']
+            return self.t - other.t
 
     def __lt__(self, other):
-        return SeriesVersionKey.compare(self, other) < 0
+        return self.compare(other) < 0
 
     def __gt__(self, other):
-        return SeriesVersionKey.compare(self, other) > 0
+        return self.compare(other) > 0
 
     def __eq__(self, other):
-        return SeriesVersionKey.compare(self, other) == 0
+        return self.compare(other) == 0
 
     def __le__(self, other):
-        return SeriesVersionKey.compare(self, other) <= 0
+        return self.compare(other) <= 0
 
     def __ge__(self, other):
-        return SeriesVersionKey.compare(self, other) >= 0
+        return self.compare(other) >= 0
 
     def __ne__(self, other):
-        return SeriesVersionKey.compare(self, other) != 0
+        return self.compare(other) != 0
   
 
 #------------------------------------------------------------------------------ 
@@ -155,13 +154,11 @@ class Series():
         data = sorted(self.data)
         result = []
         for num, sample in enumerate(data):
-            if num > 0 and sample['t'] == data[num - 1]['t']:
-                result[-1] = sample['v']
-            else:
-                result.append(sample['v'])
+            if num > 0 and sample.t == data[num - 1].t:
+                result.pop()
+            result.append(sample.v)
         return result
 
-    #REFACTOR
     def times(self):
         """valid versions of series times in seconds
         :return: list of `float`
@@ -169,10 +166,10 @@ class Series():
         data = sorted(self.data)
         result = []
         for num, sample in enumerate(data):
-            if num > 0 and sample['t'] == data[num - 1]['t']:
-                result[-1] = datetime.utcfromtimestamp(sample['t'] * 0.001)
-            else:
-                result.append(datetime.utcfromtimestamp(sample['t'] * 0.001))
+            if num > 0 and sample.t == data[num - 1].t:
+                result.pop()
+            new_time = milliseconds_to_utc(sample.t)
+            result.append(new_time)
         return result
 
     @staticmethod
@@ -203,7 +200,8 @@ class Series():
             return self.to_pandas_series().plot()
         except ImportError:
             import matplotlib.pyplot as plt
-            return plt.plot(self.times(), self.values())
+            p = plt.plot(self.times(), self.values())
+            plt.show(p)
 
 #------------------------------------------------------------------------------ 
 class Property():
@@ -285,14 +283,3 @@ class Message():
         self.tags=tags
         self.message=message
         self.persist=persist
-
-
-# if __name__ == '__main__':
-#     import pandas as pd
-#     now = int(time.time() * 1000)
-#     dt = datetime.fromtimestamp(now * 0.001)
-#     print now, dt, _dt_to_milliseconds(dt)
-#     ts = pd.Series([1], index=[datetime.fromtimestamp(now * 0.001)])
-#     res = _dt_to_milliseconds(ts.index[0])
-#     dt = datetime.fromtimestamp(res * 0.001)
-#     print res, dt
