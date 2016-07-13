@@ -226,13 +226,16 @@ class Property():
         
 #------------------------------------------------------------------------------ 
 class Alert():
-    def __init__(self, id, rule=None, entity=None, metric=None, lastEventTime=None, openTime=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
+    def __repr__(self):
+            return "<ALERT id={id}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self.id, entity=self.entity, metric=self.metric, openDate=self.openDate)
+    #Checked
+    def __init__(self, id, rule=None, entity=None, metric=None, lastEventDate=None, openDate=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
         self.id = id
         self.rule = rule
         self.entity = entity
         self.metric = metric
-        self.lastEventTime = lastEventTime
-        self.openTime = openTime
+        self.lastEventDate = lastEventDate
+        self.openDate = openDate
         self.value = value
         self.message = message
         self.tags = tags
@@ -244,13 +247,17 @@ class Alert():
         
 #------------------------------------------------------------------------------ 
 class AlertHistory():
-    def __init__(self, alert=None, alertDuration=None, alertOpenTime=None, entity=None, metric=None, receivedTime=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, schedule=None, severity=None, tags=None, time=None, type=None, value=None, window=None):
+    def __repr__(self):
+            return "<ALERT_HISTORY alert={alert}, metric={metric}, entity={entity}, date={date}, alertOpenDate={alertOpenDate}...>".format(alert=self.alert, entity=self.entity, metric=self.metric, alertOpenDate=self.alertOpenDate, date=self.date)
+        
+    #Checked
+    def __init__(self, alert=None, alertDuration=None, alertOpenDate=None, entity=None, metric=None, receivedDate=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, schedule=None, severity=None, tags=None, time=None, type=None, date=None, value=None, window=None):
         self.alert = alert
         self.alertDuration = alertDuration
-        self.alertOpenTime = alertOpenTime
+        self.alertOpenDate = alertOpenDate
         self.entity = entity
         self.metric = metric
-        self.receivedTime = receivedTime
+        self.receivedDate = receivedDate
         self.repeatCount = repeatCount
         self.rule = rule
         self.ruleExpression = ruleExpression
@@ -260,11 +267,15 @@ class AlertHistory():
         self.tags = tags
         self.time = time
         self.type = type
+        self.date = date
         self.value = value
         self.window = window
         
 #------------------------------------------------------------------------------ 
 class Message():
+    def __repr__(self):
+            return "<MESSAGE type={type}, source={source}, entity={entity}, date={date}...>".format(type=self.type, entity=self.entity, source=self.source, date=self.date)
+            
     def __init__(self, type, source, entity, date, severity, tags, message, persist=True):
         self.type=type
         self.source=source

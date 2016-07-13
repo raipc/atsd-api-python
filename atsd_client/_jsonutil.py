@@ -29,8 +29,10 @@ def serialize(target):
         return {k:serialize(v) for k, v in target.items()}
     elif isinstance(target, (list, tuple)):
         return [serialize(el) for el in target]
-    elif isinstance(target, (str, unicode, numbers.Number, bool)):
+    elif isinstance(target, (str, unicode, numbers.Number)):
         return target
+    elif isinstance(target, bool):
+        return str(target).lower()
     elif target is None:
         return None
     else:
@@ -43,7 +45,7 @@ def serialize(target):
                     result[prop] = serialized_property
             return result
         except AttributeError:
-            raise ValueError(unicode(target) + ' could not be serialised')
+            raise ValueError(unicode(target) + ' could not be serialized')
 
 
 def deserialize(target, model_class):

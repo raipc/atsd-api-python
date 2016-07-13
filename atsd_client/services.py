@@ -20,6 +20,7 @@ from .exceptions import DataParseException
 from .exceptions import ServerException
 from ._client import Client
 from . import _jsonutil
+from ._constants import *
 
 try:
     from urllib import quote
@@ -70,7 +71,7 @@ class SeriesService(_Service):
         :param queries: :class:`.SeriesQuery` objects
         :return: list of :class:`.Series` objects
         """
-        response = self.conn.post('series/query', queries)
+        response = self.conn.post(series_query_url, queries)
         return [_jsonutil.deserialize(element, Series) for element in response]
 
     def url_query(self, *queries):
@@ -78,9 +79,7 @@ class SeriesService(_Service):
         :param queries: :class:`.SOMECLASS` objects
         :return: list of :class:`.SOMECLASS` objects
         """
-        data = {'queries': queries}
-        resp = self.conn.post('series', data)
-        return [_jsonutil.deserialize(r, Series) for r in resp['series']]
+        pass
 
 
 #-------------------------------------------------------------------- PROPERTIES
@@ -90,7 +89,7 @@ class PropertiesService(_Service):
         :param properties: :class:`.Property`
         :return: True if success
         """
-        self.conn.post('properties/insert', properties)
+        self.conn.post(properties_insert_url, properties)
         return True
     
     def query(self, *queries):
@@ -99,8 +98,7 @@ class PropertiesService(_Service):
         :param queries: :class:`.PropertiesQuery`
         :return: list of :class:`.Property` objects
         """
-        data = {'queries': queries}
-        resp = self.conn.post('properties', data)
+        resp = self.conn.post(properties_query_url, queries)
         return _jsonutil.deserialize(resp, Property)
     
     def type_query(self, entity):
@@ -108,7 +106,7 @@ class PropertiesService(_Service):
         :param entity: :class:`.Entity`
         :return: list of properties' types
         """
-        response = self.conn.get('properties/{entity}/types'.format(entity=quote(entity.name, '')))
+        response = self.conn.get(properties_types_url.format(entity=quote(entity.name, '')))
         return response
 
     def url_query(self, *queries):
@@ -123,7 +121,7 @@ class PropertiesService(_Service):
         :param filters: :class:`.PropertyDeleteFilter`
         :return: True if success
         """
-        response = self.conn.post('properties/delete', filters)
+        response = self.conn.post(properties_delete_url, filters)
         return True
 
 
@@ -134,7 +132,7 @@ class AlertsService(_Service):
         :param queries: :class:`.AlertsQuery`
         :return: list of :class:`.Alert` objects
         """
-        resp = self.conn.post('alerts/query', queries)
+        resp = self.conn.post(alerts_query_url, queries)
         return _jsonutil.deserialize(resp, Alert)
     
     def update(self, *filters):
@@ -142,7 +140,7 @@ class AlertsService(_Service):
         :param 
         :return: 
         """
-        response = self.conn.post('alerts/update', filters)
+        response = self.conn.post(alerts_update_url, filters)
         return True
 
     def history_query(self, *queries):
@@ -150,8 +148,7 @@ class AlertsService(_Service):
         :param queries: :class:`.AlertHistoryQuery`
         :return: list of :class:`.AlertHistory` objects
         """
-        data = {'queries': queries}
-        resp = self.conn.post('alerts/history', data)
+        resp = self.conn.post(alerts_history_url, queries)
         return _jsonutil.deserialize(resp, AlertHistory)
 
     def delete(self, *filters):
@@ -159,7 +156,7 @@ class AlertsService(_Service):
         :param queries: :class:`.AlertsDeleteFilter`
         :return: True if success
         """
-        response = self.conn.post('alerts/delete', filters)
+        response = self.conn.post(alerts_delete_url, filters)
         return True
 
 #---------------------------------------------------------------------- MESSAGES
@@ -169,7 +166,7 @@ class MessageService(_Service):
         :param messages: :class:`.Message`
         :return: True if success
         """
-        resp = self.conn.post('messages/insert', messages)
+        resp = self.conn.post(messages_insert_url, messages)
         return True
     
     def query(self, *queries):
@@ -177,15 +174,15 @@ class MessageService(_Service):
         :param queries: :class:`.AlertsQuery`
         :return: list of :class:`.Alert` objects
         """
-        resp = self.conn.post('messages/query', queries)
+        resp = self.conn.post(messages_query_url, queries)
         return _jsonutil.deserialize(resp, Message)
 
     def statistics(self, *params):
         """TODO
-        :param queries: :class:`.AlertsDeleteFilter`
+        :param params: :class:`.SomeClass
         :return: True if success
         """
-        response = self.conn.post('messages/statistics', params)
+        response = self.conn.post(messages_statistics_url, params)
         return True
 
 
