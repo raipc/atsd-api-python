@@ -31,9 +31,6 @@ class Sample():
         :param version: `dict`
     """
     
-    def __str__(self):
-        return "<{v}-{t}--{vv}>".format(v=self.v, t=self.t, vv=self.version)
-    
     def __repr__(self):
         return "<{v}-{t}--{vv}>".format(v=self.v, t=self.t, vv=self.version)
     
@@ -107,7 +104,7 @@ class Series():
         for sample in samples:
             self.data.append(sample)
         
-    def __str__(self):
+    def __repr__(self):
         if len(self.data) > display_series_threshold:
             displayed_data = self.data[:display_series_part] + self.data[-display_series_part:]
         else:
@@ -127,7 +124,7 @@ class Series():
                 row += '{0: >17}{1: >17}{2: >21}'.format(source, status, version_time)
             rows.append(row)
         if versioned:
-            header = ('           timestamp'
+            header = ('           date'
                       '         value'
                       '   version_source'
                       '   version_status'
@@ -142,19 +139,6 @@ class Series():
                 result += '\n{0}: {1}'.format(attr_name, getattr(self, attr_name))
         return result
 
-    @staticmethod
-    def from_pandas_series(entity, metric, ts):
-        """
-        :param entity: str entity name
-        :param metric: str metric name
-        :param ts: pandas time series object
-        :return: :class:`.Series` with data from pandas time series
-        """
-        res = Series(entity, metric)
-        for dt in ts.index:
-            res.add_sample(ts[dt], dt)
-        return res
-
     def sort(self, key=None, reverse=False):
         """
         Sort series data in place
@@ -162,7 +146,8 @@ class Series():
         :param reverse:
         """
         self.data.sort(key=key, reverse=reverse)
-
+    
+    #REFACTOR
     def values(self):
         """valid versions of series values
         :return: list of `Number`
@@ -176,6 +161,7 @@ class Series():
                 result.append(sample['v'])
         return result
 
+    #REFACTOR
     def times(self):
         """valid versions of series times in seconds
         :return: list of `float`
@@ -188,6 +174,19 @@ class Series():
             else:
                 result.append(datetime.utcfromtimestamp(sample['t'] * 0.001))
         return result
+
+    @staticmethod
+    def from_pandas_series(entity, metric, ts):
+        """
+        :param entity: str entity name
+        :param metric: str metric name
+        :param ts: pandas time series object
+        :return: :class:`.Series` with data from pandas time series
+        """
+        res = Series(entity, metric)
+        for dt in ts.index:
+            res.add_sample(ts[dt], dt)
+        return res
 
     def to_pandas_series(self):
         """
@@ -208,19 +207,22 @@ class Series():
 
 #------------------------------------------------------------------------------ 
 class Property():
-    def __init__(self, type, entity, tags, key=None, timestamp=None):
+    def __repr__(self):
+            return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self.type, entity=self.entity, tags=self.tags)
+        
+    def __init__(self, type, entity, tags, key=None, date=None):
         """
         :param type: str  Property type name 
         :param entity: str  Entity name
-        :param key: dict  Object containing name=value fields that uniquely identify the property record. 
         :param tags: dict Object containing name=value fields that are not part of the key and contain descriptive information about the property record. 
+        :param key: dict  Object containing name=value fields that uniquely identify the property record. 
         :param date: str  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
         """
         self.type = type
         self.entity = entity
         self.tags = tags
         self.key = key
-        self.timestamp = timestamp
+        self.date = date
         
 #------------------------------------------------------------------------------ 
 class Alert():
