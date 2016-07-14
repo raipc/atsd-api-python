@@ -241,21 +241,21 @@ class MetricsService(_Service):
         self.conn.patch(metric_update_url.format(metric=quote(metric.name, '')), metric)
         return True
     
-    def create_or_replace_metric(self, metric):
+    def create_or_replace(self, metric):
         """
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.put('metrics/' + quote(metric.name, ''), metric)
+        self.conn.put(metric_create_or_replace_url.format(metric=quote(metric.name, '')), metric)
         return True
 
 
-    def delete_metric(self, metric):
+    def delete(self, metric_name):
         """
-        :param metric: :class:`.Metric`
+        :param metric_name: :class:`.Metric`
         :return: True if success
         """
-        self.conn.delete('metrics/' + quote(metric.name, ''))
+        self.conn.delete(metric_delete_url.format(metric=quote(metric_name, '')))
         return True
 
 
