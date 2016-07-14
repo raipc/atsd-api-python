@@ -18,4 +18,4 @@ messages_query_url      = 'messages/query'
 messages_statistics_url = 'messages/stats/query' 
 #---------------------------------------------Meta
 metric_get_url = 'metrics/{metric}'
-
+metric_update_url = 'metrics/{metric}'

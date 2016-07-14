@@ -21,6 +21,7 @@ from .exceptions import ServerException
 from ._client import Client
 from . import _jsonutil
 from ._constants import *
+from ._time_utilities import to_iso_utc
 
 try:
     from urllib import quote
@@ -193,14 +194,27 @@ class MessageService(_Service):
 
 #----------------------------------------------------------------------- METRICS
 class MetricsService(_Service):
-    def retrieve_metrics(self,
-                         expression=None,
-                         active=None,
-                         tags=None,
-                         limit=None):
+
+    def get(self, name):
+        """
+        :param name: `str` metric name
+        :return: :class:`.Metric`
+        """
+        _check_name(name)
+        try:
+            response = self.conn.get(metric_get_url.format(metric=quote(name, '')))
+        except ServerException as e:
+            if e.status_code == 404:
+                return None
+            else:
+                raise e
+        return _jsonutil.deserialize(response, Metric)
+
+    def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
         :param expression: `str`
-        :param active: `bool`
+        :param minInsertDate: `int` | `str` | None | :class: `.datetime`
+        :param maxInsertDate: `int` | `str` | None | :class: `.datetime`
         :param tags: `str`
         :param limit: `int`
         :return: :class:`.Metric` objects
@@ -208,32 +222,17 @@ class MetricsService(_Service):
         params = {}
         if expression is not None:
             params['expression'] = expression
-        if active is not None:
-            params['active'] = active
+        if minInsertDate is not None:
+            params['minInsertDate'] = to_iso_utc(minInsertDate)
+        if maxInsertDate is not None:
+            params['maxInsertDate'] = to_iso_utc(maxInsertDate)
         if tags is not None:
             params['tags'] = tags
         if limit is not None:
             params['limit'] = limit
-
-        resp = self.conn.get('metrics', params)
-        return _jsonutil.deserialize(resp, Metric)
-
-    def retrieve_metric(self, name):
-        """
-        :param name: `str` metric name
-        :return: :class:`.Metric`
-        """
-        _check_name(name)
-        try:
-            resp = self.conn.get('metrics/' + quote(name, ''))
-        except ServerException as e:
-            if e.status_code == 404:
-                return None
-            else:
-                raise e
-
-        return _jsonutil.deserialize(resp, Metric)
-
+        response = self.conn.get(metric_update_url, params)
+        return _jsonutil.deserialize(response, Metric)
+    
     def create_or_replace_metric(self, metric):
         """
         :param metric: :class:`.Metric`

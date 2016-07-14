@@ -43,7 +43,6 @@ class Metric():
                  dataType=None,
                  timePrecision=None,
                  persistent=None,
-                 counter=None,
                  filter=None,
                  minValue=None,
                  maxValue=None,
@@ -55,7 +54,6 @@ class Metric():
                  versioned=None):
         #: `str` metric name
         self.name = name
-
         #: `str`
         self.label = label
         #: `bool`
@@ -66,10 +64,7 @@ class Metric():
         self.timePrecision = timePrecision
         #: `bool`
         self.persistent = persistent
-        #: `bool`
-        self.counter = counter
-        #: If filter is specified,
-        #: metric puts that do not match the filter are discarded
+        #: If filter is specified, metric puts that do not match the filter are discarded
         self.filter = filter
         #: `Number`
         self.minValue = minValue
@@ -87,14 +82,15 @@ class Metric():
         self.tags = tags
         #: `boolean`
         self.versioned = versioned
-
+    
+    def __repr__(self):
+        return "<METRIC name={name}, label={label}, description={des}".format(name=self.name, label=self.label, des=self.description)
 
 class Entity():
     def __init__(self, name,
                  enabled=None, lastInsertTime=None, tags=None):
         # `str` entity name
         self.name = name
-
         #: `bool`
         self.enabled = enabled
         #: `long` milliseconds
@@ -107,7 +103,6 @@ class EntityGroup():
     def __init__(self, name, expression=None, tags=None):
         #: `str` group name
         self.name = name
-
         #: `str`
         self.expression = expression
         #: `dict`
