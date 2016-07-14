@@ -46,7 +46,10 @@ def to_iso_utc(time):
     if time is None:
         aux_time = _current_aware_datetime()
     if isinstance(time, str):
-        aux_time = dateutil.parser.parse(time)
+        try:
+            aux_time = dateutil.parser.parse(time)
+        except ValueError:
+            return time
     elif isinstance(time, datetime):
         aux_time = time
     elif isinstance(time, numbers.Number):
