@@ -19,7 +19,7 @@ permissions and limitations under the License.
 import numbers
 from datetime import datetime
 from .._utilities import copy_not_empty_attrs
-from .._time_utilities import _dt_to_milliseconds
+from .._time_utilities import to_iso_utc
 
 from ._data_models import Property
 from ._data_models import Alert
@@ -107,13 +107,16 @@ class EntityFilter():
             raise ValueError("Not enough arguments for entity filter")
         
 class DateFilter():
-    def __init__(self, startDate="", endDate="", interval={}):
-        if interval or (startDate and endDate):
-            self.startDate = startDate 
-            self.endDate = endDate 
-            self.interval = interval
-        else:
-            raise ValueError("Not enough arguments for date filter")
+    def validate(self):
+        return (self.startDate is not None and self.endDate is not None) or \
+                (self.interval is not None) and all(key in self.interval for key in ("count","unit"))
+    
+    def __init__(self, startDate=None, endDate=None, interval=None):
+        self.startDate = to_iso_utc(startDate) if startDate is not None else None 
+        self.endDate = to_iso_utc(endDate) if endDate is not None else None 
+        self.interval = interval
+        if not self.validate():
+            raise ValueError("Bad arguments for date filter: startDate={}, endDate={}, interval={}".format(startDate, endDate, interval))
 #===============================================================================
 ################# Series Queries
 #===============================================================================

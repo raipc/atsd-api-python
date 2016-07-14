@@ -18,10 +18,10 @@ permissions and limitations under the License.
 
 import numbers
 import copy
-from _constants import display_series_threshold, display_series_part, utc_format
+from .._constants import display_series_threshold, display_series_part, utc_format
 
 from datetime import datetime, timedelta
-from .._time_utilities import to_timestamp, _milliseconds_to_utc_dt
+from .._time_utilities import to_timestamp, to_iso_utc
 
 class Sample():
     """
@@ -152,7 +152,7 @@ class Series():
         for num, sample in enumerate(data):
             if num > 0 and sample.t == data[num - 1].t:
                 result.pop()
-            new_time = _milliseconds_to_utc_dt(sample.t)
+            new_time = to_iso_utc(sample.t)
             result.append(new_time)
         return result
 
