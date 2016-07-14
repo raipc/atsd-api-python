@@ -230,7 +230,7 @@ class MetricsService(_Service):
             params['tags'] = tags
         if limit is not None:
             params['limit'] = limit
-        response = self.conn.get(metric_update_url, params)
+        response = self.conn.get(metric_list_url, params)
         return _jsonutil.deserialize(response, Metric)
     
     def create_or_replace_metric(self, metric):
