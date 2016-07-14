@@ -18,7 +18,7 @@ permissions and limitations under the License.
 
 import numbers
 import copy
-from .._constants import display_series_threshold, display_series_part, utc_format
+from .._constants import display_series_threshold, display_series_part
 
 from datetime import datetime, timedelta
 from .._time_utilities import to_timestamp, to_iso_utc

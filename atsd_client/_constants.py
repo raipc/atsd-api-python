@@ -1,8 +1,9 @@
+#------------------------------------------------------------------------------INNER
 display_series_threshold = 20
 display_series_part = 10
-utc_format = "%Y-%m-%dT%H:%M:%S"
 
-#------------------------------------------------------------------------------URLS 
+#------------------------------------------------------------------------------URLS
+#---------------------------------------------Data
 series_query_url        = 'series/query'
 properties_insert_url   = 'properties/insert'
 properties_query_url    = 'properties/query'
@@ -15,3 +16,6 @@ alerts_delete_url       = 'alerts/delete'
 messages_insert_url     = 'messages/insert'
 messages_query_url      = 'messages/query'
 messages_statistics_url = 'messages/stats/query' 
+#---------------------------------------------Meta
+metric_get_url = 'metrics/{metric}'
+
