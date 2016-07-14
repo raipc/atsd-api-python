@@ -29,10 +29,10 @@ def serialize(target):
         return {k:serialize(v) for k, v in target.items()}
     elif isinstance(target, (list, tuple)):
         return [serialize(el) for el in target]
-    elif isinstance(target, (str, unicode, numbers.Number)):
-        return target
     elif isinstance(target, bool):
         return str(target).lower()
+    elif isinstance(target, (str, unicode, numbers.Number)):
+        return target
     elif target is None:
         return None
     else:
