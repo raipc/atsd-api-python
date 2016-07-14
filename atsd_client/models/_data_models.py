@@ -21,7 +21,7 @@ import copy
 from _constants import display_series_threshold, display_series_part, utc_format
 
 from datetime import datetime, timedelta
-from ..time_utilities import iso_to_milliseconds, dt_to_milliseconds, milliseconds_to_utc 
+from .._time_utilities import to_timestamp, _milliseconds_to_utc_dt
 
 class Sample():
     """
@@ -32,29 +32,15 @@ class Sample():
     """
     
     def __repr__(self):
-        return "<{v}-{t}--{vv}>".format(v=self.v, t=self.t, vv=self.version)
+        return "<{v}@{t}({vv})>".format(v=self.v, t=self.t, vv=self.version)
     
     def __init__(self, value, time=None, version=None):
         self.v = copy.deepcopy(value) if not value == "Nan" else float("nan") 
+        self.t = to_timestamp(time)
         self.version = version
-        time_to_set = copy.deepcopy(time)
-        if time is None:
-            time_to_set = int(time.time() * 1000)
-        elif isinstance(time, str):
-            time_to_set = iso_to_milliseconds(time_to_set)
-        elif isinstance(time, datetime):
-            time_to_set = dt_to_milliseconds(time_to_set)
-        else:
-            raise ValueError('data "time" should be either number or str')
-        self.t = time_to_set
+        
         
     def compare(self, other):
-        if self.t == other.t:
-            if (self.version is None  or other.version is None):
-                return 0
-            else:
-                return self.version.get('t', 0)  - other.version.get('t', 0)
-        else:
             return self.t - other.t
 
     def __lt__(self, other):
@@ -86,7 +72,7 @@ class Series():
         self.data = []
         if data is not None:
             for data_unit in data:
-                if isinstance(data_unit, dict):
+                if isinstance(data_unit, dict): #Compatability
                     self.data.append(Sample(
                                             value=data_unit['v'],
                                             time=data_unit.get('t', data_unit.get('d', None)), 
@@ -110,8 +96,7 @@ class Series():
             displayed_data = self.data
         rows = []
         versioned = False
-        for sample in displayed_data:
-            #print(sample)
+        for sample in sorted(displayed_data):
             time = sample.t
             value = sample.v
             row = '{0}{1: >14}'.format(time, value)
@@ -119,15 +104,14 @@ class Series():
                 versioned = True
                 source = sample.version.get('source', '')
                 status = sample.version.get('status', '')
-                version_time = datetime.utcfromtimestamp(sample.version['t'] * 0.001).strftime(utc_format) if 't' in sample.version else ''
-                row += '{0: >17}{1: >17}{2: >21}'.format(source, status, version_time)
+                row += '{0: >17}{1: >17}'.format(source, status)
             rows.append(row)
         if versioned:
-            header = ('           date'
+            header = ('           time'
                       '         value'
                       '   version_source'
                       '   version_status'
-                      '         version_time')
+                      )
             rows.insert(0, header)
         if len(self.data) > 20:
             result = '\n'.join(rows[:-display_series_part]) + '\n...\n' + '\n'.join(rows[-display_series_part:])
@@ -146,7 +130,6 @@ class Series():
         """
         self.data.sort(key=key, reverse=reverse)
     
-    #REFACTOR
     def values(self):
         """valid versions of series values
         :return: list of `Number`
@@ -160,7 +143,8 @@ class Series():
         return result
 
     def times(self):
-        """valid versions of series times in seconds
+        """
+        valid versions of series times in seconds
         :return: list of `float`
         """
         data = sorted(self.data)
@@ -168,7 +152,7 @@ class Series():
         for num, sample in enumerate(data):
             if num > 0 and sample.t == data[num - 1].t:
                 result.pop()
-            new_time = milliseconds_to_utc(sample.t)
+            new_time = _milliseconds_to_utc_dt(sample.t)
             result.append(new_time)
         return result
 

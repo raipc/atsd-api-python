@@ -19,7 +19,7 @@ permissions and limitations under the License.
 import numbers
 from datetime import datetime
 from .._utilities import copy_not_empty_attrs
-from .._time_utilities import dt_to_milliseconds
+from .._time_utilities import _dt_to_milliseconds
 
 from ._data_models import Property
 from ._data_models import Alert
@@ -125,6 +125,10 @@ class SeriesQuery():
         copy_not_empty_attrs(forecast_filter, self)
         copy_not_empty_attrs(versioning_filter, self)
         copy_not_empty_attrs(transformation_filter, self)
+    
+    def set_series_filter(self, series_filter):
+        copy_not_empty_attrs(series_filter, self)
+        
                 
 class SeriesFilter():
     def __init__(self, metric, tags={}, type="HISTORY"):
@@ -308,7 +312,7 @@ class PropertiesQuery():
         self.last=last
         self.offset=offset
         
-class PropertiesDeleteFilter():
+class PropertiesDeleteQuery():
     def __init__(self, type, entity, startTime=None, endTime=None, key=None, exactMatch=False):
         self.type=type
         self.entity=entity
@@ -337,8 +341,13 @@ class AlertHistoryQuery():
         self.limit = result_limit
         self.rule = alert_rule
         self.metric = alert_metric
+
+class AlertUpdateQuery():
+    def __init__(self, id, acknowledged):
+        self.id = id
+        self.acknowledged = acknowledged
         
-class AlertDeleteFilter():
+class AlertDeleteQuery():
     def __init__(self, alert_id):
         self.id = alert_id
 

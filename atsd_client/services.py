@@ -135,12 +135,12 @@ class AlertsService(_Service):
         resp = self.conn.post(alerts_query_url, queries)
         return _jsonutil.deserialize(resp, Alert)
     
-    def update(self, *filters):
-        """ TODO
-        :param 
-        :return: 
+    def update(self, *queries):
         """
-        response = self.conn.post(alerts_update_url, filters)
+       :param queries: :class:`.AlertUpdateQuery`
+        :return: True if success
+        """
+        response = self.conn.post(alerts_update_url, queries)
         return True
 
     def history_query(self, *queries):
