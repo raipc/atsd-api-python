@@ -233,6 +233,14 @@ class MetricsService(_Service):
         response = self.conn.get(metric_list_url, params)
         return _jsonutil.deserialize(response, Metric)
     
+    def update(self, metric):
+        """
+        :param metric: :class:`.Metric`
+        :return: True if success
+        """
+        self.conn.patch(metric_update_url.format(metric=quote(metric.name, '')), metric)
+        return True
+    
     def create_or_replace_metric(self, metric):
         """
         :param metric: :class:`.Metric`
@@ -241,13 +249,6 @@ class MetricsService(_Service):
         self.conn.put('metrics/' + quote(metric.name, ''), metric)
         return True
 
-    def update_metric(self, metric):
-        """
-        :param metric: :class:`.Metric`
-        :return: True if success
-        """
-        self.conn.patch('metrics/' + quote(metric.name, ''), metric)
-        return True
 
     def delete_metric(self, metric):
         """
