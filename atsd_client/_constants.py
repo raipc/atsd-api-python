@@ -22,3 +22,14 @@ metric_list_url = 'metrics'
 metric_update_url = 'metrics/{metric}'
 metric_create_or_replace_url = 'metrics/{metric}'
 metric_delete_url = 'metrics/{metric}'
+eg_get_url = "entity-groups/{group}"
+eg_list_url = "entity-groups"
+eg_update_url = "entity-groups/{group}"
+eg_delete_url = "entity-groups/{group}"
+eg_create_or_replace_url = "entity-groups/{group}"
+eg_get_entities_url = "entity-groups/{group}/entities"
+eg_add_entities_url = "entity-groups/{group}/entities/add"
+eg_set_entities_url = "entity-groups/{group}/entities/set"
+eg_delete_entities_url = "entity-groups/{group}/entities/delete"
+
+
