@@ -87,8 +87,7 @@ class Metric():
         return "<METRIC name={name}, label={label}, description={des}".format(name=self.name, label=self.label, des=self.description)
 
 class Entity():
-    def __init__(self, name,
-                 enabled=None, lastInsertTime=None, tags=None):
+    def __init__(self, name, enabled=None, lastInsertTime=None, tags=None):
         # `str` entity name
         self.name = name
         #: `bool`
@@ -97,7 +96,9 @@ class Entity():
         self.lastInsertTime = lastInsertTime
         #: `dict`
         self.tags = tags
-
+        
+    def __repr__(self):
+        return "<Entity name={name}, enabled={enabled}, lastInsertTime={lit}, tags={tags}".format(name=self.name, enabled=self.enabled, lit=self.lastInsertTime, tags=self.tags)
 
 class EntityGroup():
     def __init__(self, name, expression=None, tags=None):
@@ -107,3 +108,6 @@ class EntityGroup():
         self.expression = expression
         #: `dict`
         self.tags = tags
+        
+    def __repr__(self):
+        return "<EntityGroup name={name}, expression={expression}, tags={tags}".format(name=self.name, expression=self.expression, tags=self.tags)
