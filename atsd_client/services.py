@@ -260,11 +260,22 @@ class MetricsService(_Service):
 
 
 class EntitiesService(_Service):
-    def retrieve_entities(self,
-                          expression=None,
-                          active=None,
-                          tags=None,
-                          limit=None):
+    def get(self, name):
+        """
+        :param name: `str` entity name
+        :return: :class:`.Entity`
+        """
+        _check_name(name)
+        try:
+            resp = self.conn.get('entities/' + quote(name, ''))
+        except ServerException as e:
+            if e.status_code == 404:
+                return None
+            else:
+                raise e
+        return _jsonutil.deserialize(resp, Entity)
+    
+    def list(self, expression=None, active=None, tags=None, limit=None):
         """
         :param expression: `str`
         :param active: `bool`
@@ -281,27 +292,11 @@ class EntitiesService(_Service):
             params['tags'] = tags
         if limit is not None:
             params['limit'] = limit
-
         resp = self.conn.get('entities', params)
         return _jsonutil.deserialize(resp, Entity)
 
-    def retrieve_entity(self, name):
-        """
-        :param name: `str` entity name
-        :return: :class:`.Entity`
-        """
-        _check_name(name)
-        try:
-            resp = self.conn.get('entities/' + quote(name, ''))
-        except ServerException as e:
-            if e.status_code == 404:
-                return None
-            else:
-                raise e
 
-        return _jsonutil.deserialize(resp, Entity)
-
-    def create_or_replace_entity(self, entity):
+    def create_or_replace(self, entity):
         """
         :param entity: :class:`.Entity`
         :return: True if success
@@ -309,7 +304,7 @@ class EntitiesService(_Service):
         self.conn.put('entities/' + quote(entity.name, ''), entity)
         return True
 
-    def update_entity(self, entity):
+    def update(self, entity):
         """
         :param entity: :class:`.Entity`
         :return: True if success
@@ -317,7 +312,7 @@ class EntitiesService(_Service):
         self.conn.patch('entities/' + quote(entity.name, ''), entity)
         return True
 
-    def delete_entity(self, entity):
+    def delete(self, entity):
         """
         :param entity: :class:`.Entity`
         :return: True if success
