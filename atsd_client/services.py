@@ -259,20 +259,20 @@ class MetricsService(_Service):
 
 #------------------------------------------------------------------------------ ENTITIES
 class EntitiesService(_Service):
-    def get(self, name):
+    def get(self, entity_name):
         """
-        :param name: `str` entity name
+        :param entity_name: `str` entity entity_name
         :return: :class:`.Entity`
         """
-        _check_name(name)
+        _check_name(entity_name)
         try:
-            resp = self.conn.get('entities/' + quote(name, ''))
+            response = self.conn.get(ent_get_url.format(entity=quote(entity_name, '')))
         except ServerException as e:
             if e.status_code == 404:
                 return None
             else:
                 raise e
-        return _jsonutil.deserialize(resp, Entity)
+        return _jsonutil.deserialize(response, Entity)
     
     def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
@@ -282,6 +282,7 @@ class EntitiesService(_Service):
         :param tags: `dict`
         :param limit: `int`
         """
+        params = dict()
         if expression is not None: 
              params["expression"] = expression
         if minInsertDate is not None: 
@@ -292,7 +293,7 @@ class EntitiesService(_Service):
              params["tags"] = tags
         if limit is not None: 
              params["limit"] = limit
-        resp = self.conn.get('entities', params)
+        resp = self.conn.get(ent_list_url, params)
         return _jsonutil.deserialize(resp, Entity)
 
     def update(self, entity):
@@ -300,7 +301,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.patch('entities/' + quote(entity.name, ''), entity)
+        self.conn.patch(ent_update_url.format(entity=quote(entity.name, '')), entity)
         return True
 
     def create_or_replace(self, entity):
@@ -308,7 +309,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.put('entities/' + quote(entity.name, ''), entity)
+        self.conn.put(ent_create_or_replace_url.format(entity=quote(entity.name, '')), entity)
         return True
 
     def delete(self, entity):
@@ -316,7 +317,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.delete('entities/' + quote(entity.name, ''))
+        self.conn.delete(ent_delete_url.format(entity=quote(entity.name, '')))
         return True
 
 #------------------------------------------------------------------------------ ENTITIY GROUPS
