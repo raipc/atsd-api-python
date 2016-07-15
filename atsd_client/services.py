@@ -15,7 +15,7 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, BatchEntitiesCommand, Message
+from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, Message
 from .exceptions import DataParseException
 from .exceptions import ServerException
 from ._client import Client
@@ -70,7 +70,7 @@ class SeriesService(_Service):
     def query(self, *queries):
         """retrieve series for each query
         :param queries: :class:`.SeriesQuery` objects
-        :return: list of :class:`.Series` objects
+        :return: get of :class:`.Series` objects
         """
         response = self.conn.post(series_query_url, queries)
         return [_jsonutil.deserialize(element, Series) for element in response]
@@ -78,7 +78,7 @@ class SeriesService(_Service):
     def url_query(self, *queries):
         """TODO
         :param queries: :class:`.SOMECLASS` objects
-        :return: list of :class:`.SOMECLASS` objects
+        :return: get of :class:`.SOMECLASS` objects
         """
         pass
 
@@ -97,7 +97,7 @@ class PropertiesService(_Service):
         """retrieve property for each query
 
         :param queries: :class:`.PropertiesQuery`
-        :return: list of :class:`.Property` objects
+        :return: get of :class:`.Property` objects
         """
         resp = self.conn.post(properties_query_url, queries)
         return _jsonutil.deserialize(resp, Property)
@@ -105,7 +105,7 @@ class PropertiesService(_Service):
     def type_query(self, entity):
         """
         :param entity: :class:`.Entity`
-        :return: list of properties' types
+        :return: get of properties' types
         """
         response = self.conn.get(properties_types_url.format(entity=quote(entity.name, '')))
         return response
@@ -131,33 +131,33 @@ class AlertsService(_Service):
     def query(self, *queries):
         """retrieve alert for each query
         :param queries: :class:`.AlertsQuery`
-        :return: list of :class:`.Alert` objects
+        :return: get of :class:`.Alert` objects
         """
         resp = self.conn.post(alerts_query_url, queries)
         return _jsonutil.deserialize(resp, Alert)
     
-    def update(self, *queries):
+    def update(self, *updates):
         """
-       :param queries: :class:`.AlertUpdateQuery`
+        :param updates: `dict`
         :return: True if success
         """
-        response = self.conn.post(alerts_update_url, queries)
+        response = self.conn.post(alerts_update_url, updates)
         return True
 
     def history_query(self, *queries):
         """retrieve history for each query
         :param queries: :class:`.AlertHistoryQuery`
-        :return: list of :class:`.AlertHistory` objects
+        :return: get of :class:`.AlertHistory` objects
         """
         resp = self.conn.post(alerts_history_url, queries)
         return _jsonutil.deserialize(resp, AlertHistory)
 
-    def delete(self, *filters):
+    def delete(self, *ids):
         """retrieve alert for each query
-        :param queries: :class:`.AlertsDeleteFilter`
+        :param id: `int`
         :return: True if success
         """
-        response = self.conn.post(alerts_delete_url, filters)
+        response = self.conn.post(alerts_delete_url, ids)
         return True
 
 #---------------------------------------------------------------------- MESSAGES
@@ -173,7 +173,7 @@ class MessageService(_Service):
     def query(self, *queries):
         """retrieve alert for each query
         :param queries: :class:`.AlertsQuery`
-        :return: list of :class:`.Alert` objects
+        :return: get of :class:`.Alert` objects
         """
         resp = self.conn.post(messages_query_url, queries)
         return _jsonutil.deserialize(resp, Message)
@@ -194,7 +194,6 @@ class MessageService(_Service):
 
 #----------------------------------------------------------------------- METRICS
 class MetricsService(_Service):
-
     def get(self, name):
         """
         :param name: `str` metric name
@@ -258,7 +257,7 @@ class MetricsService(_Service):
         self.conn.delete(metric_delete_url.format(metric=quote(metric_name, '')))
         return True
 
-
+#------------------------------------------------------------------------------ ENTITIES
 class EntitiesService(_Service):
     def get(self, name):
         """
@@ -275,34 +274,26 @@ class EntitiesService(_Service):
                 raise e
         return _jsonutil.deserialize(resp, Entity)
     
-    def list(self, expression=None, active=None, tags=None, limit=None):
+    def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
         :param expression: `str`
-        :param active: `bool`
-        :param tags: `str`
+        :param minInsertDate: `str` | `int` | :class: `.datetime`  
+        :param maxInsertDate: `str` | `int` | :class: `.datetime`
+        :param tags: `dict`
         :param limit: `int`
-        :return: `list` of :class:`.Entity` objects
         """
-        params = {}
-        if expression is not None:
-            params['expression'] = expression
-        if active is not None:
-            params['active'] = active
-        if tags is not None:
-            params['tags'] = tags
-        if limit is not None:
-            params['limit'] = limit
+        if expression is not None: 
+             params["expression"] = expression
+        if minInsertDate is not None: 
+             params["minInsertDate"] = to_iso_utc(minInsertDate)
+        if maxInsertDate is not None: 
+             params["maxInsertDate"] = to_iso_utc(maxInsertDate)
+        if tags is not None: 
+             params["tags"] = tags
+        if limit is not None: 
+             params["limit"] = limit
         resp = self.conn.get('entities', params)
         return _jsonutil.deserialize(resp, Entity)
-
-
-    def create_or_replace(self, entity):
-        """
-        :param entity: :class:`.Entity`
-        :return: True if success
-        """
-        self.conn.put('entities/' + quote(entity.name, ''), entity)
-        return True
 
     def update(self, entity):
         """
@@ -310,6 +301,14 @@ class EntitiesService(_Service):
         :return: True if success
         """
         self.conn.patch('entities/' + quote(entity.name, ''), entity)
+        return True
+
+    def create_or_replace(self, entity):
+        """
+        :param entity: :class:`.Entity`
+        :return: True if success
+        """
+        self.conn.put('entities/' + quote(entity.name, ''), entity)
         return True
 
     def delete(self, entity):
@@ -320,124 +319,121 @@ class EntitiesService(_Service):
         self.conn.delete('entities/' + quote(entity.name, ''))
         return True
 
-
+#------------------------------------------------------------------------------ ENTITIY GROUPS
 class EntityGroupsService(_Service):
-    def retrieve_entity_groups(self, expression=None, tags=None, limit=None):
+    def get(self, group_name):
         """
-        :param expression: `str`
-        :param tags: `str`
-        :param limit: `int`
-        :return: `list` of :class:`.EntityGroup` objects
-        """
-        params = {}
-        if expression is not None:
-            params['expression'] = expression
-        if tags is not None:
-            params['tags'] = tags
-        if limit is not None:
-            params['limit'] = limit
-
-        resp = self.conn.get('entity-groups', params)
-        return _jsonutil.deserialize(resp, EntityGroup)
-
-    def retrieve_entity_group(self, name):
-        """
-        :param name: `str` entity group name
+        :param group_name: `str` entity group name
         :return: :class:`.EntityGroup`
         """
-        _check_name(name)
+        _check_name(group_name)
         try:
-            resp = self.conn.get('entity-groups/' + quote(name, ''))
+            resp = self.conn.get('entity-groups/' + quote(group_name, ''))
         except ServerException as e:
             if e.status_code == 404:
                 return None
             else:
                 raise e
-
+        return _jsonutil.deserialize(resp, EntityGroup)
+    
+    def list(self, expression=None, tags=None, limit=None):
+        """
+        :param expression: `str`
+        :param tags: `dict`
+        :param limit: `int`
+        """
+        params=dict()
+        if expression is not None: 
+             params["expression"] = expression
+        if tags is not None: 
+             params["tags"] = tags
+        if limit is not None: 
+             params["limit"] = limit
+        resp = self.conn.get(eg_list_url, params)
         return _jsonutil.deserialize(resp, EntityGroup)
 
-    def create_or_replace_entity_group(self, group):
+    def update(self, group):
         """
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.put('entity-groups/' + quote(group.name, ''), group)
+        self.conn.patch(eg_update_url.format(group=quote(group.name, '')), group)
         return True
 
-    def update_entity_group(self, group):
+    def create_or_replace(self, group):
         """
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.patch('entity-groups/' + quote(group.name, ''), group)
+        self.conn.put(eg_create_or_replace_url.format(group=quote(group.name, '')), group)
         return True
 
-    def delete_entity_group(self, group):
+    def delete(self, group):
         """
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.delete('entity-groups/' + quote(group.name, ''))
+        self.conn.delete(eg_delete_url.format(group=quote(group.name, '')))
         return True
 
-    def retrieve_group_entities(self,
-                                group_name,
-                                active=None,
-                                expression=None,
-                                tags=None,
-                                limit=None):
+    def get_entities(self, group_name, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
         :param group_name: `str`
-        :param active: `bool`
         :param expression: `str`
-        :param tags: `str`
+        :param minInsertDate: `str` | `int` | :class: `.datetime`  
+        :param maxInsertDate: `str` | `int` | :class: `.datetime`
+        :param tags: `dict`
         :param limit: `int`
         :return: `list` of :class:`.Entity` objects
         """
-        params = {}
-        if active is not None:
-            params['active'] = active
-        if expression is not None:
-            params['expression'] = expression
-        if tags is not None:
-            params['tags'] = tags
-        if limit is not None:
-            params['limit'] = limit
-
-        resp = self.conn.get('entity-groups/' + quote(group_name, '') + '/entities',
-                             params)
+        _check_name(group_name)
+        params = dict()
+        if expression is not None: 
+            params["expression"] = expression
+        if minInsertDate is not None: 
+            params["minInsertDate"] = to_iso_utc(minInsertDate)
+        if maxInsertDate is not None: 
+            params["maxInsertDate"] = to_iso_utc(maxInsertDate)
+        if tags is not None: 
+            params["tags"] = tags
+        if limit is not None: 
+            params["limit"] = limit
+        resp = self.conn.get(eg_get_entities_url.format(group=quote(group_name, '')), params)
         return _jsonutil.deserialize(resp, Entity)
 
-    def add_group_entities(self, group_name, *entities, **kwargs):
+    def add_entities(self, group_name, entities, createEntities=None):
         """
         :param group_name: `str`
-        :param entities: :class:`.Entity` objects
-        :param kwargs: createEntities=bool
+        :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
+        :param createEntities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
+        :return: response json
+        """
+        _check_name(group_name)
+        data = [e.name if isinstance(e, Entity) else e for e in entities]
+        params={"createEntities": True if createEntities is None else createEntities}
+        response = self.conn.post(eg_add_entities_url.format(group=quote(group_name, '')), data, params=params)
+        return True
+
+    def set_entities(self, group_name, entities, createEntities=None):
+        """
+        :param group_name: `str`
+        :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
+        :param createEntities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
         :return: True if success
         """
         _check_name(group_name)
-        add_command = \
-            BatchEntitiesCommand.create_add_command(*entities, **kwargs)
-        return self.batch_update_group_entities(group_name, add_command)
-
-    def delete_group_entities(self, group_name, *entity_names):
+        data = [e.name if isinstance(e, Entity) else e for e in entities]
+        params={"createEntities": True if createEntities is None else createEntities}
+        response = self.conn.post(eg_set_entities_url.format(group=quote(group_name, '')), data, params=params)
+        return True
+    
+    def delete_entities(self, group_name, entities):
         """
         :param group_name: `str`
-        :param entity_names: `str` objects
+        :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
         :return: True if success
         """
-        delete_command = BatchEntitiesCommand.create_delete_command(*entity_names)
-        return self.batch_update_group_entities(group_name, delete_command)
-
-    def batch_update_group_entities(self, group_name, *commands):
-        """
-        :param group_name: `str`
-        :param commands: :class:`.BatchEntitiesCommand` objects
-        :return: True if success
-        """
-        commands = [c for c in commands if not c.empty]
-
-        if len(commands):
-            self.conn.patch('entity-groups/' + quote(group_name, '') + '/entities', commands)
-            return True
-        return False
+        _check_name(group_name)
+        data = [e.name if isinstance(e, Entity) else e for e in entities]
+        response = self.conn.post(eg_delete_entities_url.format(group=quote(group_name, '')), data=entities)
+        return True
