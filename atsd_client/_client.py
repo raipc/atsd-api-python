@@ -79,8 +79,8 @@ class Client(object):
         except ValueError:
             return response.text
 
-    def post(self, path, data):
-        return self._request('POST', path, data=data)
+    def post(self, path, data, params=None):
+        return self._request('POST', path, params=params, data=data)
 
     def patch(self, path, data):
         return self._request('PATCH', path, data=data)
