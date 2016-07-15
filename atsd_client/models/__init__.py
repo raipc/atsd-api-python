@@ -18,4 +18,3 @@ permissions and limitations under the License.
 from ._data_models import Series, Property, Alert, AlertHistory, Message
 from ._meta_models import Metric, Entity, EntityGroup, DataType, InvalidAction, TimePrecision
 from ._data_queries import *
-from ._meta_queries import BatchEntitiesCommand
