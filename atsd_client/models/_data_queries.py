@@ -345,14 +345,14 @@ class AlertHistoryQuery():
         self.rule = alert_rule
         self.metric = alert_metric
 
-class AlertUpdateQuery():
-    def __init__(self, id, acknowledged):
-        self.id = id
-        self.acknowledged = acknowledged
-        
-class AlertDeleteQuery():
-    def __init__(self, alert_id):
-        self.id = alert_id
+# class AlertUpdateQuery():
+#     def __init__(self, id, acknowledged):
+#         self.id = id
+#         self.acknowledged = acknowledged
+#         
+# class AlertDeleteQuery():
+#     def __init__(self, alert_id):
+#         self.id = alert_id
 
 #===============================================================================
 ################# Messages
