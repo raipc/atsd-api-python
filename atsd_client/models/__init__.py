@@ -15,6 +15,6 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-from ._data_models import Series, Property, Alert, AlertHistory, Message
+from ._data_models import Series, Sample, Property, Alert, AlertHistory, Message
 from ._meta_models import Metric, Entity, EntityGroup, DataType, InvalidAction, TimePrecision
 from ._data_queries import *
