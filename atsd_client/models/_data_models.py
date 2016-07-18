@@ -73,7 +73,6 @@ class Sample():
     def __ne__(self, other):
         return self._compare(other) != 0
   
-
 #------------------------------------------------------------------------------ 
 class Series():
     """
@@ -233,6 +232,7 @@ class Series():
 
     def set_data(self, value):
         self.data = value
+
 #------------------------------------------------------------------------------ 
 class Property():
     """
@@ -257,6 +257,7 @@ class Property():
 
     def __repr__(self):
             return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self.type, entity=self.entity, tags=self.tags)
+    
     
     #Getters and setters    
     def get_type(self):
@@ -298,9 +299,6 @@ class Alert():
     The users can set acknowledge/de-acknowledge status for open alerts.
     The rule expressions can operate on series, message, and property commands.
     """
-    
-    def __repr__(self):
-            return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self.id, entity=self.entity, metric=self.metric, openDate=self.openDate, text=self.textValue)
 
     def __init__(self, id, rule=None, entity=None, metric=None, lastEventDate=None, openDate=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
         self.id = id
@@ -329,7 +327,10 @@ class Alert():
         self.acknowledged = acknowledged
         #: `Number`
         self.openValue = openValue
-    
+
+    def __repr__(self):
+            return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self.id, entity=self.entity, metric=self.metric, openDate=self.openDate, text=self.textValue)
+            
     #Getters and setters
     def get_id(self):
         return self.id
@@ -415,7 +416,6 @@ class Alert():
     def set_open_value(self, value):
         self.openValue = value
 
-        
 #------------------------------------------------------------------------------ 
 class AlertHistory():
     """
