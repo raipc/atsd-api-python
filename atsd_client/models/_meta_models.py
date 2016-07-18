@@ -60,7 +60,8 @@ class Metric():
                  retentionInterval=None,
                  lastInsertDate=None,
                  tags=None,
-                 versioned=None):
+                 versioned=None
+                 ):
         #: `str` metric name
         self.name = name
         #: `str`
@@ -71,25 +72,25 @@ class Metric():
         self.dataType = dataType
         #: :class:`.TimePrecision`
         self.timePrecision = timePrecision
-        #: `bool`
+        #: `bool` persistence status. Non-persistent metrics are not stored in the database and are only processed by the rule engine
         self.persistent = persistent
         #: If filter is specified, metric puts that do not match the filter are discarded
         self.filter = filter
-        #: `Number`
+        #: `Number` minimum value for Invalid Action trigger
         self.minValue = minValue
-        #: `Number`
+        #: `Number` maximum value for Invalid Action trigger
         self.maxValue = maxValue
         #: :class:`.InvalidAction`
         self.invalidAction = invalidAction
-        #: `str`
+        #: `str` metric description
         self.description = description
-        #: `Number`
+        #: `Number` number of days to retain values for this metric in the database
         self.retentionInterval = retentionInterval
-        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date 
+        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
         self.lastInsertDate = to_iso_utc(lastInsertDate)
         #: `dict`
         self.tags = tags
-        #: `boolean`
+        #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status 
         self.versioned = versioned
 
     def __repr__(self):
@@ -178,7 +179,7 @@ class Metric():
         self.retentionInterval = value
 
     def set_last_insert_date(self, value):
-        self.lastInsertDate = value
+        self.lastInsertDate = to_iso_utc(value)
 
     def set_tags(self, value):
         self.tags = value
@@ -197,9 +198,9 @@ class Entity():
     def __init__(self, name, enabled=None, lastInsertDate=None, tags=None):
         # `str` entity name
         self.name = name
-        #: `bool`
+        #: `bool` enabled status. Incoming data is discarded for disabled entities
         self.enabled = enabled
-        #: `long` milliseconds
+        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
         self.lastInsertDate = to_iso_utc(lastInsertDate)
         #: `dict`
         self.tags = tags
@@ -227,7 +228,7 @@ class Entity():
         self.enabled = value
 
     def set_last_insert_date(self, value):
-        self.lastInsertDate = value
+        self.lastInsertDate = to_iso_utc(value)
 
     def set_tags(self, value):
         self.tags = value
@@ -243,9 +244,9 @@ class EntityGroup():
     This is a useful feature when working with large amounts of entities and big data sets.
     """
     def __init__(self, name, expression=None, tags=None):
-        #: `str` group name
+        #: `str` entity group name
         self.name = name
-        #: `str`
+        #: `str` group membership expression. The expression is applied to entities to automatically add/remove members of this group
         self.expression = expression
         #: `dict`
         self.tags = tags
