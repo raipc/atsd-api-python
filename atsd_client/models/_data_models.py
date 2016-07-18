@@ -19,14 +19,12 @@ import copy
 from .._constants import display_series_threshold, display_series_part
 from .._time_utilities import to_timestamp, to_iso_utc
 
+#------------------------------------------------------------------------------ 
 class Sample():
     """
     Class that represents a numeric value observed at some time with additional version information if provided.
     If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
     """
-    
-    def __repr__(self):
-        return "<{v}@{t}({vv})>".format(v=self.v, t=self.t, vv=self.version)
     
     def __init__(self, value, time=None, version=None):
         self.v = copy.deepcopy(value) if not value == "Nan" else float("nan")
@@ -34,6 +32,9 @@ class Sample():
         self.t = to_timestamp(time)
         #`.dict` version object including 'source' and 'status' keys
         self.version = version
+        
+    def __repr__(self):
+        return "<Sample v={v}, t={t}, version={vv}>".format(v=self.v, t=self.t, vv=self.version)
     
     #Getters and setters
     def get_v(self):
@@ -46,10 +47,10 @@ class Sample():
         self.v = v
 
     def set_t(self, t):
-        self.t = t
+        self.t = to_timestamp(t)
         
     def _compare(self, other):
-            return self.t - other.t
+            return self.t - other.get_t()
 
     def __lt__(self, other):
         return self._compare(other) < 0
@@ -195,7 +196,7 @@ class Series():
 
     def plot(self):
         """
-        plot series in matplotlib.pyplot
+        Plot series in matplotlib.pyplot
         """
         try:
             return self.to_pandas_series().plot()
@@ -284,7 +285,7 @@ class Property():
         self.key = value
 
     def set_date(self, value):
-        self.date = value
+        self.date = to_iso_utc(value)
        
 #------------------------------------------------------------------------------ 
 class Alert():
@@ -304,24 +305,23 @@ class Alert():
         self.entity = entity
         #: `str` metric
         self.metric = metric
-        #: `str` | `.datetime` | `long`
+        #: `str` | `.datetime` | `long` milliseconds when the last record was received
         self.lastEventDate = to_iso_utc(lastEventDate)
-        #: `str` | `.datetime` | `long`
+        #: `str` | `.datetime` | `long` milliseconds when the alert was open
         self.openDate = to_iso_utc(openDate)
-        #: `int` alert id
+        #: `Number` last numeric value received
         self.value = value
-        self.message = message
         #: `dict`
         self.tags = tags
-        #: `str`
+        #: `str` text value
         self.textValue = textValue
         #: :class:`.Severity`
         self.severity = severity
-        #: `int`
+        #: `int` number of times when the expression evaluated to true sequentially
         self.repeatCount = repeatCount
-        #: `bool`
+        #: `bool` acknowledgement status
         self.acknowledged = acknowledged
-        #: `Number`
+        #: `Number` first numeric value received.
         self.openValue = openValue
 
     def __repr__(self):
@@ -380,7 +380,7 @@ class Alert():
         self.metric = value
 
     def set_open_date(self, value):
-        self.openDate = value
+        self.openDate = to_iso_utc(value)
 
     def set_text_value(self, value):
         self.textValue = value
@@ -389,7 +389,7 @@ class Alert():
         self.rule = value
 
     def set_last_event_date(self, value):
-        self.lastEventDate = value
+        self.lastEventDate = to_iso_utc(value)
 
     def set_value(self, value):
         self.value = value
@@ -418,33 +418,37 @@ class AlertHistory():
     Class representing history of an alert, including such values as alert duration, alert open date, repeat count, etc.
     """
   
-    def __init__(self, alert=None, alertDuration=None, alertOpenDate=None, entity=None, metric=None, receivedDate=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, schedule=None, severity=None, tags=None, time=None, type=None, date=None, value=None, window=None):
+    def __init__(self, alert=None, alertDuration=None, alertOpenDate=None, entity=None, metric=None, receivedDate=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, severity=None, tags=None, type=None, date=None, value=None, window=None):
         self.alert = alert
-         #: `number`
+        #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
         self.alertDuration = alertDuration
         #: `str` | `.datetime` | `long`    
-        self.alertOpenDate = alertOpenDate
+        self.alertOpenDate = to_iso_utc(alertOpenDate)
         #: `str`
         self.entity = entity
         #: `str`
         self.metric = metric
         #: `str` | `.datetime` | `long` 
-        self.receivedDate = receivedDate
+        self.receivedDate = to_iso_utc(receivedDate)
+        #: `int`
         self.repeatCount = repeatCount
+        #: `str`
         self.rule = rule
         #: `str`
         self.ruleExpression = ruleExpression
+        #: `str`
         self.ruleFilter = ruleFilter
-        self.schedule = schedule
         #: :class:`.Severity`
         self.severity = severity
         #: `str`
         self.tags = tags
-        self.time = time
+        #: `str` alert state when closed: OPEN, CANCEL, REPEAT
         self.type = type
-        self.date = date
-        #: `Number`
+        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date
+        self.date = to_iso_utc(date)
+        #: `Number` last numeric value received
         self.value = value
+        #: `int` window length
         self.window = window
 
     def __repr__(self):
@@ -493,9 +497,6 @@ class AlertHistory():
     def get_tags(self):
         return self.tags
 
-    def get_time(self):
-        return self.time
-
     def get_type(self):
         return self.type
 
@@ -515,16 +516,16 @@ class AlertHistory():
         self.metric = value
 
     def set_alert_open_date(self, value):
-        self.alertOpenDate = value
+        self.alertOpenDate = to_iso_utc(value)
 
     def set_date(self, value):
-        self.date = value
+        self.date = to_iso_utc(value)
 
     def set_alert_duration(self, value):
         self.alertDuration = value
 
     def set_received_date(self, value):
-        self.receivedDate = value
+        self.receivedDate = to_iso_utc(value)
 
     def set_repeat_count(self, value):
         self.repeatCount = value
@@ -547,9 +548,6 @@ class AlertHistory():
     def set_tags(self, value):
         self.tags = value
 
-    def set_time(self, value):
-        self.time = value
-
     def set_type(self, value):
         self.type = value
 
@@ -570,22 +568,20 @@ class Message():
     """
   
     def __init__(self, type, source, entity, date, severity, tags, message, persist=True):
-        #: `str` m    essage type
-        self.type=type
+        #: `str` message type
+        self.type = type
         #: `str` message source
-        self.source=source
+        self.source = source
         #: `str` entity name
-        self.entity=entity
+        self.entity = entity
         #: #: `.datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created 
-        self.date= to_iso_utc(date)
-        #: `str`
-        self.severity=severity
-        #: `str`
+        self.date = to_iso_utc(date)
+        #: :class:`.Severity`
+        self.severity = severity
+        #: `str` message tags
         self.tags=tags
         #: `str`
         self.message=message
-        #: `str`
-        self.persist=persist
     
     #Getters and setters
     def get_type(self):
@@ -609,9 +605,6 @@ class Message():
     def get_message(self):
         return self.message
 
-    def get_persist(self):
-        return self.persist
-
     def set_type(self, value):
         self.type = value
 
@@ -622,7 +615,7 @@ class Message():
         self.source = value
 
     def set_date(self, value):
-        self.date = value
+        self.date = to_iso_utc(value)
 
     def set_severity(self, value):
         self.severity = value
@@ -632,6 +625,3 @@ class Message():
 
     def set_message(self, value):
         self.message = value
-
-    def set_persist(self, value):
-        self.persist = value
