@@ -31,142 +31,101 @@ To retrieve data from the Axibase Time-Series Database (ATSD), establish a conne
 ```python
 
     >>> import atsd_client
-    >>> from atsd_client import services, models
-    >>>
+    >>> from atsd_client.services import SeriesService
     >>> conn = atsd_client.connect()
 ```
-
+All data needed to connect and authorize at ATSD is by default taken from special 'connection.properties' file.
 ###Initializing the Service
 
 The Service implements a set of methods for interacting with a particular type of
-objects in ATSD, for example, `Series`, `Property`,
-`Alert` objects as well as with metadata objects such as `Entity`,
-`Metric`, `EntityGroup`.
+objects in ATSD, for example, `Series`, `Property`, `Alert`, `Message` objects as well as with metadata objects such as `Entity`, `Metric`, `EntityGroup`. An example of creating a service is provided below.  
 
 ```python
 
-    >>> svc = services.SeriesService(conn)
+    >>> svc = SeriesService(conn)
 ```
 
 ###Inserting Series Values
 
-To insert series values into ATSD initialize
-a `Series` object and populate it with timestamped values.
+To insert series values into ATSD initialize a `Series` object and populate it with timestamped values.
 
 ```python
 
-    >>> series = models.Series('sensor001', 'temperature')
-    >>> series.add_value(3, '2015-04-14T07:03:31Z')
+	>>> from atsd_client.models import Sample, Series
+    >>> series = Series(entity='sensor123', metric='temperature')
+      
+    >>> series.add_samples(
+    		Sample(value=1, time="2016-07-18T17:14:30Z"),
+     	    Sample(value=2, time="2016-07-18T17:16:30Z")
+     	)
     >>>
-    >>> svc.insert_series(series)
+    >>> svc.insert(series)
 ```
 
-add version information with an optional `version` argument
+add version information with an optional `version` argument (here it is supposed that `power` metric is versioned)
 
 ```python
 
-    >>> series.add_value(3, '2015-04-14T07:03:31Z', version={'source': 'manual'})
+	>>> from datetime import datetime
+    >>> other_series = Series('sensor123', 'power')
+    >>> other_series.add_samples( Sample(3, datetime.now(), version={"source":"TEST_SOURCE", "status":"TEST_STATUS"}))
 ```
 
 ###Querying Series Values
 
-When querying series values from ATSD you need to specify metric, entity, as well as start
-and end time. The `retrieve_series` method returns a list of Series objects, 
-which you can unpack using `series, = svc.retrieve_series` function.
+When querying series values from ATSD you need to specify entity filter, date filter and series filter.
+Forecast, Versioning, Control, Transformation filters can also be used to filter result Series objects.
+See [SeriesQuery documentation page](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for more information.
+Series filter requires specifying metric name. You can also pass type, tags and exactMatch parameters to this filter to get more specific series objects.
+Entity filter can be set by entity name, names of multiple entities, name of entityGroup or entityExpression.
+Date filter can be set by specifying `startDate`, `endDate` or `interval` fields. Note that for correct work some combination of these parameters are needed. `startDate`, `endDate` fields can be provided either as special words from [endTime syntax](https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md) or ISO 8601 formatted string or number of milliseconds since 01.01.1970 or a datetime object.
+To get a list of `Series` objects, matching specified filters the `query` method of the service should be used.
 
 ```python
 
-    >>> import time
+	>>> from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter
+    >>> sf = SeriesFilter(metric="temperature")
+    >>> ef = EntityFilter(entity="sensor123")
+    >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=datetime.now())
+    >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
+    >>> result = svc.query(query_data)
     >>>
-    >>> query = models.SeriesQuery('sensor001', 'temperature')
-    >>> now = int(time.time() * 1000)  # current time in unix milliseconds
-    >>> query.endTime = now
-    >>> query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
-    >>>
-    >>> series, = svc.retrieve_series(query)
-    >>>
-    >>> print(series)
-    2015-11-19T12:05:44Z          2.0
-    2015-11-19T12:08:19Z          2.0
-    2015-11-19T12:08:19Z         34.0
-    2015-11-19T12:08:19Z          3.0
-    2015-11-19T12:15:44Z          4.0
-    2015-11-19T14:34:36Z         15.0
-    2015-11-19T15:20:07Z         36.0
-    2015-11-19T15:20:33Z         11.0
-    2015-11-19T15:20:55Z         40.0
-    2015-11-19T15:21:13Z         45.0
-    ...
-    2015-11-19T16:20:17Z         45.0
-    2015-11-19T16:46:10Z         55.0
-    2015-11-19T17:24:34Z         62.0
-    2015-11-19T17:38:14Z         42.0
-    2015-11-19T18:38:58Z          nan
-    2015-11-19T18:43:58Z         14.0
-    2015-11-20T09:42:02Z         24.0
-    2015-11-20T10:36:03Z         35.0
-    2015-11-20T10:49:53Z         11.0
-    2015-11-20T11:09:06Z         33.0
-    metric: temperature
-    entity: sensor001
-    aggregate: {u'type': u'DETAIL'}
-    type: HISTORY
-```
-
-Alternatively you can specify `startTime` and `endTime` properties using the built-in `datetime` object
-
-```python
-
-    >>> from datetime import datetime
-    >>> from datetime import timedelta
-    >>>
-    >>> query.endTime = datetime.now()
-    >>> query.startTime = query.endTime - timedelta(hours=12)
+    >>> print(result[0]) #picking first Series object
+    
+    2016-07-18T17:14:30+00:00             1
+	2016-07-18T17:16:30+00:00             2
+	metric: temperature
+	aggregate: {'type': 'DETAIL'}
+	type: HISTORY
+	tags: {}
+	data: [<Sample v=1, t=1468862070000.0, version=None>, <Sample v=2, t=1468862190000.0, version=None>]
+	entity: sensor123
 ```
 
 ###Querying Versioned Series Values
 
-To fetch series values with version information add `query.versioned = True`
+To fetch series values with version information add VersionedFilter to query with `versioned` field equal to True. The example demonstrated below also illustrates how milliseconds can be used to set a date filter. 
 
 ```python
 
     >>> import time
-    >>>
-    >>> query = models.SeriesQuery('sensor001', 'temperature')
-    >>> now = int(time.time() * 1000)  # current time in unix milliseconds
-    >>> query.versioned = True
-    >>> query.endTime = now
-    >>> query.startTime = now - 12 * 60 * 60 * 1000  # query data for the last 12 hours
-    >>>
-    >>> series, = svc.retrieve_series(query)
-    >>> series.sort(key=lambda sample: sample['version']['t'])
-    >>> print(series)
-               timestamp        value   version_source    version_status        version_time
-    2015-11-19T12:05:44Z          2.0        gateway-1               OK 2015-11-19T12:14:32Z
-    2015-11-19T12:08:19Z          2.0        gateway-1               OK 2015-11-19T12:09:59Z
-    2015-11-19T12:08:19Z         34.0        gateway-1               OK 2015-11-19T12:10:27Z
-    2015-11-19T12:08:19Z          3.0        gateway-1               OK 2015-11-19T12:12:58Z
-    2015-11-19T12:15:44Z          4.0        gateway-1               OK 2015-11-19T12:15:56Z
-    2015-11-19T14:34:36Z         15.0        gateway-1               OK 2015-11-19T14:35:54Z
-    2015-11-19T15:20:07Z         36.0        gateway-1               OK 2015-11-19T15:20:06Z
-    2015-11-19T15:20:33Z         11.0        gateway-1               OK 2015-11-19T15:20:32Z
-    2015-11-19T15:20:55Z         40.0        gateway-1               OK 2015-11-19T15:20:53Z
-    2015-11-19T15:21:13Z         45.0        gateway-1               OK 2015-11-19T15:21:12Z
-    ...
-    2015-11-19T16:46:10Z         55.0        gateway-1               OK 2015-11-19T16:46:11Z
-    2015-11-19T17:24:34Z         62.0        gateway-1               OK 2015-11-19T17:24:35Z
-    2015-11-19T17:38:14Z         42.0        gateway-1               OK 2015-11-19T17:38:15Z
-    2015-11-19T18:38:58Z       1094.0        gateway-1               OK 2015-11-19T18:38:59Z
-    2015-11-19T18:43:58Z         14.0        gateway-1               OK 2015-11-19T18:43:59Z
-    2015-11-20T09:42:02Z         24.0        gateway-1               OK 2015-11-20T09:42:03Z
-    2015-11-20T10:36:03Z         35.0        gateway-1               OK 2015-11-20T10:36:05Z
-    2015-11-20T10:49:53Z         11.0        gateway-1               OK 2015-11-20T10:49:54Z
-    2015-11-20T11:09:06Z         33.0        gateway-1               OK 2015-11-20T11:09:39Z
-    2015-11-19T18:38:58Z          nan      form/manual               OK 2015-11-20T18:39:43Z
-    metric: temperature
-    entity: sensor001
-    aggregate: {u'type': u'DETAIL'}
-    type: HISTORY
+    >>> from atsd_client.models import VersionFilter
+     >>> cur_unix_milliseconds = int(time.time() * 1000)
+	>>> sf = SeriesFilter(metric="power")
+	>>> ef = EntityFilter(entity="sensor123")
+	>>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
+	>>> vf = VersioningFilter(versioned=True)
+	>>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
+    >>> result = svc.query(query_data)
+    >>> print(result[0])
+	           time         value   version_source   version_status
+	1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
+	1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
+	1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
+	1468868308000.0           1.0      TEST_SOURCE      TEST_STATUS
+	1468868364000.0          15.0      TEST_SOURCE      TEST_STATUS
+	1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
+	1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
 ```
 
 ###Exploring Results
@@ -204,38 +163,42 @@ To plot series with `matplotlib` use the built-in `plot()` method
 
 ### Data API
 - Series
-    - Query
     - Insert
+    - Query
 - Properties
-    - Query
     - Insert
-    - Batch
+    - Query
+    - Type Query
 - Alerts 
     - Query
+    - Delete
     - Update
     - History Query
+- Messages
+	- Insert
+	- Query
     
 ### Meta API
 - Metrics 
-    - List
     - Get
-    - Create or replace
+    - List
     - Update
+    - Create or replace
     - Delete
-    - Entities and tags
 - Entities
-    - List
     - Get
-    - Create or replace
+    - List
     - Update
+    - Create or replace
     - Delete
 - Entity Group 
-    - List
     - Get
-    - Create or replace
+    - List
     - Update
+    - Create or replace
     - Delete
     - Get entities
     - Add entities
     - Set entities
     - Delete entities
+    
