@@ -19,5 +19,5 @@ from .connection import connect, connect_url
 from . import models, _constants, _utilities, _time_utilities
 from . import services
 
-__all__ = ['services', 'models', '_time_utilities']
-__version__ = '1.1.7'
+__all__ = ['services', 'models']
+__version__ = '2.0.0'
