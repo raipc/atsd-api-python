@@ -32,7 +32,7 @@ class Sample():
         self.t = to_timestamp(time)
         #`.dict` version object including 'source' and 'status' keys
         self.version = version
-        
+
     def __repr__(self):
         return "<Sample v={v}, t={t}, version={vv}>".format(v=self.v, t=self.t, vv=self.version)
     
@@ -48,6 +48,13 @@ class Sample():
 
     def set_t(self, t):
         self.t = to_timestamp(t)
+        
+    def get_version(self):
+        return self.version
+
+    def set_version(self, value):
+        self.version = value
+
         
     def _compare(self, other):
             return self.t - other.get_t()
@@ -112,8 +119,8 @@ class Series():
             row = '{0}{1: >14}'.format(time, value)
             if sample.version is not None:
                 versioned = True
-                source = sample.version.get('source', '')
-                status = sample.version.get('status', '')
+                source = sample.version.get('source', '-')
+                status = sample.version.get('status', '-')
                 row += '{0: >17}{1: >17}'.format(source, status)
             rows.append(row)
         if versioned:
