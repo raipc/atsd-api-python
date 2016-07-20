@@ -1,6 +1,7 @@
 import time
 import copy
 import dateutil.parser
+import calendar
 from datetime import datetime
 from dateutil.tz import tzlocal, tzutc
 import numbers
@@ -18,7 +19,8 @@ def _iso_to_milliseconds(time_string):
     :return: timestamp in milliseconds
     """
     utc_dt = dateutil.parser.parse(time_string)
-    return utc_dt.timestamp() * 1000
+    return calendar.timegm(utc_dt.timetuple()) * 1000
+
 
 def _dt_to_utc(datetime_obj):
     """
@@ -35,7 +37,7 @@ def to_timestamp(time):
     :param time: None | `str` in iso format | :class: `.datetime` | `int`
     :return: timestamp in milliseconds
     """
-    return _iso_to_milliseconds(to_iso_utc(time))
+    return _iso_to_milliseconds(to_iso_utc(time)) #CHANGED
 
 def to_iso_utc(time):
     """
@@ -45,7 +47,7 @@ def to_iso_utc(time):
     aux_time = None
     if time is None:
         aux_time = _current_aware_datetime()
-    if isinstance(time, str):
+    if isinstance(time, (str, unicode)):
         try:
             aux_time = dateutil.parser.parse(time)
         except ValueError:
