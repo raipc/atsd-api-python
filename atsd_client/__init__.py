@@ -21,3 +21,18 @@ from . import services
 
 __all__ = ['services', 'models']
 __version__ = '2.0.0'
+
+try:
+    print("Checking for the appropriate 'python-requests' version...")
+    req_v = None
+    import requests
+    req_v = requests.__version__
+    if list(map(lambda x: int(x), req_v.split("."))) < [2, 4, 2]:
+        print("Detected version of 'python-requests' :{}. OK".format(req_v))
+    else:
+        raise Exception 
+except:
+        import sys
+        sys.stderr.write("WARNING! Detected version of 'python-requests' :{}. Needed at least 2.4.2".format(req_v))
+        sys.stderr.flush()
+    
