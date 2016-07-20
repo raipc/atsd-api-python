@@ -110,7 +110,7 @@ To fetch series values with version information add VersionedFilter to query wit
 ```python
 
     >>> import time
-    >>> from atsd_client.models import VersionFilter
+    >>> from atsd_client.models import VersioningFilter
     >>> cur_unix_milliseconds = int(time.time() * 1000)
     >>> sf = SeriesFilter(metric="power")
     >>> ef = EntityFilter(entity="sensor123")
