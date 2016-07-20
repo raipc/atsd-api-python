@@ -20,7 +20,7 @@ from . import models, _constants, _utilities, _time_utilities
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '2.0.0'
+__version__ = '2.0.1'
 
 try:
     print("Checking for the appropriate 'python-requests' version...")
@@ -33,6 +33,6 @@ try:
         raise Exception 
 except:
         import sys
-        sys.stderr.write("WARNING! Detected version of 'python-requests' :{}. Needed at least 2.4.2".format(req_v))
+        sys.stderr.write("WARNING! Detected version of 'python-requests' :{}. Needed at least 2.4.2!\n".format(req_v))
         sys.stderr.flush()
     

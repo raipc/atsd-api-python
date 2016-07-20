@@ -37,7 +37,7 @@ def to_timestamp(time):
     :param time: None | `str` in iso format | :class: `.datetime` | `int`
     :return: timestamp in milliseconds
     """
-    return _iso_to_milliseconds(to_iso_utc(time)) #CHANGED
+    return _iso_to_milliseconds(to_iso_utc(time))
 
 def to_iso_utc(time):
     """
