@@ -27,7 +27,7 @@ try:
     req_v = None
     import requests
     req_v = requests.__version__
-    if list(map(lambda x: int(x), req_v.split("."))) < [2, 4, 2]:
+    if list(map(lambda x: int(x), req_v.split("."))) >= [2, 4, 2]:
         print("Detected version of 'python-requests' :{}. OK".format(req_v))
     else:
         raise Exception 
