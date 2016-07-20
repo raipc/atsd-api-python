@@ -51,14 +51,12 @@ To insert series values into ATSD initialize a `Series` object and populate it w
 
 ```python
 
-	>>> from atsd_client.models import Sample, Series
+    >>> from atsd_client.models import Sample, Series
     >>> series = Series(entity='sensor123', metric='temperature')
-      
     >>> series.add_samples(
-    		Sample(value=1, time="2016-07-18T17:14:30Z"),
+    	    Sample(value=1, time="2016-07-18T17:14:30Z"),
      	    Sample(value=2, time="2016-07-18T17:16:30Z")
      	)
-    >>>
     >>> svc.insert(series)
 ```
 
@@ -66,24 +64,26 @@ add version information with an optional `version` argument (here it is supposed
 
 ```python
 
-	>>> from datetime import datetime
+    >>> from datetime import datetime
     >>> other_series = Series('sensor123', 'power')
-    >>> other_series.add_samples( Sample(3, datetime.now(), version={"source":"TEST_SOURCE", "status":"TEST_STATUS"}))
+    >>> other_series.add_samples(
+                Sample(3, datetime.now(), version={"source":"TEST_SOURCE", "status":"TEST_STATUS"})
+        )
 ```
 
 ###Querying Series Values
 
-When querying series values from ATSD you need to specify entity filter, date filter and series filter.
+When querying series values from ATSD you need to specify *entity filter*, *date filter* and *series filter*. <br>
 Forecast, Versioning, Control, Transformation filters can also be used to filter result Series objects.
-See [SeriesQuery documentation page](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for more information.
-Series filter requires specifying metric name. You can also pass type, tags and exactMatch parameters to this filter to get more specific series objects.
-Entity filter can be set by entity name, names of multiple entities, name of entityGroup or entityExpression.
-Date filter can be set by specifying `startDate`, `endDate` or `interval` fields. Note that for correct work some combination of these parameters are needed. `startDate`, `endDate` fields can be provided either as special words from [endTime syntax](https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md) or ISO 8601 formatted string or number of milliseconds since 01.01.1970 or a datetime object.
-To get a list of `Series` objects, matching specified filters the `query` method of the service should be used.
+See [SeriesQuery documentation page](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for more information.<br>
+*Series filter* requires specifying metric name. You can also pass type, tags and exactMatch parameters to this filter to get more specific series objects.<br>
+*Entity filter* can be set by providing either entity name, names of multiple entities, name of entityGroup or entityExpression.<br>
+*Date filter* can be set by specifying `startDate`, `endDate` or `interval` fields. Note that for correct work some **combination** of these parameters are needed. `startDate`, `endDate` fields can be provided either as special words from [endTime syntax](https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md) or ISO 8601 formatted string or number of milliseconds since 01.01.1970 or a datetime object.<br>
+Finally, to get a list of `Series` objects, matching specified filters the `query` method of the service should be used.
 
 ```python
 
-	>>> from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter
+    >>> from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter
     >>> sf = SeriesFilter(metric="temperature")
     >>> ef = EntityFilter(entity="sensor123")
     >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=datetime.now())
@@ -110,12 +110,12 @@ To fetch series values with version information add VersionedFilter to query wit
 
     >>> import time
     >>> from atsd_client.models import VersionFilter
-     >>> cur_unix_milliseconds = int(time.time() * 1000)
-	>>> sf = SeriesFilter(metric="power")
-	>>> ef = EntityFilter(entity="sensor123")
-	>>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
-	>>> vf = VersioningFilter(versioned=True)
-	>>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
+    >>> cur_unix_milliseconds = int(time.time() * 1000)
+    >>> sf = SeriesFilter(metric="power")
+    >>> ef = EntityFilter(entity="sensor123")
+    >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
+    >>> vf = VersioningFilter(versioned=True)
+    >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
     >>> result = svc.query(query_data)
     >>> print(result[0])
 	           time         value   version_source   version_status
