@@ -58,6 +58,7 @@ To insert series values into ATSD initialize a `Series` object and populate it w
      	    Sample(value=2, time="2016-07-18T17:16:30Z")
      	)
     >>> svc.insert(series)
+    True
 ```
 
 add version information with an optional `version` argument (here it is supposed that `power` metric is versioned)
@@ -104,7 +105,7 @@ Finally, to get a list of `Series` objects, matching specified filters the `quer
 
 ###Querying Versioned Series Values
 
-To fetch series values with version information add VersionedFilter to query with `versioned` field equal to True. The example demonstrated below also illustrates how milliseconds can be used to set a date filter. 
+To fetch series values with version information add VersionedFilter to query with `versioned` field equal to **True**. The example demonstrated below also illustrates how milliseconds can be used to set a date filter. 
 
 ```python
 
