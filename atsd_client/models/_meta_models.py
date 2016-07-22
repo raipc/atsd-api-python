@@ -86,7 +86,7 @@ class Metric():
         self.description = description
         #: `Number` number of days to retain values for this metric in the database
         self.retentionInterval = retentionInterval
-        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
         self.lastInsertDate = to_iso_utc(lastInsertDate)
         #: `dict`
         self.tags = tags
@@ -200,7 +200,7 @@ class Entity():
         self.name = name
         #: `bool` enabled status. Incoming data is discarded for disabled entities
         self.enabled = enabled
-        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
         self.lastInsertDate = to_iso_utc(lastInsertDate)
         #: `dict`
         self.tags = tags

@@ -28,7 +28,7 @@ class Sample():
     
     def __init__(self, value, time=None, version=None):
         self.v = copy.deepcopy(value) if not value == "Nan" else float("nan")
-        #`.datetime` object | `long` milliseconds | `str`  ISO 8601 date 
+        #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date 
         self.t = to_timestamp(time)
         #`.dict` version object including 'source' and 'status' keys
         self.version = version
@@ -247,7 +247,7 @@ class Property():
     Each properties record is uniquely identified by entity name, property type and optional property keys.
     """
         
-    def __init__(self, type, entity, tags, key=None, date=None):
+    def __init__(self, type, entity, tags=None, key=None, date=None):
         #: `str` property type name
         self.type = type
         #: `str` entity name
@@ -256,7 +256,7 @@ class Property():
         self.tags = tags
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self.key = key
-        #: `.datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
+        #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
         self.date = to_iso_utc(date)
 
     def __repr__(self):
@@ -312,9 +312,9 @@ class Alert():
         self.entity = entity
         #: `str` metric
         self.metric = metric
-        #: `str` | `.datetime` | `long` milliseconds when the last record was received
+        #: `str` | :class:`datetime` | `long` milliseconds when the last record was received
         self.lastEventDate = to_iso_utc(lastEventDate)
-        #: `str` | `.datetime` | `long` milliseconds when the alert was open
+        #: `str` | :class:`datetime` | `long` milliseconds when the alert was open
         self.openDate = to_iso_utc(openDate)
         #: `Number` last numeric value received
         self.value = value
@@ -429,13 +429,13 @@ class AlertHistory():
         self.alert = alert
         #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
         self.alertDuration = alertDuration
-        #: `str` | `.datetime` | `long`    
+        #: `str` | :class:`datetime` | `long`    
         self.alertOpenDate = to_iso_utc(alertOpenDate)
         #: `str`
         self.entity = entity
         #: `str`
         self.metric = metric
-        #: `str` | `.datetime` | `long` 
+        #: `str` | :class:`datetime` | `long` 
         self.receivedDate = to_iso_utc(receivedDate)
         #: `int`
         self.repeatCount = repeatCount
@@ -451,7 +451,7 @@ class AlertHistory():
         self.tags = tags
         #: `str` alert state when closed: OPEN, CANCEL, REPEAT
         self.type = type
-        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date
         self.date = to_iso_utc(date)
         #: `Number` last numeric value received
         self.value = value
@@ -581,7 +581,7 @@ class Message():
         self.source = source
         #: `str` entity name
         self.entity = entity
-        #: #: `.datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created 
+        #:`datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created 
         self.date = to_iso_utc(date)
         #: :class:`.Severity`
         self.severity = severity

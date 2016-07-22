@@ -5,7 +5,10 @@ import calendar
 from datetime import datetime
 from dateutil.tz import tzlocal, tzutc
 import numbers
-
+try:
+    unicode = unicode
+except NameError:
+    unicode = str
 
 def _current_aware_datetime():
     return datetime.now(tzlocal())
@@ -34,14 +37,14 @@ def _dt_to_utc(datetime_obj):
 
 def to_timestamp(time):
     """
-    :param time: None | `str` in iso format | :class: `.datetime` | `int`
+    :param time: None | `str` in iso format | :class:`datetime` | `int`
     :return: timestamp in milliseconds
     """
     return _iso_to_milliseconds(to_iso_utc(time))
 
 def to_iso_utc(time):
     """
-    :param time: None | iso `str` | :class: `.datetime` | `int`
+    :param time: None | iso `str` | :class:`datetime` | `int`
     :return: timestamp in milliseconds
     """
     aux_time = None

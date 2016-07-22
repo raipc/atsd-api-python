@@ -138,11 +138,11 @@ class DateFilter():
                 (self.interval is not None) and all(key in self.interval for key in ("count","unit"))
     
     def __init__(self, startDate=None, endDate=None, interval=None):
-        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02Z, current_hour
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02Z, current_hour
         self.startDate = to_iso_utc(startDate) if startDate is not None else None 
-        #: `.datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
         self.endDate = to_iso_utc(endDate) if endDate is not None else None 
-        #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"
+        #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"}
         self.interval = interval
         if not self._validate():
             raise ValueError("Bad arguments for date filter: startDate={}, endDate={}, interval={}".format(startDate, endDate, interval))
@@ -201,7 +201,7 @@ class SeriesFilter():
         self.metric = metric
         #: `dict`
         self.tags = tags 
-        #: :class: `.SeriesType` type of underlying data: HISTORY, FORECAST, FORECAST_DEVIATION. Default: HISTORY
+        #: :class:`.SeriesType` type of underlying data: HISTORY, FORECAST, FORECAST_DEVIATION. Default: HISTORY
         self.type = type
 
     def set_metric(self, value):
@@ -270,11 +270,11 @@ class  ControlFilter():
 #=======================================================================
 class TransformationFilter():
     def __init__(self, aggregate, group, rate):
-        #: :class: `.Aggregate` object responsible for grouping detailed values into periods and calculating statistics for each period. Default: DETAIL
+        #: :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating statistics for each period. Default: DETAIL
         self.aggregate = aggregate
-        #: :class: `.Group` object responsible for merging multiple series into one series
+        #: :class:`.Group` object responsible for merging multiple series into one series
         self.group = group
-        #: :class: `.Rate` object responsible for computing difference between consecutive samples per unit of time (rate period)
+        #: :class:`.Rate` object responsible for computing difference between consecutive samples per unit of time (rate period)
         self.rate = rate
 
     def set_aggregate(self, value):

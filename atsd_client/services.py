@@ -52,6 +52,7 @@ class SeriesService(_Service):
         """
         :param series_objects: :class:`.Series` objects
         :return: True if success
+        Insert an array of samples for a given series identified by metric, entity, and series tags
         """
         for series in series_objects:
             if len(series.data) == 0:
@@ -61,9 +62,9 @@ class SeriesService(_Service):
     
     def query(self, *queries):
         """
-        Retrieve series for each query
         :param queries: :class:`.SeriesQuery` objects
         :return: list of :class:`.Series` objects
+        Retrieve series for each query
         """
         response = self.conn.post(series_query_url, queries)
         return [_jsonutil.deserialize(element, Series) for element in response]
@@ -84,18 +85,18 @@ class SeriesService(_Service):
 class PropertiesService(_Service):
     def insert(self, *properties):
         """
-        Inserts given properties
         :param properties: :class:`.Property`
         :return: True if success
+        Insert given properties
         """
         self.conn.post(properties_insert_url, properties)
         return True
     
     def query(self, *queries):
         """
-        Retrieves property for each query
         :param queries: :class:`.PropertiesQuery`
         :return: list of :class:`.Property` objects
+        Retrieves property for each query
         """
         resp = self.conn.post(properties_query_url, queries)
         return _jsonutil.deserialize(resp, Property)
@@ -104,6 +105,7 @@ class PropertiesService(_Service):
         """
         :param entity: :class:`.Entity`
         :return: returns `list` of property types for the entity.
+        Returns an array of property types for the entity.
         """
         response = self.conn.get(properties_types_url.format(entity=quote(entity.name, '')))
         return response
@@ -116,9 +118,9 @@ class PropertiesService(_Service):
     
     def delete(self, *filters):
         """
-        Delete properties for each query
         :param filters: :class:`.PropertyDeleteFilter`
         :return: True if success
+        Delete properties for each query
         """
         response = self.conn.post(properties_delete_url, filters)
         return True
@@ -127,36 +129,36 @@ class PropertiesService(_Service):
 class AlertsService(_Service):
     def query(self, *queries):
         """
-        Retrieve alert for each query
         :param queries: :class:`.AlertsQuery`
         :return: get of :class:`.Alert` objects
+        Retrieve alert for each query
         """
         resp = self.conn.post(alerts_query_url, queries)
         return _jsonutil.deserialize(resp, Alert)
     
     def update(self, *updates):
         """
-        Change acknowledgement status of the specified open alerts.
         :param updates: `dict`
         :return: True if success
+        Change acknowledgement status of the specified open alerts.
         """
         response = self.conn.post(alerts_update_url, updates)
         return True
 
     def history_query(self, *queries):
         """
-        Retrieve history for each query
         :param queries: :class:`.AlertHistoryQuery`
         :return: get of :class:`.AlertHistory` objects
+        Retrieve history for each query
         """
         resp = self.conn.post(alerts_history_url, queries)
         return _jsonutil.deserialize(resp, AlertHistory)
 
     def delete(self, *ids):
         """
-        Retrieve alert for each query
         :param id: `int`
         :return: True if success
+        Retrieve alert for each query
         """
         response = self.conn.post(alerts_delete_url, ids)
         return True
@@ -165,18 +167,18 @@ class AlertsService(_Service):
 class MessageService(_Service):
     def insert(self, *messages):
         """
-        Insert specified messages
         :param messages: :class:`.Message`
         :return: True if success
+        Insert specified messages
         """
         resp = self.conn.post(messages_insert_url, messages)
         return True
     
     def query(self, *queries):
         """
-        Retrieve alerts for each query
         :param queries: :class:`.AlertsQuery`
         :return: `list` of :class:`.Alert` objects
+        Retrieve alerts for each query
         """
         resp = self.conn.post(messages_query_url, queries)
         return _jsonutil.deserialize(resp, Message)
@@ -196,9 +198,9 @@ class MessageService(_Service):
 class MetricsService(_Service):
     def get(self, name):
         """
-        Retrieve properties and tags for the specified metric.
         :param name: `str` metric name
         :return: :class:`.Metric`
+        Retrieve properties and tags for the specified metric.
         """
         _check_name(name)
         try:
@@ -212,13 +214,13 @@ class MetricsService(_Service):
 
     def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
-        Retrieve a `list` of metrics matching the specified filter conditions.
         :param expression: `str`
-        :param minInsertDate: `int` | `str` | None | :class: `.datetime`
-        :param maxInsertDate: `int` | `str` | None | :class: `.datetime`
+        :param minInsertDate: `int` | `str` | None | :class:`datetime`
+        :param maxInsertDate: `int` | `str` | None | :class:`datetime`
         :param tags: `str`
         :param limit: `int`
         :return: :class:`.Metric` objects
+        Retrieve a `list` of metrics matching the specified filter conditions.
         """
         params = {}
         if expression is not None:
@@ -236,18 +238,18 @@ class MetricsService(_Service):
     
     def update(self, metric):
         """
-        Update fields and tags of the specified metric.
-        :param metric: :class: `.Metric`
+        :param metric: :class:`.Metric`
         :return: True if success
+        Update fields and tags of the specified metric.
         """
         self.conn.patch(metric_update_url.format(metric=quote(metric.name, '')), metric)
         return True
     
     def create_or_replace(self, metric):
         """
-        Create a metric with specified fields and tags or replace the fields and tags of an existing metric.
         :param metric: :class:`.Metric`
         :return: True if success
+        Create a metric with specified fields and tags or replace the fields and tags of an existing metric.
         """
         self.conn.put(metric_create_or_replace_url.format(metric=quote(metric.name, '')), metric)
         return True
@@ -255,9 +257,9 @@ class MetricsService(_Service):
 
     def delete(self, metric_name):
         """
-        Delete the specified metric.
         :param metric_name: :class:`.Metric`
         :return: True if success
+        Delete the specified metric.
         """
         self.conn.delete(metric_delete_url.format(metric=quote(metric_name, '')))
         return True
@@ -266,9 +268,9 @@ class MetricsService(_Service):
 class EntitiesService(_Service):
     def get(self, entity_name):
         """
-        Retrieve information about the specified entity including its tags.
         :param entity_name: `str` entity name
         :return: :class:`.Entity`
+        Retrieve information about the specified entity including its tags.
         """
         _check_name(entity_name)
         try:
@@ -282,13 +284,13 @@ class EntitiesService(_Service):
     
     def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
-        Retrieve a list of entities matching the specified filter conditions.
         :param expression: `str`
-        :param minInsertDate: `str` | `int` | :class: `.datetime`  
-        :param maxInsertDate: `str` | `int` | :class: `.datetime`
+        :param minInsertDate: `str` | `int` | :class:`datetime`  
+        :param maxInsertDate: `str` | `int` | :class:`datetime`
         :param tags: `dict`
         :param limit: `int`
         :return: :class:`.Entity` objects
+        Retrieve a list of entities matching the specified filter conditions.
         """
         params = dict()
         if expression is not None: 
@@ -306,27 +308,27 @@ class EntitiesService(_Service):
 
     def update(self, entity):
         """
-        Update fields and tags of the specified entity.
         :param entity: :class:`.Entity`
         :return: True if success
+        Update fields and tags of the specified entity.
         """
         self.conn.patch(ent_update_url.format(entity=quote(entity.name, '')), entity)
         return True
 
     def create_or_replace(self, entity):
         """
-        Create an entity with specified fields and tags or replace the fields and tags of an existing entity.
         :param entity: :class:`.Entity`
         :return: True if success
+        Create an entity with specified fields and tags or replace the fields and tags of an existing entity.
         """
         self.conn.put(ent_create_or_replace_url.format(entity=quote(entity.name, '')), entity)
         return True
 
     def delete(self, entity):
         """
-        Delete the specified entity and delete it as member from any entity groups that it belongs to.
         :param entity: :class:`.Entity`
         :return: True if success
+        Delete the specified entity and delete it as member from any entity groups that it belongs to.
         """
         self.conn.delete(ent_delete_url.format(entity=quote(entity.name, '')))
         return True
@@ -335,11 +337,11 @@ class EntitiesService(_Service):
 class EntityGroupsService(_Service):
     def get(self, group_name):
         """
+        :param group_name: `str` entity group name
+        :return: :class:`.EntityGroup`
         Retrieve information about the specified entity group including its tags.
         Membership in entity groups with non-empty expression is managed by the server.
         Adding/removing members of expression-based groups is not supported.
-        :param group_name: `str` entity group name
-        :return: :class:`.EntityGroup`
         """
         _check_name(group_name)
         try:
@@ -353,13 +355,13 @@ class EntityGroupsService(_Service):
     
     def list(self, expression=None, tags=None, limit=None):
         """
-        Retrieve a list of entity groups.
-        Membership in entity groups with non-empty expression is managed by the server. 
-        Adding/removing members of expression-based groups is not supported.
         :param expression: `str`
         :param tags: `dict`
         :param limit: `int`
         :return: :class:`.EntityGroup` objects
+        Retrieve a list of entity groups.
+        Membership in entity groups with non-empty expression is managed by the server. 
+        Adding/removing members of expression-based groups is not supported.        
         """
         params=dict()
         if expression is not None: 
@@ -373,43 +375,43 @@ class EntityGroupsService(_Service):
 
     def update(self, group):
         """
-        Update fields and tags of the specified entity group.
-        Unlike the replace method, fields and tags that are not specified in the request are left unchanged.
         :param group: :class:`.EntityGroup`
         :return: True if success
+        Update fields and tags of the specified entity group.
+        Unlike the replace method, fields and tags that are not specified in the request are left unchanged.
         """
         self.conn.patch(eg_update_url.format(group=quote(group.name, '')), group)
         return True
 
     def create_or_replace(self, group):
         """
-        Create an entity group with specified fields and tags or replace the fields and tags of an existing entity group.
         :param group: :class:`.EntityGroup`
         :return: True if success
+        Create an entity group with specified fields and tags or replace the fields and tags of an existing entity group.
         """
         self.conn.put(eg_create_or_replace_url.format(group=quote(group.name, '')), group)
         return True
 
     def delete(self, group):
         """
-        Delete the specified entity group.
-        Member entities and their data is not affected by this operation.
         :param group: :class:`.EntityGroup`
         :return: True if success
+        Delete the specified entity group.
+        Member entities and their data is not affected by this operation.
         """
         self.conn.delete(eg_delete_url.format(group=quote(group.name, '')))
         return True
 
     def get_entities(self, group_name, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
-        Retrieve a list of entities that are members of the specified entity group and are matching the specified filter conditions.
         :param group_name: `str`
         :param expression: `str`
-        :param minInsertDate: `str` | `int` | :class: `.datetime`  
-        :param maxInsertDate: `str` | `int` | :class: `.datetime`
+        :param minInsertDate: `str` | `int` | :class:`datetime`  
+        :param maxInsertDate: `str` | `int` | :class:`datetime`
         :param tags: `dict`
         :param limit: `int`
         :return: `list` of :class:`.Entity` objects
+        Retrieve a list of entities that are members of the specified entity group and are matching the specified filter conditions.
         """
         _check_name(group_name)
         params = dict()
@@ -428,11 +430,11 @@ class EntityGroupsService(_Service):
 
     def add_entities(self, group_name, entities, createEntities=None):
         """
-        Add entities as members to the specified entity group.
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
         :param createEntities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
         :return: True if success
+        Add entities as members to the specified entity group.
         """
         _check_name(group_name)
         data = [e.name if isinstance(e, Entity) else e for e in entities]
@@ -442,13 +444,13 @@ class EntityGroupsService(_Service):
 
     def set_entities(self, group_name, entities, createEntities=None):
         """
-        Set members of the entity group from the specified entity list.
-        All existing members that are not included in the request will be removed from members.
-        If the array in the request is empty, all entities are removed from the group and are replaced with an empty list.
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
         :param createEntities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
         :return: True if success
+        Set members of the entity group from the specified entity list.
+        All existing members that are not included in the request will be removed from members.
+        If the array in the request is empty, all entities are removed from the group and are replaced with an empty list.
         """
         _check_name(group_name)
         data = [e.name if isinstance(e, Entity) else e for e in entities]
@@ -458,11 +460,11 @@ class EntityGroupsService(_Service):
     
     def delete_entities(self, group_name, entities):
         """
-        Remove specified entities from members of the specified entity group.
-        To delete all entities, submit an empty list [] with set_entities method.
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
         :return: True if success
+        Remove specified entities from members of the specified entity group.
+        To delete all entities, submit an empty list [] with set_entities method.
         """
         _check_name(group_name)
         data = [e.name if isinstance(e, Entity) else e for e in entities]

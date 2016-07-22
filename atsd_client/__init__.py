@@ -20,7 +20,7 @@ from . import models, _constants, _utilities, _time_utilities
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '2.0.2'
+__version__ = '2.0.3'
 
 try:
     print("Checking for the appropriate 'python-requests' version...")
