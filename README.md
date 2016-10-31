@@ -34,7 +34,7 @@ To retrieve data from the Axibase Time Series Database (ATSD), establish a conne
     >>> from atsd_client.services import SeriesService
     >>> conn = atsd_client.connect()
 ```
-All data needed to connect and authorize ATSD is by default taken from the special `connection.properties` file.
+All data needed to connect and authorize ATSD is by default taken from the `connection.properties` file.
 ###Initializing the Service
 
 The `Service` command implements a set of methods for interacting with a particular type of
