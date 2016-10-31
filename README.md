@@ -1,4 +1,4 @@
-# Axibase Time-Series Database Client for Python
+# Axibase Time-Series Database Client for Python 
 
 The Axibase Time-Series Database API Client for Python enables developers 
 to easily read and write statistics and metadata 
