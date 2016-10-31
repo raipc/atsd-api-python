@@ -8,7 +8,7 @@ from Axibase Time-Series Database.
 [PyPI](https://pypi.python.org/pypi/atsd_client)  
 [Client documentation](http://pythonhosted.org/atsd_client)
 
-## Installation
+## Installation 
 
 Install atsd_client with pip
 
