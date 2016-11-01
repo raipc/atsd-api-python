@@ -1,8 +1,8 @@
 # Axibase Time-Series Database Client for Python
 
-The Axibase Time-Series Database API Client for Python enables developers 
+The Axibase Time Series Database API Client for Python enables developers 
 to easily read and write statistics and metadata 
-from Axibase Time-Series Database.
+from the Axibase Time Series Database.
 
 [API documentation](https://axibase.com/atsd/api)  
 [PyPI](https://pypi.python.org/pypi/atsd_client)  
@@ -10,13 +10,13 @@ from Axibase Time-Series Database.
 
 ## Installation
 
-Install atsd_client with pip
+Install `atsd_client` with pip:
 
 ```
 pip install atsd_client
 ```
 
-or clone GitHub repository and run
+Or, you can clone the GitHub repository and run:
 
 ```
 python setup.py install
@@ -26,7 +26,7 @@ python setup.py install
 
 ###Connecting to ATSD
 
-To retrieve data from the Axibase Time-Series Database (ATSD), establish a connection with atsd_client module as follows:
+To retrieve data from the Axibase Time Series Database (ATSD), establish a connection with the `atsd_client` module as follows:
 
 ```python
 
@@ -34,11 +34,12 @@ To retrieve data from the Axibase Time-Series Database (ATSD), establish a conne
     >>> from atsd_client.services import SeriesService
     >>> conn = atsd_client.connect()
 ```
-All data needed to connect and authorize at ATSD is by default taken from special 'connection.properties' file.
+All data needed to connect and authorize ATSD is by default taken from the `connection.properties` file.
 ###Initializing the Service
 
-The Service implements a set of methods for interacting with a particular type of
-objects in ATSD, for example, `Series`, `Property`, `Alert`, `Message` objects as well as with metadata objects such as `Entity`, `Metric`, `EntityGroup`. An example of creating a service is provided below.  
+The client provides a set of services for interacting with a particular type of objects in ATSD, for example, `Series`, `Property`, `Alert`,  and `Message` objects 
+as well as with metadata objects such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a service is provided below.
+
 
 ```python
 
@@ -47,7 +48,7 @@ objects in ATSD, for example, `Series`, `Property`, `Alert`, `Message` objects a
 
 ###Inserting Series Values
 
-To insert series values into ATSD initialize a `Series` object and populate it with timestamped values.
+To insert series values into ATSD, initialize a `Series` object and populate it with timestamped values.
 
 ```python
 
@@ -61,7 +62,7 @@ To insert series values into ATSD initialize a `Series` object and populate it w
     True
 ```
 
-add version information with an optional `version` argument (here it is supposed that `power` metric is versioned)
+You can add version information with an optional `version` argument (here it is assumed that the `power` metric is versioned).
 
 ```python
 
@@ -74,13 +75,17 @@ add version information with an optional `version` argument (here it is supposed
 
 ###Querying Series Values
 
-When querying series values from ATSD you need to specify *entity filter*, *date filter* and *series filter*. <br>
-Forecast, Versioning, Control, Transformation filters can also be used to filter result Series objects.
-See [SeriesQuery documentation page](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for more information.<br>
-*Series filter* requires specifying metric name. You can also pass type, tags and exactMatch parameters to this filter to get more specific series objects.<br>
-*Entity filter* can be set by providing either entity name, names of multiple entities, name of entityGroup or entityExpression.<br>
-*Date filter* can be set by specifying `startDate`, `endDate` or `interval` fields. Note that for correct work some **combination** of these parameters are needed. `startDate`, `endDate` fields can be provided either as special words from [endTime syntax](https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md) or ISO 8601 formatted string or number of milliseconds since 01.01.1970 or a datetime object.<br>
-Finally, to get a list of `Series` objects, matching specified filters the `query` method of the service should be used.
+When querying series values from ATSD, you need to specify *entity filter*, *date filter*, and *series filter*. <br>
+Forecast, Versioning, Control, and Transformation filters can also be used to filter the resulting `Series` objects.
+See the [SeriesQuery documentation page](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for more information.
+
+*Series filter*: requires specifying the metric name. You can also include type, tags, and exactMatch parameters in this filter to get more specific series objects.
+
+*Entity filter*: can be set by providing entity name, names of multiple entities, or the name of the entityGroup or entityExpression.
+
+*Date filter*: can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters are required. The `startDate` and `endDate` fields can be provided either as special words from [endTime syntax](https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md), an ISO 8601 formatted string, number of milliseconds since 01.01.1970, or a datetime object.
+
+Finally, to get a list of `Series` objects matching the specified filters, the `query` method of the service should be used.
 
 ```python
 
@@ -105,7 +110,7 @@ Finally, to get a list of `Series` objects, matching specified filters the `quer
 
 ###Querying Versioned Series Values
 
-To fetch series values with version information add VersionedFilter to query with `versioned` field equal to **True**. The example demonstrated below also illustrates how milliseconds can be used to set a date filter. 
+To fetch series values with version information, add the `VersionedFilter` to the query with the `versioned` field equal to **True**. The example demonstrated below also illustrates how milliseconds can be used to set a date filter. 
 
 ```python
 
@@ -131,8 +136,7 @@ To fetch series values with version information add VersionedFilter to query wit
 
 ###Exploring Results
 
-In order to consume the Series object in [pandas, a Python data analysis toolkit]
-(http://pandas.pydata.org/), you can utilize the built-in `to_pandas_series()`
+In order to consume the Series object in [pandas](http://pandas.pydata.org/), a Python data analysis toolkit, you can utilize the built-in `to_pandas_series()`
 and `from_pandas_series()` methods.
 
 ```python
@@ -151,7 +155,7 @@ and `from_pandas_series()` methods.
 
 ###Graphing Results
 
-To plot series with `matplotlib` use the built-in `plot()` method
+To plot the series with `matplotlib`, use the built-in `plot()` method:
 
 ```python
 
