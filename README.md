@@ -37,8 +37,9 @@ To retrieve data from the Axibase Time Series Database (ATSD), establish a conne
 All data needed to connect and authorize ATSD is by default taken from the `connection.properties` file.
 ###Initializing the Service
 
-The `Service` command implements a set of methods for interacting with a particular type of
-object in ATSD. Allowable objects incude `Series`, `Property`, `Alert`, and `Message` objects, as well as metadata objects such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a `Service` command is shown below:  
+The client provides a set of services for interacting with a particular type of objects in ATSD, for example, `Series`, `Property`, `Alert`,  and `Message` objects 
+as well as with metadata objects such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a service is provided below.
+
 
 ```python
 
