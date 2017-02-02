@@ -37,7 +37,7 @@ setup(
     author='Axibase Corporation',
     author_email='axibase-api@axibase.com',
     license='Apache 2.0',
-    install_requires=['requests','python-dateutil'],
+    install_requires=['requests','python-dateutil', 'pandas'],
     package_data={'atsd_client': ['connection.properties']},
     keywords='axibase, atsd, axibase time-series database, python',
     classifiers=(

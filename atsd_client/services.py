@@ -23,10 +23,14 @@ from . import _jsonutil
 from ._constants import *
 from ._time_utilities import to_iso_utc
 
+import pandas as pd
+
 try:
     from urllib import quote
+    from urllib import urlencode
 except ImportError:
     from urllib.parse import quote
+    from urllib.parse import urlencode
 try:
     unicode = unicode
 except NameError:
@@ -57,9 +61,9 @@ class SeriesService(_Service):
         for series in series_objects:
             if len(series.data) == 0:
                 raise DataParseException('data', Series, 'Inserting empty series')
-        self.conn.post('series/insert', series_objects)
+        self.conn.post(series_insert_url, series_objects)
         return True
-    
+
     def query(self, *queries):
         """
         :param queries: :class:`.SeriesQuery` objects
@@ -74,7 +78,7 @@ class SeriesService(_Service):
         Unimplemented
         """
         raise NotImplementedError
-    
+
     def csv_insert(self, *csvs):
         """
         Unimplemented
@@ -91,7 +95,7 @@ class PropertiesService(_Service):
         """
         self.conn.post(properties_insert_url, properties)
         return True
-    
+
     def query(self, *queries):
         """
         :param queries: :class:`.PropertiesQuery`
@@ -100,7 +104,7 @@ class PropertiesService(_Service):
         """
         resp = self.conn.post(properties_query_url, queries)
         return _jsonutil.deserialize(resp, Property)
-    
+
     def type_query(self, entity):
         """
         :param entity: :class:`.Entity`
@@ -115,7 +119,7 @@ class PropertiesService(_Service):
         Unimplemented 
         """
         raise NotImplementedError
-    
+
     def delete(self, *filters):
         """
         :param filters: :class:`.PropertyDeleteFilter`
@@ -135,7 +139,7 @@ class AlertsService(_Service):
         """
         resp = self.conn.post(alerts_query_url, queries)
         return _jsonutil.deserialize(resp, Alert)
-    
+
     def update(self, *updates):
         """
         :param updates: `dict`
@@ -173,7 +177,7 @@ class MessageService(_Service):
         """
         resp = self.conn.post(messages_insert_url, messages)
         return True
-    
+
     def query(self, *queries):
         """
         :param queries: :class:`.AlertsQuery`
@@ -235,7 +239,7 @@ class MetricsService(_Service):
             params['limit'] = limit
         response = self.conn.get(metric_list_url, params)
         return _jsonutil.deserialize(response, Metric)
-    
+
     def update(self, metric):
         """
         :param metric: :class:`.Metric`
@@ -244,7 +248,7 @@ class MetricsService(_Service):
         """
         self.conn.patch(metric_update_url.format(metric=quote(metric.name, '')), metric)
         return True
-    
+
     def create_or_replace(self, metric):
         """
         :param metric: :class:`.Metric`
@@ -281,7 +285,7 @@ class EntitiesService(_Service):
             else:
                 raise e
         return _jsonutil.deserialize(response, Entity)
-    
+
     def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
         """
         :param expression: `str`
@@ -293,15 +297,15 @@ class EntitiesService(_Service):
         Retrieve a list of entities matching the specified filter conditions.
         """
         params = dict()
-        if expression is not None: 
+        if expression is not None:
              params["expression"] = expression
-        if minInsertDate is not None: 
+        if minInsertDate is not None:
              params["minInsertDate"] = to_iso_utc(minInsertDate)
-        if maxInsertDate is not None: 
+        if maxInsertDate is not None:
              params["maxInsertDate"] = to_iso_utc(maxInsertDate)
-        if tags is not None: 
+        if tags is not None:
              params["tags"] = tags
-        if limit is not None: 
+        if limit is not None:
              params["limit"] = limit
         resp = self.conn.get(ent_list_url, params)
         return _jsonutil.deserialize(resp, Entity)
@@ -352,7 +356,7 @@ class EntityGroupsService(_Service):
             else:
                 raise e
         return _jsonutil.deserialize(resp, EntityGroup)
-    
+
     def list(self, expression=None, tags=None, limit=None):
         """
         :param expression: `str`
@@ -363,13 +367,13 @@ class EntityGroupsService(_Service):
         Membership in entity groups with non-empty expression is managed by the server. 
         Adding/removing members of expression-based groups is not supported.        
         """
-        params=dict()
-        if expression is not None: 
-             params["expression"] = expression
-        if tags is not None: 
-             params["tags"] = tags
-        if limit is not None: 
-             params["limit"] = limit
+        params = dict()
+        if expression is not None:
+            params["expression"] = expression
+        if tags is not None:
+            params["tags"] = tags
+        if limit is not None:
+            params["limit"] = limit
         resp = self.conn.get(eg_list_url, params)
         return _jsonutil.deserialize(resp, EntityGroup)
 
@@ -415,15 +419,15 @@ class EntityGroupsService(_Service):
         """
         _check_name(group_name)
         params = dict()
-        if expression is not None: 
+        if expression is not None:
             params["expression"] = expression
-        if minInsertDate is not None: 
+        if minInsertDate is not None:
             params["minInsertDate"] = to_iso_utc(minInsertDate)
-        if maxInsertDate is not None: 
+        if maxInsertDate is not None:
             params["maxInsertDate"] = to_iso_utc(maxInsertDate)
-        if tags is not None: 
+        if tags is not None:
             params["tags"] = tags
-        if limit is not None: 
+        if limit is not None:
             params["limit"] = limit
         resp = self.conn.get(eg_get_entities_url.format(group=quote(group_name, '')), params)
         return _jsonutil.deserialize(resp, Entity)
@@ -438,7 +442,7 @@ class EntityGroupsService(_Service):
         """
         _check_name(group_name)
         data = [e.name if isinstance(e, Entity) else e for e in entities]
-        params={"createEntities": True if createEntities is None else createEntities}
+        params = {"createEntities": True if createEntities is None else createEntities}
         response = self.conn.post(eg_add_entities_url.format(group=quote(group_name, '')), data, params=params)
         return True
 
@@ -454,10 +458,10 @@ class EntityGroupsService(_Service):
         """
         _check_name(group_name)
         data = [e.name if isinstance(e, Entity) else e for e in entities]
-        params={"createEntities": True if createEntities is None else createEntities}
+        params = {"createEntities": True if createEntities is None else createEntities}
         response = self.conn.post(eg_set_entities_url.format(group=quote(group_name, '')), data, params=params)
         return True
-    
+
     def delete_entities(self, group_name, entities):
         """
         :param group_name: `str`
@@ -470,3 +474,18 @@ class EntityGroupsService(_Service):
         data = [e.name if isinstance(e, Entity) else e for e in entities]
         response = self.conn.post(eg_delete_entities_url.format(group=quote(group_name, '')), data=entities)
         return True
+
+
+# ------------------------------------------------------------------------ SQL
+class SQLService(_Service):
+    def query(self, sql_query):
+        """
+        :param sql_query: `str`
+        :return: :class:`.DataFrame` object
+        Execute sql query.
+        """
+        params = {'q': sql_query, 'outputFormat': 'json'}
+        response = self.conn.post(sql_query_url, None, urlencode(params))
+
+        schema_columns = [c['name'] for c in response['metadata']['tableSchema']['columns']]
+        return pd.DataFrame(response['data'], columns=schema_columns)

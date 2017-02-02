@@ -43,7 +43,7 @@ class Client(object):
         :param verify: verify ssl sertificate
         :param timeout: request timeout
         """
-        self.context = urlparse.urljoin(base_url, 'api/v1/')
+        self.context = urlparse.urljoin(base_url, 'api/')
         session = requests.Session()
         if verify is False:
             session.verify = False
