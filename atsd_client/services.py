@@ -27,9 +27,11 @@ import pandas as pd
 
 try:
     from urllib import quote
+    from StringIO import StringIO
     from urllib import urlencode
 except ImportError:
     from urllib.parse import quote
+    from io import StringIO
     from urllib.parse import urlencode
 try:
     unicode = unicode
@@ -484,8 +486,7 @@ class SQLService(_Service):
         :return: :class:`.DataFrame` object
         Execute sql query.
         """
-        params = {'q': sql_query, 'outputFormat': 'json'}
+        params = {'q': sql_query, 'outputFormat': 'csv'}
         response = self.conn.post(sql_query_url, None, urlencode(params))
 
-        schema_columns = [c['name'] for c in response['metadata']['tableSchema']['columns']]
-        return pd.DataFrame(response['data'], columns=schema_columns)
+        return pd.read_csv(StringIO(response), sep=',')
