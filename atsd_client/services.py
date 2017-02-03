@@ -487,6 +487,12 @@ class SQLService(_Service):
         Execute sql query.
         """
         params = {'q': sql_query, 'outputFormat': 'csv'}
-        response = self.conn.post(sql_query_url, None, urlencode(params))
+        try:
+            response = self.conn.post(sql_query_url, None, urlencode(params))
+        except ServerException as e:
+            if e.status_code == 400:
+                return None
+            else:
+                raise e
 
         return pd.read_csv(StringIO(response), sep=',')
