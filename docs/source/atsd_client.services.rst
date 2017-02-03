@@ -32,3 +32,8 @@ Meta services
 .. autoclass:: atsd_client.services.EntityGroupsService
     :members:
 
+SQL service
+-----------
+
+.. autoclass:: atsd_client.services.SQLService
+    :members:

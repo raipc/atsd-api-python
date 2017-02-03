@@ -201,6 +201,25 @@ To plot series with ``matplotlib`` use the built-in ``plot()`` method
         >>> series.plot()
         >>> plt.show()
 
+SQL queries
+~~~~~~~~~~~
+
+To perform SQL queries, use ``query`` method from SQLService.
+Returned table will be an instance of ``DataFrame`` class.
+
+.. code:: python
+
+
+    >>> sql = SQLService(conn)
+    >>> df = sql.query('select * from jvm_memory_free limit 3')
+    >>> df
+      entity                  datetime        value     tags.host
+    0   atsd  2017-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
+    1   atsd  2017-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
+    2   atsd  2017-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
+
+
+
 Implemented Methods
 -------------------
 
@@ -261,6 +280,8 @@ Meta API
    -  Set entities
    -  Delete entities
 
+SQL
+~~~
 
 Client Documentation
 ====================

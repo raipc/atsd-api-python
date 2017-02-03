@@ -171,6 +171,7 @@ To perform SQL queries, use `query` method from SQLService.
 Returned table will be an instance of `DataFrame` class.
 
 ```python
+
     >>> sql = SQLService(conn)
     >>> df = sql.query('select * from jvm_memory_free limit 3')
     >>> df
