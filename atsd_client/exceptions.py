@@ -38,3 +38,13 @@ class ServerException(Exception):
         return ' status_code: ' + repr(self.status_code) \
                + ', content: ' + repr(self.content) \
                + ', message: ' + repr(self.msg)
+
+class SQLException(ServerException):
+    def __init__(self, status_code, content, query=''):
+        super(SQLException, self).__init__(status_code, SQLException.extract_reason(content),
+                                           'Unable to perform query: ' + query)
+
+    @classmethod
+    def extract_reason(cls, content):
+        import json
+        return json.loads(content[1:])['errors'][0]['message']

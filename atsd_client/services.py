@@ -16,8 +16,7 @@ permissions and limitations under the License.
 """
 
 from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, Message
-from .exceptions import DataParseException
-from .exceptions import ServerException
+from .exceptions import DataParseException, SQLException, ServerException
 from ._client import Client
 from . import _jsonutil
 from ._constants import *
@@ -52,7 +51,8 @@ class _Service(object):
             raise ValueError('conn should be Client instance')
         self.conn = conn
 
-#------------------------------------------------------------------------ SERIES
+
+# ------------------------------------------------------------------------ SERIES
 class SeriesService(_Service):
     def insert(self, *series_objects):
         """
@@ -87,7 +87,8 @@ class SeriesService(_Service):
         """
         raise NotImplementedError
 
-#-------------------------------------------------------------------- PROPERTIES
+
+# -------------------------------------------------------------------- PROPERTIES
 class PropertiesService(_Service):
     def insert(self, *properties):
         """
@@ -131,7 +132,8 @@ class PropertiesService(_Service):
         response = self.conn.post(properties_delete_url, filters)
         return True
 
-#------------------------------------------------------------------------ ALERTS
+
+# ------------------------------------------------------------------------ ALERTS
 class AlertsService(_Service):
     def query(self, *queries):
         """
@@ -169,7 +171,8 @@ class AlertsService(_Service):
         response = self.conn.post(alerts_delete_url, ids)
         return True
 
-#---------------------------------------------------------------------- MESSAGES
+
+# ---------------------------------------------------------------------- MESSAGES
 class MessageService(_Service):
     def insert(self, *messages):
         """
@@ -196,11 +199,11 @@ class MessageService(_Service):
         raise NotImplementedError
 
 
-#===============================================================================
+# ===============================================================================
 #################################  META   #####################################
-#===============================================================================
+# ===============================================================================
 
-#----------------------------------------------------------------------- METRICS
+# ----------------------------------------------------------------------- METRICS
 class MetricsService(_Service):
     def get(self, name):
         """
@@ -260,7 +263,6 @@ class MetricsService(_Service):
         self.conn.put(metric_create_or_replace_url.format(metric=quote(metric.name, '')), metric)
         return True
 
-
     def delete(self, metric_name):
         """
         :param metric_name: :class:`.Metric`
@@ -270,7 +272,8 @@ class MetricsService(_Service):
         self.conn.delete(metric_delete_url.format(metric=quote(metric_name, '')))
         return True
 
-#------------------------------------------------------------------------------ ENTITIES
+
+# ------------------------------------------------------------------------------ ENTITIES
 class EntitiesService(_Service):
     def get(self, entity_name):
         """
@@ -300,15 +303,15 @@ class EntitiesService(_Service):
         """
         params = dict()
         if expression is not None:
-             params["expression"] = expression
+            params["expression"] = expression
         if minInsertDate is not None:
-             params["minInsertDate"] = to_iso_utc(minInsertDate)
+            params["minInsertDate"] = to_iso_utc(minInsertDate)
         if maxInsertDate is not None:
-             params["maxInsertDate"] = to_iso_utc(maxInsertDate)
+            params["maxInsertDate"] = to_iso_utc(maxInsertDate)
         if tags is not None:
-             params["tags"] = tags
+            params["tags"] = tags
         if limit is not None:
-             params["limit"] = limit
+            params["limit"] = limit
         resp = self.conn.get(ent_list_url, params)
         return _jsonutil.deserialize(resp, Entity)
 
@@ -339,7 +342,8 @@ class EntitiesService(_Service):
         self.conn.delete(ent_delete_url.format(entity=quote(entity.name, '')))
         return True
 
-#------------------------------------------------------------------------------ ENTITIY GROUPS
+
+# ------------------------------------------------------------------------------ ENTITIY GROUPS
 class EntityGroupsService(_Service):
     def get(self, group_name):
         """
@@ -490,9 +494,9 @@ class SQLService(_Service):
         try:
             response = self.conn.post(sql_query_url, None, urlencode(params))
         except ServerException as e:
-            if e.status_code == 400:
+            if e.status_code == 404:
                 return None
             else:
-                raise e
+                raise SQLException(e.status_code, e.content, sql_query)
 
         return pd.read_csv(StringIO(response), sep=',')
