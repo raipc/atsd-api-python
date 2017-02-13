@@ -490,13 +490,23 @@ class SQLService(_Service):
         :return: :class:`.DataFrame` object
         Execute sql query.
         """
-        params = {'q': sql_query, 'outputFormat': 'csv'}
+        response = self.query_with_params(sql_query)
+        return pd.read_csv(StringIO(response), sep=',')
+
+    def query_with_params(self, sql_query, params={'outputFormat': 'csv'}):
+        """
+        :param params:
+        :param sql_query: `str`
+        :param params: `dict`
+        :return: Content of the response
+        Execute sql query with api parameters.
+        """
+        params['q'] = sql_query
         try:
-            response = self.conn.post(sql_query_url, None, urlencode(params))
+            response_text = self.conn.post(sql_query_url, None, urlencode(params))
         except ServerException as e:
             if e.status_code == 404:
                 return None
             else:
                 raise SQLException(e.status_code, e.content, sql_query)
-
-        return pd.read_csv(StringIO(response), sep=',')
+        return response_text
