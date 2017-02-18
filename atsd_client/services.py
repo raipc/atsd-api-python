@@ -495,7 +495,6 @@ class SQLService(_Service):
 
     def query_with_params(self, sql_query, params={'outputFormat': 'csv'}):
         """
-        :param params:
         :param sql_query: `str`
         :param params: `dict`
         :return: Content of the response
@@ -510,3 +509,12 @@ class SQLService(_Service):
             else:
                 raise SQLException(e.status_code, e.content, sql_query)
         return response_text
+
+    def cancel_query(self, query_id):
+        """
+        :param query_id: `str`
+        :return: True if success
+        Cancel the specified sql query.
+        """
+        response = self.conn.get(sql_cancel_url, urlencode({'queryId': query_id}))
+        return True
