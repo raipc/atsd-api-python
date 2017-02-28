@@ -518,3 +518,17 @@ class SQLService(_Service):
         """
         response = self.conn.get(sql_cancel_url, urlencode({'queryId': query_id}))
         return True
+
+
+# ------------------------------------------------------------------------------ COMMANDS
+class CommandsService(_Service):
+    def send_commands(self, commands):
+        """
+        :param commands: `str` | `list`
+        :return: True if success
+        Send a command or a batch of commands in Network API syntax via /api/v1/command
+        """
+        if type(commands) is not list: commands = [commands]
+        data = '\n'.join(commands)
+        response = self.conn.post(commands_url, data)
+        return True
