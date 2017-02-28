@@ -22,8 +22,6 @@ from . import _jsonutil
 from ._constants import *
 from ._time_utilities import to_iso_utc
 
-import pandas as pd
-
 try:
     from urllib import quote
     from StringIO import StringIO
@@ -490,6 +488,7 @@ class SQLService(_Service):
         :return: :class:`.DataFrame` object
         Execute sql query.
         """
+        import pandas as pd
         response = self.query_with_params(sql_query)
         return pd.read_csv(StringIO(response), sep=',')
 

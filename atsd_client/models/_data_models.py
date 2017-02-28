@@ -19,13 +19,13 @@ import copy
 from .._constants import display_series_threshold, display_series_part
 from .._time_utilities import to_timestamp, to_iso_utc
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class Sample():
     """
     Class that represents a numeric value observed at some time with additional version information if provided.
     If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
     """
-    
+
     def __init__(self, value, time=None, version=None):
         self.v = copy.deepcopy(value) if not value == "Nan" else float("nan")
         #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date 
@@ -35,7 +35,7 @@ class Sample():
 
     def __repr__(self):
         return "<Sample v={v}, t={t}, version={vv}>".format(v=self.v, t=self.t, vv=self.version)
-    
+
     #Getters and setters
     def get_v(self):
         return self.v
@@ -48,14 +48,14 @@ class Sample():
 
     def set_t(self, t):
         self.t = to_timestamp(t)
-        
+
     def get_version(self):
         return self.version
 
     def set_version(self, value):
         self.version = value
 
-        
+
     def _compare(self, other):
             return self.t - other.get_t()
 
@@ -76,15 +76,15 @@ class Sample():
 
     def __ne__(self, other):
         return self._compare(other) != 0
-  
-#------------------------------------------------------------------------------ 
+
+#------------------------------------------------------------------------------
 class Series():
     """
     Class representing a Time Series.
     Time Series is a time-indexed array of samples (observations), each consisting of a timestamp and a numeric value, for example CPU utilization or body temperature.
     Each series is uniquely identified by entity name, metric name and optional series tags.
     """
-    
+
     def __init__(self, entity, metric, data=None, tags=None):
         #: `str` entity name
         self.entity = entity
@@ -99,13 +99,13 @@ class Series():
                 if isinstance(data_unit, dict): #Compatability
                     self.data.append(Sample(
                                             value=data_unit['v'],
-                                            time=data_unit.get('t', data_unit.get('d', None)), 
+                                            time=data_unit.get('t', data_unit.get('d', None)),
                                             version=data_unit.get('version', None)
                                             )
                                     )
                 else:
                     self.data.append(data_unit)
-    
+
     def __repr__(self):
         if len(self.data) > display_series_threshold:
             displayed_data = self.data[:display_series_part] + self.data[-display_series_part:]
@@ -145,7 +145,7 @@ class Series():
         """
         for sample in samples:
             self.data.append(sample)
-        
+
     def sort(self, key=None, reverse=False):
         """
         Sort series data in place
@@ -153,7 +153,7 @@ class Series():
         :param reverse:
         """
         self.data.sort(key=key, reverse=reverse)
-    
+
     def values(self):
         """
         Valid versions of series values
@@ -211,8 +211,8 @@ class Series():
             import matplotlib.pyplot as plt
             p = plt.plot(self.times(), self.values())
             plt.show(p)
-            
-    #Getters and setters       
+
+    #Getters and setters
     def get_entity(self):
         return self.entity
 
@@ -237,7 +237,7 @@ class Series():
     def set_data(self, value):
         self.data = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class Property():
     """
     Class representing a single property.
@@ -246,7 +246,7 @@ class Property():
     Properties are collected at a lower frequency than time series or whenever their values change. 
     Each properties record is uniquely identified by entity name, property type and optional property keys.
     """
-        
+
     def __init__(self, type, entity, tags=None, key=None, date=None):
         #: `str` property type name
         self.type = type
@@ -261,9 +261,9 @@ class Property():
 
     def __repr__(self):
             return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self.type, entity=self.entity, tags=self.tags)
-    
-    
-    #Getters and setters    
+
+
+    #Getters and setters
     def get_type(self):
         return self.type
 
@@ -293,8 +293,8 @@ class Property():
 
     def set_date(self, value):
         self.date = to_iso_utc(value)
-       
-#------------------------------------------------------------------------------ 
+
+#------------------------------------------------------------------------------
 class Alert():
     """
     Class, representing an single alert.
@@ -333,7 +333,7 @@ class Alert():
 
     def __repr__(self):
             return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self.id, entity=self.entity, metric=self.metric, openDate=self.openDate, text=self.textValue)
-            
+
     #Getters and setters
     def get_id(self):
         return self.id
@@ -419,12 +419,12 @@ class Alert():
     def set_open_value(self, value):
         self.openValue = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class AlertHistory():
     """
     Class representing history of an alert, including such values as alert duration, alert open date, repeat count, etc.
     """
-  
+
     def __init__(self, alert=None, alertDuration=None, alertOpenDate=None, entity=None, metric=None, receivedDate=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, severity=None, tags=None, type=None, date=None, value=None, window=None):
         self.alert = alert
         #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
@@ -460,7 +460,7 @@ class AlertHistory():
 
     def __repr__(self):
             return "<ALERT_HISTORY alert={alert}, metric={metric}, entity={entity}, date={date}, alertOpenDate={alertOpenDate}...>".format(alert=self.alert, entity=self.entity, metric=self.metric, alertOpenDate=self.alertOpenDate, date=self.date)
-    
+
     #Getters and setters
     def get_alert(self):
         return self.alert
@@ -564,7 +564,7 @@ class AlertHistory():
     def set_window(self, value):
         self.window = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class Message():
     """
     Class representing a Message.
@@ -573,7 +573,7 @@ class Message():
     Each message is related to an entity, has a set of tags and a free-form text message.
     Messages for the same entity, time and type/source tags are automatically de-duplicated.
     """
-  
+
     def __init__(self, type, source, entity, date, severity, tags, message):
         #: `str` message type
         self.type = type
@@ -589,10 +589,10 @@ class Message():
         self.tags=tags
         #: `str`
         self.message=message
-    
+
     def __repr__(self):
         return "<MESSAGE type={t}, source={s}, entity={e}, message={m}, date={d}...>".format(t=self.type, s=self.source, e=self.entity, m=self.message, d=self.date)
-    
+
     #Getters and setters
     def get_type(self):
         return self.type
