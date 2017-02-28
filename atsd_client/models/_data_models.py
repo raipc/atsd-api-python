@@ -242,7 +242,7 @@ class Property():
     """
     Class representing a single property.
     Properties represent metadata describing entities, obtained from configuration files, system command output, etc.
-    Property examples are device model, OS version, and location. Unlike time series, the database stores only last value for each property and such value is stored as text. 
+    Property examples are device model, OS version, and location. Unlike time series, the database stores only cache value for each property and such value is stored as text.
     Properties are collected at a lower frequency than time series or whenever their values change. 
     Each properties record is uniquely identified by entity name, property type and optional property keys.
     """

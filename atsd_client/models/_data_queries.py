@@ -77,7 +77,7 @@ class AggregateType(object):
     PERCENTILE_50      = 'PERCENTILE_50'
     STANDARD_DEVIATION = 'STANDARD_DEVIATION'
     FIRST              = 'FIRST'
-    LAST               = 'LAST'
+    CACHE              = 'CACHE'
     DELTA              = 'DELTA'
     WAVG               = 'WAVG'
     WTAVG              = 'WTAVG'
@@ -225,21 +225,22 @@ class ForecastFilter():
 #------------------------------------------------------------------------------ 
 class VersioningFilter():
     def __init__(self,versioned=None, versionFilter=None):
-        #: `bool` flag indicating if version status, source, and change date will be returned if metric is versioned. Default: false.
+        # : `bool` flag indicating if version status, source, and change date will be returned if metric is
+        # versioned. Default: false.
         self.versioned = False if versioned is None else versioned
-        #: `str` expression to filter value history (versions) by version status, source or time, for example: version_status = 'Deleted' or version_source LIKE '*user*'
+        # : `str` expression to filter value history (versions) by version status, source or time, for example:
+        # version_status = 'Deleted' or version_source LIKE '*user*'
         self.versionFilter = "" if versionFilter is None else versionFilter
 
 #------------------------------------------------------------------------------ 
 class  ControlFilter():
-    def __init__(self,limit=None, direction=None, last=None, cache=None, requestId=None, timeFormat=None):
+    def __init__(self,limit=None, direction=None, cache=None, requestId=None, timeFormat=None):
         #: `int` maximum number of time:value samples returned for each series. Default: 0.
         self.limit = 0 if limit is None else limit 
         #: `str` scan order for applying the limit: DESC - descending, ASC - ascending. Default: DESC
         self.direction= "DESC" if direction is None else direction
-        #: `bool` flag indicating if only 1 most recent value will be retreived for each series. Default: false.
-        self.last= False if last is None else last
-        #: `bool` flag. If true, execute the query against Last Insert table which results in faster response time for last value queries. Default: false
+        # : `bool` flag. If true, execute the query against Last Insert table which results in faster response time
+        # for last value queries. Default: false
         self.cache= False if cache is None else cache
         #: `str` optional identifier used to associate query object in request with series objects in response.
         self.requestId= "" if requestId is None else requestId
@@ -251,9 +252,6 @@ class  ControlFilter():
 
     def set_direction(self, value):
         self.direction = value
-
-    def set_last(self, value):
-        self.last = value
 
     def set_cache(self, value):
         self.cache = value
@@ -435,7 +433,7 @@ class PropertiesQuery():
     """
     Class representing a single query to get properties matching provided filters and parameters.
     """
-    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=None, keyTagExpression=None, limit=None, last=None, offset=None):
+    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=None, keyTagExpression=None, limit=None, cache=None, offset=None):
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
         self.type=type
@@ -443,7 +441,7 @@ class PropertiesQuery():
         self.exactMatch=False if exactMatch is None else exactMatch
         self.keyTagExpression=keyTagExpression
         self.limit=0 if limit is None else limit
-        self.last=False if last is None else last
+        self.cache=False if cache is None else cache
         self.offset=-1 if offset is None else offset
     
     def set_entity_filter(self,value):
@@ -468,7 +466,7 @@ class PropertiesQuery():
         self.limit = value
     
     def set_last(self,value):
-        self.last = value
+        self.cache = value
     
     def set_offset(self,value):
         self.offset = value
