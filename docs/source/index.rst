@@ -249,6 +249,10 @@ Data API
    -  Insert
    -  Query
 
+-  Extended
+
+   - Commands
+
 Meta API
 ~~~~~~~~
 
@@ -282,6 +286,8 @@ Meta API
 
 SQL
 ~~~
+
+- Query API Endpoint
 
 Client Documentation
 ====================
