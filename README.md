@@ -138,6 +138,12 @@ To fetch series values with version information, add the `VersionedFilter` to th
 
 ###Exploring Results
 
+Here and further you will need `pandas` module that can be installed using pip:
+
+```
+pip install pandas
+```
+
 In order to consume the Series object in [pandas](http://pandas.pydata.org/), a Python data analysis toolkit, you can utilize the built-in `to_pandas_series()`
 and `from_pandas_series()` methods.
 
