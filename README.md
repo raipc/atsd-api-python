@@ -138,14 +138,13 @@ To fetch series values with version information, add the `VersionedFilter` to th
 
 ###Exploring Results
 
-Here and further you will need `pandas` module that can be installed using pip:
+Install the `pandas` module using pip:
 
 ```
 pip install pandas
 ```
 
-In order to consume the Series object in [pandas](http://pandas.pydata.org/), a Python data analysis toolkit, you can utilize the built-in `to_pandas_series()`
-and `from_pandas_series()` methods.
+In order to access the Series object in [pandas](http://pandas.pydata.org/), a Python data analysis toolkit, utilize the built-in `to_pandas_series()` and `from_pandas_series()` methods.
 
 ```python
 
@@ -163,7 +162,7 @@ and `from_pandas_series()` methods.
 
 ###Graphing Results
 
-To plot the series with `matplotlib`, use the built-in `plot()` method:
+To plot the series with `matplotlib`, use `plot()`:
 
 ```python
 
@@ -175,8 +174,8 @@ To plot the series with `matplotlib`, use the built-in `plot()` method:
 
 ###SQL queries
 
-To perform SQL queries, use `query` method from SQLService.
-Returned table will be an instance of `DataFrame` class.
+To perform SQL queries, use `query` method from the SQLService.
+Returned table will be an instance of the `DataFrame` class.
 
 ```python
 
