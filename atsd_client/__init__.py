@@ -14,21 +14,22 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
+import logging
 
 from .connection import connect, connect_url
 from . import models, _constants, _utilities, _time_utilities
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '2.0.11'
+__version__ = '2.0.12'
 
 try:
-    print("Checking for the appropriate 'python-requests' version...")
+    logging.debug("Checking for the appropriate 'python-requests' version...")
     req_v = None
     import requests
     req_v = requests.__version__
     if list(map(lambda x: int(x), req_v.split("."))) >= [2, 4, 2]:
-        print("Detected version of 'python-requests' :{}. OK".format(req_v))
+        logging.debug("Detected version of 'python-requests' : %s. OK", req_v)
     else:
         raise Exception 
 except:
