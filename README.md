@@ -68,16 +68,7 @@ To insert series values into ATSD, initialize a `Series` object and populate it 
     True
 ```
 
-You can also add optional versioning fields to the Samples using the `version` argument. Versioning enables keeping track of value changes and is described [here](https://axibase.com/products/axibase-time-series-database/data-model/versioning/).
-
-```python
-
-    >>> from datetime import datetime
-    >>> other_series = Series('sensor123', 'power')
-    >>> other_series.add_samples(
-                Sample(3, datetime.now(), version={"source":"TEST_SOURCE", "status":"TEST_STATUS"})
-        )
-```
+In addition to inserting records via `atsd_client` client, you can load datasets into ATSD by uploading CSV files or importing publicly available information from [data.gov](https://github.com/axibase/atsd-use-cases/blob/master/SocrataPython/README.md) using Axibase Collector.
 
 ### Querying Series Values
 
@@ -112,32 +103,6 @@ Finally, to get a list of `Series` objects matching the specified filters, the `
 	tags: {}
 	data: [<Sample v=1, t=1468862070000.0, version=None>, <Sample v=2, t=1468862190000.0, version=None>]
 	entity: sensor123
-```
-
-### Querying Versioned Series Values
-
-To fetch series values with version information, add the `VersionedFilter` to the query with the `versioned` field equal to **True**.
-
-```python
-
-    >>> import time
-    >>> from atsd_client.models import VersioningFilter
-    >>> cur_unix_milliseconds = int(time.time() * 1000)
-    >>> sf = SeriesFilter(metric="power")
-    >>> ef = EntityFilter(entity="sensor123")
-    >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
-    >>> vf = VersioningFilter(versioned=True)
-    >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
-    >>> result = svc.query(query_data)
-    >>> print(result[0])
-	           time         value   version_source   version_status
-	1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
-	1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
-	1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
-	1468868308000.0           1.0      TEST_SOURCE      TEST_STATUS
-	1468868364000.0          15.0      TEST_SOURCE      TEST_STATUS
-	1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
-	1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
 ```
 
 ### Exploring Results
@@ -175,10 +140,9 @@ To plot the series with `matplotlib`, use `plot()`:
     >>> plt.show()
 ```
 
-
 ### SQL queries
 
-To perform SQL queries, use `query` method implemented in the SQLService.
+To perform SQL queries, use the `query` method implemented in the SQLService.
 The returned table will be an instance of the `DataFrame` class.
 
 ```python
@@ -190,6 +154,45 @@ The returned table will be an instance of the `DataFrame` class.
     0   atsd  2017-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
     1   atsd  2017-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
     2   atsd  2017-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
+```
+
+### Working with Versioned Data
+
+Versioning enables keeping track of value changes and is described [here](https://axibase.com/products/axibase-time-series-database/data-model/versioning/).
+
+You can enable versioning for specific metrics and add optional versioning fields to Samples using the `version` argument. 
+
+```python
+
+    >>> from datetime import datetime
+    >>> other_series = Series('sensor123', 'power')
+    >>> other_series.add_samples(
+                Sample(3, datetime.now(), version={"source":"TEST_SOURCE", "status":"TEST_STATUS"})
+        )
+```
+
+To retrieve series values with versioning fields, add the `VersionedFilter` to the query with the `versioned` field equal to **True**.
+
+```python
+
+    >>> import time
+    >>> from atsd_client.models import VersioningFilter
+    >>> cur_unix_milliseconds = int(time.time() * 1000)
+    >>> sf = SeriesFilter(metric="power")
+    >>> ef = EntityFilter(entity="sensor123")
+    >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
+    >>> vf = VersioningFilter(versioned=True)
+    >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
+    >>> result = svc.query(query_data)
+    >>> print(result[0])
+	           time         value   version_source   version_status
+	1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
+	1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
+	1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
+	1468868308000.0           1.0      TEST_SOURCE      TEST_STATUS
+	1468868364000.0          15.0      TEST_SOURCE      TEST_STATUS
+	1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
+	1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
 ```
 
 ## Implemented Methods
