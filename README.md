@@ -26,19 +26,28 @@ python setup.py install
 
 ## Usage
 
-### Configuring Connection
-
-Open `connection.properties` file and enter connection settings.
-
 ### Connecting to ATSD
 
-To retrieve data from the Axibase Time Series Database (ATSD), establish a connection with the `atsd_client` module as follows:
+To connect to an ATSD instance, you need to know its hostname and port, and have a user account configured on the **Admin>Users** page. 
+
+Establish a connection with the `connect_url` method.
 
 ```python
-
     >>> import atsd_client
-    >>> from atsd_client.services import SeriesService
-    >>> conn = atsd_client.connect()
+    >>> conn = atsd_client.connect_url('http://atsd_hostname:8088', 'usr', 'pwd')  
+```
+
+Alternatively, create a `connection.properties` file and specify its path in the `connect` method.
+
+```ls
+base_url=http://atsd_hostname:8088
+username=usr
+password=pwd
+```
+
+```python
+    >>> import atsd_client
+    >>> conn = atsd_client.connect('/path/to/connection.properties')  
 ```
 
 ### Initializing the Service
@@ -48,7 +57,7 @@ as well as with metadata objects such as `Entity`, `Metric`, and `EntityGroup`. 
 
 
 ```python
-
+    >>> from atsd_client.services import SeriesService
     >>> svc = SeriesService(conn)
 ```
 
