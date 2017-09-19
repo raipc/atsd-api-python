@@ -45,12 +45,12 @@ class Client(object):
         """
         self.context = urlparse.urljoin(base_url, 'api/')
         session = requests.Session()
-        if verify is False:
+        if verify is False or verify == 'False':
             session.verify = False
         if username is not None and password is not None:
             session.auth = (username, password)
         self.session = session
-        self.timeout = timeout
+        self.timeout = int(timeout) if timeout is not None else None
 
     def _request(self, method, path, params=None, data=None):
         request = requests.Request(
