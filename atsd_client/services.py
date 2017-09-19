@@ -529,5 +529,5 @@ class CommandsService(_Service):
         """
         if type(commands) is not list: commands = [commands]
         data = '\n'.join(commands)
-        response = self.conn.post(commands_url, data)
+        response = self.conn.post_plain_text(commands_url, data)
         return True

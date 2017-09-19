@@ -52,11 +52,12 @@ class Client(object):
         self.session = session
         self.timeout = timeout
 
-    def _request(self, method, path, params=None, data=None):
+    def _request(self, method, path, params=None, json=None, data=None):
         request = requests.Request(
             method=method,
             url=urlparse.urljoin(self.context, path),
-            json=_jsonutil.serialize(data),
+            data=data,
+            json=_jsonutil.serialize(json),
             params=params
         )
         prepared_request = self.session.prepare_request(request)
@@ -69,16 +70,19 @@ class Client(object):
             return response.text
 
     def post(self, path, data, params=None):
+        return self._request('POST', path, params=params, json=data)
+
+    def post_plain_text(self, path, data, params=None):
         return self._request('POST', path, params=params, data=data)
 
     def patch(self, path, data):
-        return self._request('PATCH', path, data=data)
+        return self._request('PATCH', path, json=data)
 
     def get(self, path, params=None):
         return self._request('GET', path, params=params)
 
     def put(self, path, data):
-        return self._request('PUT', path, data=data)
+        return self._request('PUT', path, json=data)
 
     def delete(self, path):
         return self._request('DELETE', path)
