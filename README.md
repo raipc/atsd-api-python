@@ -21,7 +21,7 @@ python -V
 The client is supported for the following Python versions:
 
 * Python 2.7.9 and later
-* Python 3.?
+* Python 3, all versions
 
 ## Installation
 
