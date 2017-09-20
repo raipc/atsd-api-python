@@ -40,6 +40,11 @@ for el in docker_hosts:
     print(" - DELETE objects for docker_host= " + docker_host.name)
 
     for entity in entities:
+        
+        if entity.name == docker_host.name:
+            #ignore the docker host itself, it will be deleted later
+            continue;
+            
         print("- Deleting " + entity.tags.get('docker-type', '') + " : " + entity.name + " : " + entity.tags.get('name', ''))
         tags_printer.pprint(entity.tags)
         # Uncomment next line to delete
