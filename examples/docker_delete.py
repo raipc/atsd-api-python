@@ -29,7 +29,9 @@ for el in docker_hosts:
     entity_filter = "lower(tags.docker-host) = lower('" + docker_host.name + "')"
     entities = entity_service.list(expression=entity_filter, limit=0, tags="*")
 
-    print(" - FOUND {} objects for docker_host={} : {} : elapsed_days={}".format(len(entities), docker_host.name, docker_host.lastInsertDate, elapsed_days))
+    print(" - FOUND {} objects for docker_host={} : {} : elapsed_days={}".format(
+        len(entities), docker_host.name, docker_host.lastInsertDate, elapsed_days)
+    )
 
     if elapsed_days < 7:
         print(" - RETAIN (do not delete): " + docker_host.name)
@@ -38,7 +40,9 @@ for el in docker_hosts:
     print(" - DELETE objects for docker_host= " + docker_host.name)
 
     for entity in entities:
-        print("- Deleting {} : {} : {}".format(entity.tags.get('docker-type',''), entity.name, entity.tags.get('name','')))
+        print("- Deleting {} : {} : {}".format(
+            entity.tags.get('docker-type', ''), entity.name, entity.tags.get('name', ''))
+        )
         tags_printer.pprint(entity.tags)
         # Uncomment next line to delete
         #entity_service.delete(entity)
