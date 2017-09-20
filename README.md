@@ -12,24 +12,30 @@ The ATSD API Client for Python simplifies the process of interacting with [Axiba
 
 ## Requirements
 
-Install `requests` module according to your python version:
+Check Python version.
 
+```sh
+python -V
 ```
-pip install requests[security]    # older than 2.7.7 
-pip install requests              # otherwise
-```
+
+The client is supported for the following Python versions:
+
+* Python 2.7.8 and later
+* Python 3.?
 
 ## Installation
 
-Install `atsd_client` with pip:
+Install `atsd_client` module using `pip`.
 
 ```
 pip install atsd_client
 ```
 
-Or, you can clone the GitHub repository and run:
+Alternatively, clone the repository and run the installation manually.
 
 ```
+git clone https://github.com/axibase/atsd-api-python.git
+cd atsd-api-python
 python setup.py install
 ```
 
