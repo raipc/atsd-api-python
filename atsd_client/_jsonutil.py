@@ -15,18 +15,18 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-
-import numbers
 import inspect
+import numbers
 
 try:
     unicode = unicode
 except NameError:
     unicode = str
 
+
 def serialize(target):
     if isinstance(target, dict):
-        return {k:serialize(v) for k, v in target.items()}
+        return dict([k, serialize(v)] for k, v in target.items)
     elif isinstance(target, (list, tuple)):
         return [serialize(el) for el in target]
     elif isinstance(target, bool):
@@ -65,4 +65,3 @@ def deserialize(target, model_class):
     except:
         raise ValueError(unicode(target) + ' could not be deserialized to ' + unicode(model_class))
     return result_object
-
