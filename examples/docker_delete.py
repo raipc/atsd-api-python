@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from datetime import datetime
 from dateutil.parser import parse as parse_date
 import pprint
