@@ -10,6 +10,15 @@ The ATSD API Client for Python simplifies the process of interacting with [Axiba
 * [PyPI atsd_client](https://pypi.python.org/pypi/atsd_client)  
 * atsd_client documentation on [pythonhosted.org](http://pythonhosted.org/atsd_client)
 
+## Requirements
+
+Install `requests` module according to your python version:
+
+```
+pip install requests[security]    # older than 2.7.7 
+pip install requests              # otherwise
+```
+
 ## Installation
 
 Install `atsd_client` with pip:
