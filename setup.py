@@ -13,6 +13,7 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
+import sys
 
 try:
     from setuptools import setup
@@ -28,6 +29,8 @@ with open('atsd_client/__init__.py', 'r') as fd:
 
 print('version:', version)
 
+requests_module = 'requests' if sys.version_info >= (2, 7, 9) else 'requests[security]'
+
 setup(
     name='atsd_client',
     packages=['atsd_client', 'atsd_client.models'],
@@ -37,7 +40,7 @@ setup(
     author='Axibase Corporation',
     author_email='axibase-api@axibase.com',
     license='Apache 2.0',
-    install_requires=['requests','python-dateutil'],
+    install_requires=['python-dateutil', requests_module],
     package_data={'atsd_client': ['connection.properties']},
     keywords='axibase, atsd, axibase time-series database, python',
     classifiers=(
