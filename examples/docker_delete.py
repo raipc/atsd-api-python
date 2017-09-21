@@ -25,7 +25,7 @@ for el in docker_hosts:
 
     last_insert_time = parse_date(docker_host.lastInsertDate).replace(tzinfo=pytz.utc)
     elapsed_time = datetime.now(pytz.utc) - last_insert_time
-    elapsed_days = round(elapsed_time.total_seconds() / (24 * 3600), 1)
+    elapsed_days = int(elapsed_time.days)
 
     entity_filter = "lower(tags.docker-host) = lower('" + docker_host.name + "')"
     entities = entity_service.list(expression=entity_filter, limit=0, tags="*")
