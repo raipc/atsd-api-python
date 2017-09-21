@@ -39,7 +39,7 @@ cd atsd-api-python
 python setup.py install
 ```
 
-For offline installation check [the guide](offline_installation.md)
+For installation on a system without internet access, review the following [guide](offline_installation.md)
 
 ## Usage
 
