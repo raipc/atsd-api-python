@@ -58,7 +58,7 @@ cd atsd-api-python
 Copy the previously downloaded modules to a corresponding directory on the local machine.
 
 ```sh
-cp -r modules/* `python -m site --user-site`
+mkdir -p `python -m site --user-site` && cp -r modules/* `python -m site --user-site`
 ```
 
 Install ATSD client.
