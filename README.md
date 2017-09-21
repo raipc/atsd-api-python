@@ -39,6 +39,8 @@ cd atsd-api-python
 python setup.py install
 ```
 
+For installation on a system without internet access, review the following [guide](offline_installation.md)
+
 ## Usage
 
 ### Connecting to ATSD
