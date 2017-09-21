@@ -63,8 +63,6 @@ Create this directory if it doesnt't exist.
 python -m site --user-site | xargs mkdir -p
 ```
 
-Copy the `modules` directory from the connected server to the target machine.
-
 Copy the `atsd-api-python` directory from the connected server to the target machine.
 
 Install `atsd_client`
@@ -75,4 +73,10 @@ cd atsd-api-python
 
 ```sh
 python setup.py install
+```
+
+Copy prepared modules to a directory with locally installed ones.
+
+```sh
+cp -r atsd-api-python/modules/* `python -m site --user-site`
 ```
