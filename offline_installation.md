@@ -78,5 +78,5 @@ python setup.py install
 Copy prepared modules to a directory with locally installed ones.
 
 ```sh
-cp -r atsd-api-python/modules/* `python -m site --user-site`
+cp -r modules/* `python -m site --user-site`
 ```
