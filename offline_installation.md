@@ -1,49 +1,39 @@
-### Check environment
+# Offline Installation
 
-* Login into offline machine
+The document describes how ATSD Python client can be installed on a machine without internet access. The process involves downloading the module and its dependencies to an intermediate server from which the files are then copied to the target machine.
 
-* Find out path that holds locally-installed packages:
+### Download Modules
 
-```
-python -m site --user-site | xargs stat
-```
+Login into the server with internet access.
 
-If it doesnt't exist create:
-```
-python -m site --user-site | xargs mkdir -p
-```
-
-
-### Download atsd_client and required modules
-
-* Login into machine with internet access
-
-* Download atsd_client sources:
+Download the `atsd_client` source code.
 
 ```
-git clone https://github.com/axibase/atsd-api-python.git
-# or curl -OL https://github.com/axibase/atsd-api-python/archive/master.zip; unzip master.zip; rm master.zip; mv atsd-api-python-master atsd-api-python
-
+curl -OL https://github.com/axibase/atsd-api-python/archive/master.zip; \
+unzip master.zip; rm master.zip; mv atsd-api-python-master atsd-api-python
+# git clone https://github.com/axibase/atsd-api-python.git
 ```
 
-* Prepare requirements list:
+```
+cd atsd-api-python
+```
+
+Create a `requirements.txt` file containing the list of required modules (dependencies).
 
 ```
-cat <<EOF >> requirements.txt
 requests[security]
 python-dateutil
 pytz
-EOF
 ```
 
-* Download required modules into temporary folder
+Download required modules into temporary folder
 
 ```
 mkdir modules
 pip install --download ./modules -r requirements.txt
 ```
 
-* Unpack modules to be able to use on offline machine:
+Unpack modules.
 
 ```
 cd modules
@@ -51,19 +41,38 @@ for i in `ls *.whl`; do unzip "$i"; rm "$i"; done;
 for i in `ls *.tar.gz`; do tar -xvf "$i"; rm "$i"; done;
 ```
 
-### Transfer required modules
+### Copy and Install Modules to the Target Machine
 
-* Transfer `modules/*` to offline machine folder that holds locally-installed packages
-* Transfer `atsd-api-python` to offline machine to install latest client version
+Login into the target server where the ATSD client will be installed
 
+Check Pythin version.
 
-### Install modules
-
-* Login into offline machine
-
-* Install `atsd_client`
-
+```sh
+python -V
 ```
+
+Determine the path to a directory with locally installed modules.
+
+```sh
+python -m site --user-site | xargs stat
+```
+
+Create this directory if it doesnt't exist.
+
+```sh
+python -m site --user-site | xargs mkdir -p
+```
+
+Copy the `modules` directory from the connected server to the target machine.
+
+Copy the `atsd-api-python` directory from the connected server to the target machine.
+
+Install `atsd_client`
+
+```sh
 cd atsd-api-python
+```
+
+```sh
 python setup.py install
 ```
