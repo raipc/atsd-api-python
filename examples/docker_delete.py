@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
 import pprint
 
@@ -33,7 +33,7 @@ for el in docker_hosts:
     print(" - FOUND " + str(len(entities)) + " objects for docker_host= " + docker_host.name +
           " : " + docker_host.lastInsertDate + " : elapsed_days= " + str(elapsed_days))
 
-    if elapsed_days < 7:
+    if elapsed_time < timedelta(hours=7*24):
         print(" - RETAIN (do not delete): " + docker_host.name)
         continue
 
