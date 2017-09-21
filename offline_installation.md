@@ -2,7 +2,7 @@
 
 The document describes how ATSD Python client can be installed on a machine without internet access. The process involves downloading the module and its dependencies to an intermediate server from which the files are then copied to the target machine.
 
-### Download Modules
+## Download Modules
 
 Login into the server with internet access.
 
@@ -26,14 +26,16 @@ python-dateutil
 pytz
 ```
 
-Download required modules into temporary folder
+Download the modules specified in the `requirements.txt` file into a temporary folder.
 
-```
+```sh
 mkdir modules
 pip install --download ./modules -r requirements.txt
 ```
 
-Unpack modules.
+The directory will contain a set of `*.whl` files.
+
+Unpack the downloaded modules.
 
 ```
 cd modules
@@ -41,42 +43,27 @@ for i in `ls *.whl`; do unzip "$i"; rm "$i"; done;
 for i in `ls *.tar.gz`; do tar -xvf "$i"; rm "$i"; done;
 ```
 
-### Copy and Install Modules to the Target Machine
-
-Login into the target server where the ATSD client will be installed
-
-Check Pythin version.
-
-```sh
-python -V
-```
-
-Determine the path to a directory with locally installed modules.
-
-```sh
-python -m site --user-site | xargs stat
-```
-
-Create this directory if it doesnt't exist.
-
-```sh
-python -m site --user-site | xargs mkdir -p
-```
-
 Copy the `atsd-api-python` directory from the connected server to the target machine.
 
-Install `atsd_client`
+## Install Modules to the Target Machine
+
+Login into the target server where the ATSD client will be installed.
+
+Change to the `atsd-api-python` directory copied before.
 
 ```sh
 cd atsd-api-python
 ```
 
-```sh
-python setup.py install
-```
-
-Copy prepared modules to a directory with locally installed ones.
+Copy the previously downloaded modules to a corresponding directory on the local machine.
 
 ```sh
 cp -r modules/* `python -m site --user-site`
 ```
+
+Install ATSD client.
+
+```sh
+python setup.py install
+```
+
