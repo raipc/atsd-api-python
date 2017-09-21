@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from datetime import datetime
+from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
 import pprint
 
@@ -25,7 +25,7 @@ for el in docker_hosts:
 
     last_insert_time = parse_date(docker_host.lastInsertDate).replace(tzinfo=pytz.utc)
     elapsed_time = datetime.now(pytz.utc) - last_insert_time
-    elapsed_days = round(elapsed_time.total_seconds() / (24 * 3600), 1)
+    elapsed_days = int(elapsed_time.days)
 
     entity_filter = "lower(tags.docker-host) = lower('" + docker_host.name + "')"
     entities = entity_service.list(expression=entity_filter, limit=0, tags="*")
@@ -33,7 +33,7 @@ for el in docker_hosts:
     print(" - FOUND " + str(len(entities)) + " objects for docker_host= " + docker_host.name +
           " : " + docker_host.lastInsertDate + " : elapsed_days= " + str(elapsed_days))
 
-    if elapsed_days < 7:
+    if elapsed_time < timedelta(hours=7*24):
         print(" - RETAIN (do not delete): " + docker_host.name)
         continue
 
