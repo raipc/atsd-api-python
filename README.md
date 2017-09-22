@@ -281,3 +281,8 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 ### SQL
 
 - Query
+
+## Script Examples
+
+* [Delete Lagging Docker Hosts](examples/docker_delete.py)
+* [Delete Entities by Name](examples/entities_expression_delete.py)
