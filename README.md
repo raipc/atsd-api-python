@@ -45,6 +45,14 @@ Check that the modules have been installed successfully.
 python -c "import atsd_client, pandas, requests, dateutil, pytz"
 ```
 
+The output will be empty if all modules are installed and error with absent one will be raised otherwise.
+
+```python
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ImportError: No module named atsd_client
+```
+
 For installation on a system without internet access, review the following [guide](offline_installation.md)
 
 ## Usage
