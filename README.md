@@ -39,7 +39,7 @@ cd atsd-api-python
 python setup.py install
 ```
 
-Check that the client and required modules are installed successfully.
+Check that the modules have been installed successfully.
 
 ```sh
 python -c "import atsd_client, pandas, requests, dateutil, pytz"
