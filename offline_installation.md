@@ -81,7 +81,7 @@ Check that the modules have been installed successfully.
 python -c "import atsd_client, pandas, requests, dateutil, pytz"
 ```
 
-The output will be empty if all modules are installed and error with absent one will be raised otherwise.
+The output will be empty if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
 
 ```python
 Traceback (most recent call last):
