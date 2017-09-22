@@ -23,6 +23,7 @@ Create a `requirements.txt` file containing the list of required modules (depend
 ```
 requests[security]
 python-dateutil
+pandas
 pytz
 ```
 
@@ -62,7 +63,7 @@ Change to the `atsd-api-python` directory copied before.
 cd atsd-api-python
 ```
 
-Copy the previously downloaded modules to a corresponding directory on the local machine.
+Copy the previously downloaded modules to a corresponding directory on the target machine.
 
 ```sh
 mkdir -p `python -m site --user-site` && cp -r modules/* `python -m site --user-site`
@@ -74,3 +75,16 @@ Install ATSD client.
 python setup.py install
 ```
 
+Check that the modules have been installed successfully.
+
+```sh
+python -c "import atsd_client, pandas, requests, dateutil, pytz"
+```
+
+The output will be empty if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
+
+```python
+Traceback (most recent call last):
+  File "<string>", line 1, in <module>
+ImportError: No module named atsd_client
+```
