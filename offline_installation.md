@@ -23,6 +23,7 @@ Create a `requirements.txt` file containing the list of required modules (depend
 ```
 requests[security]
 python-dateutil
+pandas
 pytz
 ```
 
@@ -72,5 +73,11 @@ Install ATSD client.
 
 ```sh
 python setup.py install
+```
+
+Check that the client and required modules are installed successfully.
+
+```sh
+python -c "import atsd_client, pandas, requests, dateutil, pytz"
 ```
 

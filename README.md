@@ -39,6 +39,12 @@ cd atsd-api-python
 python setup.py install
 ```
 
+Check that the client and required modules are installed successfully.
+
+```sh
+python -c "import atsd_client, pandas, requests, dateutil, pytz"
+```
+
 For installation on a system without internet access, review the following [guide](offline_installation.md)
 
 ## Usage
