@@ -17,21 +17,17 @@ permissions and limitations under the License.
 
 import inspect
 import numbers
-
-try:
-    unicode = unicode
-except NameError:
-    unicode = str
+import six
 
 
 def serialize(target):
     if isinstance(target, dict):
-        return dict([k, serialize(v)] for k, v in target.items)
+        return dict([k, serialize(v)] for k, v in six.iteritems(target))
     elif isinstance(target, (list, tuple)):
         return [serialize(el) for el in target]
     elif isinstance(target, bool):
         return str(target).lower()
-    elif isinstance(target, (str, unicode, numbers.Number)):
+    elif isinstance(target, (six.text_type, six.binary_type, numbers.Number)):
         return target
     elif target is None:
         return None
@@ -45,7 +41,7 @@ def serialize(target):
                     result[prop] = serialized_property
             return result
         except AttributeError:
-            raise ValueError(unicode(target) + ' could not be serialized')
+            raise ValueError(six.text_type(target) + ' could not be serialized')
 
 
 def deserialize(target, model_class):
@@ -63,5 +59,5 @@ def deserialize(target, model_class):
             if attr not in args:
                 setattr(result_object, attr, target[attr])
     except:
-        raise ValueError(unicode(target) + ' could not be deserialized to ' + unicode(model_class))
+        raise ValueError(six.text_type(target) + ' could not be deserialized to ' + six.text_type(model_class))
     return result_object
