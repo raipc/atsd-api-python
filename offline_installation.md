@@ -21,7 +21,7 @@ cd atsd-api-python
 Create a `requirements.txt` file containing the list of required modules (dependencies).
 
 ```
-requests[security]
+requests[security]>=2.4.2
 python-dateutil
 pandas
 pytz
