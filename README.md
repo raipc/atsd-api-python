@@ -74,6 +74,7 @@ Alternatively, create a `connection.properties` file and specify its path in the
 base_url=http://atsd_hostname:8088
 username=usr
 password=pwd
+ssl_verify=False
 ```
 
 ```python

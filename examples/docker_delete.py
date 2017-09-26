@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
 import pprint
 
-from atsd_client import connect_url
+from atsd_client import connect
 from atsd_client.services import EntitiesService
 from atsd_client.models import Entity
 import pytz
@@ -12,10 +12,12 @@ import pytz
 Locate a collection of entities (docker hosts in this cases).
 Delete those that have not inserted data for more than 4 days
 Also delete related entities (docker containers).
+Connection.properties will be taken from the same folder where script is.
 '''
 
 tags_printer = pprint.PrettyPrinter(indent=4)
-conn = connect_url('http://atsd_hostname:8088', 'user', 'pwd')
+conn = connect()
+#conn = connect_url('http://atsd_hostname:8088', 'user', 'pwd')
 #conn = atsd_client.connect('/home/axibase/connection.properties')
 
 entity_service = EntitiesService(conn)

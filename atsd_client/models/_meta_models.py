@@ -34,6 +34,8 @@ class InvalidAction(object):
     NONE      = 'NONE'
     DISCARD   = 'DISCARD'
     TRANSFORM = 'TRANSFORM'
+    RAISE_ERROR   = 'RAISE_ERROR'
+    TRANSFORM = 'SET_VERSION_STATUS'
 
 #------------------------------------------------------------------------------ 
 class Metric():
@@ -45,7 +47,7 @@ class Metric():
     In addition, metrics can have user-defined tags such as unit of measurement, scale, type or a category that can be used for filtering and grouping.
     """
     
-    def __init__(self, 
+    def __init__(self,
                  name,
                  label=None,
                  enabled=None,
@@ -57,10 +59,14 @@ class Metric():
                  maxValue=None,
                  invalidAction=None,
                  description=None,
-                 retentionInterval=None,
+                 retentionDays=None,
+                 seriesRetentionDays=None,
                  lastInsertDate=None,
                  tags=None,
-                 versioned=None
+                 versioned=None,
+                 interpolate=None,
+                 units=None,
+                 timeZone=None
                  ):
         #: `str` metric name
         self.name = name
@@ -84,14 +90,22 @@ class Metric():
         self.invalidAction = invalidAction
         #: `str` metric description
         self.description = description
-        #: `Number` number of days to retain values for this metric in the database
-        self.retentionInterval = retentionInterval
+        #: `Number` number of days to store the values for this metric in the database
+        self.retentionDays = retentionDays
+        #: `Number` number of days to retain series in the database
+        self.seriesRetentionDays = seriesRetentionDays
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
-        self.lastInsertDate = to_iso_utc(lastInsertDate)
+        self.lastInsertDate = None if lastInsertDate is None else to_iso_utc(lastInsertDate)
         #: `dict`
         self.tags = tags
         #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status 
         self.versioned = versioned
+        #: :class:`.Interpolate`
+        self.interpolate = interpolate
+        #: `str` metric units
+        self.units = units
+        #: `str` entity timezone
+        self.timeZone = timeZone
 
     def __repr__(self):
         return "<METRIC name={name}, label={label}, description={des}".format(name=self.name, label=self.label, des=self.description)
@@ -130,8 +144,11 @@ class Metric():
     def get_description(self):
         return self.description
 
-    def get_retention_interval(self):
-        return self.retentionInterval
+    def get_retention_days(self):
+        return self.retentionDays
+
+    def get_series_retention_days(self):
+        return self.seriesRetentionDays
 
     def get_last_insert_date(self):
         return self.lastInsertDate
@@ -141,6 +158,15 @@ class Metric():
 
     def get_versioned(self):
         return self.versioned
+
+    def get_interpolate(self):
+        return self.interpolate
+
+    def get_units(self):
+        return self.units
+
+    def get_time_zone(self):
+        return self.timeZone
 
     def set_name(self, value):
         self.name = value
@@ -175,18 +201,30 @@ class Metric():
     def set_description(self, value):
         self.description = value
 
-    def set_retention_interval(self, value):
-        self.retentionInterval = value
+    def set_retention_days(self, value):
+        self.retentionDays = value
+
+    def set_series_retention_days(self, value):
+        self.retentionDays = value
 
     def set_last_insert_date(self, value):
-        self.lastInsertDate = to_iso_utc(value)
+        self.lastInsertDate = None if value is None else to_iso_utc(value)
 
     def set_tags(self, value):
         self.tags = value
 
     def set_versioned(self, value):
         self.versioned = value
-    
+
+    def set_interpolate(self, value):
+        self.interpolate = value
+
+    def set_units(self, value):
+        self.units = value
+
+    def set_time_zone(self, value):
+        self.timeZone = value
+
 #------------------------------------------------------------------------------ 
 class Entity():
     """
@@ -195,22 +233,41 @@ class Entity():
     Entities are ingested with attached metrics (time series data) using the csv/nmon parsers, telnet and http/s protocols, and Axibase Collector jobs.
     """
     
-    def __init__(self, name, enabled=None, lastInsertDate=None, tags=None):
-        # `str` entity name
+    def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None):
+        #: `str` entity name
         self.name = name
+        #: `str` entity label
+        self.label = label
+        #: :class:`.Interpolate`
+        self.interpolate = interpolate
+        #: `str` entity timezone
+        self.timeZone = timeZone
         #: `bool` enabled status. Incoming data is discarded for disabled entities
         self.enabled = enabled
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
-        self.lastInsertDate = to_iso_utc(lastInsertDate)
+        self.lastInsertDate = None if lastInsertDate is None else to_iso_utc(lastInsertDate)
         #: `dict`
         self.tags = tags
         
     def __repr__(self):
-        return "<Entity name={name}, enabled={enabled}, lastInsertDate={lit}, tags={tags}".format(name=self.name, enabled=self.enabled, lit=self.lastInsertDate, tags=self.tags)
+        return "<Entity name={name}, label={label}, interpolate={interpolate}, timezone={timezone}, enabled={" \
+               "enabled}, lastInsertDate={lit}, tags={tags}".format(name=self.name, label=self.label,
+                                                                    interpolate=self.interpolate,
+                                                                    timezone=self.timeZone, enabled=self.enabled,
+                                                                    lit=self.lastInsertDate, tags=self.tags)
 
     #Getters and setters
     def get_name(self):
         return self.name
+
+    def get_label(self):
+        return self.label
+
+    def get_interpolate(self):
+        return self.interpolate
+
+    def get_time_zone(self):
+        return self.timeZone
 
     def get_enabled(self):
         return self.enabled
@@ -224,11 +281,20 @@ class Entity():
     def set_name(self, value):
         self.name = value
 
+    def set_label(self, value):
+        self.label = value
+
+    def set_interpolate(self, value):
+        self.interpolate = value
+
+    def set_time_zone(self, value):
+        self.timeZone = value
+
     def set_enabled(self, value):
         self.enabled = value
 
     def set_last_insert_date(self, value):
-        self.lastInsertDate = to_iso_utc(value)
+        self.lastInsertDate = None if value is None else to_iso_utc(value)
 
     def set_tags(self, value):
         self.tags = value
@@ -243,16 +309,18 @@ class EntityGroup():
     Portals can be added to all entities present in the Group.
     This is a useful feature when working with large amounts of entities and big data sets.
     """
-    def __init__(self, name, expression=None, tags=None):
+    def __init__(self, name, expression=None, tags=None, enabled=None):
         #: `str` entity group name
         self.name = name
         #: `str` group membership expression. The expression is applied to entities to automatically add/remove members of this group
         self.expression = expression
         #: `dict`
         self.tags = tags
+        #: `bool`
+        self.enabled = enabled
     
     def __repr__(self):
-        return "<EntityGroup name={name}, expression={expression}, tags={tags}".format(name=self.name, expression=self.expression, tags=self.tags)
+        return "<EntityGroup name={name}, expression={expression}, tags={tags}".format(name=self.name, expression=self.expression, tags=self.tags, enabled=self.enabled)
     
     #Getters and setters
     def get_name(self):
@@ -264,6 +332,9 @@ class EntityGroup():
     def get_tags(self):
         return self.tags
 
+    def get_enabled(self):
+        return self.enabled
+
     def set_name(self, value):
         self.name = value
 
@@ -272,3 +343,6 @@ class EntityGroup():
 
     def set_tags(self, value):
         self.tags = value
+
+    def set_enabled(self, value):
+        self.enabled = value

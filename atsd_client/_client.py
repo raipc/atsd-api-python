@@ -35,17 +35,17 @@ class Client(object):
 
     def __init__(self, base_url,
                  username=None, password=None,
-                 verify=None, timeout=None):
+                 ssl_verify=False, timeout=None):
         """
         :param base_url: atsd url
         :param username: login
         :param password:
-        :param verify: verify ssl sertificate
+        :param ssl_verify: verify ssl sertificate
         :param timeout: request timeout
         """
         self.context = urlparse.urljoin(base_url, 'api/')
         session = requests.Session()
-        if verify is False or verify == 'False':
+        if ssl_verify is False or ssl_verify == 'False':
             session.verify = False
         if username is not None and password is not None:
             session.auth = (username, password)

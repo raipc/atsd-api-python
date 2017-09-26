@@ -574,7 +574,7 @@ class Message():
     Messages for the same entity, time and type/source tags are automatically de-duplicated.
     """
 
-    def __init__(self, type, source, entity, date, severity, tags, message):
+    def __init__(self, type, source, entity, date, severity, tags, message, persist):
         #: `str` message type
         self.type = type
         #: `str` message source
@@ -589,6 +589,8 @@ class Message():
         self.tags=tags
         #: `str`
         self.message=message
+        #: `bool`
+        self.persist=persist
 
     def __repr__(self):
         return "<MESSAGE type={t}, source={s}, entity={e}, message={m}, date={d}...>".format(t=self.type, s=self.source, e=self.entity, m=self.message, d=self.date)
@@ -615,6 +617,9 @@ class Message():
     def get_message(self):
         return self.message
 
+    def get_persist(self):
+        return self.persist
+
     def set_type(self, value):
         self.type = value
 
@@ -635,3 +640,6 @@ class Message():
 
     def set_message(self, value):
         self.message = value
+
+    def set_persist(self, value):
+        self.persist = value
