@@ -1,6 +1,6 @@
 # Axibase Time Series Database Client for Python
 
-The ATSD API Client for Python simplifies the process of interacting with [Axibase Time Series Database](https://http://axibase.com/products/axibase-time-series-database/) through SQL and REST API.
+The ATSD API Client for Python simplifies the process of interacting with [Axibase Time Series Database](https://axibase.com/products/axibase-time-series-database/) through SQL and REST API.
 
 ## References
 
@@ -65,13 +65,13 @@ Establish a connection with the `connect_url` method.
 
 ```python
     >>> import atsd_client
-    >>> conn = atsd_client.connect_url('http://atsd_hostname:8088', 'usr', 'pwd')  
+    >>> conn = atsd_client.connect_url('https://atsd_hostname:8443', 'usr', 'pwd')  
 ```
 
 Alternatively, create a `connection.properties` file and specify its path in the `connect` method.
 
 ```ls
-base_url=http://atsd_hostname:8088
+base_url=https://atsd_hostname:8443
 username=usr
 password=pwd
 ssl_verify=False

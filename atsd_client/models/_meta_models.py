@@ -14,7 +14,7 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
-from .._time_utilities import to_iso_utc
+from .._time_utilities import to_iso_local
 from .._utilities import NoneDict
 
 
@@ -97,7 +97,7 @@ class Metric():
         #: `Number` number of days to retain series in the database
         self.seriesRetentionDays = seriesRetentionDays
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
-        self.lastInsertDate = None if lastInsertDate is None else to_iso_utc(lastInsertDate)
+        self.lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         #: `dict`
         self.tags = NoneDict(tags)
         #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status 
@@ -243,7 +243,7 @@ class Metric():
 
     @lastInsertDate.setter
     def lastInsertDate(self, value):
-        self.lastInsertDate = None if value is None else to_iso_utc(value)
+        self.lastInsertDate = None if value is None else to_iso_local(value)
 
     @tags.setter
     def tags(self, value):
@@ -285,7 +285,7 @@ class Entity():
         #: `bool` enabled status. Incoming data is discarded for disabled entities
         self.enabled = enabled
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
-        self.lastInsertDate = None if lastInsertDate is None else to_iso_utc(lastInsertDate)
+        self.lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         #: `dict`
         self.tags = NoneDict(tags)
         
@@ -347,7 +347,7 @@ class Entity():
 
     @lastInsertDate.setter
     def lastInsertDate(self, value):
-        self.lastInsertDate = None if value is None else to_iso_utc(value)
+        self.lastInsertDate = None if value is None else to_iso_local(value)
 
     @tags.setter
     def tags(self, value):

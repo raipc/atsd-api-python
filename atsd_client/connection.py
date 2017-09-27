@@ -30,7 +30,7 @@ def connect_url(base_url,
                 timeout=None):
     """connect to ATSD using specified parameters
 
-    :param base_url: ATSD url, for example http://atsd_server:8088
+    :param base_url: ATSD url, for example https://atsd_server:8443
     :param username: user name
     :param password: user password
     :param ssl_verify: verify ssl certificate (default False)

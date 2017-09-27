@@ -11,7 +11,7 @@ Locate entities by name, using an expression filter
 Iterate over the collection and delete each entity
 '''
 
-conn = connect_url('http://atsd_hostname:8088', 'user', 'pwd')
+conn = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 #conn = atsd_client.connect('/home/axibase/connection.properties')
 
 entity_service = EntitiesService(conn)
