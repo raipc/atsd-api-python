@@ -1,13 +1,15 @@
 #!/usr/bin/env python
+import os
+import pprint
+import time
+
+import sys
+
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
-import pprint
-
 from dateutil.tz import tzlocal
 
 import logging
-logging.getLogger().setLevel(logging.INFO)
-
 from atsd_client import connect
 from atsd_client.services import EntitiesService, MetricsService
 
@@ -17,6 +19,11 @@ Delete those that have not inserted data for more than 4 days
 Also delete related entities (docker containers).
 Connection.properties will be taken from the same folder where script is.
 '''
+
+logging.getLogger().setLevel(logging.INFO)
+
+os.environ['TZ'] = 'Europe/London'
+time.tzset()
 
 tags_printer = pprint.PrettyPrinter(indent=4)
 conn = connect()
