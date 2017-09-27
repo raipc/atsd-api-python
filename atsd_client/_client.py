@@ -14,6 +14,7 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
+import logging
 
 try:
     import urlparse
@@ -43,6 +44,7 @@ class Client(object):
         :param ssl_verify: verify ssl sertificate
         :param timeout: request timeout
         """
+        logging.info('Connecting to base_url: %s as %s user.' % (base_url, username))
         self.context = urlparse.urljoin(base_url, 'api/')
         session = requests.Session()
         if ssl_verify is False or ssl_verify == 'False':

@@ -7,10 +7,7 @@ import time
 from datetime import datetime
 from dateutil.tz import tzlocal, tzutc
 
-try:
-    unicode = unicode
-except NameError:
-    unicode = str
+import six
 
 def _current_aware_datetime():
     return datetime.now(tzlocal())
@@ -52,7 +49,7 @@ def to_iso_utc(time):
     aux_time = None
     if time is None:
         aux_time = _current_aware_datetime()
-    if isinstance(time, (str, unicode)):
+    if isinstance(time, (str, six.text_type)):
         try:
             aux_time = dateutil.parser.parse(time)
         except ValueError:
@@ -77,7 +74,7 @@ def timediff_in_minutes(prev_date, next_date=None):
     if prev_date is None:
         return sys.maxsize
 
-    if isinstance(prev_date, (str, unicode)):
+    if isinstance(prev_date, (str, six.text_type)):
         try:
             prev_date = dateutil.parser.parse(prev_date)
         except ValueError:
@@ -91,7 +88,7 @@ def timediff_in_minutes(prev_date, next_date=None):
 
     if next_date is None:
         next_date = datetime.now(tzutc())
-    elif isinstance(next_date, (str, unicode)):
+    elif isinstance(next_date, (str, six.text_type)):
         try:
             next_date = dateutil.parser.parse(next_date)
         except ValueError:

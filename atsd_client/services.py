@@ -32,14 +32,11 @@ except ImportError:
     from urllib.parse import quote
     from io import StringIO
     from urllib.parse import urlencode
-try:
-    unicode = unicode
-except NameError:
-    unicode = str
 
+import six
 
 def _check_name(name):
-    if not isinstance(name, (str, unicode)):
+    if not isinstance(name, (str, six.text_type)):
         raise TypeError('name should be str')
     if len(name) == 0:
         raise ValueError('name is empty')
@@ -311,8 +308,9 @@ class MetricsService(_Service):
         :param metric_name: `str` metric name
         :return: True if success
         """
+
         entity = self.get(metric_name)
-        return timediff_in_minutes(entity.get_last_insert_date())
+        return timediff_in_minutes(entity.lastInsertDate)
 
 
 # ------------------------------------------------------------------------------ ENTITIES
@@ -420,7 +418,7 @@ class EntitiesService(_Service):
         :return: True if success
         """
         entity = self.get(entity_name)
-        return timediff_in_minutes(entity.get_last_insert_date())
+        return timediff_in_minutes(entity.lastInsertDate)
 
 
 # ------------------------------------------------------------------------------ ENTITIY GROUPS
