@@ -35,7 +35,7 @@ except ImportError:
 import six
 
 def _check_name(name):
-    if not isinstance(name, (str, six.text_type)):
+    if not isinstance(name, (six.binary_type, six.text_type)):
         raise TypeError('name should be str')
     if len(name) == 0:
         raise ValueError('name is empty')
@@ -296,7 +296,7 @@ class MetricsService(_Service):
             response = self.conn.get(metric_series_url.format(metric=quote(metric_name, '')), params)
         except ServerException as e:
             if e.status_code == 404:
-                return None
+                return []
             else:
                 raise e
         return _jsonutil.deserialize(response, Series)

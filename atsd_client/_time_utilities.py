@@ -49,7 +49,7 @@ def to_iso_local(time):
     aux_time = None
     if time is None:
         aux_time = _current_aware_datetime()
-    if isinstance(time, (str, six.text_type)):
+    if isinstance(time, (six.binary_type, six.text_type)):
         try:
             aux_time = dateutil.parser.parse(time)
         except ValueError:
@@ -74,7 +74,7 @@ def timediff_in_minutes(prev_date, next_date=None):
     if prev_date is None:
         return sys.maxsize
 
-    if isinstance(prev_date, (str, six.text_type)):
+    if isinstance(prev_date, (six.binary_type, six.text_type)):
         try:
             prev_date = dateutil.parser.parse(prev_date)
         except ValueError:
@@ -88,7 +88,7 @@ def timediff_in_minutes(prev_date, next_date=None):
 
     if next_date is None:
         next_date = datetime.now(tzlocal())
-    elif isinstance(next_date, (str, six.text_type)):
+    elif isinstance(next_date, (six.binary_type, six.text_type)):
         try:
             next_date = dateutil.parser.parse(next_date)
         except ValueError:
