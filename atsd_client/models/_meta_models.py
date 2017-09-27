@@ -15,6 +15,8 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 from .._time_utilities import to_iso_utc
+from .._utilities import NoneDict
+
 
 #------------------------------------------------------------------------------ 
 class DataType(object):
@@ -97,7 +99,7 @@ class Metric():
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
         self.lastInsertDate = None if lastInsertDate is None else to_iso_utc(lastInsertDate)
         #: `dict`
-        self.tags = tags
+        self.tags = NoneDict(tags)
         #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status 
         self.versioned = versioned
         #: :class:`.Interpolate`
@@ -245,7 +247,7 @@ class Metric():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
     @versioned.setter
     def versioned(self, value):
@@ -285,7 +287,7 @@ class Entity():
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
         self.lastInsertDate = None if lastInsertDate is None else to_iso_utc(lastInsertDate)
         #: `dict`
-        self.tags = tags
+        self.tags = NoneDict(tags)
         
     def __repr__(self):
         return "<Entity name={name}, label={label}, interpolate={interpolate}, timezone={timezone}, enabled={" \
@@ -349,7 +351,7 @@ class Entity():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
 #------------------------------------------------------------------------------ 
 class EntityGroup():
@@ -367,7 +369,7 @@ class EntityGroup():
         #: `str` group membership expression. The expression is applied to entities to automatically add/remove members of this group
         self.expression = expression
         #: `dict`
-        self.tags = tags
+        self.tags = NoneDict(tags)
         #: `bool`
         self.enabled = enabled
     
@@ -401,7 +403,7 @@ class EntityGroup():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
     @enabled.setter
     def enabled(self, value):

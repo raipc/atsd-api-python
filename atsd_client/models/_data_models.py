@@ -16,6 +16,8 @@ permissions and limitations under the License.
 """
 
 import copy
+
+from .._utilities import NoneDict
 from .._constants import display_series_threshold, display_series_part
 from .._time_utilities import to_timestamp, to_iso_utc
 
@@ -96,7 +98,7 @@ class Series():
         #: `str` metric name
         self.metric = metric
         #: `dict` of ``tag_name: tag_value`` pairs
-        self.tags = tags
+        self.tags = NoneDict(tags)
         # `list` of :class:`.Sample` objects| `list` of {'t': time, 'v': value} objects
         self.data = []
         if data is not None:
@@ -243,7 +245,7 @@ class Series():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
     @data.setter
     def data(self, value):
@@ -265,7 +267,7 @@ class Property():
         #: `str` entity name
         self.entity = entity
          #: `dict` of ``name: value`` pairs that are not part of the key and contain descriptive information about the property record.
-        self.tags = tags
+        self.tags = NoneDict(tags)
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self.key = key
         #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
@@ -305,7 +307,7 @@ class Property():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
     @key.setter
     def key(self, value):
@@ -340,7 +342,7 @@ class Alert():
         #: `Number` last numeric value received
         self.value = value
         #: `dict`
-        self.tags = tags
+        self.tags = NoneDict(tags)
         #: `str` text value
         self.textValue = textValue
         #: :class:`.Severity`
@@ -449,7 +451,7 @@ class Alert():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
     @severity.setter
     def severity(self, value):
@@ -496,7 +498,7 @@ class AlertHistory():
         #: :class:`.Severity`
         self.severity = severity
         #: `str`
-        self.tags = tags
+        self.tags = NoneDict(tags)
         #: `str` alert state when closed: OPEN, CANCEL, REPEAT
         self.type = type
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date
@@ -631,7 +633,7 @@ class AlertHistory():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
     @type.setter
     def type(self, value):
@@ -667,7 +669,7 @@ class Message():
         #: :class:`.Severity`
         self.severity = severity
         #: `str` message tags
-        self.tags=tags
+        self.tags = NoneDict(tags)
         #: `str`
         self.message=message
         #: `bool`
@@ -731,7 +733,7 @@ class Message():
 
     @tags.setter
     def tags(self, value):
-        self.tags = value
+        self.tags = NoneDict(value)
 
     @message.setter
     def message(self, value):
