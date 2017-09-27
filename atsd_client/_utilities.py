@@ -7,5 +7,8 @@ def copy_not_empty_attrs(src, dst):
 
 
 class NoneDict(dict):
+    def __init__(self, tags):
+        dict(tags) if tags is not None else None
+
     def __getitem__(self, key):
         return dict.get(self, key)
