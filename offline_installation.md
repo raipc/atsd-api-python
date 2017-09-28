@@ -24,8 +24,6 @@ Create a `requirements.txt` file containing the list of required modules (depend
 requests[security]>=2.4.2
 python-dateutil
 pandas
-pytz
-six
 ```
 
 Download the modules specified in the `requirements.txt` file into a temporary folder.
@@ -46,6 +44,7 @@ cryptography-2.0.3-cp27-cp27m-macosx_10_6_intel.whl                             
 enum34-1.1.6-py2-none-any.whl                                                                                                   requests-2.18.4-py2.py3-none-any.whl
 idna-2.6-py2.py3-none-any.whl                                                                                                   six-1.11.0-py2.py3-none-any.whl
 ipaddress-1.0.18-py2-none-any.whl                                                                                               urllib3-1.22-py2.py3-none-any.whl
+numpy-1.13.2-cp27-cp27m-macosx_10_6_intel.macosx_10_9_intel.macosx_10_9_x86_64.macosx_10_10_intel.macosx_10_10_x86_64.whl
 ```
 
 Unpack the downloaded modules.

@@ -22,7 +22,7 @@ from .._constants import display_series_threshold, display_series_part
 from .._time_utilities import to_timestamp, to_iso_local
 
 #------------------------------------------------------------------------------
-class Sample():
+class Sample(object):
     """
     Class that represents a numeric value observed at some time with additional version information if provided.
     If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
@@ -85,7 +85,7 @@ class Sample():
         return self._compare(other) != 0
 
 #------------------------------------------------------------------------------
-class Series():
+class Series(object):
     """
     Class representing a Time Series.
     Time Series is a time-indexed array of samples (observations), each consisting of a timestamp and a numeric value, for example CPU utilization or body temperature.
@@ -263,7 +263,7 @@ class Series():
         self._lastInsertDate = None if value is None else to_iso_local(value)
 
 #------------------------------------------------------------------------------
-class Property():
+class Property(object):
     """
     Class representing a single property.
     Properties represent metadata describing entities, obtained from configuration files, system command output, etc.
@@ -329,7 +329,7 @@ class Property():
         self._date = to_iso_local(value)
 
 #------------------------------------------------------------------------------
-class Alert():
+class Alert(object):
     """
     Class, representing an single alert.
     Alert is an event produced by the rule engine by applying pre-defined rules to incoming data. 
@@ -481,7 +481,7 @@ class Alert():
         self._openValue = value
 
 #------------------------------------------------------------------------------
-class AlertHistory():
+class AlertHistory(object):
     """
     Class representing history of an alert, including such values as alert duration, alert open date, repeat count, etc.
     """
@@ -659,7 +659,7 @@ class AlertHistory():
         self._window = value
 
 #------------------------------------------------------------------------------
-class Message():
+class Message(object):
     """
     Class representing a Message.
     Messages are events collected from system logs and messaging systems.

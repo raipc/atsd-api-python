@@ -34,11 +34,14 @@ def serialize(target):
     else:
         try:
             result = {}
-            props = target.__dict__.keys()
-            for prop in props:
-                serialized_property = serialize(target.__dict__[prop])
+            for key, value in vars(target).items():
+                if key.startswith('__'):
+                    continue
+                elif key.startswith('_'):
+                    key = key[1:]
+                serialized_property = serialize(value)
                 if serialized_property is not None:
-                    result[prop] = serialized_property
+                    result[key] = serialized_property
             return result
         except AttributeError:
             raise ValueError(six.text_type(target) + ' could not be serialized')

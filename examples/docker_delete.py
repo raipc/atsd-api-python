@@ -15,7 +15,7 @@ from atsd_client.services import EntitiesService, MetricsService
 
 '''
 Locate a collection of entities (docker hosts in this cases).
-Delete those that have not inserted data for more than 4 days
+Delete those that have not inserted data for more than 7 days
 Also delete related entities (docker containers).
 Connection.properties will be taken from the same folder where script is.
 '''

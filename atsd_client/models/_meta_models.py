@@ -40,7 +40,7 @@ class InvalidAction(object):
     TRANSFORM = 'SET_VERSION_STATUS'
 
 #------------------------------------------------------------------------------ 
-class Metric():
+class Metric(object):
     """
     Class representing a single metric.
     Metrics are names assigned to numeric measurements, for example, temperature or speed.
@@ -266,7 +266,7 @@ class Metric():
         self._timeZone = value
 
 #------------------------------------------------------------------------------ 
-class Entity():
+class Entity(object):
     """
     Class representing a single entitiy.
     Entities are servers, hosts, frames, virtual machines, sensors, etc.
@@ -354,7 +354,7 @@ class Entity():
         self._tags = NoneDict(value)
 
 #------------------------------------------------------------------------------ 
-class EntityGroup():
+class EntityGroup(object):
     """
     Class representing a single entity group.
     Entities can be grouped into Entity Groups which can be used for building Portals, Exporting Data, and creating Forecasts.
