@@ -9,18 +9,20 @@ from dateutil.tz import tzlocal
 
 import six
 
+
 def _current_aware_datetime():
     return datetime.now(tzlocal())
+
 
 def _current_aware_timestring():
     return str(datetime.now(tzlocal()).replace(microsecond=0).isoformat())
 
-def _iso_to_milliseconds(time_string):
+
+def _iso_to_milliseconds(dt):
     """
-    :param time_string: in iso 8601 format'
+    :param dt datetime
     :return: timestamp in milliseconds
     """
-    dt = dateutil.parser.parse(time_string)
     return calendar.timegm(dt.timetuple()) * 1000
 
 
@@ -34,6 +36,7 @@ def _dt_to_local(datetime_obj):
     else:
         return datetime_obj.astimezone(tzlocal())
 
+
 def to_timestamp(time):
     """
     :param time: None | `str` in iso format | :class:`datetime` | `int`
@@ -41,10 +44,11 @@ def to_timestamp(time):
     """
     return _iso_to_milliseconds(to_iso_local(time))
 
+
 def to_iso_local(time):
     """
     :param time: None | iso `str` | :class:`datetime` | `int`
-    :return: datetime string representation in ISO 8601 format
+    :return: datetime
     """
     aux_time = None
     if time is None:
@@ -60,7 +64,8 @@ def to_iso_local(time):
         aux_time = datetime.utcfromtimestamp(time * 0.001).replace(tzinfo=tzlocal())  # expecting milliseconds
     elif aux_time is None:
         raise ValueError('data "time" should be either number, datetime instance, None or str')
-    return str(_dt_to_local(aux_time).replace(microsecond=0).isoformat())
+    return _dt_to_local(aux_time).replace(microsecond=0)
+
 
 def timediff_in_minutes(prev_date, next_date=None):
     """

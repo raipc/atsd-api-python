@@ -18,6 +18,7 @@ permissions and limitations under the License.
 import inspect
 import numbers
 import six
+from datetime import datetime
 
 
 def serialize(target):
@@ -27,6 +28,8 @@ def serialize(target):
         return [serialize(el) for el in target]
     elif isinstance(target, bool):
         return str(target).lower()
+    elif isinstance(target, datetime):
+        return target.isoformat()
     elif isinstance(target, (six.text_type, six.binary_type, numbers.Number)):
         return target
     elif target is None:

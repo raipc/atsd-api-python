@@ -301,16 +301,6 @@ class MetricsService(_Service):
                 raise e
         return _jsonutil.deserialize(response, Series)
 
-    def last_insert_elapsed_time(self, metric_name):
-        """Return last insert elapsed time in minutes for the specified metric.
-
-        :param metric_name: `str` metric name
-        :return: True if success
-        """
-
-        entity = self.get(metric_name)
-        return timediff_in_minutes(entity.lastInsertDate)
-
 
 # ------------------------------------------------------------------------------ ENTITIES
 class EntitiesService(_Service):
@@ -409,15 +399,6 @@ class EntitiesService(_Service):
             params['tags'] = tags
         response = self.conn.get(ent_metrics_url.format(entity=quote(entity_name, '')), params)
         return _jsonutil.deserialize(response, Metric)
-
-    def last_insert_elapsed_time(self, entity_name):
-        """Return last insert elapsed time in minutes for the specified entity.
-
-        :param entity_name: `str` entity name
-        :return: True if success
-        """
-        entity = self.get(entity_name)
-        return timediff_in_minutes(entity.lastInsertDate)
 
 
 # ------------------------------------------------------------------------------ ENTITIY GROUPS

@@ -19,7 +19,8 @@ import copy
 
 from .._utilities import NoneDict
 from .._constants import display_series_threshold, display_series_part
-from .._time_utilities import to_timestamp, to_iso_local
+from .._time_utilities import to_timestamp, to_iso_local, timediff_in_minutes
+
 
 #------------------------------------------------------------------------------
 class Sample(object):
@@ -261,6 +262,13 @@ class Series(object):
     @lastInsertDate.setter
     def lastInsertDate(self, value):
         self._lastInsertDate = None if value is None else to_iso_local(value)
+
+    def get_elapsed_minutes(self):
+        """Return last insert elapsed time in minutes for the current `Series` object.
+
+        :return: Time in minutes
+        """
+        return timediff_in_minutes(self.lastInsertDate)
 
 #------------------------------------------------------------------------------
 class Property(object):

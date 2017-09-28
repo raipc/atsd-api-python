@@ -14,7 +14,7 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
-from .._time_utilities import to_iso_local
+from .._time_utilities import to_iso_local, timediff_in_minutes
 from .._utilities import NoneDict
 
 
@@ -265,6 +265,13 @@ class Metric(object):
     def timeZone(self, value):
         self._timeZone = value
 
+    def get_elapsed_minutes(self):
+        """Return last insert elapsed time in minutes for the current `Series` object.
+
+        :return: Time in minutes
+        """
+        return timediff_in_minutes(self.lastInsertDate)
+
 #------------------------------------------------------------------------------ 
 class Entity(object):
     """
@@ -352,6 +359,13 @@ class Entity(object):
     @tags.setter
     def tags(self, value):
         self._tags = NoneDict(value)
+
+    def get_elapsed_minutes(self):
+        """Return last insert elapsed time in minutes for the current `Series` object.
+
+        :return: Time in minutes
+        """
+        return timediff_in_minutes(self.lastInsertDate)
 
 #------------------------------------------------------------------------------ 
 class EntityGroup(object):
