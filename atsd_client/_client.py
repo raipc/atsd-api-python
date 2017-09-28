@@ -25,6 +25,10 @@ from . import _jsonutil
 
 from .exceptions import ServerException
 
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 
 class Client(object):
     """
