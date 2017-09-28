@@ -42,7 +42,7 @@ python setup.py install
 Check that the modules have been installed successfully.
 
 ```sh
-python -c "import atsd_client, pandas, requests, dateutil, pytz"
+python -c "import atsd_client, pandas, requests, dateutil"
 ```
 
 The output will be empty if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
