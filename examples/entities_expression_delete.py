@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from dateutil.parser import parse as parse_date
 
-from atsd_client import connect_url
+from atsd_client import connect
 from atsd_client.services import EntitiesService
 from atsd_client.models import Entity
 
@@ -11,7 +11,7 @@ Locate entities by name, using an expression filter
 Iterate over the collection and delete each entity
 '''
 
-conn = connect_url('http://atsd_hostname:8088', 'user', 'pwd')
+conn = connect()
 #conn = atsd_client.connect('/home/axibase/connection.properties')
 
 entity_service = EntitiesService(conn)

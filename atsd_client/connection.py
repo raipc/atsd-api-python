@@ -17,30 +17,28 @@ permissions and limitations under the License.
 
 # TODO: connect return Connection(client)
 
+import sys
 from ._client import Client
 from os import path
+import logging
 
 
 def connect_url(base_url,
                 username,
                 password,
-                verify=True,
+                ssl_verify=False,
                 timeout=None):
     """connect to ATSD using specified parameters
 
-    :param base_url: ATSD url, for example http://atsd_server:8088
+    :param base_url: ATSD url, for example https://atsd_server:8443
     :param username: user name
     :param password: user password
-    :param verify: verify ssl certificate (default True)
+    :param ssl_verify: verify ssl certificate (default False)
     :param timeout: request timeout in seconds (default None - no timeout)
     :return: new client instance
     """
 
-    return Client(base_url,
-                  username,
-                  password,
-                  verify,
-                  timeout)
+    return Client(base_url, username, password, ssl_verify, timeout)
 
 
 def connect(file_name=None):
@@ -51,8 +49,10 @@ def connect(file_name=None):
     """
 
     if file_name is None:
-        file_name = path.join(path.dirname(__file__), 'connection.properties')
+        file_name = path.join(path.dirname(path.abspath(sys.argv[0])), 'connection.properties')
     f = open(file_name)
+
+    logging.info("Getting connection properties from file: %s" % file_name)
 
     params = {}
     for line in f:

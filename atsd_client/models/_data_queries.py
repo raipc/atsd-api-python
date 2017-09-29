@@ -17,10 +17,8 @@ permissions and limitations under the License.
 
 
 import numbers
-from datetime import datetime
 from .._utilities import copy_not_empty_attrs
-from .._time_utilities import to_iso_utc
-from ._data_models import Property, Alert
+from .._time_utilities import to_iso_local
 
 try:
     unicode = unicode
@@ -39,7 +37,7 @@ class SeriesType(object):
 class Interpolate(object):
     NONE   = 'NONE'
     LINEAR = 'LINEAR'
-    STEP   = 'STEP'
+    PREVIOUS = 'PREVIOUS'
     
 #------------------------------------------------------------------------------ 
 class TimeUnit(object):
@@ -139,22 +137,22 @@ class DateFilter():
     
     def __init__(self, startDate=None, endDate=None, interval=None):
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02Z, current_hour
-        self.startDate = to_iso_utc(startDate) if startDate is not None else None 
+        self.startDate = to_iso_local(startDate) if startDate is not None else None
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
-        self.endDate = to_iso_utc(endDate) if endDate is not None else None 
+        self.endDate = to_iso_local(endDate) if endDate is not None else None
         #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"}
         self.interval = interval
         if not self._validate():
             raise ValueError("Bad arguments for date filter: startDate={}, endDate={}, interval={}".format(startDate, endDate, interval))
 
     def set_start_date(self, value):
-        self.startDate = to_iso_utc(value)
+        self.startDate = to_iso_local(value)
 
     def set_end_date(self, value):
-        self.endDate = to_iso_utc(value)
+        self.endDate = to_iso_local(value)
 
     def set_interval(self, value):
-        self.interval = to_iso_utc(value)
+        self.interval = to_iso_local(value)
 
 #===============================================================================
 ################# Series Queries
@@ -479,8 +477,8 @@ class PropertiesDeleteQuery():
     def __init__(self, type, entity, startDate=None, endDate=None, key=None, exactMatch=None):
         self.type=type
         self.entity=entity
-        self.startTime= to_iso_utc(startDate) if startDate is not None else None
-        self.endTime=to_iso_utc(endDate) if endDate is not None else None
+        self.startTime= to_iso_local(startDate) if startDate is not None else None
+        self.endTime=to_iso_local(endDate) if endDate is not None else None
         self.key=key
         self.exactMatch=False if exactMatch is None else exactMatch
     
@@ -491,10 +489,10 @@ class PropertiesDeleteQuery():
         self.entity = value
     
     def set_startDate(self,value):
-        self.startDate = to_iso_utc(value)
+        self.startDate = to_iso_local(value)
     
     def set_endDate(self,value):
-        self.endDate = to_iso_utc(value)
+        self.endDate = to_iso_local(value)
     
     def set_key(self,value):
         self.key = value
@@ -544,11 +542,12 @@ class AlertHistoryQuery():
     """
     Class representing a single query to get a history for an alert matching provided filters and parameters.
     """
-    def __init__(self, entity_filter, date_filter, rule, metric, limit ):
+    def __init__(self, entity_filter, date_filter, rule=None, rules=None, metric=None, limit=None):
         copy_not_empty_attrs(src=entity_filter, dst=self)
         copy_not_empty_attrs(src=date_filter, dst=self)
         self.limit = limit
         self.rule = rule
+        self.rules = rules
         self.metric = metric
 
     def set_entity_filter(self,value):
@@ -560,6 +559,9 @@ class AlertHistoryQuery():
     def set_rule(self,value):
         self.rule = value
     
+    def set_rules(self,value):
+        self.rule = value
+
     def set_metric(self,value):
         self.metric = value
     
@@ -574,12 +576,13 @@ class MessageQuery():
     """
     Class representing a single query to get messages matching provided filters and parameters.
     """
-    def __init__(self, entity_filter, date_filter, type=None, source=None, tags=None, severities=None, minSeverity=None, limit=None):
+    def __init__(self, entity_filter, date_filter, type=None, source=None, tags=None, severity=None, severities=None, minSeverity=None, limit=None):
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
         self.type = type
         self.source = source
         self.tags = tags
+        self.severity = severity
         self.severities = severities
         self.minSeverity = minSeverity
         self.limit = 1000 if limit is None else limit
@@ -599,9 +602,12 @@ class MessageQuery():
     def set_tags(self,value):
         self.tags = value
     
+    def set_severity(self,value):
+        self.severity = value
+
     def set_severities(self,value):
         self.severities = value
-    
+
     def set_minSeverity(self,value):
         self.minSeverity = value
     

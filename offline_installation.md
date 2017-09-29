@@ -21,26 +21,33 @@ cd atsd-api-python
 Create a `requirements.txt` file containing the list of required modules (dependencies).
 
 ```
-requests[security]>=2.4.2
+requests>=2.12.1
 python-dateutil
 pandas
-pytz
 ```
 
 Download the modules specified in the `requirements.txt` file into a temporary folder.
 
+> If your python version and os are different from the target server proceed to [Download modules for different systems](#Download-modules-for-different-systems)
+
 ```sh
 mkdir modules
-pip install --download ./modules -r requirements.txt
+pip download -r requirements.txt -d modules
+```
+
+If your python version is less than 2.7.9 download in addition:
+```
+pip download pyOpenSSL idna -d modules  
 ```
 
 The directory will contain a set of `*.whl`and `*.tar.gz` files.
 
 ```sh
-asn1crypto-0.22.0-py2.py3-none-any.whl                  cryptography-2.0.3-cp27-cp27m-macosx_10_6_intel.whl     pyOpenSSL-17.3.0-py2.py3-none-any.whl                   requests-2.18.4-py2.py3-none-any.whl
-certifi-2017.7.27.1-py2.py3-none-any.whl                enum34-1.1.6-py2-none-any.whl                           pycparser-2.18.tar.gz                                   six-1.11.0-py2.py3-none-any.whl
-cffi-1.11.0-cp27-cp27m-macosx_10_6_intel.whl            idna-2.6-py2.py3-none-any.whl                           python_dateutil-2.6.1-py2.py3-none-any.whl              urllib3-1.22-py2.py3-none-any.whl
-chardet-3.0.4-py2.py3-none-any.whl                      ipaddress-1.0.18-py2-none-any.whl                       pytz-2017.2-py2.py3-none-any.whl
+asn1crypto-0.23.0-py2.py3-none-any.whl                  enum34-1.1.6-py2-none-any.whl                           pyOpenSSL-17.3.0-py2.py3-none-any.whl                   six-1.11.0-py2.py3-none-any.whl
+certifi-2017.7.27.1-py2.py3-none-any.whl                idna-2.6-py2.py3-none-any.whl                           pycparser-2.18.tar.gz                                   urllib3-1.22-py2.py3-none-any.whl
+cffi-1.11.0-cp27-cp27m-manylinux1_x86_64.whl            ipaddress-1.0.18-py2-none-any.whl                       python_dateutil-2.6.1-py2.py3-none-any.whl
+chardet-3.0.4-py2.py3-none-any.whl                      numpy-1.13.1-cp27-cp27m-manylinux1_x86_64.whl           pytz-2017.2-py2.py3-none-any.whl
+cryptography-2.0.3-cp27-cp27m-manylinux1_x86_64.whl     pandas-0.20.3-cp27-cp27m-manylinux1_x86_64.whl          requests-2.18.4-py2.py3-none-any.whl
 ```
 
 Unpack the downloaded modules.
@@ -78,7 +85,7 @@ python setup.py install
 Check that the modules have been installed successfully.
 
 ```sh
-python -c "import atsd_client, pandas, requests, dateutil, pytz"
+python -c "import atsd_client, pandas, requests, dateutil"
 ```
 
 The output will be empty if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
@@ -88,3 +95,31 @@ Traceback (most recent call last):
   File "<string>", line 1, in <module>
 ImportError: No module named atsd_client
 ```
+
+
+### Download modules for different systems 
+
+To fetch dependencies for an interpreter and system other than the ones that pip is running on 
+
+run `pip download` with the `--platform`, `--python-version`, `--implementation` and `--abi` options (more [details](https://pip.pypa.io/en/stable/reference/pip_download/)).
+
+These options set by default to the current system/interpreter. Current list of available option values in [PyPI](https://pypi.python.org/pypi):
+
+|**Option**|**Value**|
+|:---|:---|
+| platform |win32, win_amd64, manylinux1_i686, manylinux1_x86_64, macosx_10_6_intel, macosx_10_6_intel, macosx_10_9_intel, macosx_10_9_x86_64, macosx_10_10_intel, macosx_10_10_x86_64|
+| python-version(abi) |27(27m), 34(34m), 35(35m), 36(36m)|
+ 
+Note that python-version corresponds to concatenated `Python -V` command first two digits.
+
+For example for linux_x86_64 machine with python 2.7.x
+
+```
+pip download -r requirements.txt -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
+pip download pyOpenSSL idna      -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
+pip download pycparser           -d modules
+```
+
+If your python version is less than 2.7 or you have not find appropriate modules try to find out them on [PyPI](https://pypi.python.org/pypi)
+
+or use machine with same os and python interpreter.

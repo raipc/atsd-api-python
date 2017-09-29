@@ -14,6 +14,7 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
+import logging
 
 try:
     import urlparse
@@ -23,6 +24,10 @@ import requests
 from . import _jsonutil
 
 from .exceptions import ServerException
+
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 
 class Client(object):
@@ -35,17 +40,18 @@ class Client(object):
 
     def __init__(self, base_url,
                  username=None, password=None,
-                 verify=None, timeout=None):
+                 ssl_verify=False, timeout=None):
         """
         :param base_url: atsd url
         :param username: login
         :param password:
-        :param verify: verify ssl sertificate
+        :param ssl_verify: verify ssl sertificate
         :param timeout: request timeout
         """
+        logging.info('Connecting to base_url: %s as %s user.' % (base_url, username))
         self.context = urlparse.urljoin(base_url, 'api/')
         session = requests.Session()
-        if verify is False or verify == 'False':
+        if ssl_verify is False or ssl_verify == 'False':
             session.verify = False
         if username is not None and password is not None:
             session.auth = (username, password)

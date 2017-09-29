@@ -16,48 +16,56 @@ permissions and limitations under the License.
 """
 
 import copy
+
+from .._utilities import NoneDict
 from .._constants import display_series_threshold, display_series_part
-from .._time_utilities import to_timestamp, to_iso_utc
+from .._time_utilities import to_timestamp, to_iso_local, timediff_in_minutes
+
 
 #------------------------------------------------------------------------------
-class Sample():
+class Sample(object):
     """
     Class that represents a numeric value observed at some time with additional version information if provided.
     If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
     """
 
     def __init__(self, value, time=None, version=None):
-        self.v = copy.deepcopy(value) if not value == "Nan" else float("nan")
+        self._v = copy.deepcopy(value) if not value == "Nan" else float("nan")
         #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date 
-        self.t = to_timestamp(time)
+        self._t = to_timestamp(time)
         #`.dict` version object including 'source' and 'status' keys
-        self.version = version
+        self._version = version
 
     def __repr__(self):
-        return "<Sample v={v}, t={t}, version={vv}>".format(v=self.v, t=self.t, vv=self.version)
+        return "<Sample v={v}, t={t}, version={vv}>".format(v=self._v, t=self._t, vv=self._version)
 
-    #Getters and setters
-    def get_v(self):
-        return self.v
+    @property
+    def v(self):
+        return self._v
 
-    def get_t(self):
-        return self.t
+    @property
+    def t(self):
+        return self._t
 
-    def set_v(self, v):
-        self.v = v
+    @property
+    def version(self):
+        return self._version
 
-    def set_t(self, t):
-        self.t = to_timestamp(t)
+    @v.setter
+    def v(self, v):
+        self._v = v
 
-    def get_version(self):
-        return self.version
+    @t.setter
+    def t(self, t):
+        self._t = to_timestamp(t)
 
-    def set_version(self, value):
-        self.version = value
+    @version.setter
+    def version(self, value):
+        self._version = value
 
 
     def _compare(self, other):
-            return self.t - other.get_t()
+            return self._t - other.t
 
     def __lt__(self, other):
         return self._compare(other) < 0
@@ -78,39 +86,42 @@ class Sample():
         return self._compare(other) != 0
 
 #------------------------------------------------------------------------------
-class Series():
+class Series(object):
     """
     Class representing a Time Series.
     Time Series is a time-indexed array of samples (observations), each consisting of a timestamp and a numeric value, for example CPU utilization or body temperature.
     Each series is uniquely identified by entity name, metric name and optional series tags.
     """
 
-    def __init__(self, entity, metric, data=None, tags=None):
+    def __init__(self, entity, metric, data=None, tags=None, lastInsertDate=None):
         #: `str` entity name
-        self.entity = entity
+        self._entity = entity
         #: `str` metric name
-        self.metric = metric
+        self._metric = metric
         #: `dict` of ``tag_name: tag_value`` pairs
-        self.tags = tags
+        self._tags = NoneDict(tags)
         # `list` of :class:`.Sample` objects| `list` of {'t': time, 'v': value} objects
-        self.data = []
+        self._data = []
+        #: `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
+        self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         if data is not None:
             for data_unit in data:
                 if isinstance(data_unit, dict): #Compatability
-                    self.data.append(Sample(
+                    self._data.append(Sample(
                                             value=data_unit['v'],
                                             time=data_unit.get('t', data_unit.get('d', None)),
                                             version=data_unit.get('version', None)
                                             )
                                     )
                 else:
-                    self.data.append(data_unit)
+                    self._data.append(data_unit)
+                    #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
 
     def __repr__(self):
-        if len(self.data) > display_series_threshold:
-            displayed_data = self.data[:display_series_part] + self.data[-display_series_part:]
+        if len(self._data) > display_series_threshold:
+            displayed_data = self._data[:display_series_part] + self._data[-display_series_part:]
         else:
-            displayed_data = self.data
+            displayed_data = self._data
         rows = []
         versioned = False
         for sample in sorted(displayed_data):
@@ -130,7 +141,7 @@ class Series():
                       '   version_status'
                       )
             rows.insert(0, header)
-        if len(self.data) > 20:
+        if len(self._data) > 20:
             result = '\n'.join(rows[:-display_series_part]) + '\n...\n' + '\n'.join(rows[-display_series_part:])
         else:
             result = '\n'.join(rows)
@@ -144,7 +155,7 @@ class Series():
         Add all given samples to series
         """
         for sample in samples:
-            self.data.append(sample)
+            self._data.append(sample)
 
     def sort(self, key=None, reverse=False):
         """
@@ -152,14 +163,14 @@ class Series():
         :param key:
         :param reverse:
         """
-        self.data.sort(key=key, reverse=reverse)
+        self._data.sort(key=key, reverse=reverse)
 
     def values(self):
         """
         Valid versions of series values
         :return: list of `Number`
         """
-        data = sorted(self.data)
+        data = sorted(self._data)
         result = []
         for num, sample in enumerate(data):
             if num > 0 and sample.t == data[num - 1].t:
@@ -172,12 +183,12 @@ class Series():
         Valid versions of series times in seconds
         :return: list of `float`
         """
-        data = sorted(self.data)
+        data = sorted(self._data)
         result = []
         for num, sample in enumerate(data):
             if num > 0 and sample.t == data[num - 1].t:
                 result.pop()
-            new_time = to_iso_utc(sample.t)
+            new_time = to_iso_local(sample.t)
             result.append(new_time)
         return result
 
@@ -212,33 +223,55 @@ class Series():
             p = plt.plot(self.times(), self.values())
             plt.show(p)
 
-    #Getters and setters
-    def get_entity(self):
-        return self.entity
+    @property
+    def entity(self):
+        return self._entity
 
-    def get_metric(self):
-        return self.metric
+    @property
+    def metric(self):
+        return self._metric
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def tags(self):
+        return self._tags
 
-    def get_data(self):
-        return self.data
+    @property
+    def data(self):
+        return self._data
 
-    def set_entity(self, value):
-        self.entity = value
+    @entity.setter
+    def entity(self, value):
+        self._entity = value
 
-    def set_metric(self, value):
-        self.metric = value
+    @metric.setter
+    def metric(self, value):
+        self._metric = value
 
-    def set_tags(self, value):
-        self.tags = value
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
 
-    def set_data(self, value):
-        self.data = value
+    @data.setter
+    def data(self, value):
+        self._data = value
+
+    @property
+    def lastInsertDate(self):
+        return self._lastInsertDate
+
+    @lastInsertDate.setter
+    def lastInsertDate(self, value):
+        self._lastInsertDate = None if value is None else to_iso_local(value)
+
+    def get_elapsed_minutes(self):
+        """Return last insert elapsed time in minutes for the current `Series` object.
+
+        :return: Time in minutes
+        """
+        return timediff_in_minutes(self.lastInsertDate)
 
 #------------------------------------------------------------------------------
-class Property():
+class Property(object):
     """
     Class representing a single property.
     Properties represent metadata describing entities, obtained from configuration files, system command output, etc.
@@ -249,53 +282,62 @@ class Property():
 
     def __init__(self, type, entity, tags=None, key=None, date=None):
         #: `str` property type name
-        self.type = type
+        self._type = type
         #: `str` entity name
-        self.entity = entity
+        self._entity = entity
          #: `dict` of ``name: value`` pairs that are not part of the key and contain descriptive information about the property record.
-        self.tags = tags
+        self._tags = NoneDict(tags)
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
-        self.key = key
+        self._key = NoneDict(key)
         #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
-        self.date = to_iso_utc(date)
+        self._date = to_iso_local(date)
 
     def __repr__(self):
-            return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self.type, entity=self.entity, tags=self.tags)
+            return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self._type, entity=self._entity, tags=self._tags)
 
 
-    #Getters and setters
-    def get_type(self):
-        return self.type
+    @property
+    def type(self):
+        return self._type
 
-    def get_entity(self):
-        return self.entity
+    @property
+    def entity(self):
+        return self._entity
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def tags(self):
+        return self._tags
 
-    def get_key(self):
-        return self.key
+    @property
+    def key(self):
+        return self._key
 
-    def get_date(self):
-        return self.date
+    @property
+    def date(self):
+        return self._date
 
-    def set_type(self, value):
-        self.type = value
+    @type.setter
+    def type(self, value):
+        self._type = value
 
-    def set_entity(self, value):
-        self.entity = value
+    @entity.setter
+    def entity(self, value):
+        self._entity = value
 
-    def set_tags(self, value):
-        self.tags = value
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
 
-    def set_key(self, value):
-        self.key = value
+    @key.setter
+    def key(self, value):
+        self._key = value
 
-    def set_date(self, value):
-        self.date = to_iso_utc(value)
+    @date.setter
+    def date(self, value):
+        self._date = to_iso_local(value)
 
 #------------------------------------------------------------------------------
-class Alert():
+class Alert(object):
     """
     Class, representing an single alert.
     Alert is an event produced by the rule engine by applying pre-defined rules to incoming data. 
@@ -305,267 +347,327 @@ class Alert():
     """
 
     def __init__(self, id, rule=None, entity=None, metric=None, lastEventDate=None, openDate=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
-        self.id = id
+        self._id = id
         #: `str` rule
-        self.rule = rule
+        self._rule = rule
         #: `str` entity
-        self.entity = entity
+        self._entity = entity
         #: `str` metric
-        self.metric = metric
+        self._metric = metric
         #: `str` | :class:`datetime` | `long` milliseconds when the last record was received
-        self.lastEventDate = to_iso_utc(lastEventDate)
+        self._lastEventDate = to_iso_local(lastEventDate)
         #: `str` | :class:`datetime` | `long` milliseconds when the alert was open
-        self.openDate = to_iso_utc(openDate)
+        self._openDate = to_iso_local(openDate)
         #: `Number` last numeric value received
-        self.value = value
+        self._value = value
         #: `dict`
-        self.tags = tags
+        self._tags = NoneDict(tags)
         #: `str` text value
-        self.textValue = textValue
+        self._textValue = textValue
         #: :class:`.Severity`
-        self.severity = severity
+        self._severity = severity
         #: `int` number of times when the expression evaluated to true sequentially
-        self.repeatCount = repeatCount
+        self._repeatCount = repeatCount
         #: `bool` acknowledgement status
-        self.acknowledged = acknowledged
+        self._acknowledged = acknowledged
         #: `Number` first numeric value received.
-        self.openValue = openValue
+        self._openValue = openValue
 
     def __repr__(self):
-            return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self.id, entity=self.entity, metric=self.metric, openDate=self.openDate, text=self.textValue)
+            return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self._id, entity=self._entity, metric=self._metric, openDate=self._openDate, text=self._textValue)
 
-    #Getters and setters
-    def get_id(self):
-        return self.id
+    @property
+    def id(self):
+        return self._id
 
-    def get_entity(self):
-        return self.entity
+    @property
+    def entity(self):
+        return self._entity
 
-    def get_metric(self):
-        return self.metric
+    @property
+    def metric(self):
+        return self._metric
 
-    def get_open_date(self):
-        return self.openDate
+    @property
+    def openDate(self):
+        return self._openDate
 
-    def get_text_value(self):
-        return self.textValue
+    @property
+    def textValue(self):
+        return self._textValue
 
-    def get_rule(self):
-        return self.rule
+    @property
+    def rule(self):
+        return self._rule
 
-    def get_last_event_date(self):
-        return self.lastEventDate
+    @property
+    def lastEventDate(self):
+        return self._lastEventDate
 
-    def get_value(self):
-        return self.value
+    @property
+    def value(self):
+        return self._value
 
-    def get_message(self):
-        return self.message
+    @property
+    def message(self):
+        return self._message
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def tags(self):
+        return self._tags
 
-    def get_severity(self):
-        return self.severity
+    @property
+    def severity(self):
+        return self._severity
 
-    def get_repeat_count(self):
-        return self.repeatCount
+    @property
+    def repeatCount(self):
+        return self._repeatCount
 
-    def get_acknowledged(self):
-        return self.acknowledged
+    @property
+    def acknowledged(self):
+        return self._acknowledged
 
-    def get_open_value(self):
-        return self.openValue
+    @property
+    def openValue(self):
+        return self._openValue
 
-    def set_id(self, value):
-        self.id = value
+    @id.setter
+    def id(self, value):
+        self._id = value
 
-    def set_entity(self, value):
-        self.entity = value
+    @entity.setter
+    def entity(self, value):
+        self._entity = value
 
-    def set_metric(self, value):
-        self.metric = value
+    @metric.setter
+    def metric(self, value):
+        self._metric = value
 
-    def set_open_date(self, value):
-        self.openDate = to_iso_utc(value)
+    @openDate.setter
+    def openDate(self, value):
+        self._openDate = to_iso_local(value)
 
-    def set_text_value(self, value):
-        self.textValue = value
+    @textValue.setter
+    def textValue(self, value):
+        self._textValue = value
 
-    def set_rule(self, value):
-        self.rule = value
+    @rule.setter
+    def rule(self, value):
+        self._rule = value
 
-    def set_last_event_date(self, value):
-        self.lastEventDate = to_iso_utc(value)
+    @lastEventDate.setter
+    def lastEventDate(self, value):
+        self._lastEventDate = to_iso_local(value)
 
-    def set_value(self, value):
-        self.value = value
+    @value.setter
+    def value(self, value):
+        self._value = value
 
-    def set_message(self, value):
-        self.message = value
+    @message.setter
+    def message(self, value):
+        self._message = value
 
-    def set_tags(self, value):
-        self.tags = value
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
 
-    def set_severity(self, value):
-        self.severity = value
+    @severity.setter
+    def severity(self, value):
+        self._severity = value
 
-    def set_repeat_count(self, value):
-        self.repeatCount = value
+    @repeatCount.setter
+    def repeatCount(self, value):
+        self._repeatCount = value
 
-    def set_acknowledged(self, value):
-        self.acknowledged = value
+    @acknowledged.setter
+    def acknowledged(self, value):
+        self._acknowledged = value
 
-    def set_open_value(self, value):
-        self.openValue = value
+    @openValue.setter
+    def openValue(self, value):
+        self._openValue = value
 
 #------------------------------------------------------------------------------
-class AlertHistory():
+class AlertHistory(object):
     """
     Class representing history of an alert, including such values as alert duration, alert open date, repeat count, etc.
     """
 
     def __init__(self, alert=None, alertDuration=None, alertOpenDate=None, entity=None, metric=None, receivedDate=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, severity=None, tags=None, type=None, date=None, value=None, window=None):
-        self.alert = alert
+        self._alert = alert
         #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
-        self.alertDuration = alertDuration
+        self._alertDuration = alertDuration
         #: `str` | :class:`datetime` | `long`    
-        self.alertOpenDate = to_iso_utc(alertOpenDate)
+        self._alertOpenDate = to_iso_local(alertOpenDate)
         #: `str`
-        self.entity = entity
+        self._entity = entity
         #: `str`
-        self.metric = metric
+        self._metric = metric
         #: `str` | :class:`datetime` | `long` 
-        self.receivedDate = to_iso_utc(receivedDate)
+        self._receivedDate = to_iso_local(receivedDate)
         #: `int`
-        self.repeatCount = repeatCount
+        self._repeatCount = repeatCount
         #: `str`
-        self.rule = rule
+        self._rule = rule
         #: `str`
-        self.ruleExpression = ruleExpression
+        self._ruleExpression = ruleExpression
         #: `str`
-        self.ruleFilter = ruleFilter
+        self._ruleFilter = ruleFilter
         #: :class:`.Severity`
-        self.severity = severity
+        self._severity = severity
         #: `str`
-        self.tags = tags
+        self._tags = NoneDict(tags)
         #: `str` alert state when closed: OPEN, CANCEL, REPEAT
-        self.type = type
+        self._type = type
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date
-        self.date = to_iso_utc(date)
+        self._date = to_iso_local(date)
         #: `Number` last numeric value received
-        self.value = value
+        self._value = value
         #: `int` window length
-        self.window = window
+        self._window = window
 
     def __repr__(self):
-            return "<ALERT_HISTORY alert={alert}, metric={metric}, entity={entity}, date={date}, alertOpenDate={alertOpenDate}...>".format(alert=self.alert, entity=self.entity, metric=self.metric, alertOpenDate=self.alertOpenDate, date=self.date)
+            return "<ALERT_HISTORY alert={alert}, metric={metric}, entity={entity}, date={date}, alertOpenDate={alertOpenDate}...>".format(alert=self._alert, entity=self._entity, metric=self._metric, alertOpenDate=self._alertOpenDate, date=self._date)
 
-    #Getters and setters
-    def get_alert(self):
-        return self.alert
+    @property
+    def alert(self):
+        return self._alert
 
-    def get_entity(self):
-        return self.entity
+    @property
+    def entity(self):
+        return self._entity
 
-    def get_metric(self):
-        return self.metric
+    @property
+    def metric(self):
+        return self._metric
 
-    def get_alert_open_date(self):
-        return self.alertOpenDate
+    @property
+    def alertOpenDate(self):
+        return self._alertOpenDate
 
-    def get_date(self):
-        return self.date
+    @property
+    def date(self):
+        return self._date
 
-    def get_alert_duration(self):
-        return self.alertDuration
+    @property
+    def alertDuration(self):
+        return self._alertDuration
 
-    def get_received_date(self):
-        return self.receivedDate
+    @property
+    def receivedDate(self):
+        return self._receivedDate
 
-    def get_repeat_count(self):
-        return self.repeatCount
+    @property
+    def repeatCount(self):
+        return self._repeatCount
 
-    def get_rule(self):
-        return self.rule
+    @property
+    def rule(self):
+        return self._rule
 
-    def get_rule_expression(self):
-        return self.ruleExpression
+    @property
+    def ruleExpression(self):
+        return self._ruleExpression
 
-    def get_rule_filter(self):
-        return self.ruleFilter
+    @property
+    def ruleFilter(self):
+        return self._ruleFilter
 
-    def get_schedule(self):
-        return self.schedule
+    @property
+    def schedule(self):
+        return self._schedule
 
-    def get_severity(self):
-        return self.severity
+    @property
+    def severity(self):
+        return self._severity
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def tags(self):
+        return self._tags
 
-    def get_type(self):
-        return self.type
+    @property
+    def type(self):
+        return self._type
 
-    def get_value(self):
-        return self.value
+    @property
+    def value(self):
+        return self._value
 
-    def get_window(self):
-        return self.window
+    @property
+    def window(self):
+        return self._window
 
-    def set_alert(self, value):
-        self.alert = value
+    @alert.setter
+    def alert(self, value):
+        self._alert = value
 
-    def set_entity(self, value):
-        self.entity = value
+    @entity.setter
+    def entity(self, value):
+        self._entity = value
 
-    def set_metric(self, value):
-        self.metric = value
+    @metric.setter
+    def metric(self, value):
+        self._metric = value
 
-    def set_alert_open_date(self, value):
-        self.alertOpenDate = to_iso_utc(value)
+    @alertOpenDate.setter
+    def alertOpenDate(self, value):
+        self._alertOpenDate = to_iso_local(value)
 
-    def set_date(self, value):
-        self.date = to_iso_utc(value)
+    @date.setter
+    def date(self, value):
+        self._date = to_iso_local(value)
 
-    def set_alert_duration(self, value):
-        self.alertDuration = value
+    @alertDuration.setter
+    def alertDuration(self, value):
+        self._alertDuration = value
 
-    def set_received_date(self, value):
-        self.receivedDate = to_iso_utc(value)
+    @receivedDate.setter
+    def receivedDate(self, value):
+        self._receivedDate = to_iso_local(value)
 
-    def set_repeat_count(self, value):
-        self.repeatCount = value
+    @repeatCount.setter
+    def repeatCount(self, value):
+        self._repeatCount = value
 
-    def set_rule(self, value):
-        self.rule = value
+    @rule.setter
+    def rule(self, value):
+        self._rule = value
 
-    def set_rule_expression(self, value):
-        self.ruleExpression = value
+    @ruleExpression.setter
+    def ruleExpression(self, value):
+        self._ruleExpression = value
 
-    def set_rule_filter(self, value):
-        self.ruleFilter = value
+    @ruleFilter.setter
+    def ruleFilter(self, value):
+        self._ruleFilter = value
 
-    def set_schedule(self, value):
-        self.schedule = value
+    @schedule.setter
+    def schedule(self, value):
+        self._schedule = value
 
-    def set_severity(self, value):
-        self.severity = value
+    @severity.setter
+    def severity(self, value):
+        self._severity = value
 
-    def set_tags(self, value):
-        self.tags = value
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
 
-    def set_type(self, value):
-        self.type = value
+    @type.setter
+    def type(self, value):
+        self._type = value
 
-    def set_value(self, value):
-        self.value = value
+    @value.setter
+    def value(self, value):
+        self._value = value
 
-    def set_window(self, value):
-        self.window = value
+    @window.setter
+    def window(self, value):
+        self._window = value
 
 #------------------------------------------------------------------------------
-class Message():
+class Message(object):
     """
     Class representing a Message.
     Messages are events collected from system logs and messaging systems.
@@ -574,64 +676,88 @@ class Message():
     Messages for the same entity, time and type/source tags are automatically de-duplicated.
     """
 
-    def __init__(self, type, source, entity, date, severity, tags, message):
+    def __init__(self, type, source, entity, date, severity, tags, message, persist):
         #: `str` message type
-        self.type = type
+        self._type = type
         #: `str` message source
-        self.source = source
+        self._source = source
         #: `str` entity name
-        self.entity = entity
+        self._entity = entity
         #:`datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created 
-        self.date = to_iso_utc(date)
+        self._date = to_iso_local(date)
         #: :class:`.Severity`
-        self.severity = severity
+        self._severity = severity
         #: `str` message tags
-        self.tags=tags
+        self._tags = NoneDict(tags)
         #: `str`
-        self.message=message
+        self._message=message
+        #: `bool`
+        self._persist=persist
 
     def __repr__(self):
-        return "<MESSAGE type={t}, source={s}, entity={e}, message={m}, date={d}...>".format(t=self.type, s=self.source, e=self.entity, m=self.message, d=self.date)
+        return "<MESSAGE type={t}, source={s}, entity={e}, message={m}, date={d}...>".format(t=self._type, s=self._source, e=self._entity, m=self._message, d=self._date)
 
     #Getters and setters
-    def get_type(self):
-        return self.type
+    @property
+    def type(self):
+        return self._type
 
-    def get_entity(self):
-        return self.entity
+    @property
+    def entity(self):
+        return self._entity
 
-    def get_source(self):
-        return self.source
+    @property
+    def source(self):
+        return self._source
 
-    def get_date(self):
-        return self.date
+    @property
+    def date(self):
+        return self._date
 
-    def get_severity(self):
-        return self.severity
+    @property
+    def severity(self):
+        return self._severity
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def tags(self):
+        return self._tags
 
-    def get_message(self):
-        return self.message
+    @property
+    def message(self):
+        return self._message
 
-    def set_type(self, value):
-        self.type = value
+    @property
+    def persist(self):
+        return self._persist
 
-    def set_entity(self, value):
-        self.entity = value
+    @type.setter
+    def type(self, value):
+        self._type = value
 
-    def set_source(self, value):
-        self.source = value
+    @entity.setter
+    def entity(self, value):
+        self._entity = value
 
-    def set_date(self, value):
-        self.date = to_iso_utc(value)
+    @source.setter
+    def source(self, value):
+        self._source = value
 
-    def set_severity(self, value):
-        self.severity = value
+    @date.setter
+    def date(self, value):
+        self._date = to_iso_local(value)
 
-    def set_tags(self, value):
-        self.tags = value
+    @severity.setter
+    def severity(self, value):
+        self._severity = value
 
-    def set_message(self, value):
-        self.message = value
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
+
+    @message.setter
+    def message(self, value):
+        self._message = value
+
+    @persist.setter
+    def persist(self, value):
+        self._persist = value

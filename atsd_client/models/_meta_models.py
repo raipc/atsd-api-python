@@ -14,7 +14,9 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
-from .._time_utilities import to_iso_utc
+from .._time_utilities import to_iso_local, timediff_in_minutes
+from .._utilities import NoneDict
+
 
 #------------------------------------------------------------------------------ 
 class DataType(object):
@@ -34,9 +36,11 @@ class InvalidAction(object):
     NONE      = 'NONE'
     DISCARD   = 'DISCARD'
     TRANSFORM = 'TRANSFORM'
+    RAISE_ERROR   = 'RAISE_ERROR'
+    TRANSFORM = 'SET_VERSION_STATUS'
 
 #------------------------------------------------------------------------------ 
-class Metric():
+class Metric(object):
     """
     Class representing a single metric.
     Metrics are names assigned to numeric measurements, for example, temperature or speed.
@@ -45,7 +49,7 @@ class Metric():
     In addition, metrics can have user-defined tags such as unit of measurement, scale, type or a category that can be used for filtering and grouping.
     """
     
-    def __init__(self, 
+    def __init__(self,
                  name,
                  label=None,
                  enabled=None,
@@ -57,184 +61,314 @@ class Metric():
                  maxValue=None,
                  invalidAction=None,
                  description=None,
-                 retentionInterval=None,
+                 retentionDays=None,
+                 seriesRetentionDays=None,
                  lastInsertDate=None,
                  tags=None,
-                 versioned=None
+                 versioned=None,
+                 interpolate=None,
+                 units=None,
+                 timeZone=None
                  ):
         #: `str` metric name
-        self.name = name
+        self._name = name
         #: `str`
-        self.label = label
+        self._label = label
         #: `bool`
-        self.enabled = enabled
+        self._enabled = enabled
         #: :class:`.DataType`
-        self.dataType = dataType
+        self._dataType = dataType
         #: :class:`.TimePrecision`
-        self.timePrecision = timePrecision
+        self._timePrecision = timePrecision
         #: `bool` persistence status. Non-persistent metrics are not stored in the database and are only processed by the rule engine
-        self.persistent = persistent
+        self._persistent = persistent
         #: If filter is specified, metric puts that do not match the filter are discarded
-        self.filter = filter
+        self._filter = filter
         #: `Number` minimum value for Invalid Action trigger
-        self.minValue = minValue
+        self._minValue = minValue
         #: `Number` maximum value for Invalid Action trigger
-        self.maxValue = maxValue
+        self._maxValue = maxValue
         #: :class:`.InvalidAction`
-        self.invalidAction = invalidAction
+        self._invalidAction = invalidAction
         #: `str` metric description
-        self.description = description
-        #: `Number` number of days to retain values for this metric in the database
-        self.retentionInterval = retentionInterval
+        self._description = description
+        #: `Number` number of days to store the values for this metric in the database
+        self._retentionDays = retentionDays
+        #: `Number` number of days to retain series in the database
+        self._seriesRetentionDays = seriesRetentionDays
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
-        self.lastInsertDate = to_iso_utc(lastInsertDate)
+        self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         #: `dict`
-        self.tags = tags
+        self._tags = NoneDict(tags)
         #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status 
-        self.versioned = versioned
+        self._versioned = versioned
+        #: :class:`.Interpolate`
+        self._interpolate = interpolate
+        #: `str` metric units
+        self._units = units
+        #: `str` entity timezone
+        self._timeZone = timeZone
 
     def __repr__(self):
-        return "<METRIC name={name}, label={label}, description={des}".format(name=self.name, label=self.label, des=self.description)
+        return "<METRIC name={name}, label={label}, description={des}".format(name=self._name, label=self._label, des=self._description)
     
     #Getters and setters
-    def get_name(self):
-        return self.name
+    @property
+    def name(self):
+        return self._name
 
-    def get_label(self):
-        return self.label
+    @property
+    def label(self):
+        return self._label
 
-    def get_enabled(self):
-        return self.enabled
+    @property
+    def enabled(self):
+        return self._enabled
 
-    def get_data_type(self):
-        return self.dataType
+    @property
+    def dataType(self):
+        return self._dataType
 
-    def get_time_precision(self):
-        return self.timePrecision
+    @property
+    def timePrecision(self):
+        return self._timePrecision
 
-    def get_persistent(self):
-        return self.persistent
+    @property
+    def persistent(self):
+        return self._persistent
 
-    def get_filter(self):
-        return self.filter
+    @property
+    def filter(self):
+        return self._filter
 
-    def get_min_value(self):
-        return self.minValue
+    @property
+    def minValue(self):
+        return self._minValue
 
-    def get_max_value(self):
-        return self.maxValue
+    @property
+    def maxValue(self):
+        return self._maxValue
 
-    def get_invalid_action(self):
-        return self.invalidAction
+    @property
+    def invalidAction(self):
+        return self._invalidAction
 
-    def get_description(self):
-        return self.description
+    @property
+    def description(self):
+        return self._description
 
-    def get_retention_interval(self):
-        return self.retentionInterval
+    @property
+    def retentionDays(self):
+        return self._retentionDays
 
-    def get_last_insert_date(self):
-        return self.lastInsertDate
+    @property
+    def seriesRetentionDays(self):
+        return self._seriesRetentionDays
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def lastInsertDate(self):
+        return self._lastInsertDate
 
-    def get_versioned(self):
-        return self.versioned
+    @property
+    def tags(self):
+        return self._tags
 
-    def set_name(self, value):
-        self.name = value
+    @property
+    def versioned(self):
+        return self._versioned
 
-    def set_label(self, value):
-        self.label = value
+    @property
+    def interpolate(self):
+        return self._interpolate
 
-    def set_enabled(self, value):
-        self.enabled = value
+    @property
+    def units(self):
+        return self._units
 
-    def set_data_type(self, value):
-        self.dataType = value
+    @property
+    def timeZone(self):
+        return self._timeZone
 
-    def set_time_precision(self, value):
-        self.timePrecision = value
+    @name.setter
+    def name(self, value):
+        self._name = value
 
-    def set_persistent(self, value):
-        self.persistent = value
+    @label.setter
+    def label(self, value):
+        self._label = value
 
-    def set_filter(self, value):
-        self.filter = value
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value
 
-    def set_min_value(self, value):
-        self.minValue = value
+    @dataType.setter
+    def dataType(self, value):
+        self._dataType = value
 
-    def set_max_value(self, value):
-        self.maxValue = value
+    @timePrecision.setter
+    def timePrecision(self, value):
+        self._timePrecision = value
 
-    def set_invalid_action(self, value):
-        self.invalidAction = value
+    @persistent.setter
+    def persistent(self, value):
+        self._persistent = value
 
-    def set_description(self, value):
-        self.description = value
+    @filter.setter
+    def filter(self, value):
+        self._filter = value
 
-    def set_retention_interval(self, value):
-        self.retentionInterval = value
+    @minValue.setter
+    def minValue(self, value):
+        self._minValue = value
 
-    def set_last_insert_date(self, value):
-        self.lastInsertDate = to_iso_utc(value)
+    @maxValue.setter
+    def maxValue(self, value):
+        self._maxValue = value
 
-    def set_tags(self, value):
-        self.tags = value
+    @invalidAction.setter
+    def invalidAction(self, value):
+        self._invalidAction = value
 
-    def set_versioned(self, value):
-        self.versioned = value
-    
+    @description.setter
+    def description(self, value):
+        self._description = value
+
+    @retentionDays.setter
+    def retentionDays(self, value):
+        self._retentionDays = value
+
+    @seriesRetentionDays.setter
+    def seriesRetentionDays(self, value):
+        self._seriesRetentionDays = value
+
+    @lastInsertDate.setter
+    def lastInsertDate(self, value):
+        self._lastInsertDate = None if value is None else to_iso_local(value)
+
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
+
+    @versioned.setter
+    def versioned(self, value):
+        self._versioned = value
+
+    @interpolate.setter
+    def interpolate(self, value):
+        self._interpolate = value
+
+    @units.setter
+    def units(self, value):
+        self._units = value
+
+    @timeZone.setter
+    def timeZone(self, value):
+        self._timeZone = value
+
+    def get_elapsed_minutes(self):
+        """Return last insert elapsed time in minutes for the current `Series` object.
+
+        :return: Time in minutes
+        """
+        return timediff_in_minutes(self.lastInsertDate)
+
 #------------------------------------------------------------------------------ 
-class Entity():
+class Entity(object):
     """
     Class representing a single entitiy.
     Entities are servers, hosts, frames, virtual machines, sensors, etc.
     Entities are ingested with attached metrics (time series data) using the csv/nmon parsers, telnet and http/s protocols, and Axibase Collector jobs.
     """
     
-    def __init__(self, name, enabled=None, lastInsertDate=None, tags=None):
-        # `str` entity name
-        self.name = name
+    def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None):
+        #: `str` entity name
+        self._name = name
+        #: `str` entity label
+        self._label = label
+        #: :class:`.Interpolate`
+        self._interpolate = interpolate
+        #: `str` entity timezone
+        self._timeZone = timeZone
         #: `bool` enabled status. Incoming data is discarded for disabled entities
-        self.enabled = enabled
+        self._enabled = enabled
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
-        self.lastInsertDate = to_iso_utc(lastInsertDate)
+        self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         #: `dict`
-        self.tags = tags
+        self._tags = NoneDict(tags)
         
     def __repr__(self):
-        return "<Entity name={name}, enabled={enabled}, lastInsertDate={lit}, tags={tags}".format(name=self.name, enabled=self.enabled, lit=self.lastInsertDate, tags=self.tags)
+        return "<Entity name={name}, label={label}, interpolate={interpolate}, timezone={timezone}, enabled={" \
+               "enabled}, lastInsertDate={lit}, tags={tags}".format(name=self._name, label=self._label,
+                                                                    interpolate=self._interpolate,
+                                                                    timezone=self._timeZone, enabled=self._enabled,
+                                                                    lit=self._lastInsertDate, tags=self._tags)
 
     #Getters and setters
-    def get_name(self):
-        return self.name
+    @property
+    def name(self):
+        return self._name
 
-    def get_enabled(self):
-        return self.enabled
+    @property
+    def label(self):
+        return self._label
 
-    def get_last_insert_date(self):
-        return self.lastInsertDate
+    @property
+    def interpolate(self):
+        return self._interpolate
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def timeZone(self):
+        return self._timeZone
 
-    def set_name(self, value):
-        self.name = value
+    @property
+    def enabled(self):
+        return self._enabled
 
-    def set_enabled(self, value):
-        self.enabled = value
+    @property
+    def lastInsertDate(self):
+        return self._lastInsertDate
 
-    def set_last_insert_date(self, value):
-        self.lastInsertDate = to_iso_utc(value)
+    @property
+    def tags(self):
+        return self._tags
 
-    def set_tags(self, value):
-        self.tags = value
+    @name.setter
+    def name(self, value):
+        self._name = value
+
+    @label.setter
+    def label(self, value):
+        self._label = value
+
+    @interpolate.setter
+    def interpolate(self, value):
+        self._interpolate = value
+
+    @timeZone.setter
+    def timeZone(self, value):
+        self._timeZone = value
+
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value
+
+    @lastInsertDate.setter
+    def lastInsertDate(self, value):
+        self._lastInsertDate = None if value is None else to_iso_local(value)
+
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
+
+    def get_elapsed_minutes(self):
+        """Return last insert elapsed time in minutes for the current `Series` object.
+
+        :return: Time in minutes
+        """
+        return timediff_in_minutes(self.lastInsertDate)
 
 #------------------------------------------------------------------------------ 
-class EntityGroup():
+class EntityGroup(object):
     """
     Class representing a single entity group.
     Entities can be grouped into Entity Groups which can be used for building Portals, Exporting Data, and creating Forecasts.
@@ -243,32 +377,48 @@ class EntityGroup():
     Portals can be added to all entities present in the Group.
     This is a useful feature when working with large amounts of entities and big data sets.
     """
-    def __init__(self, name, expression=None, tags=None):
+    def __init__(self, name, expression=None, tags=None, enabled=None):
         #: `str` entity group name
-        self.name = name
+        self._name = name
         #: `str` group membership expression. The expression is applied to entities to automatically add/remove members of this group
-        self.expression = expression
+        self._expression = expression
         #: `dict`
-        self.tags = tags
+        self._tags = NoneDict(tags)
+        #: `bool`
+        self._enabled = enabled
     
     def __repr__(self):
-        return "<EntityGroup name={name}, expression={expression}, tags={tags}".format(name=self.name, expression=self.expression, tags=self.tags)
+        return "<EntityGroup name={name}, expression={expression}, tags={tags}>".format(name=self._name, expression=self._expression, tags=self._tags, enabled=self._enabled)
     
     #Getters and setters
-    def get_name(self):
-        return self.name
+    @property
+    def name(self):
+        return self._name
 
-    def get_expression(self):
-        return self.expression
+    @property
+    def expression(self):
+        return self._expression
 
-    def get_tags(self):
-        return self.tags
+    @property
+    def tags(self):
+        return self._tags
 
-    def set_name(self, value):
-        self.name = value
+    @property
+    def enabled(self):
+        return self._enabled
 
-    def set_expression(self, value):
-        self.expression = value
+    @name.setter
+    def name(self, value):
+        self._name = value
 
-    def set_tags(self, value):
-        self.tags = value
+    @expression.setter
+    def expression(self, value):
+        self._expression = value
+
+    @tags.setter
+    def tags(self, value):
+        self._tags = NoneDict(value)
+
+    @enabled.setter
+    def enabled(self, value):
+        self._enabled = value

@@ -18,6 +18,7 @@ permissions and limitations under the License.
 import inspect
 import numbers
 import six
+from datetime import datetime
 
 
 def serialize(target):
@@ -27,6 +28,8 @@ def serialize(target):
         return [serialize(el) for el in target]
     elif isinstance(target, bool):
         return str(target).lower()
+    elif isinstance(target, datetime):
+        return target.isoformat()
     elif isinstance(target, (six.text_type, six.binary_type, numbers.Number)):
         return target
     elif target is None:
@@ -34,11 +37,14 @@ def serialize(target):
     else:
         try:
             result = {}
-            props = target.__dict__.keys()
-            for prop in props:
-                serialized_property = serialize(target.__dict__[prop])
+            for key, value in vars(target).items():
+                if key.startswith('__'):
+                    continue
+                elif key.startswith('_'):
+                    key = key[1:]
+                serialized_property = serialize(value)
                 if serialized_property is not None:
-                    result[prop] = serialized_property
+                    result[key] = serialized_property
             return result
         except AttributeError:
             raise ValueError(six.text_type(target) + ' could not be serialized')

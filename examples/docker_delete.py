@@ -1,70 +1,70 @@
 #!/usr/bin/env python
-from datetime import datetime, timedelta
-from dateutil.parser import parse as parse_date
+import os
 import pprint
+import time
 
-from atsd_client import connect_url
-from atsd_client.services import EntitiesService
-from atsd_client.models import Entity
-import pytz
+import logging
+from atsd_client import connect, connect_url
+from atsd_client.services import EntitiesService, MetricsService
 
 '''
 Locate a collection of entities (docker hosts in this cases).
-Delete those that have not inserted data for more than 4 days
+Delete those that have not inserted data for more than 7 days
 Also delete related entities (docker containers).
+Connection.properties will be taken from the same folder where script is.
 '''
 
+logging.getLogger().setLevel(logging.INFO)
+
+# Uncomment next two lines to set custom local timezone
+# os.environ['TZ'] = 'Europe/London'
+# time.tzset()
+
 tags_printer = pprint.PrettyPrinter(indent=4)
-conn = connect_url('http://atsd_hostname:8088', 'user', 'pwd')
-#conn = atsd_client.connect('/home/axibase/connection.properties')
+conn = connect()
+# conn = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+# conn = atsd_client.connect('/home/axibase/connection.properties')
 
 entity_service = EntitiesService(conn)
+metric_service = MetricsService(conn)
 
 # select all entities that collect this metric
 # this metric is collected by docker hosts
-docker_hosts = conn.get("v1/metrics/docker.cpu.sum.usage.total.percent/series")
+docker_hosts = metric_service.series('docker.cpu.sum.usage.total.percent')
 
 print("Docker hosts found: " + str(len(docker_hosts)))
 
-for el in docker_hosts:
-    docker_host = Entity(el["entity"])
-    docker_host.lastInsertDate = el["lastInsertDate"]
+for docker_host_series in docker_hosts:
     print("--------------")
 
-    # convert all times to UTC timezone
-    last_insert_time = parse_date(docker_host.lastInsertDate).replace(tzinfo=pytz.utc)
+    # get minutes since last insert
+    elapsed_minutes = docker_host_series.get_elapsed_minutes()
 
-    # calculate time difference between now and last insert time
-    elapsed_time = datetime.now(pytz.utc) - last_insert_time
-
-    # days since last insert, rounded down to nearest integer
-    elapsed_days = int(elapsed_time.days)
-
-    entity_filter = "lower(tags.docker-host) = lower('" + docker_host.name + "')"
+    entity_filter = "lower(tags.docker-host) = lower('" + docker_host_series.entity + "')"
     # find related entities, which tag value equals docker host
     entities = entity_service.list(expression=entity_filter, limit=0, tags="*")
 
-    print(" - FOUND " + str(len(entities)) + " objects for docker_host= " + docker_host.name +
-          " : " + docker_host.lastInsertDate + " : elapsed_days= " + str(elapsed_days))
+    print(" - FOUND " + str(len(entities)) + " objects for docker_host= " + docker_host_series.entity +
+          " : " + docker_host_series.lastInsertDate.isoformat() + " : elapsed_minutes= " + str(elapsed_minutes))
 
-    # keep entitites that have recent data (inserted within the last 7 days)
-    if elapsed_time < timedelta(hours=7*24):
-        print(" - RETAIN (do not delete): " + docker_host.name)
+    # keep entities that have recent data (inserted within the last 7 days)
+    if elapsed_minutes < 7*24*60:
+        print(" - RETAIN (do not delete): " + docker_host_series.entity)
         continue
 
-    print(" - DELETE objects for docker_host= " + docker_host.name)
+    print(" - DELETE objects for docker_host= " + docker_host_series.entity)
 
     for entity in entities:
-        
-        if entity.name == docker_host.name:
-            #ignore the docker host itself, it will be deleted later
-            continue;
-            
+
+        if entity.name == docker_host_series.entity:
+            # ignore the docker host itself, it will be deleted later
+            continue
+
         print("- Deleting " + entity.tags.get('docker-type', '') + " : " + entity.name + " : " + entity.tags.get('name', ''))
         tags_printer.pprint(entity.tags)
         # Uncomment next line to delete
-        #entity_service.delete(entity)
+        # entity_service.delete(entity)
 
-    print("- DELETE Docker host: " + docker_host.name)
+    print("- DELETE Docker host: " + docker_host_series.entity)
     # Uncomment next line to delete
-    #entity_service.delete(docker_host)
+    # entity_service.delete(docker_host_series.entity)
