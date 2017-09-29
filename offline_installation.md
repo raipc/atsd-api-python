@@ -20,7 +20,7 @@ cd atsd-api-python
 
 Download required modules (dependencies) into a temporary folder.
 
-> If your python version and os are different from the target server proceed to [Download Platform-Dependent Module](#Download-Platform-Dependent-Module)
+> If your python version and os are different from the target server proceed to [Download Platform-Dependent Module](#download-platform-dependent-module)
 
 ```sh
 mkdir modules
