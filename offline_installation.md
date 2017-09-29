@@ -18,26 +18,18 @@ unzip master.zip; rm master.zip; mv atsd-api-python-master atsd-api-python
 cd atsd-api-python
 ```
 
-Create a `requirements.txt` file containing the list of required modules (dependencies).
+Download required modules (dependencies) into a temporary folder.
 
-```
-requests>=2.12.1
-python-dateutil
-pandas
-```
-
-Download the modules specified in the `requirements.txt` file into a temporary folder.
-
-> If your python version and os are different from the target server proceed to [Download modules for different systems](#Download-modules-for-different-systems)
+> If your python version and os are different from the target server proceed to [Download Platform-Dependent Module](#Download-Platform-Dependent-Module)
 
 ```sh
 mkdir modules
-pip download -r requirements.txt -d modules
+pip download 'requests>=2.12.1' python-dateutil pandas -d modules
 ```
 
 If your python version is less than 2.7.9 download in addition:
 ```
-pip download pyOpenSSL idna -d modules  
+pip download pyOpenSSL idna -d modules
 ```
 
 The directory will contain a set of `*.whl`and `*.tar.gz` files.
@@ -97,25 +89,17 @@ ImportError: No module named atsd_client
 ```
 
 
-### Download Platform-Dependent Modules
+### Download Platform-Dependent Module
 
-If the Python version and operating system type are different on the intermediate server, download dependencies by specifying the target platform explicitly. 
+If the Python version and operating system type are different on the intermediate server, download `pandas` module by specifying the target platform explicitly. 
 
 * Python 2.7 Linux x86_64 Example
 
 ```
-pip download -r requirements.txt -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
-pip download pyOpenSSL idna      -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
-pip download pycparser           -d modules
+pip download pandas -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
 ```
 
-* Python 2.6 Linux x86_64 Example
-
-```
-pip download -r requirements.txt -d modules --only-binary=:all: --python-version 26 --implementation cp --abi cp26m
-pip download pyOpenSSL idna      -d modules --only-binary=:all: --python-version 26 --implementation cp --abi cp26m
-pip download pycparser           -d modules
-```
+For python version less than 2.7 pandas has to be built from sources.
 
 References:
 
