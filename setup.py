@@ -37,7 +37,7 @@ setup(
     name='atsd_client',
     packages=['atsd_client', 'atsd_client.models'],
     version=version,
-    description='Axibase Time-Series Database API Client for Python',
+    description='Axibase Time Series Database API Client for Python',
     url='https://github.com/axibase/atsd-api-python',
     author='Axibase Corporation',
     author_email='axibase-api@axibase.com',

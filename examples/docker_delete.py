@@ -3,8 +3,7 @@ import os
 import pprint
 import time
 
-import logging
-from atsd_client import connect, connect_url
+from atsd_client import connect_url, connect
 from atsd_client.services import EntitiesService, MetricsService
 
 '''
@@ -14,15 +13,13 @@ Also delete related entities (docker containers).
 Connection.properties will be taken from the same folder where script is.
 '''
 
-logging.getLogger().setLevel(logging.INFO)
-
 # Uncomment next two lines to set custom local timezone
 # os.environ['TZ'] = 'Europe/London'
 # time.tzset()
 
 tags_printer = pprint.PrettyPrinter(indent=4)
-conn = connect()
-# conn = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+conn = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+# conn = connect()
 # conn = atsd_client.connect('/home/axibase/connection.properties')
 
 entity_service = EntitiesService(conn)
