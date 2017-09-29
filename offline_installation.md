@@ -115,7 +115,7 @@ Note that python-version corresponds to concatenated `Python -V` command first t
 For example for linux_x86_64 machine with python 2.7.x
 
 ```
-pip download -r requirements.txt -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27
+pip download -r requirements.txt -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
 pip download pyOpenSSL idna      -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
 pip download pycparser           -d modules
 ```
