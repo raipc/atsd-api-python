@@ -1,6 +1,6 @@
 # Offline Installation
 
-The document describes how ATSD Python client can be installed on a machine without internet access. The process involves downloading the module and its dependencies to an intermediate server from which the files are then copied to the target machine.
+The document describes how ATSD Python client can be installed on a machine without internet access. The process involves downloading the module and its dependencies to an intermediate server from which the files are then copied to the target machine. The intermediate server should have the same Python version and operating system type as the target server.
 
 ## Download Modules
 
@@ -60,7 +60,7 @@ for i in `ls *.tar.gz`; do tar -xvf "$i"; rm "$i"; done;
 
 Copy the `atsd-api-python` directory from the connected server to the target machine.
 
-## Install Modules to the Target Machine
+## Install Modules on the Target Server
 
 Login into the target server where the ATSD client will be installed.
 
@@ -97,22 +97,11 @@ ImportError: No module named atsd_client
 ```
 
 
-### Download modules for different systems 
+### Download Platform-Dependent Modules
 
-To fetch dependencies for an interpreter and system other than the ones that pip is running on 
+If the Python version and operating system type are different on the intermediate server, download dependencies by specifying the target platform explicitly. 
 
-run `pip download` with the `--platform`, `--python-version`, `--implementation` and `--abi` options (more [details](https://pip.pypa.io/en/stable/reference/pip_download/)).
-
-These options set by default to the current system/interpreter. Current list of available option values in [PyPI](https://pypi.python.org/pypi):
-
-|**Option**|**Value**|
-|:---|:---|
-| platform |win32, win_amd64, manylinux1_i686, manylinux1_x86_64, macosx_10_6_intel, macosx_10_6_intel, macosx_10_9_intel, macosx_10_9_x86_64, macosx_10_10_intel, macosx_10_10_x86_64|
-| python-version(abi) |27(27m), 34(34m), 35(35m), 36(36m)|
- 
-Note that python-version corresponds to concatenated `Python -V` command first two digits.
-
-For example for linux_x86_64 machine with python 2.7.x
+* Python 2.7 Linux x86_64 Example
 
 ```
 pip download -r requirements.txt -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
@@ -120,6 +109,15 @@ pip download pyOpenSSL idna      -d modules --only-binary=:all: --platform manyl
 pip download pycparser           -d modules
 ```
 
-If your python version is less than 2.7 or you have not find appropriate modules try to find out them on [PyPI](https://pypi.python.org/pypi)
+* Python 2.6 Linux x86_64 Example
 
-or use machine with same os and python interpreter.
+```
+pip download -r requirements.txt -d modules --only-binary=:all: --python-version 26 --implementation cp --abi cp26m
+pip download pyOpenSSL idna      -d modules --only-binary=:all: --python-version 26 --implementation cp --abi cp26m
+pip download pycparser           -d modules
+```
+
+References:
+
+* [`pip download` parameters](https://pip.pypa.io/en/stable/reference/pip_download/)
+* [Pandas Versions](http://pandas.pydata.org/)
