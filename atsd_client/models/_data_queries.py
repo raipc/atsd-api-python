@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2015 Axibase Corporation or its affiliates. All Rights Reserved.
+Copyright 2017 Axibase Corporation or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ class Interpolate(object):
     
 #------------------------------------------------------------------------------ 
 class TimeUnit(object):
+    NANOSECOND  = 'NANOSECOND'
     MILLISECOND = 'MILLISECOND'
     SECOND      = 'SECOND'
     MINUTE      = 'MINUTE'
@@ -62,8 +63,11 @@ class PeriodAlign(object):
 class AggregateType(object):
     DETAIL             = 'DETAIL'
     COUNT              = 'COUNT'
+    COUNTER            = 'COUNTER'
     MIN                = 'MIN'
     MAX                = 'MAX'
+    MIN_VALUE_TIME     = 'MIN_VALUE_TIME'
+    MAX_VALUE_TIME     = 'MAX_VALUE_TIME'
     AVG                = 'AVG'
     SUM                = 'SUM'
     PERCENTILE_999     = 'PERCENTILE_999'
@@ -72,10 +76,10 @@ class AggregateType(object):
     PERCENTILE_95      = 'PERCENTILE_95'
     PERCENTILE_90      = 'PERCENTILE_90'
     PERCENTILE_75      = 'PERCENTILE_75'
-    PERCENTILE_50      = 'PERCENTILE_50'
+    PERCENTILE_50      = 'PERCENTILE_50'        #MEDIAN
     STANDARD_DEVIATION = 'STANDARD_DEVIATION'
     FIRST              = 'FIRST'
-    CACHE              = 'CACHE'
+    LAST               = 'LAST'
     DELTA              = 'DELTA'
     WAVG               = 'WAVG'
     WTAVG              = 'WTAVG'
@@ -87,11 +91,11 @@ class AggregateType(object):
 class Severity(object):
     UNDEFINED = 0
     UNKNOWN   = 1
-    NORMAL    = 2
-    WARNING   = 3
+    NORMAL    = 2   # INFO
+    WARNING   = 3   # WARN
     MINOR     = 4
     MAJOR     = 5
-    CRITICAL  = 6
+    CRITICAL  = 6   # ERROR
     FATAL     = 7
 
 #===============================================================================

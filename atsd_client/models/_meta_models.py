@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2015 Axibase Corporation or its affiliates. All Rights Reserved.
+Copyright 2017 Axibase Corporation or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may not use this file except in compliance with the License.
@@ -18,28 +18,38 @@ from .._time_utilities import to_iso_local, timediff_in_minutes
 from .._utilities import NoneDict
 
 
-#------------------------------------------------------------------------------ 
+# ------------------------------------------------------------------------------
 class DataType(object):
-    SHORT    = 'SHORT'
-    INTEGER  = 'INTEGER'
-    FLOAT    = 'FLOAT'
-    LONG     = 'LONG'
-    DOUBLE   = 'DOUBLE'
+    SHORT   = 'SHORT'
+    INTEGER = 'INTEGER'
+    FLOAT   = 'FLOAT'
+    LONG    = 'LONG'
+    DOUBLE  = 'DOUBLE'
+    DECIMAL = 'DECIMAL'
 
-#------------------------------------------------------------------------------ 
+
+# ------------------------------------------------------------------------------
 class TimePrecision(object):
     SECONDS      = 'SECONDS'
     MILLISECONDS = 'MILLISECONDS'
 
-#------------------------------------------------------------------------------ 
-class InvalidAction(object):
-    NONE      = 'NONE'
-    DISCARD   = 'DISCARD'
-    TRANSFORM = 'TRANSFORM'
-    RAISE_ERROR   = 'RAISE_ERROR'
-    TRANSFORM = 'SET_VERSION_STATUS'
 
-#------------------------------------------------------------------------------ 
+# ------------------------------------------------------------------------------
+class InvalidAction(object):
+    NONE                = 'NONE'
+    DISCARD             = 'DISCARD'
+    TRANSFORM           = 'TRANSFORM'
+    RAISE_ERROR         = 'RAISE_ERROR'
+    SET_VERSION_STATUS  = 'SET_VERSION_STATUS'
+
+
+# ------------------------------------------------------------------------------
+class Interpolate(object):
+    LINEAR   = 'LINEAR'
+    PREVIOUS = 'PREVIOUS'
+
+
+# ------------------------------------------------------------------------------
 class Metric(object):
     """
     Class representing a single metric.
@@ -48,7 +58,7 @@ class Metric(object):
     Metrics specify how incoming data should be stored (data type), validated and pruned.
     In addition, metrics can have user-defined tags such as unit of measurement, scale, type or a category that can be used for filtering and grouping.
     """
-    
+
     def __init__(self,
                  name,
                  label=None,
@@ -68,7 +78,8 @@ class Metric(object):
                  versioned=None,
                  interpolate=None,
                  units=None,
-                 timeZone=None
+                 timeZone=None,
+                 createdDate=None
                  ):
         #: `str` metric name
         self._name = name
@@ -108,11 +119,14 @@ class Metric(object):
         self._units = units
         #: `str` entity timezone
         self._timeZone = timeZone
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Creation date for this metric
+        self._createdDate = None if createdDate is None else to_iso_local(createdDate)
 
     def __repr__(self):
-        return "<METRIC name={name}, label={label}, description={des}".format(name=self._name, label=self._label, des=self._description)
-    
-    #Getters and setters
+        return "<METRIC name={name}, label={label}, description={des}".format(name=self._name, label=self._label,
+                                                                              des=self._description)
+
+    # Getters and setters
     @property
     def name(self):
         return self._name
@@ -205,6 +219,10 @@ class Metric(object):
     def dataType(self, value):
         self._dataType = value
 
+    @property
+    def createdDate(self):
+        return self._createdDate
+
     @timePrecision.setter
     def timePrecision(self, value):
         self._timePrecision = value
@@ -241,10 +259,6 @@ class Metric(object):
     def seriesRetentionDays(self, value):
         self._seriesRetentionDays = value
 
-    @lastInsertDate.setter
-    def lastInsertDate(self, value):
-        self._lastInsertDate = None if value is None else to_iso_local(value)
-
     @tags.setter
     def tags(self, value):
         self._tags = NoneDict(value)
@@ -272,15 +286,17 @@ class Metric(object):
         """
         return timediff_in_minutes(self.lastInsertDate)
 
-#------------------------------------------------------------------------------ 
+
+# ------------------------------------------------------------------------------
 class Entity(object):
     """
     Class representing a single entitiy.
     Entities are servers, hosts, frames, virtual machines, sensors, etc.
     Entities are ingested with attached metrics (time series data) using the csv/nmon parsers, telnet and http/s protocols, and Axibase Collector jobs.
     """
-    
-    def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None):
+
+    def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None,
+                 createdDate=None):
         #: `str` entity name
         self._name = name
         #: `str` entity label
@@ -295,7 +311,9 @@ class Entity(object):
         self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         #: `dict`
         self._tags = NoneDict(tags)
-        
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Creation date for this entity
+        self._createdDate = None if createdDate is None else to_iso_local(createdDate)
+
     def __repr__(self):
         return "<Entity name={name}, label={label}, interpolate={interpolate}, timezone={timezone}, enabled={" \
                "enabled}, lastInsertDate={lit}, tags={tags}".format(name=self._name, label=self._label,
@@ -303,7 +321,7 @@ class Entity(object):
                                                                     timezone=self._timeZone, enabled=self._enabled,
                                                                     lit=self._lastInsertDate, tags=self._tags)
 
-    #Getters and setters
+    # Getters and setters
     @property
     def name(self):
         return self._name
@@ -332,6 +350,10 @@ class Entity(object):
     def tags(self):
         return self._tags
 
+    @property
+    def createdDate(self):
+        return self._createdDate
+
     @name.setter
     def name(self, value):
         self._name = value
@@ -352,10 +374,6 @@ class Entity(object):
     def enabled(self, value):
         self._enabled = value
 
-    @lastInsertDate.setter
-    def lastInsertDate(self, value):
-        self._lastInsertDate = None if value is None else to_iso_local(value)
-
     @tags.setter
     def tags(self, value):
         self._tags = NoneDict(value)
@@ -367,7 +385,8 @@ class Entity(object):
         """
         return timediff_in_minutes(self.lastInsertDate)
 
-#------------------------------------------------------------------------------ 
+
+# ------------------------------------------------------------------------------
 class EntityGroup(object):
     """
     Class representing a single entity group.
@@ -377,6 +396,7 @@ class EntityGroup(object):
     Portals can be added to all entities present in the Group.
     This is a useful feature when working with large amounts of entities and big data sets.
     """
+
     def __init__(self, name, expression=None, tags=None, enabled=None):
         #: `str` entity group name
         self._name = name
@@ -386,11 +406,14 @@ class EntityGroup(object):
         self._tags = NoneDict(tags)
         #: `bool`
         self._enabled = enabled
-    
+
     def __repr__(self):
-        return "<EntityGroup name={name}, expression={expression}, tags={tags}>".format(name=self._name, expression=self._expression, tags=self._tags, enabled=self._enabled)
-    
-    #Getters and setters
+        return "<EntityGroup name={name}, expression={expression}, tags={tags}>".format(name=self._name,
+                                                                                        expression=self._expression,
+                                                                                        tags=self._tags,
+                                                                                        enabled=self._enabled)
+
+    # Getters and setters
     @property
     def name(self):
         return self._name
