@@ -21,19 +21,20 @@ from . import models, _constants, _utilities, _time_utilities
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '2.0.13'
+__version__ = '2.0.14'
 
 try:
     logging.debug("Checking for the appropriate 'python-requests' version...")
     req_v = None
     import requests
+
     req_v = requests.__version__
     if list(map(lambda x: int(x), req_v.split("."))) >= [2, 4, 2]:
         logging.debug("Detected version of 'python-requests' : %s. OK", req_v)
     else:
-        raise Exception 
+        raise Exception
 except:
-        import sys
-        sys.stderr.write("WARNING! Detected version of 'python-requests' :{}. Needed at least 2.4.2!\n".format(req_v))
-        sys.stderr.flush()
-    
+    import sys
+
+    sys.stderr.write("WARNING! Detected version of 'python-requests' :{}. Needed at least 2.4.2!\n".format(req_v))
+    sys.stderr.flush()
