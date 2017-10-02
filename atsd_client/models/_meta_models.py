@@ -20,26 +20,33 @@ from .._utilities import NoneDict
 
 # ------------------------------------------------------------------------------
 class DataType(object):
-    SHORT = 'SHORT'
+    SHORT   = 'SHORT'
     INTEGER = 'INTEGER'
-    FLOAT = 'FLOAT'
-    LONG = 'LONG'
-    DOUBLE = 'DOUBLE'
+    FLOAT   = 'FLOAT'
+    LONG    = 'LONG'
+    DOUBLE  = 'DOUBLE'
+    DECIMAL = 'DECIMAL'
 
 
 # ------------------------------------------------------------------------------
 class TimePrecision(object):
-    SECONDS = 'SECONDS'
+    SECONDS      = 'SECONDS'
     MILLISECONDS = 'MILLISECONDS'
 
 
 # ------------------------------------------------------------------------------
 class InvalidAction(object):
-    NONE = 'NONE'
-    DISCARD = 'DISCARD'
-    TRANSFORM = 'TRANSFORM'
-    RAISE_ERROR = 'RAISE_ERROR'
-    SET_VERSION_STATUS = 'SET_VERSION_STATUS'
+    NONE                = 'NONE'
+    DISCARD             = 'DISCARD'
+    TRANSFORM           = 'TRANSFORM'
+    RAISE_ERROR         = 'RAISE_ERROR'
+    SET_VERSION_STATUS  = 'SET_VERSION_STATUS'
+
+
+# ------------------------------------------------------------------------------
+class Interpolate(object):
+    LINEAR   = 'LINEAR'
+    PREVIOUS = 'PREVIOUS'
 
 
 # ------------------------------------------------------------------------------
