@@ -55,6 +55,14 @@ ImportError: No module named atsd_client
 
 For installation on a system without internet access, review the following [guide](offline_installation.md)
 
+## Upgrade
+
+Execute `pip install` command to upgrade the client to the latest version.
+
+```sh
+pip install atsd_client --upgrade --upgrade-strategy only-if-needed
+```
+
 ## Usage
 
 ### Connecting to ATSD
@@ -65,7 +73,7 @@ Establish a connection with the `connect_url` method.
 
 ```python
     >>> import atsd_client
-    >>> conn = atsd_client.connect_url('https://atsd_hostname:8443', 'usr', 'pwd')  
+    >>> conn = atsd_client.connect_url('https://atsd_hostname:8443', 'usr', 'passwd')  
 ```
 
 Alternatively, create a `connection.properties` file and specify its path in the `connect` method.
@@ -73,7 +81,7 @@ Alternatively, create a `connection.properties` file and specify its path in the
 ```ls
 base_url=https://atsd_hostname:8443
 username=usr
-password=pwd
+password=passwd
 ssl_verify=False
 ```
 
