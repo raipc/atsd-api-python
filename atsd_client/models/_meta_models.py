@@ -82,7 +82,7 @@ class Metric(object):
                  createdDate=None
                  ):
         #: `str` metric name
-        self._name = name.encode('utf8')
+        self._name = name
         #: `str`
         self._label = label
         #: `bool`
@@ -299,7 +299,7 @@ class Entity(object):
     def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None,
                  createdDate=None):
         #: `str` entity name
-        self._name = name.encode('utf8')
+        self._name = name
         #: `str` entity label
         self._label = label
         #: :class:`.Interpolate`
