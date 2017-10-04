@@ -20,7 +20,7 @@ cd atsd-api-python
 
 Download required modules (dependencies) into a temporary folder.
 
-> If your python version and os are different from the target server proceed to [Download Platform-Dependent Module](#download-platform-dependent-module)
+> If your python version and os are different from the target server proceed to [Download Platform-Dependent Modules](#download-platform-dependent-modules)
 
 ```sh
 mkdir modules
@@ -89,14 +89,18 @@ ImportError: No module named atsd_client
 ```
 
 
-### Download Platform-Dependent Module
+### Download Platform-Dependent Modules
 
-If the Python version and operating system type are different on the intermediate server, download `pandas` module by specifying the target platform explicitly. 
+If the Python version and operating system type are different on the intermediate server, download modules by specifying the target platform explicitly. 
 
 * Python 2.7 Linux x86_64 Example
 
 ```
 pip download pandas -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
+# for python version less than 2.7.9
+# pycparser module needed by pyOpenSSL will be download in the next step
+pip download pyOpenSSL idna -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
+pip download pycparser -d modules
 ```
 
 For python version less than 2.7 pandas has to be built from sources.
