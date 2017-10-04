@@ -15,11 +15,10 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-
 from . import _jsonutil
 from ._client import Client
 from ._constants import *
-from ._time_utilities import to_iso_local, timediff_in_minutes
+from ._time_utilities import to_iso_local
 from .exceptions import DataParseException, SQLException, ServerException
 from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, Message
 
@@ -33,6 +32,7 @@ except ImportError:
     from urllib.parse import urlencode
 
 import six
+
 
 def _check_name(name):
     if not isinstance(name, (six.binary_type, six.text_type)):
@@ -110,12 +110,12 @@ class PropertiesService(_Service):
         :param entity: :class:`.Entity`
         :return: returns `list` of property types for the entity.
         """
-        response = self.conn.get(properties_types_url.format(entity=quote(entity.name, '')))
+        response = self.conn.get(properties_types_url.format(entity=quote(encode_if_required(entity.name), '')))
         return response
 
     def url_query(self, *queries):
         """
-        Unimplemented 
+        Unimplemented
         """
         raise NotImplementedError
 
@@ -209,7 +209,7 @@ class MetricsService(_Service):
         """
         _check_name(name)
         try:
-            response = self.conn.get(metric_get_url.format(metric=quote(name, '')))
+            response = self.conn.get(metric_get_url.format(metric=quote(encode_if_required(name), '')))
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -231,9 +231,9 @@ class MetricsService(_Service):
         if expression is not None:
             params['expression'] = expression
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso_local(minInsertDate)
+            params['minInsertDate'] = to_iso_local(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso_local(maxInsertDate)
+            params['maxInsertDate'] = to_iso_local(maxInsertDate).isoformat()
         if tags is not None:
             params['tags'] = tags
         if limit is not None:
@@ -247,7 +247,7 @@ class MetricsService(_Service):
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.patch(metric_update_url.format(metric=quote(metric.name, '')), metric)
+        self.conn.patch(metric_update_url.format(metric=quote(encode_if_required(metric.name), '')), metric)
         return True
 
     def create_or_replace(self, metric):
@@ -256,7 +256,7 @@ class MetricsService(_Service):
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.put(metric_create_or_replace_url.format(metric=quote(metric.name, '')), metric)
+        self.conn.put(metric_create_or_replace_url.format(metric=quote(encode_if_required(metric.name), '')), metric)
         return True
 
     def delete(self, metric_name):
@@ -265,35 +265,36 @@ class MetricsService(_Service):
         :param metric_name: :class:`.Metric`
         :return: True if success
         """
-        self.conn.delete(metric_delete_url.format(metric=quote(metric_name, '')))
+        self.conn.delete(metric_delete_url.format(metric=quote(encode_if_required(metric_name), '')))
         return True
 
-    def series(self, metric_name, entity=None, tags=None, minInsertDate=None, maxInsertDate=None):
+    def series(self, metric, entity=None, tags=None, minInsertDate=None, maxInsertDate=None):
         """Retrieve series for the specified metric.
 
-        :param metric_name: `str` metric name
-        :param entity: `str`
+        :param metric: `str` | :class:`.Metric`
+        :param entity: `str` | :class:`.Entity`
         :param tags: `dict`
         :param minInsertDate: `int` | `str` | None | :class:`datetime`
         :param maxInsertDate: `int` | `str` | None | :class:`datetime`
 
         :return: :class:`.Series`
         """
+        metric_name = metric.name if isinstance(metric, Metric) else metric
         _check_name(metric_name)
 
         params = {}
         if entity is not None:
-            params['entity'] = entity
+            params['entity'] = entity.name if isinstance(entity, Entity) else entity
         if tags is not None and isinstance(tags, dict):
             for k, v in six.iteritems(tags):
                 params['tags.%s' % k] = v
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso_local(minInsertDate)
+            params['minInsertDate'] = to_iso_local(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso_local(maxInsertDate)
+            params['maxInsertDate'] = to_iso_local(maxInsertDate).isoformat()
 
         try:
-            response = self.conn.get(metric_series_url.format(metric=quote(metric_name, '')), params)
+            response = self.conn.get(metric_series_url.format(metric=quote(encode_if_required(metric_name), '')), params)
         except ServerException as e:
             if e.status_code == 404:
                 return []
@@ -312,7 +313,7 @@ class EntitiesService(_Service):
         """
         _check_name(entity_name)
         try:
-            response = self.conn.get(ent_get_url.format(entity=quote(entity_name, '')))
+            response = self.conn.get(ent_get_url.format(entity=quote(encode_if_required(entity_name), '')))
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -334,9 +335,9 @@ class EntitiesService(_Service):
         if expression is not None:
             params["expression"] = expression
         if minInsertDate is not None:
-            params["minInsertDate"] = to_iso_local(minInsertDate)
+            params["minInsertDate"] = to_iso_local(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso_local(maxInsertDate)
+            params["maxInsertDate"] = to_iso_local(maxInsertDate).isoformat()
         if tags is not None:
             params["tags"] = tags
         if limit is not None:
@@ -350,7 +351,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.patch(ent_update_url.format(entity=quote(entity.name, '')), entity)
+        self.conn.patch(ent_update_url.format(entity=quote(encode_if_required(entity.name), '')), entity)
         return True
 
     def create_or_replace(self, entity):
@@ -359,7 +360,7 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.put(ent_create_or_replace_url.format(entity=quote(entity.name, '')), entity)
+        self.conn.put(ent_create_or_replace_url.format(entity=quote(encode_if_required(entity.name), '')), entity)
         return True
 
     def delete(self, entity):
@@ -368,14 +369,15 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.delete(ent_delete_url.format(entity=quote(entity.name if isinstance(entity, Entity) else entity, '')))
+        entity_name = entity.name if isinstance(entity, Entity) else entity
+        self.conn.delete(ent_delete_url.format(entity=quote(encode_if_required(entity_name), '')))
         return True
 
-    def metrics(self, entity_name, expression=None, minInsertDate=None, maxInsertDate=None, useEntityInsertTime=None,
+    def metrics(self, entity, expression=None, minInsertDate=None, maxInsertDate=None, useEntityInsertTime=None,
                 limit=None, tags=None):
         """Retrieve a `list` of metrics matching the specified filter conditions.
 
-        :param entity_name: `str`
+        :param entity: `str` | :class:`.Entity`
         :param expression: `str`
         :param minInsertDate: `int` | `str` | None | :class:`datetime`
         :param maxInsertDate: `int` | `str` | None | :class:`datetime`
@@ -383,21 +385,22 @@ class EntitiesService(_Service):
         :param tags: `str`
         :return: :class:`.Metric` objects
         """
+        entity_name = entity.name if isinstance(entity, Entity) else entity
         _check_name(entity_name)
         params = {}
         if expression is not None:
             params['expression'] = expression
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso_local(minInsertDate)
+            params['minInsertDate'] = to_iso_local(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso_local(maxInsertDate)
+            params['maxInsertDate'] = to_iso_local(maxInsertDate).isoformat()
         if useEntityInsertTime is not None:
             params['useEntityInsertTime'] = useEntityInsertTime
         if limit is not None:
             params['limit'] = limit
         if tags is not None:
             params['tags'] = tags
-        response = self.conn.get(ent_metrics_url.format(entity=quote(entity_name, '')), params)
+        response = self.conn.get(ent_metrics_url.format(entity=quote(encode_if_required(entity_name), '')), params)
         return _jsonutil.deserialize(response, Metric)
 
 
@@ -413,6 +416,7 @@ class EntityGroupsService(_Service):
         """
         _check_name(group_name)
         try:
+            group_name = self.encode_if_required(group_name)
             resp = self.conn.get(eg_get_url.format(group=quote(group_name, '')))
         except ServerException as e:
             if e.status_code == 404:
@@ -448,7 +452,7 @@ class EntityGroupsService(_Service):
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.patch(eg_update_url.format(group=quote(group.name, '')), group)
+        self.conn.patch(eg_update_url.format(group=quote(encode_if_required(group.name), '')), group)
         return True
 
     def create_or_replace(self, group, expression=None, tags=None):
@@ -491,14 +495,14 @@ class EntityGroupsService(_Service):
         if expression is not None:
             params["expression"] = expression
         if minInsertDate is not None:
-            params["minInsertDate"] = to_iso_local(minInsertDate)
+            params["minInsertDate"] = to_iso_local(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso_local(maxInsertDate)
+            params["maxInsertDate"] = to_iso_local(maxInsertDate).isoformat()
         if tags is not None:
             params["tags"] = tags
         if limit is not None:
             params["limit"] = limit
-        resp = self.conn.get(eg_get_entities_url.format(group=quote(group_name, '')), params)
+        resp = self.conn.get(eg_get_entities_url.format(group=quote(encode_if_required(group_name), '')), params)
         return _jsonutil.deserialize(resp, Entity)
 
     def add_entities(self, group_name, entities, createEntities=None):
@@ -512,7 +516,7 @@ class EntityGroupsService(_Service):
         _check_name(group_name)
         data = [e.name if isinstance(e, Entity) else e for e in entities]
         params = {"createEntities": True if createEntities is None else createEntities}
-        response = self.conn.post(eg_add_entities_url.format(group=quote(group_name, '')), data, params=params)
+        response = self.conn.post(eg_add_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
         return True
 
     def set_entities(self, group_name, entities, createEntities=None):
@@ -528,7 +532,7 @@ class EntityGroupsService(_Service):
         _check_name(group_name)
         data = [e.name if isinstance(e, Entity) else e for e in entities]
         params = {"createEntities": True if createEntities is None else createEntities}
-        response = self.conn.post(eg_set_entities_url.format(group=quote(group_name, '')), data, params=params)
+        response = self.conn.post(eg_set_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
         return True
 
     def delete_entities(self, group_name, entities):
@@ -540,8 +544,9 @@ class EntityGroupsService(_Service):
         :return: True if success
         """
         _check_name(group_name)
-        data = [e.name if isinstance(e, Entity) else e for e in entities]
-        response = self.conn.post(eg_delete_entities_url.format(group=quote(group_name, '')), data=entities)
+        entities = [e.name if isinstance(e, Entity) else e for e in entities]
+
+        response = self.conn.post(eg_delete_entities_url.format(group=quote(encode_if_required(group_name), '')), data=entities)
         return True
 
 
@@ -596,3 +601,9 @@ class CommandsService(_Service):
         data = '\n'.join(commands)
         response = self.conn.post_plain_text(commands_url, data)
         return True
+
+
+def encode_if_required(name):
+    name = name.encode('utf-8') if isinstance(name, six.string_types) else name
+    return name
+

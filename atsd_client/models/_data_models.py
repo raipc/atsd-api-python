@@ -17,12 +17,14 @@ permissions and limitations under the License.
 
 import copy
 
-from .._utilities import NoneDict
+import six
+
 from .._constants import display_series_threshold, display_series_part
 from .._time_utilities import to_timestamp, to_iso_local, timediff_in_minutes
+from .._utilities import NoneDict
 
 
-#------------------------------------------------------------------------------
+# ------------------------------------------------------------------------------
 class Sample(object):
     """
     Class that represents a numeric value observed at some time with additional version information if provided.
@@ -31,7 +33,7 @@ class Sample(object):
 
     def __init__(self, value, time=None, version=None):
         self._v = copy.deepcopy(value) if not value == "Nan" else float("nan")
-        #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date 
+        #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date
         self._t = to_timestamp(time)
         #`.dict` version object including 'source' and 'status' keys
         self._version = version
@@ -63,9 +65,8 @@ class Sample(object):
     def version(self, value):
         self._version = value
 
-
     def _compare(self, other):
-            return self._t - other.t
+        return self._t - other.t
 
     def __lt__(self, other):
         return self._compare(other) < 0
@@ -85,7 +86,8 @@ class Sample(object):
     def __ne__(self, other):
         return self._compare(other) != 0
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class Series(object):
     """
     Class representing a Time Series.
@@ -106,13 +108,13 @@ class Series(object):
         self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         if data is not None:
             for data_unit in data:
-                if isinstance(data_unit, dict): #Compatability
+                if isinstance(data_unit, dict):  # Compatability
                     self._data.append(Sample(
-                                            value=data_unit['v'],
-                                            time=data_unit.get('t', data_unit.get('d', None)),
-                                            version=data_unit.get('version', None)
-                                            )
-                                    )
+                        value=data_unit['v'],
+                        time=data_unit.get('t', data_unit.get('d', None)),
+                        version=data_unit.get('version', None)
+                    )
+                    )
                 else:
                     self._data.append(data_unit)
                     #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
@@ -145,9 +147,10 @@ class Series(object):
             result = '\n'.join(rows[:-display_series_part]) + '\n...\n' + '\n'.join(rows[-display_series_part:])
         else:
             result = '\n'.join(rows)
-        for attr_name in self.__dict__:
-            if not attr_name.startswith('_'):
-                result += '\n{0}: {1}'.format(attr_name, getattr(self, attr_name))
+        for key, value in six.iteritems(vars(type(self))):
+            if isinstance(value, property):
+                attr = getattr(self, key)
+                result += '\n{0}: {1}'.format(key, attr)
         return result
 
     def add_samples(self, *samples):
@@ -270,13 +273,14 @@ class Series(object):
         """
         return timediff_in_minutes(self.lastInsertDate)
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class Property(object):
     """
     Class representing a single property.
     Properties represent metadata describing entities, obtained from configuration files, system command output, etc.
     Property examples are device model, OS version, and location. Unlike time series, the database stores only cache value for each property and such value is stored as text.
-    Properties are collected at a lower frequency than time series or whenever their values change. 
+    Properties are collected at a lower frequency than time series or whenever their values change.
     Each properties record is uniquely identified by entity name, property type and optional property keys.
     """
 
@@ -285,7 +289,7 @@ class Property(object):
         self._type = type
         #: `str` entity name
         self._entity = entity
-         #: `dict` of ``name: value`` pairs that are not part of the key and contain descriptive information about the property record.
+        #: `dict` of ``name: value`` pairs that are not part of the key and contain descriptive information about the property record.
         self._tags = NoneDict(tags)
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self._key = NoneDict(key)
@@ -293,8 +297,8 @@ class Property(object):
         self._date = to_iso_local(date)
 
     def __repr__(self):
-            return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self._type, entity=self._entity, tags=self._tags)
-
+        return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self._type, entity=self._entity,
+                                                                                tags=self._tags)
 
     @property
     def type(self):
@@ -336,17 +340,20 @@ class Property(object):
     def date(self, value):
         self._date = to_iso_local(value)
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class Alert(object):
     """
     Class, representing an single alert.
-    Alert is an event produced by the rule engine by applying pre-defined rules to incoming data. 
+    Alert is an event produced by the rule engine by applying pre-defined rules to incoming data.
     An alert is created when an expression specified in the rule evaluates to true and it is closed, when the expression returns false.
     The users can set acknowledge/de-acknowledge status for open alerts.
     The rule expressions can operate on series, message, and property commands.
     """
 
-    def __init__(self, id, rule=None, entity=None, metric=None, lastEventDate=None, openDate=None, value=None, message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None, openValue=None):
+    def __init__(self, id, rule=None, entity=None, metric=None, lastEventDate=None, openDate=None, value=None,
+                 message=None, tags=None, textValue=None, severity=None, repeatCount=None, acknowledged=None,
+                 openValue=None):
         self._id = id
         #: `str` rule
         self._rule = rule
@@ -374,7 +381,8 @@ class Alert(object):
         self._openValue = openValue
 
     def __repr__(self):
-            return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(id=self._id, entity=self._entity, metric=self._metric, openDate=self._openDate, text=self._textValue)
+        return "<ALERT id={id}, text={text}, entity={entity}, metric={metric}, openDate={openDate}...>".format(
+            id=self._id, entity=self._entity, metric=self._metric, openDate=self._openDate, text=self._textValue)
 
     @property
     def id(self):
@@ -488,23 +496,26 @@ class Alert(object):
     def openValue(self, value):
         self._openValue = value
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class AlertHistory(object):
     """
     Class representing history of an alert, including such values as alert duration, alert open date, repeat count, etc.
     """
 
-    def __init__(self, alert=None, alertDuration=None, alertOpenDate=None, entity=None, metric=None, receivedDate=None, repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, severity=None, tags=None, type=None, date=None, value=None, window=None):
+    def __init__(self, alert=None, alertDuration=None, alertOpenDate=None, entity=None, metric=None, receivedDate=None,
+                 repeatCount=None, rule=None, ruleExpression=None, ruleFilter=None, severity=None, tags=None, type=None,
+                 date=None, value=None, window=None):
         self._alert = alert
         #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
         self._alertDuration = alertDuration
-        #: `str` | :class:`datetime` | `long`    
+        #: `str` | :class:`datetime` | `long`
         self._alertOpenDate = to_iso_local(alertOpenDate)
         #: `str`
         self._entity = entity
         #: `str`
         self._metric = metric
-        #: `str` | :class:`datetime` | `long` 
+        #: `str` | :class:`datetime` | `long`
         self._receivedDate = to_iso_local(receivedDate)
         #: `int`
         self._repeatCount = repeatCount
@@ -528,7 +539,9 @@ class AlertHistory(object):
         self._window = window
 
     def __repr__(self):
-            return "<ALERT_HISTORY alert={alert}, metric={metric}, entity={entity}, date={date}, alertOpenDate={alertOpenDate}...>".format(alert=self._alert, entity=self._entity, metric=self._metric, alertOpenDate=self._alertOpenDate, date=self._date)
+        return "<ALERT_HISTORY alert={alert}, metric={metric}, entity={entity}, date={date}, alertOpenDate={alertOpenDate}...>".format(
+            alert=self._alert, entity=self._entity, metric=self._metric, alertOpenDate=self._alertOpenDate,
+            date=self._date)
 
     @property
     def alert(self):
@@ -666,7 +679,8 @@ class AlertHistory(object):
     def window(self, value):
         self._window = value
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
 class Message(object):
     """
     Class representing a Message.
@@ -683,21 +697,25 @@ class Message(object):
         self._source = source
         #: `str` entity name
         self._entity = entity
-        #:`datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created 
+        #:`datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created
         self._date = to_iso_local(date)
         #: :class:`.Severity`
         self._severity = severity
         #: `str` message tags
         self._tags = NoneDict(tags)
         #: `str`
-        self._message=message
+        self._message = message
         #: `bool`
-        self._persist=persist
+        self._persist = persist
 
     def __repr__(self):
-        return "<MESSAGE type={t}, source={s}, entity={e}, message={m}, date={d}...>".format(t=self._type, s=self._source, e=self._entity, m=self._message, d=self._date)
+        return "<MESSAGE type={t}, source={s}, entity={e}, message={m}, date={d}...>".format(t=self._type,
+                                                                                             s=self._source,
+                                                                                             e=self._entity,
+                                                                                             m=self._message,
+                                                                                             d=self._date)
 
-    #Getters and setters
+    # Getters and setters
     @property
     def type(self):
         return self._type
