@@ -82,7 +82,7 @@ class Metric(object):
                  createdDate=None
                  ):
         #: `str` metric name
-        self._name = name
+        self._name = name.encode('utf8')
         #: `str`
         self._label = label
         #: `bool`
@@ -111,7 +111,7 @@ class Metric(object):
         self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         #: `dict`
         self._tags = NoneDict(tags)
-        #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status 
+        #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status
         self._versioned = versioned
         #: :class:`.Interpolate`
         self._interpolate = interpolate
@@ -123,8 +123,9 @@ class Metric(object):
         self._createdDate = None if createdDate is None else to_iso_local(createdDate)
 
     def __repr__(self):
-        return "<METRIC name={name}, label={label}, description={des}".format(name=self._name, label=self._label,
-                                                                              des=self._description)
+        return "<METRIC name={name}, label={label}, description={des}, createdDate={createdDate}>".format(
+            name=self._name, label=self._label,
+            des=self._description, createdDate=self._createdDate)
 
     # Getters and setters
     @property
@@ -298,7 +299,7 @@ class Entity(object):
     def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None,
                  createdDate=None):
         #: `str` entity name
-        self._name = name
+        self._name = name.encode('utf8')
         #: `str` entity label
         self._label = label
         #: :class:`.Interpolate`
@@ -316,10 +317,14 @@ class Entity(object):
 
     def __repr__(self):
         return "<Entity name={name}, label={label}, interpolate={interpolate}, timezone={timezone}, enabled={" \
-               "enabled}, lastInsertDate={lit}, tags={tags}".format(name=self._name, label=self._label,
-                                                                    interpolate=self._interpolate,
-                                                                    timezone=self._timeZone, enabled=self._enabled,
-                                                                    lit=self._lastInsertDate, tags=self._tags)
+               "enabled}, lastInsertDate={lit}, tags={tags}, createdDate={createdDate}>".format(name=self._name,
+                                                                                                label=self._label,
+                                                                                                interpolate=self._interpolate,
+                                                                                                timezone=self._timeZone,
+                                                                                                enabled=self._enabled,
+                                                                                                lit=self._lastInsertDate,
+                                                                                                tags=self._tags,
+                                                                                                createdDate=self._createdDate)
 
     # Getters and setters
     @property
