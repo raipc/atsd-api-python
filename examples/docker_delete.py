@@ -18,12 +18,12 @@ Connection.properties will be taken from the same folder where script is.
 # time.tzset()
 
 tags_printer = pprint.PrettyPrinter(indent=4)
-conn = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# conn = connect()
-# conn = atsd_client.connect('/home/axibase/connection.properties')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+# connection = connect()
+# connection = atsd_client.connect('/home/axibase/connection.properties')
 
-entity_service = EntitiesService(conn)
-metric_service = MetricsService(conn)
+entity_service = EntitiesService(connection)
+metric_service = MetricsService(connection)
 
 # select all entities that collect this metric
 # this metric is collected by docker hosts
