@@ -32,8 +32,8 @@ class SeriesType(object):
     HISTORY            = 'HISTORY'
     FORECAST           = 'FORECAST'
     FORECAST_DEVIATION = 'FORECAST_DEVIATION'
-    
-#------------------------------------------------------------------------------ 
+
+#------------------------------------------------------------------------------
 class Interpolate(object):
     NONE   = 'NONE'
     LINEAR = 'LINEAR'
@@ -87,7 +87,7 @@ class AggregateType(object):
     THRESHOLD_DURATION = 'THRESHOLD_DURATION'
     THRESHOLD_PERCENT  = 'THRESHOLD_PERCENT'
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class Severity(object):
     UNDEFINED = 0
     UNKNOWN   = 1
@@ -133,12 +133,12 @@ class EntityFilter():
     def set_entity_expression(self, value):
         self.entity_expression = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class DateFilter():
     def _validate(self):
         return (self.startDate is not None and self.endDate is not None) or \
                 (self.interval is not None) and all(key in self.interval for key in ("count","unit"))
-    
+
     def __init__(self, startDate=None, endDate=None, interval=None):
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02Z, current_hour
         self.startDate = to_iso_local(startDate) if startDate is not None else None
@@ -165,36 +165,38 @@ class SeriesQuery():
     """
     Class representing a single query to get series matching provided filters and parameters.
     """
-    def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None, control_filter=None, transformation_filter=None):
+    def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None,
+                 control_filter=None, transformation_filter=None):
         copy_not_empty_attrs(series_filter, self)
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
         copy_not_empty_attrs(forecast_filter, self)
         copy_not_empty_attrs(versioning_filter, self)
         copy_not_empty_attrs(transformation_filter, self)
-        
+        copy_not_empty_attrs(control_filter, self)
+
     def set_series_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_entity_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_date_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_forecast_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_versioning_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_control_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_transformation_filter(self,value):
         copy_not_empty_attrs(value, self)
-        
-#------------------------------------------------------------------------------ 
+
+#------------------------------------------------------------------------------
 class SeriesFilter():
     def __init__(self, metric, tags={}, type="HISTORY"):
         if not metric:
@@ -202,7 +204,7 @@ class SeriesFilter():
         #: `str` metric name
         self.metric = metric
         #: `dict`
-        self.tags = tags 
+        self.tags = tags
         #: :class:`.SeriesType` type of underlying data: HISTORY, FORECAST, FORECAST_DEVIATION. Default: HISTORY
         self.type = type
 
@@ -215,7 +217,7 @@ class SeriesFilter():
     def set_type(self, value):
         self.type = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class ForecastFilter():
     def __init__(self, forecastName=""):
         #: `str` unique forecast name. Identifies a custom forecast by name. If forecastName is not set, then the default forecast computed by the database will be returned. forecastName is applicable only when type is set to FORECAST or FORECAST_DEVIATION
@@ -224,7 +226,7 @@ class ForecastFilter():
     def set_forecast_name(self, value):
         self.forecastName = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class VersioningFilter():
     def __init__(self,versioned=None, versionFilter=None):
         # : `bool` flag indicating if version status, source, and change date will be returned if metric is
@@ -234,11 +236,11 @@ class VersioningFilter():
         # version_status = 'Deleted' or version_source LIKE '*user*'
         self.versionFilter = "" if versionFilter is None else versionFilter
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class  ControlFilter():
     def __init__(self,limit=None, direction=None, cache=None, requestId=None, timeFormat=None):
         #: `int` maximum number of time:value samples returned for each series. Default: 0.
-        self.limit = 0 if limit is None else limit 
+        self.limit = 0 if limit is None else limit
         #: `str` scan order for applying the limit: DESC - descending, ASC - ascending. Default: DESC
         self.direction= "DESC" if direction is None else direction
         # : `bool` flag. If true, execute the query against Last Insert table which results in faster response time
@@ -286,7 +288,7 @@ class TransformationFilter():
     def set_rate(self, value):
         self.rate = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class Rate():
     """
     Class representing aggregate param 'rate'
@@ -294,26 +296,26 @@ class Rate():
     def __init__(self, period, counter=True):
         self.counter = counter
         self.period = period
-        
+
     def set_period(self, count, unit=TimeUnit.SECOND):
         if not isinstance(count, numbers.Number):
             raise ValueError('period count expected number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('wrong period unit')
         self.period = {'count' : count, 'unit' : unit}
-    
+
     def set_counter(self, counter):
         if isinstance(counter, bool):
             self.counter = counter
         else:
             raise ValueError('wrong counter')
-        
-#------------------------------------------------------------------------------ 
+
+#------------------------------------------------------------------------------
 class Group():
     """
     Class representing aggregate param 'group'
     """
-    
+
     def __init__(self, type, period=None, interpolate=None, truncate=None, order=None):
         self.set_type(type)
         self.set_truncate(truncate)
@@ -351,12 +353,12 @@ class Group():
 
     def set_truncate(self, value):
         if value is not None and not isinstance(value, bool):
-            raise ValueError("wrong truncate parameter; should be boolean, found: " + unicode(type(value))) 
+            raise ValueError("wrong truncate parameter; should be boolean, found: " + unicode(type(value)))
         self.truncate = value if value is not None else False
 
     def set_order(self, value):
         if value is not None and not isinstance(value, numbers.Number):
-            raise ValueError("wrong order parameter; should be number, found: " + unicode(type(value))) 
+            raise ValueError("wrong order parameter; should be number, found: " + unicode(type(value)))
         self.order = value if value is not None else 0
 
 
@@ -403,7 +405,7 @@ class Aggregate():
         if not isinstance(name, str):
             raise ValueError("wrong name parameter; should be string, found: " + unicode(type(name)))
         self.calendar = {'name': name}
-    
+
     def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR):
         if not isinstance(count, numbers.Number):
             raise ValueError('period count expected number, found: ' + unicode(type(count)))
@@ -412,7 +414,7 @@ class Aggregate():
         self.period = {'count' : count, 'unit' : unit}
         if align is not None:
             self.period['align'] = align
-            
+
     def set_interpolate(self, type, value=None, extend=False):
         if not hasattr(Interpolate, type) and not isinstance(value, numbers.Number):
             raise ValueError('wrong type parameter, expected Interpolate, found: ' + unicode(type(type)))
@@ -424,7 +426,7 @@ class Aggregate():
         if not isinstance(extend, bool):
             raise ValueError('wrong extend parameter, expected boolean, found: ' + unicode(type(extend)))
         self.interpolate['extend'] = extend
-                
+
     def set_order(self, order):
         if not isinstance(order, numbers.Number):
             raise ValueError('wrong order, expected number, found: ' + unicode(type(order)))
@@ -445,35 +447,35 @@ class PropertiesQuery():
         self.limit=0 if limit is None else limit
         self.cache=False if cache is None else cache
         self.offset=-1 if offset is None else offset
-    
+
     def set_entity_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_date_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_type(self,value):
         self.type = value
 
     def set_key(self,value):
         self.key = value
-    
+
     def set_exactMatch(self,value):
         self.exactMatch = value
-    
+
     def set_keyTagExpression(self,value):
         self.keyTagExpression = value
-    
+
     def set_limit(self,value):
         self.limit = value
-    
+
     def set_last(self,value):
         self.cache = value
-    
+
     def set_offset(self,value):
         self.offset = value
 
-#------------------------------------------------------------------------------ 
+#------------------------------------------------------------------------------
 class PropertiesDeleteQuery():
     """
     Class representing a single query to delete properties matching provided filters and parameters.
@@ -485,22 +487,22 @@ class PropertiesDeleteQuery():
         self.endTime=to_iso_local(endDate) if endDate is not None else None
         self.key=key
         self.exactMatch=False if exactMatch is None else exactMatch
-    
+
     def set_type(self,value):
         self.type = value
-    
+
     def set_entity(self,value):
         self.entity = value
-    
+
     def set_startDate(self,value):
         self.startDate = to_iso_local(value)
-    
+
     def set_endDate(self,value):
         self.endDate = to_iso_local(value)
-    
+
     def set_key(self,value):
         self.key = value
-    
+
     def set_exactMatch(self,value):
         self.exactMatch = value
 
@@ -519,29 +521,29 @@ class AlertsQuery():
         self.severities = severities
         self.minSeverity = minSeverity
         self.acknowledged = acknowledged
-    
+
     def set_entity_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_date_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_rules(self,value):
         self.rules = value
 
     def set_metrics(self,value):
         self.metrics = value
-    
+
     def set_severities(self,value):
         self.severities = value
-    
+
     def set_minSeverity(self,value):
         self.minSeverity = value
-    
+
     def set_acknowledged(self,value):
         self.acknowledged = value
-    
-#------------------------------------------------------------------------------ 
+
+#------------------------------------------------------------------------------
 class AlertHistoryQuery():
     """
     Class representing a single query to get a history for an alert matching provided filters and parameters.
@@ -556,23 +558,23 @@ class AlertHistoryQuery():
 
     def set_entity_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_date_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_rule(self,value):
         self.rule = value
-    
+
     def set_rules(self,value):
         self.rule = value
 
     def set_metric(self,value):
         self.metric = value
-    
+
     def set_limit(self,value):
         self.limit = value
 
-    
+
 #===============================================================================
 ################# Messages
 #===============================================================================
@@ -590,22 +592,22 @@ class MessageQuery():
         self.severities = severities
         self.minSeverity = minSeverity
         self.limit = 1000 if limit is None else limit
-    
+
     def set_entity_filter(self,value):
         copy_not_empty_attrs(value, self)
-    
+
     def set_date_filter(self,value):
         copy_not_empty_attrs(value, self)
-        
+
     def set_type(self,value):
         self.type = value
 
     def set_source(self,value):
         self.source = value
-    
+
     def set_tags(self,value):
         self.tags = value
-    
+
     def set_severity(self,value):
         self.severity = value
 
@@ -614,6 +616,6 @@ class MessageQuery():
 
     def set_minSeverity(self,value):
         self.minSeverity = value
-    
+
     def set_limit(self,value):
         self.limit = value
