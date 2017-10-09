@@ -56,11 +56,11 @@ cryptography-2.0.3-cp27-cp27mu-manylinux1_x86_64.whl    pandas-0.20.3-cp27-cp27m
 Unpack the downloaded modules.
 
 ```
-for i in `ls modules/*.whl`; do unzip "$i"; rm "$i"; done;
+for i in `ls modules/*.whl`; do unzip "$i" -d modules/; rm -rf "$i"; done;
 ```
 
 ```
-for i in `ls modules/*.tar.gz`; do tar -xvf "$i"; rm "$i"; done;
+for i in `ls modules/*.tar.gz`; do tar -xvf "$i" -C modules/; rm -rf "$i"; done;
 ```
 
 Copy the `atsd-api-python` and `modules` directories from the intermediate server to the target server.
@@ -78,7 +78,8 @@ mkdir -p `python -m site --user-site` && cp -r modules/. `python -m site --user-
 Install ATSD client.
 
 ```sh
-python atsd-api-python/setup.py install
+cd atsd-api-python
+python setup.py install
 ```
 
 Check that the modules have been installed successfully.
@@ -118,10 +119,11 @@ Copy module files to a user module directory.
 mkdir -p `python -m site --user-site` && cp -r modules/. `python -m site --user-site`
 ```
 
-Change to the `atsd-api-python` directory copied before and install ATSD client.
+Install ATSD client.
 
 ```sh
-python atsd-api-python/setup.py install
+cd atsd-api-python
+python setup.py install
 ```
 
 Check that the modules have been installed successfully.
