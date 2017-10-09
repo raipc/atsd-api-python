@@ -103,8 +103,8 @@ class Severity(object):
 #===============================================================================
 class EntityFilter():
     """
-    Class needed to filter entities during queries.
-    One of the entity fields is required.
+    Class to retrieve a list of entities with optional filters.
+    One of the entity arguments is required.
     Entity name pattern may include ? and * wildcards.
     Field precedence, from high to low: entity, entities, entityGroup. Although multiple fields can be specified in the query object only the field with higher precedence will be applied.
     """
@@ -119,7 +119,7 @@ class EntityFilter():
             #: `str` filter entities by name, entity tag, and properties using special syntax
             self.entity_expression = "" if entity_expression is None else entity_expression
         else:
-            raise ValueError("Not enough arguments for entity filter")
+            raise ValueError("Not enough arguments for the entity filter")
 
     def set_entity(self, value):
         self.entity = value
@@ -142,12 +142,12 @@ class DateFilter():
     def __init__(self, startDate=None, endDate=None, interval=None):
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02Z, current_hour
         self.startDate = to_iso_local(startDate) if startDate is not None else None
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped before the endDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
         self.endDate = to_iso_local(endDate) if endDate is not None else None
         #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"}
         self.interval = interval
         if not self._validate():
-            raise ValueError("Bad arguments for date filter: startDate={}, endDate={}, interval={}".format(startDate, endDate, interval))
+            raise ValueError("Invalid arguments for the date filter: startDate={}, endDate={}, interval={}".format(startDate, endDate, interval))
 
     def set_start_date(self, value):
         self.startDate = to_iso_local(value)
@@ -393,12 +393,12 @@ class Aggregate():
 
     def set_threshold(self, min, max):
         if not isinstance(min, numbers.Number) or not isinstance(max, numbers.Number):
-            raise ValueError('wrong threshold parameters; should be numbers, found: min(' + unicode(type(min)) + ') end(' + unicode(type(max)))
+            raise ValueError('wrong threshold parameters; should be a number, found: min(' + unicode(type(min)) + ') end(' + unicode(type(max)))
         self.threshold = {'min': min, 'max': max}
 
     def set_workingMinutes(self, start, end):
         if not isinstance(start, numbers.Number) or not isinstance(end, numbers.Number):
-            raise ValueError('wrong workinMinutes parameters; should be numbers, found: start(' + unicode(type(start)) + ') end(' + unicode(type(end)))
+            raise ValueError('wrong workingMinutes parameters; should be a number, found: start(' + unicode(type(start)) + ') end(' + unicode(type(end)))
         self.workingMinutes = {'start': start, 'end': end}
 
     def set_calendar(self, name):
@@ -435,7 +435,7 @@ class Aggregate():
 #===============================================================================
 class PropertiesQuery():
     """
-    Class representing a single query to get properties matching provided filters and parameters.
+    Class to retrieve property records for the specified parameters.
     """
     def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=None, keyTagExpression=None, limit=None, cache=None, offset=None):
         copy_not_empty_attrs(entity_filter, self)
@@ -478,7 +478,7 @@ class PropertiesQuery():
 #------------------------------------------------------------------------------
 class PropertiesDeleteQuery():
     """
-    Class representing a single query to delete properties matching provided filters and parameters.
+    Class to delete property records matching the specified filters.
     """
     def __init__(self, type, entity, startDate=None, endDate=None, key=None, exactMatch=None):
         self.type=type
@@ -511,7 +511,7 @@ class PropertiesDeleteQuery():
 #===============================================================================
 class AlertsQuery():
     """
-    Class representing a single query to get all alerts matching provided filters and parameters.
+    Class to retrieve open alert records for the specified filters.
     """
     def __init__(self, entity_filter, date_filter, rules=None, metrics=None, severities=None, minSeverity=None, acknowledged=None):
         copy_not_empty_attrs(src=entity_filter, dst=self)
@@ -546,7 +546,7 @@ class AlertsQuery():
 #------------------------------------------------------------------------------
 class AlertHistoryQuery():
     """
-    Class representing a single query to get a history for an alert matching provided filters and parameters.
+    Class to retrieve alert history records for the specified filters.
     """
     def __init__(self, entity_filter, date_filter, rule=None, rules=None, metric=None, limit=None):
         copy_not_empty_attrs(src=entity_filter, dst=self)
@@ -580,7 +580,7 @@ class AlertHistoryQuery():
 #===============================================================================
 class MessageQuery():
     """
-    Class representing a single query to get messages matching provided filters and parameters.
+     Class to retrieve message records for the specified filters.
     """
     def __init__(self, entity_filter, date_filter, type=None, source=None, tags=None, severity=None, severities=None, minSeverity=None, limit=None):
         copy_not_empty_attrs(entity_filter, self)
