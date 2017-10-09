@@ -20,11 +20,15 @@ cd atsd-api-python
 
 Download required modules (dependencies) into a temporary folder.
 
+```sh
+mkdir modules
+pip download 'requests>=2.12.1' python-dateutil -d modules
+```
+
 > If your python version and os are different from the target server proceed to [Download Platform-Dependent Modules](#download-platform-dependent-modules)
 
 ```sh
-mkdir modules
-pip download 'requests>=2.12.1' python-dateutil pandas -d modules
+pip download pandas -d modules
 ```
 
 If your python version is less than 2.7.9 download in addition:
@@ -37,9 +41,9 @@ The directory will contain a set of `*.whl`and `*.tar.gz` files.
 ```sh
 asn1crypto-0.23.0-py2.py3-none-any.whl                  enum34-1.1.6-py2-none-any.whl                           pyOpenSSL-17.3.0-py2.py3-none-any.whl                   six-1.11.0-py2.py3-none-any.whl
 certifi-2017.7.27.1-py2.py3-none-any.whl                idna-2.6-py2.py3-none-any.whl                           pycparser-2.18.tar.gz                                   urllib3-1.22-py2.py3-none-any.whl
-cffi-1.11.0-cp27-cp27m-manylinux1_x86_64.whl            ipaddress-1.0.18-py2-none-any.whl                       python_dateutil-2.6.1-py2.py3-none-any.whl
-chardet-3.0.4-py2.py3-none-any.whl                      numpy-1.13.1-cp27-cp27m-manylinux1_x86_64.whl           pytz-2017.2-py2.py3-none-any.whl
-cryptography-2.0.3-cp27-cp27m-manylinux1_x86_64.whl     pandas-0.20.3-cp27-cp27m-manylinux1_x86_64.whl          requests-2.18.4-py2.py3-none-any.whl
+cffi-1.11.1-cp27-cp27mu-manylinux1_x86_64.whl           ipaddress-1.0.18-py2-none-any.whl                       python_dateutil-2.6.1-py2.py3-none-any.whl
+chardet-3.0.4-py2.py3-none-any.whl                      numpy-1.13.3-cp27-cp27mu-manylinux1_x86_64.whl          pytz-2017.2-py2.py3-none-any.whl
+cryptography-2.0.3-cp27-cp27mu-manylinux1_x86_64.whl    pandas-0.20.3-cp27-cp27mu-manylinux1_x86_64.whl         requests-2.18.4-py2.py3-none-any.whl
 ```
 
 Unpack the downloaded modules.
@@ -56,21 +60,16 @@ Copy the `atsd-api-python` directory from the connected server to the target mac
 
 Login into the target server where the ATSD client will be installed.
 
-Change to the `atsd-api-python` directory copied before.
-
-```sh
-cd atsd-api-python
-```
-
 Copy the previously downloaded modules to a corresponding directory on the target machine.
 
 ```sh
-mkdir -p `python -m site --user-site` && cp -r modules/* `python -m site --user-site`
+cd modules && mkdir -p `python -m site --user-site` && cp -r . `python -m site --user-site`
 ```
 
-Install ATSD client.
+Change to the `atsd-api-python` directory copied before and install ATSD client.
 
 ```sh
+cd atsd-api-python
 python setup.py install
 ```
 
@@ -93,15 +92,24 @@ ImportError: No module named atsd_client
 
 If the Python version and operating system type are different on the intermediate server, download modules by specifying the target platform explicitly. 
 
-* Python 2.7 Linux x86_64 Example
+* Python 2.7 Linux x86_64 Example. After modules downloaded proceed to `Unpack the downloaded modules` or download prepared archive on the next step.
 
 ```
-pip download pandas -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
+pip download pandas -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27mu
 # for python version less than 2.7.9
 # pycparser module needed by pyOpenSSL will be download in the next step
-pip download pyOpenSSL idna -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27m
+pip download pyOpenSSL idna -d modules --only-binary=:all: --platform manylinux1_x86_64 --python-version 27 --implementation cp --abi cp27mu
 pip download pycparser -d modules
 ```
+
+* Prepared archive for Python 2.7 Linux x86_64 with unpacked modules can be downloaded from axibase.com:
+
+```
+curl -O https://axibase.com/public/python/modules.tar.gz
+tar -xf modules.tar.gz
+```
+
+* Proceed to [Install Modules on the Target Server](#install-modules-on-the-target-server).
 
 For python version less than 2.7 pandas has to be built from sources.
 

@@ -6,10 +6,8 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 # connection = atsd_client.connect('/home/axibase/connection.properties')
 
 metric_service = MetricsService(connection)
-metric_list = metric_service.list(expression="name not like '* *'")
+metric_list = metric_service.list(expression="name not like '* *'", maxInsertDate="1970-01-01T00:00:00.000Z")
 
-required_metrics = [metric for metric in metric_list if metric.lastInsertDate is None]
-
-print("Metrics count: %d, %d without last insert date." % (len(metric_list), len(required_metrics)))
-for metric in required_metrics:
+for metric in metric_list:
     print(metric.name)
+print("Metrics count without last insert date is %d." % (len(metric_list)))

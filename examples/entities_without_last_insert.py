@@ -6,10 +6,8 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 # connection = atsd_client.connect('/home/axibase/connection.properties')
 
 entities_service = EntitiesService(connection)
-entity_list = entities_service.list()
+entity_list = entities_service.list(expression="name not like '* *'", maxInsertDate="1970-01-01T00:00:00.000Z")
 
-required_entities = [entity for entity in entity_list if entity.lastInsertDate is None]
-
-print("Entities count: %d, %d without last insert date." % (len(entity_list), len(required_entities)))
-for entity in required_entities:
+for entity in entity_list:
     print(entity.name)
+print("Entities count without last insert date is %d." % (len(entity_list)))
