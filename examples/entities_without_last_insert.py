@@ -8,6 +8,9 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 entities_service = EntitiesService(connection)
 entity_list = entities_service.list(expression="name not like '* *'", maxInsertDate="1970-01-01T00:00:00.000Z")
 
+print('entity.name, entity.label')
 for entity in entity_list:
-    print(entity.name)
-print("Entities count without last insert date is %d." % (len(entity_list)))
+    if entity.lastInsertDate is None:
+        print('%s, %s' % (entity.name, entity.label if entity.label is not None else ''))
+
+print("\nEntities count without last insert date is %d." % (len(entity_list)))

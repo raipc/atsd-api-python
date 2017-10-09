@@ -7,7 +7,12 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 
 metric_service = MetricsService(connection)
 metric_list = metric_service.list(expression="name not like '* *'", maxInsertDate="1970-01-01T00:00:00.000Z")
+metrics_count = 0
 
 for metric in metric_list:
-    print(metric.name)
-print("Metrics count without last insert date is %d." % (len(metric_list)))
+    if metric.enabled and metric.persistent \
+            and metric.retentionDays == 0 and metric.seriesRetentionDays == 0:
+        metrics_count += 1
+        print(metric.name)
+
+print("\nMetrics count without last insert date is %d." % metrics_count)
