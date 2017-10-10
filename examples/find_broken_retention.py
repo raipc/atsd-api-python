@@ -1,18 +1,16 @@
 from datetime import datetime, timedelta
 from dateutil.tz import tzlocal
-from prettytable import PrettyTable
+# from prettytable import PrettyTable
 
 from atsd_client import connect, connect_url
 from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, to_iso_local
 from atsd_client.services import MetricsService, SeriesService
 
 '''
-Find series that have inserted data for more than (metric.retentionDays + grace_period) days from now.
-Connection.properties will be taken from the same folder where script is.
+Find series with data older than `now - (metric.retentionDays + grace_interval_days)`.
 '''
 
-# connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-connection = connect()
+connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 # connection = atsd_client.connect('/home/axibase/connection.properties')
 
 svc = SeriesService(connection)
@@ -20,14 +18,15 @@ metric_service = MetricsService(connection)
 
 metric_list = metric_service.list()
 series_count = 0
-# ATSD removal schedule frequency, set to one day
-grace_period = 1
+# ATSD expired data removal schedule frequency, default is one day
+grace_interval_days = 1
 
-t = PrettyTable(['Metric', 'Entity', 'Tags', 'Retention Days', 'Threshold', 'Presented Sample Date'])
+print('Metric, Entity, Tags, Retention Days, Threshold, Presented Sample Date')
+# t = PrettyTable(['Metric', 'Entity', 'Tags', 'Retention Days', 'Threshold', 'Presented Sample Date'])
 for metric in metric_list:
     if metric.enabled and metric.persistent and metric.retentionDays != 0:
-        # calculate datetime that should not have data with accuracy up to grace_period
-        threshold = datetime.now(tzlocal()) - timedelta(days=metric.retentionDays + grace_period)
+        # calculate datetime before which there should be data
+        threshold = datetime.now(tzlocal()) - timedelta(days=metric.retentionDays + grace_interval_days)
 
         # query series with current metric and all entities from the beginning up to threshold
         # enough to get at least one value so limit set to 1
@@ -40,6 +39,7 @@ for metric in metric_list:
         for sl in series_list:
             if len(sl.data) > 0:
                 series_count += 1
-                t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso_local(sl.data[0].t)])
-print t
+                print("%s, %s, %s, %s, %s, %s " % (sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso_local(sl.data[0].t)))
+                # t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso_local(sl.data[0].t)])
+# print t
 print("\nSeries count with broken retention date is %d." % series_count)
