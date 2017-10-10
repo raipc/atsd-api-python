@@ -101,6 +101,16 @@ as well as with metadata objects such as `Entity`, `Metric`, and `EntityGroup`. 
     >>> svc = SeriesService(conn)
 ```
 
+### Logging 
+
+Logging to stdout is enabled by default. To disable logging, add the following lines at the beginning of the script:
+
+```python
+import logging
+logger = logging.getLogger()
+logger.disabled = True
+```
+
 ### Inserting Series Values
 
 To insert series values into ATSD, initialize a `Series` object and populate it with timestamped values.
@@ -311,12 +321,4 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[Find metrics created later than specified date](examples/metrics_created_later_than.py) | |
 |[Find entities created later than specified date](examples/entities_created_later_than.py) | |
 
-### Logging 
 
-In order to disable logging in the above examples add the following lines to the beginning:
-
-```python
-import logging
-logger = logging.getLogger()
-logger.disabled = True
-```
