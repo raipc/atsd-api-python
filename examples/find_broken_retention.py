@@ -1,6 +1,6 @@
 from datetime import datetime, timedelta
 from dateutil.tz import tzlocal
-# from prettytable import PrettyTable
+from prettytable import PrettyTable
 
 from atsd_client import connect, connect_url
 from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, to_iso_local
@@ -23,8 +23,7 @@ series_count = 0
 # ATSD removal schedule frequency, set to one day
 grace_period = 1
 
-print('Metric, Entity, Tags, Retention Days, Threshold, Presented Sample Date')
-# t = PrettyTable(['Metric', 'Entity', 'Tags', 'Retention Days', 'Threshold', 'Presented Sample Date'])
+t = PrettyTable(['Metric', 'Entity', 'Tags', 'Retention Days', 'Threshold', 'Presented Sample Date'])
 for metric in metric_list:
     if metric.enabled and metric.persistent and metric.retentionDays != 0:
         # calculate datetime that should not have data with accuracy up to grace_period
@@ -41,7 +40,6 @@ for metric in metric_list:
         for sl in series_list:
             if len(sl.data) > 0:
                 series_count += 1
-                print("%s, %s, %s, %s, %s, %s " % (sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso_local(sl.data[0].t)))
-                # t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso_local(sl.data[0].t)])
-# print t
+                t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso_local(sl.data[0].t)])
+print t
 print("\nSeries count with broken retention date is %d." % series_count)

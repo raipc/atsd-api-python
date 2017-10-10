@@ -321,4 +321,12 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[Find metrics created later than specified date](examples/metrics_created_later_than.py) | |
 |[Find entities created later than specified date](examples/entities_created_later_than.py) | |
 
+Install `prettytable` module using:
+
+```
+pip install prettytable
+# or
+pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
+```
+
 
