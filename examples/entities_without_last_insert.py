@@ -6,7 +6,7 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 # connection = atsd_client.connect('/home/axibase/connection.properties')
 
 entities_service = EntitiesService(connection)
-entity_list = entities_service.list(expression="name not like '* *'", maxInsertDate="1970-01-01T00:00:00.000Z")
+entity_list = entities_service.list(maxInsertDate="1970-01-01T00:00:00.000Z")
 
 print('entity.name, entity.label')
 for entity in entity_list:

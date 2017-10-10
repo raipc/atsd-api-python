@@ -6,7 +6,7 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 # connection = atsd_client.connect('/home/axibase/connection.properties')
 
 metric_service = MetricsService(connection)
-metric_list = metric_service.list(expression="name not like '* *'", maxInsertDate="1970-01-01T00:00:00.000Z")
+metric_list = metric_service.list(maxInsertDate="1970-01-01T00:00:00.000Z")
 metrics_count = 0
 
 for metric in metric_list:
