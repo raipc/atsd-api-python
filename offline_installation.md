@@ -78,8 +78,7 @@ mkdir -p `python -m site --user-site` && cp -r modules/. `python -m site --user-
 Install ATSD client.
 
 ```sh
-cd atsd-api-python
-python setup.py install
+python atsd-api-python/setup.py install
 ```
 
 Check that the modules have been installed successfully.
@@ -122,8 +121,7 @@ mkdir -p `python -m site --user-site` && cp -r modules/. `python -m site --user-
 Install ATSD client.
 
 ```sh
-cd atsd-api-python
-python setup.py install
+python atsd-api-python/setup.py install
 ```
 
 Check that the modules have been installed successfully.

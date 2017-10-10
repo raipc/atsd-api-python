@@ -12,7 +12,7 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
-
+import os
 import sys
 
 try:
@@ -22,6 +22,7 @@ except ImportError:
 import re
 
 version = ''
+os.chdir(os.path.abspath(os.path.dirname(__file__)))
 with open('atsd_client/__init__.py', 'r') as fd:
     # noinspection PyRedeclaration
     version = re.search(r'^__version__\s*=\s*[\'"]([^\'"]*)[\'"]',
