@@ -297,6 +297,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |:---|:---|
 |[Delete Lagging Docker Hosts](examples/docker_delete.py)| Keep docker hosts updated within the last 7 days, remove outdated|
 |[Delete Entities by Name](examples/entities_expression_delete.py)| Delete entities specified using entity expression|
+|[Find Broken Retention](examples/find_broken_retention.py)| Find series that ignore metric retention days|
 |[Find metrics without lastInsertDate](examples/metrics_without_last_insert.py) | |
 |[Find entities without lastInsertDate](examples/entities_without_last_insert.py) | |
 |[Find lagging series for entity expression](examples/find_lagging_series_by_entity_expression.py) | |
@@ -309,3 +310,13 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[Find stale agents (collecting not all metrics)](examples/find_staling_agents.py) | |
 |[Find metrics created later than specified date](examples/metrics_created_later_than.py) | |
 |[Find entities created later than specified date](examples/entities_created_later_than.py) | |
+
+### Logging 
+
+In order to disable logging in the above examples add the following lines to the beginning:
+
+```python
+import logging
+logger = logging.getLogger()
+logger.disabled = True
+```
