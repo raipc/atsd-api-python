@@ -2,7 +2,7 @@ from atsd_client import connect, connect_url
 from atsd_client.services import MetricsService, EntitiesService
 
 '''
-Locate series that have no data during the actual time interval (lag) using an expression filter for entity.
+Locate series that have no data during the actual time interval (grace_interval) using an expression filter for entity.
 Connection.properties will be taken from the same folder where script is.
 '''
 
@@ -10,8 +10,8 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 # connection = connect()
 # connection = atsd_client.connect('/home/axibase/connection.properties')
 
-# set lag in minutes to one day
-lag_in_minutes = 24 * 60
+# set grace_interval to one day
+grace_interval_minutes = 24 * 60
 
 entities_service = EntitiesService(connection)
 metrics_service = MetricsService(connection)
@@ -28,5 +28,5 @@ for entity in entities:
         series = metrics_service.series(metric, entity)
         for s in series:
             # check actual data existence
-            if s.get_elapsed_minutes() > lag_in_minutes:
+            if s.get_elapsed_minutes() > grace_interval_minutes:
                 print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.lastInsertDate))
