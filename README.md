@@ -305,20 +305,20 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 
 |**Name**| **Brief Description**|
 |:---|:---|
-|[Delete Lagging Docker Hosts](examples/docker_delete.py)| Delete docker hosts that have not inserted data for more than 7 days |
-|[Delete Entities by Name](examples/entities_expression_delete.py)| Delete entities using an expression filter |
-|[Find Broken Retention](examples/find_broken_retention.py)| Find series that ignore metric retention days |
-|[Find metrics without lastInsertDate](examples/metrics_without_last_insert.py) | Find metrics that have no lastInsertDate |
-|[Find entities without lastInsertDate](examples/entities_without_last_insert.py) | Find entities that have no lastInsertDate |
-|[Find lagging series for entity expression](examples/find_lagging_series_by_entity_expression.py) | Find lagging series using an entity expression |
-|[Find lagging series for given entity](examples/find_lagging_series_by_entity.py) | Find lagging series using an entity |
-|[Find lagging series for given metric](examples/find_lagging_series_by_metric.py) | Find lagging series using metric |
-|[Find series for the same metric and entity that lag behind related series](examples/find_lagged_series.py) | Find lagging series among all the series that differ in tags |
-|[Find high-cardinality series](examples/high_cardinality_series.py) | Find series that have tags cardinality more than specified one |
-|[Find lagging agents](examples/find_lagging_agents.py) | Find agents that stopped to collect data |
-|[Find stale agents](examples/find_staling_agents.py) | Find agents that collecting not all metrics|
-|[Find metrics created later than specified date](examples/metrics_created_later_than.py) | Find metrics that have been created after specific date |
-|[Find entities created later than specified date](examples/entities_created_later_than.py) | Find entities that have been created after specific date |
+|[docker_delete.py](examples/docker_delete.py)| Delete docker host entities and related container/image/network/volume entities that have not inserted data for more than 7 days. |
+|[entities_expression_delete.py](examples/entities_expression_delete.py)| Delete entities that match the specified expression filter. |
+|[Find Broken Retention](examples/find_broken_retention.py)| Find series that ignore metric retention days. |
+|[Find metrics without lastInsertDate](examples/metrics_without_last_insert.py) | Find metrics without a last insert date. |
+|[Find entities without lastInsertDate](examples/entities_without_last_insert.py) | Find entities without a last insert date. |
+|[Find lagging series for entity expression](examples/find_lagging_series_by_entity_expression.py) | Find series for matching entities that have not been updated for more than 1 day. |
+|[Find lagging series for given entity](examples/find_lagging_series_by_entity.py) | Find series for the specified entity that have not been updated for more than 1 day. |
+|[Find lagging series for given metric](examples/find_lagging_series_by_metric.py) | Find series for the specified metric that have not been updated for more than 1 day. |
+|[Find series for the same metric and entity that lag behind related series](examples/find_lagged_series.py) | Find series with last insert date lagging the maximum last insert date by more than specified grace interval.  |
+|[Find high-cardinality series](examples/high_cardinality_series.py) | Find series with too many tag combinations. |
+|[Find lagging entities](examples/find_lagging_agents.py) | Find entities that match the specified expression filter which have stopped collecting data. |
+|[Find stale agents](examples/find_staling_agents.py) | Find entities that have stopped collecting data for a subset metrics.|
+|[Find metrics created later than specified date](examples/metrics_created_later_than.py) | Find metrics that have been created after the specified date. |
+|[Find entities created later than specified date](examples/entities_created_later_than.py) | Find entities that have been created after the specified date. |
 
 Install `prettytable` module using:
 
