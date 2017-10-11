@@ -1,3 +1,5 @@
+from datetime import timedelta, datetime
+
 from atsd_client import connect, connect_url
 from atsd_client.services import MetricsService
 
@@ -13,14 +15,15 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
 # set metric and grace_interval to one day
 metric = 'nmon.cpu.busy%'
 grace_interval_minutes = 24 * 60
-
+# query entities with lastInsertDate
+minInsertDate = "1970-01-01T00:00:00.000Z"
+# calculate the upper boundary for the allowed lastInsertDate values excluding grace_interval
+maxInsertDate = datetime.now() - timedelta(seconds=grace_interval_minutes * 60)
 metrics_service = MetricsService(connection)
 
 # query all series for metric
-series = metrics_service.series(metric)
+series = metrics_service.series(metric, minInsertDate=minInsertDate, maxInsertDate=maxInsertDate)
 
 print('metric, entity, tags, lastInsertDate')
 for s in series:
-    # check actual data existence
-    if s.get_elapsed_minutes() > grace_interval_minutes:
-        print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.lastInsertDate))
+    print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.lastInsertDate))
