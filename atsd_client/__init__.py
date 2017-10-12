@@ -30,11 +30,11 @@ try:
 
     req_v = requests.__version__
     if list(map(lambda x: int(x), req_v.split("."))) >= [2, 4, 2]:
-        logging.debug("Detected 'python-requests' version: %s. OK", req_v)
+        logging.debug("Module 'python-requests' version is %s. The version is compatible.", req_v)
     else:
         raise Exception
 except:
     import sys
 
-    sys.stderr.write("WARNING! Detected 'python-requests' version:{}. Required version is at least 2.4.2!\n".format(req_v))
+    sys.stderr.write("ERROR. Module 'python-requests' version is {} not compatible. Required version is 2.4.2.\n".format(req_v))
     sys.stderr.flush()

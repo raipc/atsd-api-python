@@ -96,7 +96,7 @@ class PropertiesService(_Service):
         return True
 
     def query(self, *queries):
-        """Retrieves property for each query
+        """Retrieves property records for each query
 
         :param queries: :class:`.PropertiesQuery`
         :return: list of :class:`.Property` objects
@@ -132,7 +132,7 @@ class PropertiesService(_Service):
 # ------------------------------------------------------------------------ ALERTS
 class AlertsService(_Service):
     def query(self, *queries):
-        """Retrieve alert for each query
+        """Retrieve alert records for each query
 
         :param queries: :class:`.AlertsQuery`
         :return: get of :class:`.Alert` objects
@@ -141,7 +141,7 @@ class AlertsService(_Service):
         return _jsonutil.deserialize(resp, Alert)
 
     def update(self, *updates):
-        """Change acknowledgement status of the specified open alerts.
+        """Change acknowledgement status for the specified open alerts.
 
         :param updates: `dict`
         :return: True if success
@@ -150,7 +150,7 @@ class AlertsService(_Service):
         return True
 
     def history_query(self, *queries):
-        """Retrieve history for each query
+        """Retrieve alert history for each query
 
         :param queries: :class:`.AlertHistoryQuery`
         :return: get of :class:`.AlertHistory` objects
@@ -159,7 +159,7 @@ class AlertsService(_Service):
         return _jsonutil.deserialize(resp, AlertHistory)
 
     def delete(self, *ids):
-        """Retrieve alert for each query
+        """Delete alerts by id
 
         :param id: `int`
         :return: True if success
@@ -202,7 +202,7 @@ class MessageService(_Service):
 # ----------------------------------------------------------------------- METRICS
 class MetricsService(_Service):
     def get(self, name):
-        """Retrieve properties and tags for the specified metric.
+        """Retrieve metric.
 
         :param name: `str` metric name
         :return: :class:`.Metric`
@@ -218,7 +218,7 @@ class MetricsService(_Service):
         return _jsonutil.deserialize(response, Metric)
 
     def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
-        """Retrieve a `list` of metrics matching the specified filter conditions.
+        """Retrieve a `list` of metrics matching the specified filters.
 
         :param expression: `str`
         :param minInsertDate: `int` | `str` | None | :class:`datetime`
@@ -242,7 +242,7 @@ class MetricsService(_Service):
         return _jsonutil.deserialize(response, Metric)
 
     def update(self, metric):
-        """Update fields and tags of the specified metric.
+        """Update the specified metric.
 
         :param metric: :class:`.Metric`
         :return: True if success
@@ -251,7 +251,7 @@ class MetricsService(_Service):
         return True
 
     def create_or_replace(self, metric):
-        """Create a metric with specified fields and tags or replace the fields and tags of an existing metric.
+        """Create a metric or replace an existing metric.
 
         :param metric: :class:`.Metric`
         :return: True if success
@@ -306,7 +306,7 @@ class MetricsService(_Service):
 # ------------------------------------------------------------------------------ ENTITIES
 class EntitiesService(_Service):
     def get(self, entity_name):
-        """Retrieve information about the specified entity including its tags.
+        """Retrieve the entity
 
         :param entity_name: `str` entity name
         :return: :class:`.Entity`
@@ -322,7 +322,7 @@ class EntitiesService(_Service):
         return _jsonutil.deserialize(response, Entity)
 
     def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
-        """Retrieve a list of entities matching the specified filter conditions.
+        """Retrieve a list of entities matching the specified filters.
 
         :param expression: `str`
         :param minInsertDate: `str` | `int` | :class:`datetime`
@@ -346,7 +346,7 @@ class EntitiesService(_Service):
         return _jsonutil.deserialize(resp, Entity)
 
     def update(self, entity):
-        """Update fields and tags of the specified entity.
+        """Update the specified entity.
 
         :param entity: :class:`.Entity`
         :return: True if success
@@ -355,7 +355,7 @@ class EntitiesService(_Service):
         return True
 
     def create_or_replace(self, entity):
-        """Create an entity with specified fields and tags or replace the fields and tags of an existing entity.
+        """Create an entity or an existing entity.
 
         :param entity: :class:`.Entity`
         :return: True if success
@@ -364,7 +364,7 @@ class EntitiesService(_Service):
         return True
 
     def delete(self, entity):
-        """Delete the specified entity and delete it as member from any entity groups that it belongs to.
+        """Delete the specified entity.
 
         :param entity: :class:`.Entity`
         :return: True if success
@@ -375,7 +375,7 @@ class EntitiesService(_Service):
 
     def metrics(self, entity, expression=None, minInsertDate=None, maxInsertDate=None, useEntityInsertTime=None,
                 limit=None, tags=None):
-        """Retrieve a `list` of metrics matching the specified filter conditions.
+        """Retrieve a `list` of metrics matching the specified filters.
 
         :param entity: `str` | :class:`.Entity`
         :param expression: `str`
@@ -407,9 +407,7 @@ class EntitiesService(_Service):
 # ------------------------------------------------------------------------------ ENTITIY GROUPS
 class EntityGroupsService(_Service):
     def get(self, group_name):
-        """Retrieve information about the specified entity group including its tags.
-        Membership in entity groups with non-empty expression is managed by the server.
-        Adding/removing members of expression-based groups is not supported.
+        """Retrieve the specified entity group.
 
         :param group_name: `str` entity group name
         :return: :class:`.EntityGroup`
@@ -427,8 +425,6 @@ class EntityGroupsService(_Service):
 
     def list(self, expression=None, tags=None, limit=None):
         """Retrieve a list of entity groups.
-        Membership in entity groups with non-empty expression is managed by the server.
-        Adding/removing members of expression-based groups is not supported.
 
         :param expression: `str`
         :param tags: `dict`
@@ -446,7 +442,7 @@ class EntityGroupsService(_Service):
         return _jsonutil.deserialize(resp, EntityGroup)
 
     def update(self, group):
-        """Update fields and tags of the specified entity group.
+        """Update the specified entity group.
         Unlike the replace method, fields and tags that are not specified in the request are left unchanged.
 
         :param group: :class:`.EntityGroup`
@@ -456,7 +452,7 @@ class EntityGroupsService(_Service):
         return True
 
     def create_or_replace(self, group, expression=None, tags=None):
-        """Create an entity group with specified fields and tags or replace the fields and tags of an existing entity group.
+        """Create an entity group or replace an existing entity group.
 
         :param group: :class:`.EntityGroup`
         :return: True if success
@@ -480,7 +476,7 @@ class EntityGroupsService(_Service):
         return True
 
     def get_entities(self, group_name, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
-        """Retrieve a list of entities that are members of the specified entity group and are matching the specified filter conditions.
+        """Retrieve a list of entities that are members of the specified entity group and which match the specified expression filter.
 
         :param group_name: `str`
         :param expression: `str`
@@ -507,6 +503,8 @@ class EntityGroupsService(_Service):
 
     def add_entities(self, group_name, entities, createEntities=None):
         """Add entities as members to the specified entity group.
+        Changing members of expression-based groups is not supported.
+        Note that changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names
@@ -523,6 +521,7 @@ class EntityGroupsService(_Service):
         """Set members of the entity group from the specified entity list.
         All existing members that are not included in the request will be removed from members.
         If the array in the request is empty, all entities are removed from the group and are replaced with an empty list.
+        Note that changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
@@ -537,7 +536,8 @@ class EntityGroupsService(_Service):
 
     def delete_entities(self, group_name, entities):
         """Remove specified entities from members of the specified entity group.
-        To delete all entities, submit an empty list [] with set_entities method.
+        To delete all entities, submit an empty list [] using the set_entities method.
+        Note that changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
@@ -553,7 +553,7 @@ class EntityGroupsService(_Service):
 # ------------------------------------------------------------------------ SQL
 class SQLService(_Service):
     def query(self, sql_query):
-        """Execute sql query.
+        """Execute SQL query.
 
         :param sql_query: `str`
         :return: :class:`.DataFrame` object
@@ -563,7 +563,7 @@ class SQLService(_Service):
         return pd.read_csv(StringIO(response), sep=',')
 
     def query_with_params(self, sql_query, params={'outputFormat': 'csv'}):
-        """Execute sql query with api parameters.
+        """Execute SQL query with api parameters.
 
         :param sql_query: `str`
         :param params: `dict`
@@ -580,7 +580,7 @@ class SQLService(_Service):
         return response_text
 
     def cancel_query(self, query_id):
-        """Cancel the specified sql query.
+        """Cancel the execution of the specified SQL query identified by query id.
 
         :param query_id: `str`
         :return: True if success

@@ -42,7 +42,7 @@ class ServerException(Exception):
 class SQLException(ServerException):
     def __init__(self, status_code, content, query=''):
         super(SQLException, self).__init__(status_code, SQLException.extract_reason(content),
-                                           'Unable to perform query: ' + query)
+                                           'Unable to perform SQL query: ' + query)
 
     @classmethod
     def extract_reason(cls, content):

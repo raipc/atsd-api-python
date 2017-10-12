@@ -1,22 +1,15 @@
-from datetime import datetime, timedelta
-from dateutil.tz import tzlocal
+from dateutil import parser
 
 from atsd_client import connect, connect_url
 from atsd_client.services import EntitiesService
 
-date_to_compare = datetime.now(tzlocal()) - timedelta(days=30)
-
+# Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 entities_service = EntitiesService(connection)
-e = entities_service.get('check-created-date')
-entity_list = entities_service.list()
+# query all entities created after specified date
+entity_list = entities_service.list(expression="createdDate > '2017-10-01T00:00:00Z'")
 
-required_entities = [entity for entity in entity_list if
-                     entity.createdDate is not None and entity.createdDate > date_to_compare]
-
-print("Entities created later than %s" % (date_to_compare.isoformat()))
-for entity in required_entities:
-    print(entity.name)
+print('entity.name, entity.label')
+for entity in entity_list:
+    print('%s, %s' % (entity.name, entity.label if entity.label is not None else ''))
