@@ -5,12 +5,10 @@ from atsd_client.services import MetricsService, EntitiesService
 
 '''
 Locate series that have no data during the actual time interval (grace_interval) using an expression filter for entity.
-Connection.properties will be taken from the same folder where script is.
 '''
 
+# Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 # set grace_interval to one day
 grace_interval_minutes = 24 * 60

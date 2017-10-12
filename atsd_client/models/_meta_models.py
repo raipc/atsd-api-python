@@ -52,11 +52,10 @@ class Interpolate(object):
 # ------------------------------------------------------------------------------
 class Metric(object):
     """
-    Class representing a single metric.
+    Class representing a metric.
     Metrics are names assigned to numeric measurements, for example, temperature or speed.
-    A time-indexed array of measurements for a given entity and metric is called a time-series (or simply series).
-    Metrics specify how incoming data should be stored (data type), validated and pruned.
-    In addition, metrics can have user-defined tags such as unit of measurement, scale, type or a category that can be used for filtering and grouping.
+    A time-indexed array of measurements for a given metric and entity is called a time-series (or simply series).
+    Metrics describe what is being measured as well as control how incoming data should be validated, stored, and pruned.
     """
 
     def __init__(self,
@@ -93,7 +92,7 @@ class Metric(object):
         self._timePrecision = timePrecision
         #: `bool` persistence status. Non-persistent metrics are not stored in the database and are only processed by the rule engine
         self._persistent = persistent
-        #: If filter is specified, metric puts that do not match the filter are discarded
+        #: If filter is specified, series commands that do not satisfy the filter condition are discarded
         self._filter = filter
         #: `Number` minimum value for Invalid Action trigger
         self._minValue = minValue
@@ -105,7 +104,7 @@ class Metric(object):
         self._description = description
         #: `Number` number of days to store the values for this metric in the database
         self._retentionDays = retentionDays
-        #: `Number` number of days to retain series in the database
+        #: `Number` number of days after which lagging series are removed from the database
         self._seriesRetentionDays = seriesRetentionDays
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
         self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
@@ -281,7 +280,7 @@ class Metric(object):
         self._timeZone = value
 
     def get_elapsed_minutes(self):
-        """Return last insert elapsed time in minutes for the current `Series` object.
+        """Return elapsed time in minutes between current time and last insert time for this metric.
 
         :return: Time in minutes
         """
@@ -291,9 +290,8 @@ class Metric(object):
 # ------------------------------------------------------------------------------
 class Entity(object):
     """
-    Class representing a single entitiy.
-    Entities are servers, hosts, frames, virtual machines, sensors, etc.
-    Entities are ingested with attached metrics (time series data) using the csv/nmon parsers, telnet and http/s protocols, and Axibase Collector jobs.
+    Class representing an entity.
+    Entities describe objects being monitored, such as servers, sensors, buildings etc.
     """
 
     def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None,
@@ -384,7 +382,7 @@ class Entity(object):
         self._tags = NoneDict(value)
 
     def get_elapsed_minutes(self):
-        """Return last insert elapsed time in minutes for the current `Series` object.
+        """Return elapsed time in minutes between current time and last insert date for the entity.
 
         :return: Time in minutes
         """
@@ -394,12 +392,7 @@ class Entity(object):
 # ------------------------------------------------------------------------------
 class EntityGroup(object):
     """
-    Class representing a single entity group.
-    Entities can be grouped into Entity Groups which can be used for building Portals, Exporting Data, and creating Forecasts.
-    Forecasts can be calculated for all entities present in the group.
-    Data or Forecasts can be exported for all entities present in the group.
-    Portals can be added to all entities present in the Group.
-    This is a useful feature when working with large amounts of entities and big data sets.
+    Class representing an entity group.
     """
 
     def __init__(self, name, expression=None, tags=None, enabled=None):

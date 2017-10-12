@@ -27,7 +27,7 @@ from .._utilities import NoneDict
 # ------------------------------------------------------------------------------
 class Sample(object):
     """
-    Class that represents a numeric value observed at some time with additional version information if provided.
+    Class that represents a numeric value observed at some time with an optional annotation and versioning fields.
     If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
     """
 
@@ -90,9 +90,9 @@ class Sample(object):
 # ------------------------------------------------------------------------------
 class Series(object):
     """
-    Class representing a Time Series.
-    Time Series is a time-indexed array of samples (observations), each consisting of a timestamp and a numeric value, for example CPU utilization or body temperature.
-    Each series is uniquely identified by entity name, metric name and optional series tags.
+    Class representing a time series.
+    Series is a time-indexed array of samples (observations), each consisting of a timestamp and a numeric value, for example CPU utilization or temperature.
+    Each series is uniquely identified by metric name, entity name, and optional series tags.
     """
 
     def __init__(self, entity, metric, data=None, tags=None, lastInsertDate=None):
@@ -155,14 +155,14 @@ class Series(object):
 
     def add_samples(self, *samples):
         """
-        Add all given samples to series
+        Add all given samples to the series
         """
         for sample in samples:
             self._data.append(sample)
 
     def sort(self, key=None, reverse=False):
         """
-        Sort series data in place
+        Sort series samples in place
         :param key:
         :param reverse:
         """
@@ -170,7 +170,7 @@ class Series(object):
 
     def values(self):
         """
-        Valid versions of series values
+        Valid numeric samples in this series
         :return: list of `Number`
         """
         data = sorted(self._data)
@@ -183,7 +183,7 @@ class Series(object):
 
     def times(self):
         """
-        Valid versions of series times in seconds
+        Valid timestamps in this series
         :return: list of `float`
         """
         data = sorted(self._data)
@@ -267,7 +267,7 @@ class Series(object):
         self._lastInsertDate = None if value is None else to_iso_local(value)
 
     def get_elapsed_minutes(self):
-        """Return last insert elapsed time in minutes for the current `Series` object.
+        """Return elapsed time in minutes between current time and last insert date for the current series.
 
         :return: Time in minutes
         """
@@ -277,11 +277,10 @@ class Series(object):
 # ------------------------------------------------------------------------------
 class Property(object):
     """
-    Class representing a single property.
-    Properties represent metadata describing entities, obtained from configuration files, system command output, etc.
-    Property examples are device model, OS version, and location. Unlike time series, the database stores only cache value for each property and such value is stored as text.
-    Properties are collected at a lower frequency than time series or whenever their values change.
+    Class representing a property record which contains keys and tags of string type.
+    Properties represent metadata describing entities, such as device model, OS version, and location. 
     Each properties record is uniquely identified by entity name, property type and optional property keys.
+    The property values are are stored as text and only last value is stored for the given primary key.
     """
 
     def __init__(self, type, entity, tags=None, key=None, date=None):
@@ -344,11 +343,9 @@ class Property(object):
 # ------------------------------------------------------------------------------
 class Alert(object):
     """
-    Class, representing an single alert.
+    Class representing an open alert record.
     Alert is an event produced by the rule engine by applying pre-defined rules to incoming data.
-    An alert is created when an expression specified in the rule evaluates to true and it is closed, when the expression returns false.
-    The users can set acknowledge/de-acknowledge status for open alerts.
-    The rule expressions can operate on series, message, and property commands.
+    An alert is created when an expression specified in the rule evaluates to True. The alert is closed and deleted when the expression returns False.
     """
 
     def __init__(self, id, rule=None, entity=None, metric=None, lastEventDate=None, openDate=None, value=None,
@@ -685,7 +682,6 @@ class Message(object):
     """
     Class representing a Message.
     Messages are events collected from system logs and messaging systems.
-    Messages are stored in ATSD to support correlation with other data types, for example, to relate log events with resource bottleneck alerts.
     Each message is related to an entity, has a set of tags and a free-form text message.
     Messages for the same entity, time and type/source tags are automatically de-duplicated.
     """

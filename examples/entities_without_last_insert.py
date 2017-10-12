@@ -7,8 +7,6 @@ Connection.properties will be taken from the same folder where script is.
 '''
 
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 entities_service = EntitiesService(connection)
 # query entities without lastInsertDate

@@ -33,10 +33,10 @@ logging.basicConfig(level=logging.INFO)
 
 class Client(object):
     """
-    low level requests wrapper
-    gets path data and method
-    returns return response data
-        or True if successful without content
+    low level request wrapper
+    sets method, path, payload
+    returns response data
+        or True if request was successful without content
     """
 
     def __init__(self, base_url,
@@ -46,10 +46,10 @@ class Client(object):
         :param base_url: atsd url
         :param username: login
         :param password:
-        :param ssl_verify: verify ssl sertificate
+        :param ssl_verify: verify ssl certificate
         :param timeout: request timeout
         """
-        logging.info('Connecting to base_url: %s as %s user.' % (base_url, username))
+        logging.info('Connecting to ATSD at %s as %s user.' % (base_url, username))
         self.context = urlparse.urljoin(base_url, 'api/')
         session = requests.Session()
         if ssl_verify is False or ssl_verify == 'False':

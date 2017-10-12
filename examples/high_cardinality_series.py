@@ -6,9 +6,8 @@ Locate high-cardinality series that have tags more than specified cardinality.
 Connection.properties will be taken from the same folder where script is.
 '''
 
+# Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 metrics_service = MetricsService(connection)
 

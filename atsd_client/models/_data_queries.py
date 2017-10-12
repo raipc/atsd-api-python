@@ -103,10 +103,11 @@ class Severity(object):
 #===============================================================================
 class EntityFilter():
     """
-    Class to retrieve a list of entities with optional filters.
+    Helper class to retrieve a list of entities for the specified filters.
     One of the entity arguments is required.
-    Entity name pattern may include ? and * wildcards.
-    Field precedence, from high to low: entity, entities, entityGroup. Although multiple fields can be specified in the query object only the field with higher precedence will be applied.
+    Entity name pattern supports ? and * wildcards.
+    Filter precedence, from high to low: entity, entities, entityGroup. Although multiple filters can be specified in the same query object only the filter with the highest precedence is applied.
+    Entity expression is applied as an additional filter to the list of entities retrieved by the above filters.
     """
     def __init__(self, entity="", entities=None, entity_group=None, entity_expression=None):
         if (entity or entities or entity_group or entity_expression):
@@ -114,9 +115,9 @@ class EntityFilter():
             self.entity = entity
             #: `list` of entity names or entity name patterns
             self.entities = [] if entities is None else entities
-            #: `str` entity group name. Return records for member entities of the specified group. The result will be empty if the group doesn't exist or contains no entities.
+            #: `str` entity group name. Returns records for member entities of the specified group. The result will be empty if the group doesn't exist or contains no entities.
             self.entity_group = "" if entity_group is None else entity_group
-            #: `str` filter entities by name, entity tag, and properties using special syntax
+            #: `str` filter entities by name, field, entity tag, and properties
             self.entity_expression = "" if entity_expression is None else entity_expression
         else:
             raise ValueError("Not enough arguments for the entity filter")
@@ -140,7 +141,7 @@ class DateFilter():
                 (self.interval is not None) and all(key in self.interval for key in ("count","unit"))
 
     def __init__(self, startDate=None, endDate=None, interval=None):
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches records timestamped at or after startDate. Examples: 2016-07-18T11:11:02Z, current_hour
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches samples timestamped at or after the startDate. Examples: 2016-07-18T11:11:02Z, current_hour
         self.startDate = to_iso_local(startDate) if startDate is not None else None
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped before the endDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
         self.endDate = to_iso_local(endDate) if endDate is not None else None
@@ -163,7 +164,7 @@ class DateFilter():
 #===============================================================================
 class SeriesQuery():
     """
-    Class representing a single query to get series matching provided filters and parameters.
+    Class representing a series query to get sample for the specified filters and parameters.
     """
     def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None,
                  control_filter=None, transformation_filter=None):
@@ -200,7 +201,7 @@ class SeriesQuery():
 class SeriesFilter():
     def __init__(self, metric, tags={}, type="HISTORY"):
         if not metric:
-            raise ValueError("No metric supplied!")
+            raise ValueError("Metric is required.")
         #: `str` metric name
         self.metric = metric
         #: `dict`
@@ -299,16 +300,16 @@ class Rate():
 
     def set_period(self, count, unit=TimeUnit.SECOND):
         if not isinstance(count, numbers.Number):
-            raise ValueError('period count expected number, found: ' + unicode(type(count)))
+            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong period unit')
+            raise ValueError('Invalid period unit')
         self.period = {'count' : count, 'unit' : unit}
 
     def set_counter(self, counter):
         if isinstance(counter, bool):
             self.counter = counter
         else:
-            raise ValueError('wrong counter')
+            raise ValueError('Invalid counter')
 
 #------------------------------------------------------------------------------
 class Group():
@@ -327,38 +328,38 @@ class Group():
 
     def set_type(self, value):
         if not hasattr(AggregateType, value):
-            raise ValueError('wrong type parameter, expected Interpolate, found: ' + unicode(type(value)))
+            raise ValueError('Invalid type parameter, expected Interpolate, found: ' + unicode(type(value)))
         self.type = value
 
     def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR):
         if not isinstance(count, numbers.Number):
-            raise ValueError('period count expected number, found: ' + unicode(type(count)))
+            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong period unit parameter; should be TimeUnit, found: ' + unicode(type(value)))
+            raise ValueError('Invalid period unit parameter; should be TimeUnit, found: ' + unicode(type(value)))
         if not hasattr(PeriodAlign, align):
-            raise ValueError('wrong align parameter; should be PeriodAlign, found: ' + unicode(type(value)))
+            raise ValueError('Invalid align parameter; should be PeriodAlign, found: ' + unicode(type(value)))
         self.period = {'count' : count, 'unit' : unit, 'align' : align}
 
     def set_interpolate(self, type, value=None, extend=False):
         if not isinstance(type, numbers.Number):
-            raise ValueError('wrong interpolate parameter, expected number, found: ' + unicode(type(type)))
+            raise ValueError('Invalid interpolate parameter, must be a number, found: ' + unicode(type(type)))
         self.interpolate = {'type' : type}
         if value is not None:
             if not isinstance(value, numbers.Number):
-                raise ValueError('wrong value parameter, expected number, found: ' + unicode(type(value)))
+                raise ValueError('Invalid value parameter, must be a number, found: ' + unicode(type(value)))
             self.interpolate['value'] = value
         if not isinstance(extend, bool):
-            raise ValueError('wrong extend parameter, expected boolean, found: ' + unicode(type(extend)))
+            raise ValueError('Invalid extend parameter, must be a number, found: ' + unicode(type(extend)))
         self.interpolate['extend'] = extend
 
     def set_truncate(self, value):
         if value is not None and not isinstance(value, bool):
-            raise ValueError("wrong truncate parameter; should be boolean, found: " + unicode(type(value)))
+            raise ValueError("Invalid truncate parameter, must be a boolean, found: " + unicode(type(value)))
         self.truncate = value if value is not None else False
 
     def set_order(self, value):
         if value is not None and not isinstance(value, numbers.Number):
-            raise ValueError("wrong order parameter; should be number, found: " + unicode(type(value)))
+            raise ValueError("Invalid order parameter, must be a number, found: " + unicode(type(value)))
         self.order = value if value is not None else 0
 
 
@@ -388,48 +389,48 @@ class Aggregate():
         self.types = []
         for typ in types:
             if not hasattr(AggregateType, typ):
-                raise ValueError('wrong aggregate type; should be AggregateType, found: ' + unicode(type(value)))
+                raise ValueError('Invalid aggregate type; should be AggregateType, found: ' + unicode(type(value)))
             self.types.append(typ)
 
     def set_threshold(self, min, max):
         if not isinstance(min, numbers.Number) or not isinstance(max, numbers.Number):
-            raise ValueError('wrong threshold parameters; should be a number, found: min(' + unicode(type(min)) + ') end(' + unicode(type(max)))
+            raise ValueError('Invalid threshold parameters, must be a number, found: min(' + unicode(type(min)) + ') end(' + unicode(type(max)))
         self.threshold = {'min': min, 'max': max}
 
     def set_workingMinutes(self, start, end):
         if not isinstance(start, numbers.Number) or not isinstance(end, numbers.Number):
-            raise ValueError('wrong workingMinutes parameters; should be a number, found: start(' + unicode(type(start)) + ') end(' + unicode(type(end)))
+            raise ValueError('Invalid workingMinutes parameters, must be a number, found: start(' + unicode(type(start)) + ') end(' + unicode(type(end)))
         self.workingMinutes = {'start': start, 'end': end}
 
     def set_calendar(self, name):
         if not isinstance(name, str):
-            raise ValueError("wrong name parameter; should be string, found: " + unicode(type(name)))
+            raise ValueError("Invalid name parameter, must be a string, found: " + unicode(type(name)))
         self.calendar = {'name': name}
 
     def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR):
         if not isinstance(count, numbers.Number):
-            raise ValueError('period count expected number, found: ' + unicode(type(count)))
+            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('wrong period unit')
+            raise ValueError('Invalid period unit')
         self.period = {'count' : count, 'unit' : unit}
         if align is not None:
             self.period['align'] = align
 
     def set_interpolate(self, type, value=None, extend=False):
         if not hasattr(Interpolate, type) and not isinstance(value, numbers.Number):
-            raise ValueError('wrong type parameter, expected Interpolate, found: ' + unicode(type(type)))
+            raise ValueError('Invalid type parameter, expected Interpolate, found: ' + unicode(type(type)))
         self.interpolate = {'type' : type}
         if value is not None:
             if not isinstance(value, numbers.Number):
-                raise ValueError('wrong value parameter, expected number, found: ' + unicode(type(value)))
+                raise ValueError('Invalid value parameter, must be a number, found: ' + unicode(type(value)))
             self.interpolate['value'] = value
         if not isinstance(extend, bool):
-            raise ValueError('wrong extend parameter, expected boolean, found: ' + unicode(type(extend)))
+            raise ValueError('Invalid extend parameter, must be a boolean, found: ' + unicode(type(extend)))
         self.interpolate['extend'] = extend
 
     def set_order(self, order):
         if not isinstance(order, numbers.Number):
-            raise ValueError('wrong order, expected number, found: ' + unicode(type(order)))
+            raise ValueError('Invalid order, must be a number, found: ' + unicode(type(order)))
 #===============================================================================
 ################# Properties
 #===============================================================================

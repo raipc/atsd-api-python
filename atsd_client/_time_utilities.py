@@ -69,12 +69,12 @@ def to_iso_local(time):
 
 def timediff_in_minutes(prev_date, next_date=None):
     """
-    Return timediff in minutes.
-    If first date is not specified return sys.maxsize
-    If second date is not specified set it to current time.
+    Return time difference in minutes.
+    If prev_date is not specified return sys.maxsize
+    If next_date is not specified, next_date is set to current time.
     :param prev_date: None | iso `str` | :class:`datetime` | `int`
     :param next_date: None | iso `str` | :class:`datetime` | `int`
-    :return: timediff in minutes
+    :return: time difference in minutes
     """
     if prev_date is None:
         return sys.maxsize
@@ -89,7 +89,7 @@ def timediff_in_minutes(prev_date, next_date=None):
     elif isinstance(prev_date, numbers.Number):
         prev_date = datetime.utcfromtimestamp(prev_date * 0.001).replace(tzinfo=tzlocal())  # expecting milliseconds
     elif prev_date is None:
-        raise ValueError('data "prev_date" should be either number, datetime instance, None or str')
+        raise ValueError('date "prev_date" should be either number, datetime instance, None or str')
 
     if next_date is None:
         next_date = datetime.now(tzlocal())
@@ -103,7 +103,7 @@ def timediff_in_minutes(prev_date, next_date=None):
     elif isinstance(next_date, numbers.Number):
         next_date = datetime.utcfromtimestamp(next_date * 0.001).replace(tzinfo=tzlocal())  # expecting milliseconds
     elif next_date is None:
-        raise ValueError('data "next_date" should be either number, datetime instance, None or str')
+        raise ValueError('date "next_date" should be either number, datetime instance, None or str')
 
     prev_date_date_ts = time.mktime(_dt_to_local(prev_date).timetuple())
     next_date_ts = time.mktime(_dt_to_local(next_date).timetuple())

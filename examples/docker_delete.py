@@ -7,20 +7,19 @@ from atsd_client import connect_url, connect
 from atsd_client.services import EntitiesService, MetricsService
 
 '''
-Locate a collection of entities (docker hosts in this cases).
-Delete those that have not inserted data for more than 7 days.
-Also delete related entities (docker containers).
-Connection.properties will be taken from the same folder where script is.
+Locate a collection of entities (docker hosts in this cases) that have not inserted data for more than 7 days.
+Delete related entities (docker containers, images, network, volumes).
+Delete docker host entities.
 '''
 
-# Uncomment next two lines to set custom local timezone
+# Uncomment the next two lines to set custom local timezone
 # os.environ['TZ'] = 'Europe/London'
 # time.tzset()
 
 tags_printer = pprint.PrettyPrinter(indent=4)
+
+# Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 entity_service = EntitiesService(connection)
 metric_service = MetricsService(connection)

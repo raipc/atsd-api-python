@@ -9,8 +9,8 @@ from atsd_client.services import MetricsService, SeriesService
 Find series with data older than `now - (metric.retentionDays + grace_interval_days)`.
 '''
 
+# Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect('/home/axibase/connection.properties')
 
 svc = SeriesService(connection)
 metric_service = MetricsService(connection)

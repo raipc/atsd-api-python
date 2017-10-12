@@ -5,12 +5,9 @@ from atsd_client.services import MetricsService, EntitiesService
 
 '''
 Locate lagging series among all the series that differ only in tags (have the same metric and entity) during the grace interval.
-Connection.properties will be taken from the same folder where script is.
 '''
 
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 # set grace interval in hours
 grace_interval_hours = 1

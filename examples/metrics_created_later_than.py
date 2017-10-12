@@ -5,12 +5,10 @@ from atsd_client.services import MetricsService
 
 '''
 Locate a collection of metrics that have been created after specified date.
-Connection.properties will be taken from the same folder where script is.
 '''
 
+# Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 metrics_service = MetricsService(connection)
 # query all metrics created after specified_date

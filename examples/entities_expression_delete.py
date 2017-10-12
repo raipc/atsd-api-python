@@ -8,9 +8,8 @@ Locate entities by name, using an expression filter
 Iterate over the collection and delete each entity
 '''
 
+# Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
-# connection = connect()
-# connection = atsd_client.connect('/home/axibase/connection.properties')
 
 entity_service = EntitiesService(connection)
 entity_expression = "name LIKE 'net.source*'"

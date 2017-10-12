@@ -31,7 +31,7 @@ def connect_url(base_url,
                 timeout=None):
     """connect to ATSD using specified parameters
 
-    :param base_url: ATSD url, for example https://atsd_server:8443
+    :param base_url: ATSD url containing protocol, hostname, and port, for example https://atsd_server:8443
     :param username: user name
     :param password: user password
     :param ssl_verify: verify ssl certificate (default False)
@@ -43,7 +43,7 @@ def connect_url(base_url,
 
 
 def connect(file_name=None):
-    """connect to ATSD using parameters specified in file
+    """connect to ATSD using parameters specified in the configuration file
     (default connection.properties)
 
     :param file_name: `str`
@@ -53,7 +53,7 @@ def connect(file_name=None):
         file_name = path.join(path.dirname(path.abspath(sys.argv[0])), 'connection.properties')
     f = open(file_name)
 
-    logging.info("Getting connection properties from file: %s" % file_name)
+    logging.info("Reading connection properties from file: %s" % file_name)
 
     params = {}
     for line in f:
