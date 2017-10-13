@@ -18,7 +18,7 @@ permissions and limitations under the License.
 from . import _jsonutil
 from ._client import Client
 from ._constants import *
-from ._time_utilities import to_iso_local
+from ._time_utilities import to_iso
 from .exceptions import DataParseException, SQLException, ServerException
 from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, Message
 
@@ -231,9 +231,9 @@ class MetricsService(_Service):
         if expression is not None:
             params['expression'] = expression
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso_local(minInsertDate).isoformat()
+            params['minInsertDate'] = to_iso(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso_local(maxInsertDate).isoformat()
+            params['maxInsertDate'] = to_iso(maxInsertDate).isoformat()
         if tags is not None:
             params['tags'] = tags
         if limit is not None:
@@ -289,9 +289,9 @@ class MetricsService(_Service):
             for k, v in six.iteritems(tags):
                 params['tags.%s' % k] = v
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso_local(minInsertDate).isoformat()
+            params['minInsertDate'] = to_iso(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso_local(maxInsertDate).isoformat()
+            params['maxInsertDate'] = to_iso(maxInsertDate).isoformat()
 
         try:
             response = self.conn.get(metric_series_url.format(metric=quote(encode_if_required(metric_name), '')), params)
@@ -335,9 +335,9 @@ class EntitiesService(_Service):
         if expression is not None:
             params["expression"] = expression
         if minInsertDate is not None:
-            params["minInsertDate"] = to_iso_local(minInsertDate).isoformat()
+            params["minInsertDate"] = to_iso(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso_local(maxInsertDate).isoformat()
+            params["maxInsertDate"] = to_iso(maxInsertDate).isoformat()
         if tags is not None:
             params["tags"] = tags
         if limit is not None:
@@ -391,9 +391,9 @@ class EntitiesService(_Service):
         if expression is not None:
             params['expression'] = expression
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso_local(minInsertDate).isoformat()
+            params['minInsertDate'] = to_iso(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso_local(maxInsertDate).isoformat()
+            params['maxInsertDate'] = to_iso(maxInsertDate).isoformat()
         if useEntityInsertTime is not None:
             params['useEntityInsertTime'] = useEntityInsertTime
         if limit is not None:
@@ -491,9 +491,9 @@ class EntityGroupsService(_Service):
         if expression is not None:
             params["expression"] = expression
         if minInsertDate is not None:
-            params["minInsertDate"] = to_iso_local(minInsertDate).isoformat()
+            params["minInsertDate"] = to_iso(minInsertDate).isoformat()
         if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso_local(maxInsertDate).isoformat()
+            params["maxInsertDate"] = to_iso(maxInsertDate).isoformat()
         if tags is not None:
             params["tags"] = tags
         if limit is not None:

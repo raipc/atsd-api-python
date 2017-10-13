@@ -18,7 +18,7 @@ permissions and limitations under the License.
 
 import numbers
 from .._utilities import copy_not_empty_attrs
-from .._time_utilities import to_iso_local
+from .._time_utilities import to_iso
 
 try:
     unicode = unicode
@@ -142,22 +142,22 @@ class DateFilter():
 
     def __init__(self, startDate=None, endDate=None, interval=None):
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches samples timestamped at or after the startDate. Examples: 2016-07-18T11:11:02Z, current_hour
-        self.startDate = to_iso_local(startDate) if startDate is not None else None
+        self.startDate = to_iso(startDate) if startDate is not None else None
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped before the endDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
-        self.endDate = to_iso_local(endDate) if endDate is not None else None
+        self.endDate = to_iso(endDate) if endDate is not None else None
         #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"}
         self.interval = interval
         if not self._validate():
             raise ValueError("Invalid arguments for the date filter: startDate={}, endDate={}, interval={}".format(startDate, endDate, interval))
 
     def set_start_date(self, value):
-        self.startDate = to_iso_local(value)
+        self.startDate = to_iso(value)
 
     def set_end_date(self, value):
-        self.endDate = to_iso_local(value)
+        self.endDate = to_iso(value)
 
     def set_interval(self, value):
-        self.interval = to_iso_local(value)
+        self.interval = to_iso(value)
 
 #===============================================================================
 ################# Series Queries
@@ -239,11 +239,13 @@ class VersioningFilter():
 
 #------------------------------------------------------------------------------
 class  ControlFilter():
-    def __init__(self,limit=None, direction=None, cache=None, requestId=None, timeFormat=None):
+    def __init__(self,limit=None, direction=None, seriesLimit=None, cache=None, requestId=None, timeFormat=None, addMeta=None):
         #: `int` maximum number of time:value samples returned for each series. Default: 0.
         self.limit = 0 if limit is None else limit
         #: `str` scan order for applying the limit: DESC - descending, ASC - ascending. Default: DESC
         self.direction= "DESC" if direction is None else direction
+        #: `int` maximum number of series returned. Default: 0.
+        self.seriesLimit = 0 if seriesLimit is None else seriesLimit
         # : `bool` flag. If true, execute the query against Last Insert table which results in faster response time
         # for last value queries. Default: false
         self.cache= False if cache is None else cache
@@ -251,6 +253,9 @@ class  ControlFilter():
         self.requestId= "" if requestId is None else requestId
         #: `str` time format for data array. iso or milliseconds. Default: iso
         self.timeFormat="iso" if timeFormat is None else timeFormat
+        # : `bool` flag. If true, include metric and entity metadata (field, tags) under the meta object in response.
+        # Default: false
+        self.addMeta= False if addMeta is None else addMeta
 
     def set_limit(self, value):
         self.limit = value
@@ -484,8 +489,8 @@ class PropertiesDeleteQuery():
     def __init__(self, type, entity, startDate=None, endDate=None, key=None, exactMatch=None):
         self.type=type
         self.entity=entity
-        self.startTime= to_iso_local(startDate) if startDate is not None else None
-        self.endTime=to_iso_local(endDate) if endDate is not None else None
+        self.startTime= to_iso(startDate) if startDate is not None else None
+        self.endTime=to_iso(endDate) if endDate is not None else None
         self.key=key
         self.exactMatch=False if exactMatch is None else exactMatch
 
@@ -496,10 +501,10 @@ class PropertiesDeleteQuery():
         self.entity = value
 
     def set_startDate(self,value):
-        self.startDate = to_iso_local(value)
+        self.startDate = to_iso(value)
 
     def set_endDate(self,value):
-        self.endDate = to_iso_local(value)
+        self.endDate = to_iso(value)
 
     def set_key(self,value):
         self.key = value
