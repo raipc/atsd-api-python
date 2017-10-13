@@ -20,8 +20,10 @@ import copy
 import six
 
 from .._constants import display_series_threshold, display_series_part
-from .._time_utilities import to_timestamp, to_iso_local, timediff_in_minutes
+from .._time_utilities import to_timestamp, to_iso, timediff_in_minutes
 from .._utilities import NoneDict
+from .._jsonutil import deserialize
+from _meta_models import Entity, Metric
 
 
 # ------------------------------------------------------------------------------
@@ -35,8 +37,14 @@ class Sample(object):
         self._v = copy.deepcopy(value) if not value == "Nan" else float("nan")
         #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date
         self._t = to_timestamp(time)
-        #`.dict` version object including 'source' and 'status' keys
+        # `.dict` version object including 'source' and 'status' keys
         self._version = version
+
+    def to_dict(self):
+        d = {'v': self.v, 't': self.t}
+        if self.version is not None:
+            d['version'] = self.version
+        return d
 
     def __repr__(self):
         return "<Sample v={v}, t={t}, version={vv}>".format(v=self._v, t=self._t, vv=self._version)
@@ -95,7 +103,7 @@ class Series(object):
     Each series is uniquely identified by metric name, entity name, and optional series tags.
     """
 
-    def __init__(self, entity, metric, data=None, tags=None, lastInsertDate=None):
+    def __init__(self, entity, metric, data=None, tags=None, lastInsertDate=None, meta=None):
         #: `str` entity name
         self._entity = entity
         #: `str` metric name
@@ -104,8 +112,6 @@ class Series(object):
         self._tags = NoneDict(tags)
         # `list` of :class:`.Sample` objects| `list` of {'t': time, 'v': value} objects
         self._data = []
-        #: `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
-        self._lastInsertDate = None if lastInsertDate is None else to_iso_local(lastInsertDate)
         if data is not None:
             for data_unit in data:
                 if isinstance(data_unit, dict):  # Compatability
@@ -117,7 +123,13 @@ class Series(object):
                     )
                 else:
                     self._data.append(data_unit)
-                    #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
+        #: `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
+        self._lastInsertDate = None if lastInsertDate is None else to_iso(lastInsertDate)
+        #: `dict` of entity and metric objects
+        self._meta = {}
+        if meta is not None:
+            self._meta['entity'] = deserialize(meta['entity'], Entity)
+            self._meta['metric'] = deserialize(meta['metric'], Metric)
 
     def __repr__(self):
         if len(self._data) > display_series_threshold:
@@ -191,7 +203,7 @@ class Series(object):
         for num, sample in enumerate(data):
             if num > 0 and sample.t == data[num - 1].t:
                 result.pop()
-            new_time = to_iso_local(sample.t)
+            new_time = to_iso(sample.t)
             result.append(new_time)
         return result
 
@@ -242,6 +254,10 @@ class Series(object):
     def data(self):
         return self._data
 
+    @property
+    def meta(self):
+        return self._meta
+
     @entity.setter
     def entity(self, value):
         self._entity = value
@@ -264,7 +280,7 @@ class Series(object):
 
     @lastInsertDate.setter
     def lastInsertDate(self, value):
-        self._lastInsertDate = None if value is None else to_iso_local(value)
+        self._lastInsertDate = None if value is None else to_iso(value)
 
     def get_elapsed_minutes(self):
         """Return elapsed time in minutes between current time and last insert date for the current series.
@@ -283,7 +299,7 @@ class Property(object):
     The property values are are stored as text and only last value is stored for the given primary key.
     """
 
-    def __init__(self, type, entity, tags=None, key=None, date=None):
+    def __init__(self, type, entity, tags=None, key=None, date=None, meta=None):
         #: `str` property type name
         self._type = type
         #: `str` entity name
@@ -293,7 +309,11 @@ class Property(object):
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self._key = NoneDict(key)
         #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
-        self._date = to_iso_local(date)
+        self._date = to_iso(date)
+        #: `dict` of entity and metric objects
+        self._meta = {}
+        if meta is not None:
+            self._meta['entity'] = deserialize(meta['entity'], Entity)
 
     def __repr__(self):
         return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self._type, entity=self._entity,
@@ -323,6 +343,10 @@ class Property(object):
     def type(self, value):
         self._type = value
 
+    @property
+    def meta(self):
+        return self._meta
+
     @entity.setter
     def entity(self, value):
         self._entity = value
@@ -337,7 +361,7 @@ class Property(object):
 
     @date.setter
     def date(self, value):
-        self._date = to_iso_local(value)
+        self._date = to_iso(value)
 
 
 # ------------------------------------------------------------------------------
@@ -359,11 +383,13 @@ class Alert(object):
         #: `str` metric
         self._metric = metric
         #: `str` | :class:`datetime` | `long` milliseconds when the last record was received
-        self._lastEventDate = to_iso_local(lastEventDate)
+        self._lastEventDate = to_iso(lastEventDate)
         #: `str` | :class:`datetime` | `long` milliseconds when the alert was open
-        self._openDate = to_iso_local(openDate)
+        self._openDate = to_iso(openDate)
         #: `Number` last numeric value received
         self._value = value
+        #: `str` text value
+        self._message = message
         #: `dict`
         self._tags = NoneDict(tags)
         #: `str` text value
@@ -451,7 +477,7 @@ class Alert(object):
 
     @openDate.setter
     def openDate(self, value):
-        self._openDate = to_iso_local(value)
+        self._openDate = to_iso(value)
 
     @textValue.setter
     def textValue(self, value):
@@ -463,7 +489,7 @@ class Alert(object):
 
     @lastEventDate.setter
     def lastEventDate(self, value):
-        self._lastEventDate = to_iso_local(value)
+        self._lastEventDate = to_iso(value)
 
     @value.setter
     def value(self, value):
@@ -507,13 +533,13 @@ class AlertHistory(object):
         #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
         self._alertDuration = alertDuration
         #: `str` | :class:`datetime` | `long`
-        self._alertOpenDate = to_iso_local(alertOpenDate)
+        self._alertOpenDate = to_iso(alertOpenDate)
         #: `str`
         self._entity = entity
         #: `str`
         self._metric = metric
         #: `str` | :class:`datetime` | `long`
-        self._receivedDate = to_iso_local(receivedDate)
+        self._receivedDate = to_iso(receivedDate)
         #: `int`
         self._repeatCount = repeatCount
         #: `str`
@@ -529,7 +555,7 @@ class AlertHistory(object):
         #: `str` alert state when closed: OPEN, CANCEL, REPEAT
         self._type = type
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date
-        self._date = to_iso_local(date)
+        self._date = to_iso(date)
         #: `Number` last numeric value received
         self._value = value
         #: `int` window length
@@ -622,11 +648,11 @@ class AlertHistory(object):
 
     @alertOpenDate.setter
     def alertOpenDate(self, value):
-        self._alertOpenDate = to_iso_local(value)
+        self._alertOpenDate = to_iso(value)
 
     @date.setter
     def date(self, value):
-        self._date = to_iso_local(value)
+        self._date = to_iso(value)
 
     @alertDuration.setter
     def alertDuration(self, value):
@@ -634,7 +660,7 @@ class AlertHistory(object):
 
     @receivedDate.setter
     def receivedDate(self, value):
-        self._receivedDate = to_iso_local(value)
+        self._receivedDate = to_iso(value)
 
     @repeatCount.setter
     def repeatCount(self, value):
@@ -686,7 +712,7 @@ class Message(object):
     Messages for the same entity, time and type/source tags are automatically de-duplicated.
     """
 
-    def __init__(self, type, source, entity, date, severity, tags, message, persist):
+    def __init__(self, type, source, entity, date, severity, tags, message, persist=True):
         #: `str` message type
         self._type = type
         #: `str` message source
@@ -694,7 +720,7 @@ class Message(object):
         #: `str` entity name
         self._entity = entity
         #:`datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created
-        self._date = to_iso_local(date)
+        self._date = to_iso(date)
         #: :class:`.Severity`
         self._severity = severity
         #: `str` message tags
@@ -758,7 +784,7 @@ class Message(object):
 
     @date.setter
     def date(self, value):
-        self._date = to_iso_local(value)
+        self._date = to_iso(value)
 
     @severity.setter
     def severity(self, value):

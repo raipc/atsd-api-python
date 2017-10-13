@@ -5,7 +5,7 @@ import dateutil.parser
 import sys
 import time
 from datetime import datetime
-from dateutil.tz import tzlocal
+from dateutil.tz import tzlocal, tzutc
 
 import six
 
@@ -26,15 +26,16 @@ def _iso_to_milliseconds(dt):
     return calendar.timegm(dt.timetuple()) * 1000
 
 
-def _dt_to_local(datetime_obj):
+def _dt_to_tz(datetime_obj, tzinfo=tzlocal()):
     """
     :param datetime_obj: datetime object'
+    :param tzinfo: _datetime.tzinfo
     :return: datetime instance
     """
     if datetime_obj.tzinfo is None:
-        return datetime_obj.replace(tzinfo=tzlocal()).astimezone(tzlocal())
+        return datetime_obj.replace(tzinfo=tzinfo).astimezone(tzinfo)
     else:
-        return datetime_obj.astimezone(tzlocal())
+        return datetime_obj.astimezone(tzinfo)
 
 
 def to_timestamp(time):
@@ -42,12 +43,13 @@ def to_timestamp(time):
     :param time: None | `str` in iso format | :class:`datetime` | `int`
     :return: timestamp in milliseconds
     """
-    return _iso_to_milliseconds(to_iso_local(time))
+    return _iso_to_milliseconds(to_iso(time, tzutc()))
 
 
-def to_iso_local(time):
+def to_iso(time, tzinfo=tzlocal()):
     """
     :param time: None | iso `str` | :class:`datetime` | `int`
+    :param tzinfo: _datetime.tzinfo
     :return: datetime
     """
     aux_time = None
@@ -61,10 +63,10 @@ def to_iso_local(time):
     elif isinstance(time, datetime):
         aux_time = time
     elif isinstance(time, numbers.Number):
-        aux_time = datetime.utcfromtimestamp(time * 0.001).replace(tzinfo=tzlocal())  # expecting milliseconds
+        aux_time = datetime.utcfromtimestamp(time * 0.001).replace(tzinfo=tzinfo)  # expecting milliseconds
     elif aux_time is None:
         raise ValueError('data "time" should be either number, datetime instance, None or str')
-    return _dt_to_local(aux_time).replace(microsecond=0)
+    return _dt_to_tz(aux_time, tzinfo).replace(microsecond=0)
 
 
 def timediff_in_minutes(prev_date, next_date=None):
@@ -105,7 +107,7 @@ def timediff_in_minutes(prev_date, next_date=None):
     elif next_date is None:
         raise ValueError('date "next_date" should be either number, datetime instance, None or str')
 
-    prev_date_date_ts = time.mktime(_dt_to_local(prev_date).timetuple())
-    next_date_ts = time.mktime(_dt_to_local(next_date).timetuple())
+    prev_date_date_ts = time.mktime(_dt_to_tz(prev_date).timetuple())
+    next_date_ts = time.mktime(_dt_to_tz(next_date).timetuple())
 
     return int(next_date_ts - prev_date_date_ts) / 60

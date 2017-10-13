@@ -22,6 +22,9 @@ from datetime import datetime
 
 
 def serialize(target):
+    to_dict = getattr(target, "to_dict", None)
+    if callable(to_dict):
+        return target.to_dict()
     if isinstance(target, dict):
         return dict([k, serialize(v)] for k, v in six.iteritems(target))
     elif isinstance(target, (list, tuple)):
