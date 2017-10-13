@@ -1,4 +1,4 @@
-from atsd_client import connect, connect_url
+from atsd_client import connect_url
 from atsd_client.services import MetricsService
 
 '''
@@ -6,7 +6,7 @@ Locate a collection of metrics that have no lastInsertDate.
 '''
 
 # Connect to an ATSD server
-connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 metric_service = MetricsService(connection)
 # query entities without lastInsertDate

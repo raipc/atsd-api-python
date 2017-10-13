@@ -1,15 +1,14 @@
 from datetime import datetime, timedelta
 
-from atsd_client import connect, connect_url
+from atsd_client import connect_url
 from atsd_client.services import EntitiesService
 
 '''
 Locate series that have no data during the actual time interval (grace_interval) for specified entities.
-Connection.properties will be taken from the same folder where script is.
 '''
 
 # Connect to an ATSD server
-connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set grace_interval to one day
 grace_interval_minutes = 24 * 60

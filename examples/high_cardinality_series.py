@@ -1,13 +1,12 @@
-from atsd_client import connect, connect_url
+from atsd_client import connect_url
 from atsd_client.services import MetricsService
 
 '''
 Locate high-cardinality series that have tags more than specified cardinality.
-Connection.properties will be taken from the same folder where script is.
 '''
 
 # Connect to an ATSD server
-connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 metrics_service = MetricsService(connection)
 

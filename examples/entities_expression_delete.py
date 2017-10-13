@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from atsd_client import connect, connect_url
+from atsd_client import connect_url
 from atsd_client.services import EntitiesService
 
 '''
@@ -9,7 +9,7 @@ Iterate over the collection and delete each entity
 '''
 
 # Connect to an ATSD server
-connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 entity_service = EntitiesService(connection)
 entity_expression = "name LIKE 'net.source*'"
@@ -23,4 +23,4 @@ for idx, entity in enumerate(entities):
     print("- Deleting " + entity.name + " : " + str(idx + 1) + "/" + str(entity_count))
 
     # Uncomment next line to delete
-    entity_service.delete(entity)
+    # entity_service.delete(entity)

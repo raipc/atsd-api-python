@@ -1,13 +1,14 @@
 from datetime import timedelta
 
-from atsd_client import connect, connect_url
+from atsd_client import connect_url
 from atsd_client.services import MetricsService, EntitiesService
 
 '''
 Locate lagging series among all the series that differ only in tags (have the same metric and entity) during the grace interval.
 '''
 
-connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+# Connect to an ATSD server
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set grace interval in hours
 grace_interval_hours = 1
