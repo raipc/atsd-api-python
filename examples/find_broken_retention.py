@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from prettytable import PrettyTable
 
-from atsd_client import connect, connect_url
-from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, to_iso_local
+from atsd_client import connect_url
+from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, to_iso
 from atsd_client.services import MetricsService, SeriesService
 
 '''
@@ -10,7 +10,7 @@ Find series with data older than `now - (metric.retentionDays + grace_interval_d
 '''
 
 # Connect to an ATSD server
-connection = connect_url('https://atsd_hostname:8443', 'user', 'pwd')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 svc = SeriesService(connection)
 metric_service = MetricsService(connection)
@@ -37,6 +37,6 @@ for metric in metric_list:
         for sl in series_list:
             if len(sl.data) > 0:
                 series_count += 1
-                t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso_local(sl.data[0].t)])
-print t
+                t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso(sl.data[0].t)])
+print(t)
 print("\nSeries count with broken retention date is %d." % series_count)

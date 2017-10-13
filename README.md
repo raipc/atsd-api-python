@@ -319,6 +319,12 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[find_staling_agents.py](examples/find_staling_agents.py) | Find entities that have stopped collecting data for a subset metrics.|
 |[metrics_created_later_than.py](examples/metrics_created_later_than.py) | Find metrics that have been created after the specified date. |
 |[entities_created_later_than.py](examples/entities_created_later_than.py) | Find entities that have been created after the specified date. |
+|[export_messages.py](examples/export_messages.py) | Export messages from ATSD into CSV. |
+|[find_non-positive_values.py](examples/find_non-positive_values.py) | Find series with non-positive values for the specified metric, delete if required. |
+|[version_check.py](examples/version_check.py) | Print python version, timezone and dependencies version. |
+|[connect_check.py](examples/connect_check.py) | Establishes a connection to ATSD, returns ATSD version, timezone and current time using `connect()`. |
+|[connect_path_check.py](examples/connect_path_check.py) | Establishes a connection to ATSD, returns ATSD version, timezone and current time using `connect(/home/axibase/connection.properties)`. |
+|[connect_url_check.py](examples/connect_url_check.py) | Establishes a connection to ATSD, returns ATSD version, timezone and current time using  `connect_url('https://atsd_hostname:8443', 'user', 'password')`. |
 
 Install `prettytable` module using:
 
