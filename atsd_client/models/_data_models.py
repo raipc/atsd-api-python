@@ -299,7 +299,7 @@ class Property(object):
     The property values are are stored as text and only last value is stored for the given primary key.
     """
 
-    def __init__(self, type, entity, tags=None, key=None, date=None):
+    def __init__(self, type, entity, tags=None, key=None, date=None, meta=None):
         #: `str` property type name
         self._type = type
         #: `str` entity name
@@ -310,6 +310,10 @@ class Property(object):
         self._key = NoneDict(key)
         #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
         self._date = to_iso(date)
+        #: `dict` of entity and metric objects
+        self._meta = {}
+        if meta is not None:
+            self._meta['entity'] = deserialize(meta['entity'], Entity)
 
     def __repr__(self):
         return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self._type, entity=self._entity,
@@ -338,6 +342,10 @@ class Property(object):
     @type.setter
     def type(self, value):
         self._type = value
+
+    @property
+    def meta(self):
+        return self._meta
 
     @entity.setter
     def entity(self, value):
@@ -380,6 +388,8 @@ class Alert(object):
         self._openDate = to_iso(openDate)
         #: `Number` last numeric value received
         self._value = value
+        #: `str` text value
+        self._message = message
         #: `dict`
         self._tags = NoneDict(tags)
         #: `str` text value

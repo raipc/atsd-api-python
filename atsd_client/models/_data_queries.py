@@ -199,7 +199,7 @@ class SeriesQuery():
 
 #------------------------------------------------------------------------------
 class SeriesFilter():
-    def __init__(self, metric, tags={}, type="HISTORY"):
+    def __init__(self, metric, tags={}, type="HISTORY", tagExpression=None, exactMatch=None):
         if not metric:
             raise ValueError("Metric is required.")
         #: `str` metric name
@@ -208,6 +208,10 @@ class SeriesFilter():
         self.tags = tags
         #: :class:`.SeriesType` type of underlying data: HISTORY, FORECAST, FORECAST_DEVIATION. Default: HISTORY
         self.type = type
+        #: `str` tag expression to include series that match the specified tag condition
+        self.tagExpression = tagExpression
+        # : `bool` tags match operator: exact match if true, partial match if false
+        self.exactMatch = False if exactMatch is None else exactMatch
 
     def set_metric(self, value):
         self.metric = value
@@ -217,6 +221,12 @@ class SeriesFilter():
 
     def set_type(self, value):
         self.type = value
+
+    def set_tagExpression(self, value):
+        self.tagExpression = value
+
+    def set_exactMatch(self, value):
+        self.exactMatch = value
 
 #------------------------------------------------------------------------------
 class ForecastFilter():
@@ -443,7 +453,7 @@ class PropertiesQuery():
     """
     Class to retrieve property records for the specified parameters.
     """
-    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=None, keyTagExpression=None, limit=None, cache=None, offset=None):
+    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=None, keyTagExpression=None, limit=None, last=None, offset=None, addMeta=None):
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
         self.type=type
@@ -451,8 +461,9 @@ class PropertiesQuery():
         self.exactMatch=False if exactMatch is None else exactMatch
         self.keyTagExpression=keyTagExpression
         self.limit=0 if limit is None else limit
-        self.cache=False if cache is None else cache
+        self.last=False if last is None else last
         self.offset=-1 if offset is None else offset
+        self.addMeta= False if addMeta is None else addMeta
 
     def set_entity_filter(self,value):
         copy_not_empty_attrs(value, self)
@@ -476,7 +487,7 @@ class PropertiesQuery():
         self.limit = value
 
     def set_last(self,value):
-        self.cache = value
+        self.last = value
 
     def set_offset(self,value):
         self.offset = value
