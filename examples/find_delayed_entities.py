@@ -5,7 +5,8 @@ from atsd_client import connect_url
 from atsd_client.services import MetricsService
 
 '''
-Find entities of series more than n hours behind the metric's lastInsertDate.
+Find series with lastInsertDate more than n hours behind the metric's lastInsertDate.
+Print entities of that the series.
 '''
 
 # Connect to an ATSD server
