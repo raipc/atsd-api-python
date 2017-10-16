@@ -307,7 +307,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |:---|:---|
 |[docker_delete.py](examples/docker_delete.py)| Delete docker host entities and related container/image/network/volume entities that have not inserted data for more than 7 days. |
 |[entities_expression_delete.py](examples/entities_expression_delete.py)| Delete entities that match the specified expression filter. |
-|[Find Broken Retention](examples/find_broken_retention.py)| Find series that ignore metric retention days. |
+|[find_broken_retention.py](examples/find_broken_retention.py)| Find series that ignore metric retention days. |
 |[metrics_without_last_insert.py](examples/metrics_without_last_insert.py) | Find metrics without a last insert date. |
 |[entities_without_last_insert.py](examples/entities_without_last_insert.py) | Find entities without a last insert date. |
 |[find_lagging_series_by_entity_expression.py](examples/find_lagging_series_by_entity_expression.py) | Find series for matching entities that have not been updated for more than 1 day. |
