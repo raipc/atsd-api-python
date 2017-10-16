@@ -36,7 +36,7 @@ else:
 print('metric, entity, tags, data')
 for s in series:
     # filter non-positive values
-    s.data = [sample for sample in s.data if sample.v and sample.v <= 0]
+    s.data = [sample for sample in s.data if sample.v is not None and sample.v <= 0]
 
     if len(s.data) > 0:
         print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, [sample.v for sample in s.data]))

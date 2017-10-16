@@ -23,7 +23,7 @@ from .._constants import display_series_threshold, display_series_part
 from .._time_utilities import to_timestamp, to_iso, timediff_in_minutes
 from .._utilities import NoneDict
 from .._jsonutil import deserialize
-from _meta_models import Entity, Metric
+from ._meta_models import Entity, Metric
 
 
 # ------------------------------------------------------------------------------
@@ -126,10 +126,8 @@ class Series(object):
         #: `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
         self._lastInsertDate = None if lastInsertDate is None else to_iso(lastInsertDate)
         #: `dict` of entity and metric objects
-        self._meta = {}
         if meta is not None:
-            self._meta['entity'] = deserialize(meta['entity'], Entity)
-            self._meta['metric'] = deserialize(meta['metric'], Metric)
+            self._meta = {'entity': deserialize(meta['entity'], Entity), 'metric': deserialize(meta['metric'], Metric)}
 
     def __repr__(self):
         if len(self._data) > display_series_threshold:
@@ -311,9 +309,8 @@ class Property(object):
         #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
         self._date = to_iso(date)
         #: `dict` of entity and metric objects
-        self._meta = {}
         if meta is not None:
-            self._meta['entity'] = deserialize(meta['entity'], Entity)
+            self._meta = {'entity': deserialize(meta['entity'], Entity)}
 
     def __repr__(self):
         return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self._type, entity=self._entity,
