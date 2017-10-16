@@ -321,6 +321,8 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[entities_created_later_than.py](examples/entities_created_later_than.py) | Find entities that have been created after the specified date. |
 |[export_messages.py](examples/export_messages.py) | Export messages from ATSD into CSV. |
 |[find_non-positive_values.py](examples/find_non-positive_values.py) | Find series with non-positive values for the specified metric, delete if required. |
+|[find_delayed_entities.py](examples/find_delayed_entities.py) | Find entities of series more than n hours behind the metric's lastInsertDate. |
+|[find_delayed_entities_itself.py](examples/find_delayed_entities_itself.py) | Find entities itself more than n hours behind the metric's lastInsertDate. |
 |[version_check.py](examples/version_check.py) | Print python version, timezone and dependencies version. |
 |[connect_check.py](examples/connect_check.py) | Establishes a connection to ATSD, returns ATSD version, timezone and current time using `connect()`. |
 |[connect_path_check.py](examples/connect_path_check.py) | Establishes a connection to ATSD, returns ATSD version, timezone and current time using `connect(/home/axibase/connection.properties)`. |
