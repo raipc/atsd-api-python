@@ -43,8 +43,8 @@ for series in series_list:
     if lastInsertDate is None or lastInsertDate < series.lastInsertDate:
         various_entities[series.entity] = series.lastInsertDate
 
-print('entity (label), lastInsertDate')
+print('entityName, entityLabel, lastInsertDate')
 for entity in various_entities:
     label = entities_service.get(entity).label
     lastInsertDate = various_entities[entity]
-    print('%s (%s), %s' % (entity, label if label is not None else '', lastInsertDate))
+    print('%s, %s, %s' % (entity, label if label is not None else '', lastInsertDate))
