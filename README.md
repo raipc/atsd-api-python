@@ -315,6 +315,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[find_lagging_series_by_metric.py](examples/find_lagging_series_by_metric.py) | Find series for the specified metric that have not been updated for more than 1 day. |
 |[find_lagged_series.py](examples/find_lagged_series.py) | Find series with last insert date lagging the maximum last insert date by more than specified grace interval.  |
 |[high_cardinality_series.py](examples/high_cardinality_series.py) | Find series with too many tag combinations. |
+|[high_cardinality_metrics.py](examples/high_cardinality_metrics.py) | Find metrics of series with too many tag combinations. |
 |[find_lagging_entities.py](examples/find_lagging_entities.py) | Find entities that match the specified expression filter which have stopped collecting data. |
 |[find_staling_agents.py](examples/find_staling_agents.py) | Find entities that have stopped collecting data for a subset metrics.|
 |[metrics_created_later_than.py](examples/metrics_created_later_than.py) | Find metrics that have been created after the specified date. |
