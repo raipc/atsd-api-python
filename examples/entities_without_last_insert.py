@@ -12,9 +12,9 @@ entities_service = EntitiesService(connection)
 # query entities without lastInsertDate
 entity_list = entities_service.list(maxInsertDate="1970-01-01T00:00:00.000Z")
 
-print('entityName, entityLabel')
+print('entityName,entityLabel')
 for entity in entity_list:
     if entity.lastInsertDate is None:
-        print('%s, %s' % (entity.name, entity.label if entity.label is not None else ''))
+        print('%s,%s' % (entity.name, entity.label if entity.label is not None else ''))
 
 print("\nEntities count without last insert date is %d." % (len(entity_list)))

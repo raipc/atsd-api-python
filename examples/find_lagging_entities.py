@@ -20,6 +20,6 @@ maxInsertDate = datetime.now() - timedelta(seconds=grace_interval_minutes * 60)
 entities_service = EntitiesService(connection)
 entities = entities_service.list(expression="name like 'nur*'", minInsertDate=minInsertDate, maxInsertDate=maxInsertDate)
 
-print('entityName, entityLabel')
+print('entityName,entityLabel')
 for entity in entities:
-    print('%s, %s' % (entity.name, entity.label if entity.label is not None else ''))
+    print('%s,%s' % (entity.name, entity.label if entity.label is not None else ''))
