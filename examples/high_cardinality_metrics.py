@@ -2,8 +2,8 @@ from atsd_client import connect_url
 from atsd_client.services import MetricsService
 
 '''
-Locate metrics with high-cardinality series that have tags more than specified cardinality.
-Output metric name and maximum number of tags combinations.
+Locate metrics with series that have too many tags.
+Print out metric name and the maximum number of tags combinations.
 '''
 
 # Connect to an ATSD server
@@ -32,4 +32,4 @@ for metric in metrics:
         metric_count += 1
         print('%s, %d' % (metric.name, max_tags))
 
-print("Number of metrics that have more than %d tags combinations is %d " % (cardinality, metric_count))
+print("Number of metrics that have more than %d tag combinations is %d " % (cardinality, metric_count))
