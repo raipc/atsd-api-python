@@ -10,9 +10,9 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 metrics_service = MetricsService(connection)
 # query all metrics created after specified_date
-metric_list = metrics_service.list(expression="createdDate > '2017-10-01T00:00:00Z'")
+metric_list = metrics_service.list(expression="createdDate > '2017-10-16T00:00:00Z'")
 
-print('metric.name')
+print('metricName')
 for metric in metric_list:
     print(metric.name)
 

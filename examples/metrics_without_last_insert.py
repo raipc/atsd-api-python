@@ -13,6 +13,7 @@ metric_service = MetricsService(connection)
 metric_list = metric_service.list(maxInsertDate="1970-01-01T00:00:00.000Z")
 metrics_count = 0
 
+print('metricName')
 for metric in metric_list:
     if metric.enabled and metric.persistent \
             and metric.retentionDays == 0 and metric.seriesRetentionDays == 0:
