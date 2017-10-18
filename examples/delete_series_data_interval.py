@@ -26,8 +26,8 @@ endDate = "2017-10-02T00:00:00Z"
 
 series_service = SeriesService(connection)
 
-# query the series to be deleted
-sf = SeriesFilter(metric=metric, tags=tags)
+# query the series to be deleted, use exactMatch to exclude not specified tags
+sf = SeriesFilter(metric=metric, tags=tags, exactMatch=True)
 ef = EntityFilter(entity=entity)
 df = DateFilter(startDate=startDate, endDate=endDate)
 query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
