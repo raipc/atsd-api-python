@@ -2,12 +2,6 @@ from atsd_client import connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery
 from atsd_client.services import SeriesService
 
-
-def delete_value(sample):
-    sample.v = None
-    return sample
-
-
 '''
 Delete data for a given series with tags for the specified date interval.
 '''
@@ -31,13 +25,19 @@ sf = SeriesFilter(metric=metric, tags=tags, exactMatch=True)
 ef = EntityFilter(entity=entity)
 df = DateFilter(startDate=startDate, endDate=endDate)
 query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
-series = series_service.query(query)[0]
+series_list = series_service.query(query)
+
+if len(series_list) > 1:
+    raise Exception('There are multiple series meet the requirements')
+
+series = series_list[0]
 
 # check data existence
 if len(series.data) == 0:
     print('No data in required interval')
 else:
     # replace value of samples with nan
-    series.data = [delete_value(sample) for sample in series.data]
+    for sample in series.data:
+        sample.v = None
     series.aggregate = None
     series_service.insert(series)
