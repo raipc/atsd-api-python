@@ -73,6 +73,9 @@ class Sample(object):
     def version(self, value):
         self._version = value
 
+    def get_date(self):
+            return to_iso(self._t)
+
     def _compare(self, other):
         return self._t - other.t
 
