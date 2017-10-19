@@ -38,6 +38,8 @@ if len(series.data) == 0:
 else:
     # replace value of samples with nan
     for sample in series.data:
-        sample.v = None
+        print("- Deleting %s" % sample.v)
+        # Uncomment next line to delete
+        # sample.v = None
     series.aggregate = None
     series_service.insert(series)
