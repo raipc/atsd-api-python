@@ -323,6 +323,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[export_messages.py](examples/export_messages.py) | Export messages from ATSD into CSV. |
 |[find_non-positive_values.py](examples/find_non-positive_values.py) | Find series with non-positive values for the specified metric, delete if required. |
 |[find_delayed_entities.py](examples/find_delayed_entities.py) | Find entities more than n hours behind the metric's lastInsertDate. |
+|[delete_series_data_interval.py](examples/delete_series_data_interval.py) | Delete data for a given series with tags for the specified date interval. |
 |[version_check.py](examples/version_check.py) | Print python version, timezone and dependencies version. |
 |[connect_check.py](examples/connect_check.py) | Establishes a connection to ATSD, returns ATSD version, timezone and current time using `connect()`. |
 |[connect_path_check.py](examples/connect_path_check.py) | Establishes a connection to ATSD, returns ATSD version, timezone and current time using `connect(/home/axibase/connection.properties)`. |

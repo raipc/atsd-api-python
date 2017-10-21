@@ -43,6 +43,8 @@ for s in series:
         if deleteValues:
             # delete replace inappropriate values with Nan
             for sample in s.data:
+                print("- Deleting %s, %s " % (sample.get_date(), sample.v))
                 sample.v = None
             s.aggregate = None
-            svc.insert(s)
+            # Uncomment next line to delete
+            # svc.insert(s)
