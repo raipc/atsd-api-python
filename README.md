@@ -317,7 +317,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[high_cardinality_series.py](examples/high_cardinality_series.py) | Find series with too many tag combinations. |
 |[high_cardinality_metrics.py](examples/high_cardinality_metrics.py) | Find metrics with series that have too many tag combinations. |
 |[find_lagging_entities.py](examples/find_lagging_entities.py) | Find entities that match the specified expression filter which have stopped collecting data. |
-|[find_staling_agents.py](examples/find_staling_agents.py) | Find entities that have stopped collecting data for a subset metrics.|
+|[find_stale_agents.py](examples/find_staling_agents.py) | Find entities that have stopped collecting data for a subset metrics.|
 |[metrics_created_later_than.py](examples/metrics_created_later_than.py) | Find metrics that have been created after the specified date. |
 |[entities_created_later_than.py](examples/entities_created_later_than.py) | Find entities that have been created after the specified date. |
 |[export_messages.py](examples/export_messages.py) | Export messages from ATSD into CSV. |
