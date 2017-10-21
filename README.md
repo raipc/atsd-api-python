@@ -350,5 +350,7 @@ pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.
 
 ### Reporting
 
+|**Name**| **Brief Description**|
+|:---|:---|
 |[export_messages.py](examples/export_messages.py) | Export messages from ATSD into CSV. |
 
