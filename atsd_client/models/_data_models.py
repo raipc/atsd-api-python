@@ -19,11 +19,11 @@ import copy
 
 import six
 
-from .._constants import display_series_threshold, display_series_part
-from .._time_utilities import to_timestamp, to_iso, timediff_in_minutes
-from .._utilities import NoneDict
-from .._jsonutil import deserialize
 from ._meta_models import Entity, Metric
+from .._constants import display_series_threshold, display_series_part
+from .._jsonutil import deserialize
+from .._time_utilities import timediff_in_minutes, to_milliseconds, to_date, to_iso
+from .._utilities import NoneDict
 
 
 # ------------------------------------------------------------------------------
@@ -36,14 +36,15 @@ class Sample(object):
     def __init__(self, value, time=None, version=None):
         self._v = copy.deepcopy(value) if not value == "Nan" else float("nan")
         #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date
-        self._t = to_timestamp(time)
+        self._t = int(round(time.time() * 1000)) if time is None else to_milliseconds(time)
+        self._d = to_date(self._t)
         # `.dict` version object including 'source' and 'status' keys
         self._version = version
 
     def to_dict(self):
-        d = {'v': self.v, 't': self.t}
+        d = {'v': self._v, 't': self._t}
         if self.version is not None:
-            d['version'] = self.version
+            d['version'] = self._version
         return d
 
     def __repr__(self):
@@ -57,6 +58,9 @@ class Sample(object):
     def t(self):
         return self._t
 
+    def get_date(self):
+        return self._d
+
     @property
     def version(self):
         return self._version
@@ -67,14 +71,12 @@ class Sample(object):
 
     @t.setter
     def t(self, t):
-        self._t = to_timestamp(t)
+        self._t = to_milliseconds(t)
+        self._d = to_date(self._t)
 
     @version.setter
     def version(self, value):
         self._version = value
-
-    def get_date(self):
-            return to_iso(self._t)
 
     def _compare(self, other):
         return self._t - other.t
@@ -117,7 +119,7 @@ class Series(object):
         self._data = []
         if data is not None:
             for data_unit in data:
-                if isinstance(data_unit, dict):  # Compatability
+                if isinstance(data_unit, dict):  # Compatibility
                     self._data.append(Sample(
                         value=data_unit['v'],
                         time=data_unit.get('t', data_unit.get('d', None)),
@@ -126,11 +128,15 @@ class Series(object):
                     )
                 else:
                     self._data.append(data_unit)
-        #: `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
-        self._lastInsertDate = None if lastInsertDate is None else to_iso(lastInsertDate)
+        # : `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this
+        # metric by any series
+        self._lastInsertDate = None if lastInsertDate is None else to_date(lastInsertDate)
         #: `dict` of entity and metric objects
-        if meta is not None:
-            self._meta = {'entity': deserialize(meta['entity'], Entity), 'metric': deserialize(meta['metric'], Metric)}
+        self._meta = None if meta is None else {'entity': deserialize(meta['entity'], Entity),
+                                                'metric': deserialize(meta['metric'], Metric)}
+
+    def __eq__(self, o):
+        return self._entity == o.entity and self._metric == o.metric and self._tags == o.tags
 
     def __repr__(self):
         if len(self._data) > display_series_threshold:
@@ -140,9 +146,9 @@ class Series(object):
         rows = []
         versioned = False
         for sample in sorted(displayed_data):
-            time = sample.t
+            date = sample.get_date()
             value = sample.v
-            row = '{0}{1: >14}'.format(time, value)
+            row = '{0}{1: >14}'.format(date, value)
             if sample.version is not None:
                 versioned = True
                 source = sample.version.get('source', '-')
@@ -150,8 +156,8 @@ class Series(object):
                 row += '{0: >17}{1: >17}'.format(source, status)
             rows.append(row)
         if versioned:
-            header = ('           time'
-                      '         value'
+            header = ('            date'
+                      '                  value'
                       '   version_source'
                       '   version_status'
                       )
@@ -161,9 +167,10 @@ class Series(object):
         else:
             result = '\n'.join(rows)
         for key, value in six.iteritems(vars(type(self))):
-            if isinstance(value, property):
+            if isinstance(value, property) and key != 'data':
                 attr = getattr(self, key)
-                result += '\n{0}: {1}'.format(key, attr)
+                if attr is not None:
+                    result += '\n{0}: {1}'.format(key, attr)
         return result
 
     def add_samples(self, *samples):
@@ -197,14 +204,14 @@ class Series(object):
     def times(self):
         """
         Valid timestamps in this series
-        :return: list of `float`
+        :return: list of `str`
         """
         data = sorted(self._data)
         result = []
         for num, sample in enumerate(data):
-            if num > 0 and sample.t == data[num - 1].t:
+            if num > 0 and sample.get_date() == data[num - 1].get_date():
                 result.pop()
-            new_time = to_iso(sample.t)
+            new_time = to_iso(sample.get_date())
             result.append(new_time)
         return result
 
@@ -218,7 +225,7 @@ class Series(object):
         """
         res = Series(entity, metric)
         for dt in ts.index:
-            res.add_sample(ts[dt], dt)
+            res.data.append(Sample(value=ts[dt], time=dt))
         return res
 
     def to_pandas_series(self):
@@ -281,7 +288,7 @@ class Series(object):
 
     @lastInsertDate.setter
     def lastInsertDate(self, value):
-        self._lastInsertDate = None if value is None else to_iso(value)
+        self._lastInsertDate = None if value is None else to_date(value)
 
     def get_elapsed_minutes(self):
         """Return elapsed time in minutes between current time and last insert date for the current series.
@@ -289,6 +296,21 @@ class Series(object):
         :return: Time in minutes
         """
         return timediff_in_minutes(self.lastInsertDate)
+
+    def get_tags(self):
+        return ';'.join(['%s=%s' % (k, v) for k, v in six.iteritems(self._tags)])
+
+    def get_first_value(self):
+        return self._data[0].v
+
+    def get_last_value(self):
+        return self._data[-1].v
+
+    def get_first_value_date(self):
+        return self._data[0].get_date()
+
+    def get_last_value_date(self):
+        return self._data[-1].get_date()
 
 
 # ------------------------------------------------------------------------------
@@ -310,7 +332,7 @@ class Property(object):
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self._key = NoneDict(key)
         #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
-        self._date = to_iso(date)
+        self._date = None if date is None else to_date(date)
         #: `dict` of entity and metric objects
         if meta is not None:
             self._meta = {'entity': deserialize(meta['entity'], Entity)}
@@ -361,7 +383,7 @@ class Property(object):
 
     @date.setter
     def date(self, value):
-        self._date = to_iso(value)
+        self._date = None if value is None else to_date(value)
 
 
 # ------------------------------------------------------------------------------
@@ -383,9 +405,9 @@ class Alert(object):
         #: `str` metric
         self._metric = metric
         #: `str` | :class:`datetime` | `long` milliseconds when the last record was received
-        self._lastEventDate = to_iso(lastEventDate)
+        self._lastEventDate = None if lastEventDate is None else to_date(lastEventDate)
         #: `str` | :class:`datetime` | `long` milliseconds when the alert was open
-        self._openDate = to_iso(openDate)
+        self._openDate = None if openDate is None else to_date(openDate)
         #: `Number` last numeric value received
         self._value = value
         #: `str` text value
@@ -477,7 +499,7 @@ class Alert(object):
 
     @openDate.setter
     def openDate(self, value):
-        self._openDate = to_iso(value)
+        self._openDate = None if value is None else to_date(value)
 
     @textValue.setter
     def textValue(self, value):
@@ -489,7 +511,7 @@ class Alert(object):
 
     @lastEventDate.setter
     def lastEventDate(self, value):
-        self._lastEventDate = to_iso(value)
+        self._lastEventDate = None if value is None else to_date(value)
 
     @value.setter
     def value(self, value):
@@ -533,13 +555,13 @@ class AlertHistory(object):
         #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
         self._alertDuration = alertDuration
         #: `str` | :class:`datetime` | `long`
-        self._alertOpenDate = to_iso(alertOpenDate)
+        self._alertOpenDate = None if alertOpenDate is None else to_date(alertOpenDate)
         #: `str`
         self._entity = entity
         #: `str`
         self._metric = metric
         #: `str` | :class:`datetime` | `long`
-        self._receivedDate = to_iso(receivedDate)
+        self._receivedDate = None if receivedDate is None else to_date(receivedDate)
         #: `int`
         self._repeatCount = repeatCount
         #: `str`
@@ -555,7 +577,7 @@ class AlertHistory(object):
         #: `str` alert state when closed: OPEN, CANCEL, REPEAT
         self._type = type
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date
-        self._date = to_iso(date)
+        self._date = None if date is None else to_date(date)
         #: `Number` last numeric value received
         self._value = value
         #: `int` window length
@@ -648,11 +670,11 @@ class AlertHistory(object):
 
     @alertOpenDate.setter
     def alertOpenDate(self, value):
-        self._alertOpenDate = to_iso(value)
+        self._alertOpenDate = None if value is None else to_date(value)
 
     @date.setter
     def date(self, value):
-        self._date = to_iso(value)
+        self._date = None if value is None else to_date(value)
 
     @alertDuration.setter
     def alertDuration(self, value):
@@ -660,7 +682,7 @@ class AlertHistory(object):
 
     @receivedDate.setter
     def receivedDate(self, value):
-        self._receivedDate = to_iso(value)
+        self._receivedDate = None if value is None else to_date(value)
 
     @repeatCount.setter
     def repeatCount(self, value):
@@ -720,7 +742,7 @@ class Message(object):
         #: `str` entity name
         self._entity = entity
         #:`datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created
-        self._date = to_iso(date)
+        self._date = None if date is None else to_date(date)
         #: :class:`.Severity`
         self._severity = severity
         #: `str` message tags
@@ -784,7 +806,7 @@ class Message(object):
 
     @date.setter
     def date(self, value):
-        self._date = to_iso(value)
+        self._date = None if value is None else to_date(value)
 
     @severity.setter
     def severity(self, value):

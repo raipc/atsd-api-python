@@ -24,6 +24,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 
+
 def connect_url(base_url,
                 username,
                 password,

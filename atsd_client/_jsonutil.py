@@ -20,6 +20,8 @@ import numbers
 import six
 from datetime import datetime
 
+from ._time_utilities import to_iso
+
 
 def serialize(target):
     to_dict = getattr(target, "to_dict", None)
@@ -32,7 +34,7 @@ def serialize(target):
     elif isinstance(target, bool):
         return str(target).lower()
     elif isinstance(target, datetime):
-        return target.isoformat()
+        return to_iso(target)
     elif isinstance(target, (six.text_type, six.binary_type, numbers.Number)):
         return target
     elif target is None:

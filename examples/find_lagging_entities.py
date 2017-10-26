@@ -18,7 +18,8 @@ minInsertDate = "1970-01-01T00:00:00.000Z"
 maxInsertDate = datetime.now() - timedelta(seconds=grace_interval_minutes * 60)
 
 entities_service = EntitiesService(connection)
-entities = entities_service.list(expression="name like 'nur*'", minInsertDate=minInsertDate, maxInsertDate=maxInsertDate)
+entities = entities_service.list(expression="name like 'nur*'", minInsertDate=minInsertDate,
+                                 maxInsertDate=maxInsertDate)
 
 print('entityName,entityLabel')
 for entity in entities:

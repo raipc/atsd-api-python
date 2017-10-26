@@ -109,18 +109,17 @@ class EntityFilter():
     Filter precedence, from high to low: entity, entities, entityGroup. Although multiple filters can be specified in the same query object only the filter with the highest precedence is applied.
     Entity expression is applied as an additional filter to the list of entities retrieved by the above filters.
     """
-    def __init__(self, entity="", entities=None, entity_group=None, entity_expression=None):
-        if (entity or entities or entity_group or entity_expression):
-            #: `str` entity name or entity name pattern.
-            self.entity = entity
-            #: `list` of entity names or entity name patterns
-            self.entities = [] if entities is None else entities
-            #: `str` entity group name. Returns records for member entities of the specified group. The result will be empty if the group doesn't exist or contains no entities.
-            self.entity_group = "" if entity_group is None else entity_group
-            #: `str` filter entities by name, field, entity tag, and properties
-            self.entity_expression = "" if entity_expression is None else entity_expression
-        else:
-            raise ValueError("Not enough arguments for the entity filter")
+    def __init__(self, entity, entities=None, entity_group=None, entity_expression=None):
+        if not entity:
+            raise ValueError("Entity is required.")
+        #: `str` entity name or entity name pattern.
+        self.entity = entity
+        #: `list` of entity names or entity name patterns
+        self.entities = [] if entities is None else entities
+        #: `str` entity group name. Returns records for member entities of the specified group. The result will be empty if the group doesn't exist or contains no entities.
+        self.entity_group = None if entity_group is None else entity_group
+        #: `str` filter entities by name, field, entity tag, and properties
+        self.entity_expression = None if entity_expression is None else entity_expression
 
     def set_entity(self, value):
         self.entity = value
@@ -157,7 +156,7 @@ class DateFilter():
         self.endDate = to_iso(value)
 
     def set_interval(self, value):
-        self.interval = to_iso(value)
+        self.interval = value
 
 #===============================================================================
 ################# Series Queries
@@ -199,13 +198,13 @@ class SeriesQuery():
 
 #------------------------------------------------------------------------------
 class SeriesFilter():
-    def __init__(self, metric, tags={}, type="HISTORY", tagExpression=None, exactMatch=None):
+    def __init__(self, metric, tags=None, type="HISTORY", tagExpression=None, exactMatch=None):
         if not metric:
             raise ValueError("Metric is required.")
         #: `str` metric name
         self.metric = metric
         #: `dict`
-        self.tags = tags
+        self.tags = {} if tags is None else tags
         #: :class:`.SeriesType` type of underlying data: HISTORY, FORECAST, FORECAST_DEVIATION. Default: HISTORY
         self.type = type
         #: `str` tag expression to include series that match the specified tag condition
@@ -282,12 +281,18 @@ class  ControlFilter():
     def set_time_format(self, value):
         self.timeFormat = value
 
+    def set_series_limit(self, value):
+        self.seriesLimit = value
+
+    def set_add_meta(self, value):
+        self.addMeta = value
+
 
 #=======================================================================
 # Transformations 
 #=======================================================================
 class TransformationFilter():
-    def __init__(self, aggregate, group, rate):
+    def __init__(self, aggregate, group=None, rate=None):
         #: :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating statistics for each period. Default: DETAIL
         self.aggregate = aggregate
         #: :class:`.Group` object responsible for merging multiple series into one series
@@ -446,6 +451,8 @@ class Aggregate():
     def set_order(self, order):
         if not isinstance(order, numbers.Number):
             raise ValueError('Invalid order, must be a number, found: ' + unicode(type(order)))
+        self.order = order if order is not None else 0
+
 #===============================================================================
 ################# Properties
 #===============================================================================

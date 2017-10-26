@@ -37,6 +37,6 @@ for metric in metric_list:
     for sl in series_list:
         if len(sl.data) > 0:
             series_count += 1
-            t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso(sl.data[0].t)])
+            t.add_row([sl.metric, sl.entity, sl.tags, metric.retentionDays, threshold, to_iso(sl.data[0].get_date())])
 print(t)
 print("\nSeries count with broken retention date is %d." % series_count)

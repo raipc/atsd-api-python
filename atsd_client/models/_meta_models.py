@@ -14,38 +14,38 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
-from .._time_utilities import to_iso, timediff_in_minutes
+from .._time_utilities import to_date, timediff_in_minutes
 from .._utilities import NoneDict
 
 
 # ------------------------------------------------------------------------------
 class DataType(object):
-    SHORT   = 'SHORT'
+    SHORT = 'SHORT'
     INTEGER = 'INTEGER'
-    FLOAT   = 'FLOAT'
-    LONG    = 'LONG'
-    DOUBLE  = 'DOUBLE'
+    FLOAT = 'FLOAT'
+    LONG = 'LONG'
+    DOUBLE = 'DOUBLE'
     DECIMAL = 'DECIMAL'
 
 
 # ------------------------------------------------------------------------------
 class TimePrecision(object):
-    SECONDS      = 'SECONDS'
+    SECONDS = 'SECONDS'
     MILLISECONDS = 'MILLISECONDS'
 
 
 # ------------------------------------------------------------------------------
 class InvalidAction(object):
-    NONE                = 'NONE'
-    DISCARD             = 'DISCARD'
-    TRANSFORM           = 'TRANSFORM'
-    RAISE_ERROR         = 'RAISE_ERROR'
-    SET_VERSION_STATUS  = 'SET_VERSION_STATUS'
+    NONE = 'NONE'
+    DISCARD = 'DISCARD'
+    TRANSFORM = 'TRANSFORM'
+    RAISE_ERROR = 'RAISE_ERROR'
+    SET_VERSION_STATUS = 'SET_VERSION_STATUS'
 
 
 # ------------------------------------------------------------------------------
 class Interpolate(object):
-    LINEAR   = 'LINEAR'
+    LINEAR = 'LINEAR'
     PREVIOUS = 'PREVIOUS'
 
 
@@ -107,7 +107,7 @@ class Metric(object):
         #: `Number` number of days after which lagging series are removed from the database
         self._seriesRetentionDays = seriesRetentionDays
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
-        self._lastInsertDate = None if lastInsertDate is None else to_iso(lastInsertDate)
+        self._lastInsertDate = None if lastInsertDate is None else to_date(lastInsertDate)
         #: `dict`
         self._tags = NoneDict(tags)
         #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status
@@ -119,7 +119,7 @@ class Metric(object):
         #: `str` entity timezone
         self._timeZone = timeZone
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Creation date for this metric
-        self._createdDate = None if createdDate is None else to_iso(createdDate)
+        self._createdDate = None if createdDate is None else to_date(createdDate)
 
     def __repr__(self):
         return "<METRIC name={name}, label={label}, description={des}, createdDate={createdDate}>".format(
@@ -307,22 +307,19 @@ class Entity(object):
         #: `bool` enabled status. Incoming data is discarded for disabled entities
         self._enabled = enabled
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
-        self._lastInsertDate = None if lastInsertDate is None else to_iso(lastInsertDate)
+        self._lastInsertDate = None if lastInsertDate is None else to_date(lastInsertDate)
         #: `dict`
         self._tags = NoneDict(tags)
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Creation date for this entity
-        self._createdDate = None if createdDate is None else to_iso(createdDate)
+        self._createdDate = None if createdDate is None else to_date(createdDate)
 
     def __repr__(self):
-        return "<Entity name={name}, label={label}, interpolate={interpolate}, timezone={timezone}, enabled={" \
-               "enabled}, lastInsertDate={lit}, tags={tags}, createdDate={createdDate}>".format(name=self._name,
-                                                                                                label=self._label,
-                                                                                                interpolate=self._interpolate,
-                                                                                                timezone=self._timeZone,
-                                                                                                enabled=self._enabled,
-                                                                                                lit=self._lastInsertDate,
-                                                                                                tags=self._tags,
-                                                                                                createdDate=self._createdDate)
+        return "<Entity name={name}, label={label}, createdDate={createdDate}, lastInsertDate={lit}, tags={tags}>".format(
+            name=self._name,
+            label=self._label,
+            createdDate=self._createdDate,
+            lit=self._lastInsertDate,
+            tags=self._tags)
 
     # Getters and setters
     @property

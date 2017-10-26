@@ -4,7 +4,8 @@ from atsd_client import connect_url
 from atsd_client.services import MetricsService, EntitiesService
 
 '''
-Locate lagging series among all the series that differ only in tags (have the same metric and entity) during the grace interval.
+Locate lagging series among all the series that differ only in tags (have the same metric and entity) during the 
+grace interval. 
 '''
 
 # Connect to an ATSD server
@@ -30,7 +31,8 @@ for entity in entities:
         if len(series_list) > 1:
             # calculate maximum of all lastInsertDate's in list and subtract 1 hour
             # it will be lower limit date to compare
-            lower_limit_date = max(s.lastInsertDate for s in series_list) - timedelta(seconds=grace_interval_hours * 3600)
+            lower_limit_date = max(s.lastInsertDate for s in series_list) - timedelta(
+                seconds=grace_interval_hours * 3600)
             for s in series_list:
                 # check actual data existence
                 if s.lastInsertDate < lower_limit_date:

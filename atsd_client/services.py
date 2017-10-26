@@ -161,7 +161,7 @@ class AlertsService(_Service):
     def delete(self, *ids):
         """Delete alerts by id
 
-        :param id: `int`
+        :param ids: `int`
         :return: True if success
         """
         response = self.conn.post(alerts_delete_url, ids)
@@ -231,9 +231,9 @@ class MetricsService(_Service):
         if expression is not None:
             params['expression'] = expression
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso(minInsertDate).isoformat()
+            params['minInsertDate'] = to_iso(minInsertDate)
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso(maxInsertDate).isoformat()
+            params['maxInsertDate'] = to_iso(maxInsertDate)
         if tags is not None:
             params['tags'] = tags
         if limit is not None:
@@ -289,9 +289,9 @@ class MetricsService(_Service):
             for k, v in six.iteritems(tags):
                 params['tags.%s' % k] = v
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso(minInsertDate).isoformat()
+            params['minInsertDate'] = to_iso(minInsertDate)
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso(maxInsertDate).isoformat()
+            params['maxInsertDate'] = to_iso(maxInsertDate)
 
         try:
             response = self.conn.get(metric_series_url.format(metric=quote(encode_if_required(metric_name), '')), params)
@@ -335,9 +335,9 @@ class EntitiesService(_Service):
         if expression is not None:
             params["expression"] = expression
         if minInsertDate is not None:
-            params["minInsertDate"] = to_iso(minInsertDate).isoformat()
+            params["minInsertDate"] = to_iso(minInsertDate)
         if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso(maxInsertDate).isoformat()
+            params["maxInsertDate"] = to_iso(maxInsertDate)
         if tags is not None:
             params["tags"] = tags
         if limit is not None:
@@ -373,7 +373,7 @@ class EntitiesService(_Service):
         self.conn.delete(ent_delete_url.format(entity=quote(encode_if_required(entity_name), '')))
         return True
 
-    def metrics(self, entity, expression=None, minInsertDate=None, maxInsertDate=None, useEntityInsertTime=None,
+    def metrics(self, entity, expression=None, minInsertDate=None, maxInsertDate=None, useEntityInsertTime=False,
                 limit=None, tags=None):
         """Retrieve a `list` of metrics matching the specified filters.
 
@@ -381,6 +381,7 @@ class EntitiesService(_Service):
         :param expression: `str`
         :param minInsertDate: `int` | `str` | None | :class:`datetime`
         :param maxInsertDate: `int` | `str` | None | :class:`datetime`
+        :param useEntityInsertTime: `bool` If true, lastInsertDate is calculated for the specified entity and metric
         :param limit: `int`
         :param tags: `str`
         :return: :class:`.Metric` objects
@@ -391,11 +392,10 @@ class EntitiesService(_Service):
         if expression is not None:
             params['expression'] = expression
         if minInsertDate is not None:
-            params['minInsertDate'] = to_iso(minInsertDate).isoformat()
+            params['minInsertDate'] = to_iso(minInsertDate)
         if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso(maxInsertDate).isoformat()
-        if useEntityInsertTime is not None:
-            params['useEntityInsertTime'] = useEntityInsertTime
+            params['maxInsertDate'] = to_iso(maxInsertDate)
+        params['useEntityInsertTime'] = useEntityInsertTime
         if limit is not None:
             params['limit'] = limit
         if tags is not None:
@@ -414,7 +414,7 @@ class EntityGroupsService(_Service):
         """
         _check_name(group_name)
         try:
-            group_name = self.encode_if_required(group_name)
+            group_name = encode_if_required(group_name)
             resp = self.conn.get(eg_get_url.format(group=quote(group_name, '')))
         except ServerException as e:
             if e.status_code == 404:
@@ -455,6 +455,8 @@ class EntityGroupsService(_Service):
         """Create an entity group or replace an existing entity group.
 
         :param group: :class:`.EntityGroup`
+        :param expression: `str` describe entities that match a filter expression consisting of fields and operators
+        :param tags: `dict` Entity tags, as requested with the tags parameter.
         :return: True if success
         """
         data = dict()
@@ -491,9 +493,9 @@ class EntityGroupsService(_Service):
         if expression is not None:
             params["expression"] = expression
         if minInsertDate is not None:
-            params["minInsertDate"] = to_iso(minInsertDate).isoformat()
+            params["minInsertDate"] = to_iso(minInsertDate)
         if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso(maxInsertDate).isoformat()
+            params["maxInsertDate"] = to_iso(maxInsertDate)
         if tags is not None:
             params["tags"] = tags
         if limit is not None:
@@ -512,7 +514,9 @@ class EntityGroupsService(_Service):
         :return: True if success
         """
         _check_name(group_name)
-        data = [e.name if isinstance(e, Entity) else e for e in entities]
+        data = []
+        for e in entities:
+            data.append(e.name if isinstance(e, Entity) else e)
         params = {"createEntities": True if createEntities is None else createEntities}
         response = self.conn.post(eg_add_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
         return True
@@ -529,7 +533,9 @@ class EntityGroupsService(_Service):
         :return: True if success
         """
         _check_name(group_name)
-        data = [e.name if isinstance(e, Entity) else e for e in entities]
+        data = []
+        for e in entities:
+            data.append(e.name if isinstance(e, Entity) else e)
         params = {"createEntities": True if createEntities is None else createEntities}
         response = self.conn.post(eg_set_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
         return True
@@ -544,7 +550,9 @@ class EntityGroupsService(_Service):
         :return: True if success
         """
         _check_name(group_name)
-        entities = [e.name if isinstance(e, Entity) else e for e in entities]
+        entities = []
+        for e in entities:
+            entities.append(e.name if isinstance(e, Entity) else e)
 
         response = self.conn.post(eg_delete_entities_url.format(group=quote(encode_if_required(group_name), '')), data=entities)
         return True
@@ -562,13 +570,15 @@ class SQLService(_Service):
         response = self.query_with_params(sql_query)
         return pd.read_csv(StringIO(response), sep=',')
 
-    def query_with_params(self, sql_query, params={'outputFormat': 'csv'}):
+    def query_with_params(self, sql_query, params=None):
         """Execute SQL query with api parameters.
 
         :param sql_query: `str`
         :param params: `dict`
         :return: Content of the response
         """
+        if params is None:
+            params = {'outputFormat': 'csv'}
         params['q'] = sql_query
         try:
             response_text = self.conn.post(sql_query_url, None, urlencode(params))

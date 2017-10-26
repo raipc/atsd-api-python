@@ -15,7 +15,7 @@ metric_service = MetricsService(connection)
 
 # set metric and entity
 metric = 'ca.daily.reservoir_storage_af'
-entity = 'ca.oro'
+entity = 'ca.nhg'
 
 sf = SeriesFilter(metric=metric, exactMatch=True)
 ef = EntityFilter(entity=entity)
