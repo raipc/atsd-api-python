@@ -292,7 +292,7 @@ class  ControlFilter():
 # Transformations 
 #=======================================================================
 class TransformationFilter():
-    def __init__(self, aggregate, group=None, rate=None):
+    def __init__(self, aggregate=None, group=None, rate=None):
         #: :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating statistics for each period. Default: DETAIL
         self.aggregate = aggregate
         #: :class:`.Group` object responsible for merging multiple series into one series
@@ -314,7 +314,7 @@ class Rate():
     """
     Class representing aggregate param 'rate'
     """
-    def __init__(self, period, counter=True):
+    def __init__(self, period=None, counter=True):
         self.counter = counter
         self.period = period
 
@@ -351,14 +351,12 @@ class Group():
             raise ValueError('Invalid type parameter, expected Interpolate, found: ' + unicode(type(value)))
         self.type = value
 
-    def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR):
+    def set_period(self, count, unit=TimeUnit.SECOND):
         if not isinstance(count, numbers.Number):
             raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('Invalid period unit parameter; should be TimeUnit, found: ' + unicode(type(value)))
-        if not hasattr(PeriodAlign, align):
-            raise ValueError('Invalid align parameter; should be PeriodAlign, found: ' + unicode(type(value)))
-        self.period = {'count' : count, 'unit' : unit, 'align' : align}
+        self.period = {'count' : count, 'unit' : unit}
 
     def set_interpolate(self, type, value=None, extend=False):
         if not isinstance(type, numbers.Number):

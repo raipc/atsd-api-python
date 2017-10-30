@@ -6,7 +6,8 @@ import sys
 import time
 from datetime import datetime
 from dateutil.parser import parse
-from dateutil.tz import tzlocal, tzutc
+from dateutil.tz import tzutc
+from tzlocal import get_localzone
 
 
 def to_milliseconds(date):
@@ -18,11 +19,12 @@ def to_milliseconds(date):
         return date
 
     elif isinstance(date, (six.binary_type, six.text_type)):
-        dt_utc = parse(date).astimezone(tzutc())
+        dt = parse(date)
     elif isinstance(date, datetime):
-        dt_utc = date.astimezone(tzutc())
+        dt = date
     else:
         raise ValueError('time should be either number, datetime instance or str')
+    dt_utc = timezone_ensure(dt).astimezone(tzutc())
     ms = (calendar.timegm(dt_utc.timetuple()) + dt_utc.microsecond / 1000000.0) * 1000
     return ms
 
@@ -53,7 +55,7 @@ def to_iso(date):
         return date
 
     if date.tzinfo is None:
-        date = date.replace(tzinfo=tzlocal())
+        date = date.replace(tzinfo=get_localzone())
     microsecond = date.microsecond
     millisecond = int(round(microsecond / 1000))
     iso = date.isoformat().replace('.{:06d}'.format(microsecond), '.{:03d}'.format(millisecond))
@@ -61,16 +63,16 @@ def to_iso(date):
     return iso
 
 
-def timezone_ensure(datetime_obj, tzinfo=tzlocal()):
+def timezone_ensure(datetime_obj, tz=get_localzone()):
     """
     :param datetime_obj: datetime object'
-    :param tzinfo: _datetime.tzinfo
+    :param tz: _datetime.tzinfo
     :return: datetime instance
     """
     if datetime_obj.tzinfo is None:
-        return datetime_obj.replace(tzinfo=tzinfo)
+        return datetime_obj.replace(tzinfo=tz)
     else:
-        return datetime_obj.astimezone(tzinfo)
+        return datetime_obj.astimezone(tz)
 
 
 def timediff_in_minutes(prev_date, next_date=None):
@@ -88,7 +90,7 @@ def timediff_in_minutes(prev_date, next_date=None):
         prev_date = to_date(prev_date)
 
     if next_date is None:
-        next_date = datetime.now(tzlocal())
+        next_date = datetime.now(get_localzone())
     else:
         next_date = to_date(next_date)
 

@@ -30,7 +30,7 @@ with open('atsd_client/__init__.py', 'r') as fd:
 
 print('version:', version)
 
-install_requires = ['python-dateutil', 'requests>=2.12.1', 'pandas']
+install_requires = ['python-dateutil', 'requests>=2.12.1', 'pandas', 'tzlocal']
 if sys.version_info < (2, 7, 9):
     install_requires.extend(['pyOpenSSL', 'idna'])
 
