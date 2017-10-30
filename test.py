@@ -34,10 +34,6 @@ VALUE = 33333
 VERSION_METRIC = 'pyapi.versioning.metric'
 
 
-def get_timestamp():
-    return int(time.time() * 1000)
-
-
 def get_connection():
     conn = atsd_client.connect_url('https://atsd_hostname:8443', 'user', 'password')
     return conn
@@ -49,10 +45,11 @@ def insert_series_sample(data_service, val=None, *vals):
 
     series = Series(ENTITY, METRIC)
     series.tags = {TAG: TAG_VALUE}
-    series.add_samples(Sample(val, get_timestamp()))
+    series.add_samples(Sample(val, datetime.now()))
     if vals:
         for i, v in enumerate(vals):
-            series.add_samples(Sample(v, get_timestamp() + i + 1))
+            time.sleep(WAIT_TIME + 2)
+            series.add_samples(Sample(v, datetime.now()))
 
     print('insertion =', series)
 
