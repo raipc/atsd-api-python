@@ -338,6 +338,8 @@ pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.
 |[metrics_created_later_than.py](examples/metrics_created_later_than.py) | Find metrics that have been created after the specified date. |
 |[entities_created_later_than.py](examples/entities_created_later_than.py) | Find entities that have been created after the specified date. |
 |[find_delayed_entities.py](examples/find_delayed_entities.py) | Find entities more than n hours behind the metric's last_insert_date. |
+|[series_statistics.py](examples/series_statistics.py) | Retrieve series for a given metric, for each series fetch first and last value. |
+|[frequency_violate.py](examples/frequency_violate.py) | Print values that violate metric frequency. |
 
 ### Record Cleanup 
 
