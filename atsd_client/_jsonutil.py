@@ -17,8 +17,13 @@ permissions and limitations under the License.
 
 import inspect
 import numbers
+import re
+
 import six
 from datetime import datetime
+
+_underscorer1 = re.compile(r'(.)([A-Z][a-z]+)')
+_underscorer2 = re.compile('([a-z0-9])([A-Z])')
 
 from ._time_utilities import to_iso
 
@@ -62,6 +67,7 @@ def deserialize(target, model_class):
         args = inspect.getargspec(model_class.__init__).args
         args.remove('self')
         params = {}
+        target = {to_snake_case(k): v for k, v in six.iteritems(target)}
         for attr in target:
             if attr in args:
                 params[attr] = target[attr]
@@ -72,3 +78,8 @@ def deserialize(target, model_class):
     except:
         raise ValueError(six.text_type(target) + ' could not be deserialized to ' + six.text_type(model_class))
     return result_object
+
+
+def to_snake_case(cc_str):
+    subbed = _underscorer1.sub(r'\1_\2', cc_str)
+    return _underscorer2.sub(r'\1_\2', subbed).lower()
