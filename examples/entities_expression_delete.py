@@ -17,7 +17,8 @@ entity_limit = 1000
 entities = entity_service.list(expression=entity_expression, limit=entity_limit)
 
 entity_count = len(entities)
-print("Found entities: " + str(entity_count) + " for expression= " + entity_expression + " with limit= " + str(entity_limit))
+print(
+"Found entities: " + str(entity_count) + " for expression= " + entity_expression + " with limit= " + str(entity_limit))
 
 for idx, entity in enumerate(entities):
     print("- Deleting " + entity.name + " : " + str(idx + 1) + "/" + str(entity_count))

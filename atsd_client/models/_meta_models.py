@@ -14,38 +14,38 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
-from .._time_utilities import to_iso, timediff_in_minutes
+from .._time_utilities import to_date, timediff_in_minutes
 from .._utilities import NoneDict
 
 
 # ------------------------------------------------------------------------------
 class DataType(object):
-    SHORT   = 'SHORT'
+    SHORT = 'SHORT'
     INTEGER = 'INTEGER'
-    FLOAT   = 'FLOAT'
-    LONG    = 'LONG'
-    DOUBLE  = 'DOUBLE'
+    FLOAT = 'FLOAT'
+    LONG = 'LONG'
+    DOUBLE = 'DOUBLE'
     DECIMAL = 'DECIMAL'
 
 
 # ------------------------------------------------------------------------------
 class TimePrecision(object):
-    SECONDS      = 'SECONDS'
+    SECONDS = 'SECONDS'
     MILLISECONDS = 'MILLISECONDS'
 
 
 # ------------------------------------------------------------------------------
 class InvalidAction(object):
-    NONE                = 'NONE'
-    DISCARD             = 'DISCARD'
-    TRANSFORM           = 'TRANSFORM'
-    RAISE_ERROR         = 'RAISE_ERROR'
-    SET_VERSION_STATUS  = 'SET_VERSION_STATUS'
+    NONE = 'NONE'
+    DISCARD = 'DISCARD'
+    TRANSFORM = 'TRANSFORM'
+    RAISE_ERROR = 'RAISE_ERROR'
+    SET_VERSION_STATUS = 'SET_VERSION_STATUS'
 
 
 # ------------------------------------------------------------------------------
 class Interpolate(object):
-    LINEAR   = 'LINEAR'
+    LINEAR = 'LINEAR'
     PREVIOUS = 'PREVIOUS'
 
 
@@ -62,23 +62,23 @@ class Metric(object):
                  name,
                  label=None,
                  enabled=None,
-                 dataType=None,
-                 timePrecision=None,
+                 data_type=None,
+                 time_precision=None,
                  persistent=None,
                  filter=None,
-                 minValue=None,
-                 maxValue=None,
-                 invalidAction=None,
+                 min_value=None,
+                 max_value=None,
+                 invalid_action=None,
                  description=None,
-                 retentionDays=None,
-                 seriesRetentionDays=None,
-                 lastInsertDate=None,
+                 retention_days=None,
+                 series_retention_days=None,
+                 last_insert_date=None,
                  tags=None,
                  versioned=None,
                  interpolate=None,
                  units=None,
-                 timeZone=None,
-                 createdDate=None
+                 time_zone=None,
+                 created_date=None
                  ):
         #: `str` metric name
         self._name = name
@@ -87,27 +87,27 @@ class Metric(object):
         #: `bool`
         self._enabled = enabled
         #: :class:`.DataType`
-        self._dataType = dataType
+        self._dataType = data_type
         #: :class:`.TimePrecision`
-        self._timePrecision = timePrecision
+        self._timePrecision = time_precision
         #: `bool` persistence status. Non-persistent metrics are not stored in the database and are only processed by the rule engine
         self._persistent = persistent
         #: If filter is specified, series commands that do not satisfy the filter condition are discarded
         self._filter = filter
         #: `Number` minimum value for Invalid Action trigger
-        self._minValue = minValue
+        self._minValue = min_value
         #: `Number` maximum value for Invalid Action trigger
-        self._maxValue = maxValue
+        self._maxValue = max_value
         #: :class:`.InvalidAction`
-        self._invalidAction = invalidAction
+        self._invalidAction = invalid_action
         #: `str` metric description
         self._description = description
         #: `Number` number of days to store the values for this metric in the database
-        self._retentionDays = retentionDays
+        self._retentionDays = retention_days
         #: `Number` number of days after which lagging series are removed from the database
-        self._seriesRetentionDays = seriesRetentionDays
+        self._seriesRetentionDays = series_retention_days
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
-        self._lastInsertDate = None if lastInsertDate is None else to_iso(lastInsertDate)
+        self._lastInsertDate = to_date(last_insert_date)
         #: `dict`
         self._tags = NoneDict(tags)
         #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status
@@ -117,12 +117,12 @@ class Metric(object):
         #: `str` metric units
         self._units = units
         #: `str` entity timezone
-        self._timeZone = timeZone
+        self._timeZone = time_zone
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Creation date for this metric
-        self._createdDate = None if createdDate is None else to_iso(createdDate)
+        self._createdDate = to_date(created_date)
 
     def __repr__(self):
-        return "<METRIC name={name}, label={label}, description={des}, createdDate={createdDate}>".format(
+        return "<METRIC name={name}, label={label}, description={des}, created_date={createdDate}>".format(
             name=self._name, label=self._label,
             des=self._description, createdDate=self._createdDate)
 
@@ -140,11 +140,11 @@ class Metric(object):
         return self._enabled
 
     @property
-    def dataType(self):
+    def data_type(self):
         return self._dataType
 
     @property
-    def timePrecision(self):
+    def time_precision(self):
         return self._timePrecision
 
     @property
@@ -156,15 +156,15 @@ class Metric(object):
         return self._filter
 
     @property
-    def minValue(self):
+    def min_value(self):
         return self._minValue
 
     @property
-    def maxValue(self):
+    def max_value(self):
         return self._maxValue
 
     @property
-    def invalidAction(self):
+    def invalid_action(self):
         return self._invalidAction
 
     @property
@@ -172,15 +172,15 @@ class Metric(object):
         return self._description
 
     @property
-    def retentionDays(self):
+    def retention_days(self):
         return self._retentionDays
 
     @property
-    def seriesRetentionDays(self):
+    def series_retention_days(self):
         return self._seriesRetentionDays
 
     @property
-    def lastInsertDate(self):
+    def last_insert_date(self):
         return self._lastInsertDate
 
     @property
@@ -200,7 +200,7 @@ class Metric(object):
         return self._units
 
     @property
-    def timeZone(self):
+    def time_zone(self):
         return self._timeZone
 
     @name.setter
@@ -215,16 +215,16 @@ class Metric(object):
     def enabled(self, value):
         self._enabled = value
 
-    @dataType.setter
-    def dataType(self, value):
+    @data_type.setter
+    def data_type(self, value):
         self._dataType = value
 
     @property
-    def createdDate(self):
+    def created_date(self):
         return self._createdDate
 
-    @timePrecision.setter
-    def timePrecision(self, value):
+    @time_precision.setter
+    def time_precision(self, value):
         self._timePrecision = value
 
     @persistent.setter
@@ -235,28 +235,28 @@ class Metric(object):
     def filter(self, value):
         self._filter = value
 
-    @minValue.setter
-    def minValue(self, value):
+    @min_value.setter
+    def min_value(self, value):
         self._minValue = value
 
-    @maxValue.setter
-    def maxValue(self, value):
+    @max_value.setter
+    def max_value(self, value):
         self._maxValue = value
 
-    @invalidAction.setter
-    def invalidAction(self, value):
+    @invalid_action.setter
+    def invalid_action(self, value):
         self._invalidAction = value
 
     @description.setter
     def description(self, value):
         self._description = value
 
-    @retentionDays.setter
-    def retentionDays(self, value):
+    @retention_days.setter
+    def retention_days(self, value):
         self._retentionDays = value
 
-    @seriesRetentionDays.setter
-    def seriesRetentionDays(self, value):
+    @series_retention_days.setter
+    def series_retention_days(self, value):
         self._seriesRetentionDays = value
 
     @tags.setter
@@ -275,8 +275,8 @@ class Metric(object):
     def units(self, value):
         self._units = value
 
-    @timeZone.setter
-    def timeZone(self, value):
+    @time_zone.setter
+    def time_zone(self, value):
         self._timeZone = value
 
     def get_elapsed_minutes(self):
@@ -284,7 +284,7 @@ class Metric(object):
 
         :return: Time in minutes
         """
-        return timediff_in_minutes(self.lastInsertDate)
+        return timediff_in_minutes(self.last_insert_date)
 
 
 # ------------------------------------------------------------------------------
@@ -294,8 +294,8 @@ class Entity(object):
     Entities describe objects being monitored, such as servers, sensors, buildings etc.
     """
 
-    def __init__(self, name, enabled=None, label=None, interpolate=None, timeZone=None, lastInsertDate=None, tags=None,
-                 createdDate=None):
+    def __init__(self, name, enabled=None, label=None, interpolate=None, time_zone=None, last_insert_date=None, tags=None,
+                 created_date=None):
         #: `str` entity name
         self._name = name
         #: `str` entity label
@@ -303,26 +303,23 @@ class Entity(object):
         #: :class:`.Interpolate`
         self._interpolate = interpolate
         #: `str` entity timezone
-        self._timeZone = timeZone
+        self._timeZone = time_zone
         #: `bool` enabled status. Incoming data is discarded for disabled entities
         self._enabled = enabled
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
-        self._lastInsertDate = None if lastInsertDate is None else to_iso(lastInsertDate)
+        self._lastInsertDate = to_date(last_insert_date)
         #: `dict`
         self._tags = NoneDict(tags)
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Creation date for this entity
-        self._createdDate = None if createdDate is None else to_iso(createdDate)
+        self._createdDate = to_date(created_date)
 
     def __repr__(self):
-        return "<Entity name={name}, label={label}, interpolate={interpolate}, timezone={timezone}, enabled={" \
-               "enabled}, lastInsertDate={lit}, tags={tags}, createdDate={createdDate}>".format(name=self._name,
-                                                                                                label=self._label,
-                                                                                                interpolate=self._interpolate,
-                                                                                                timezone=self._timeZone,
-                                                                                                enabled=self._enabled,
-                                                                                                lit=self._lastInsertDate,
-                                                                                                tags=self._tags,
-                                                                                                createdDate=self._createdDate)
+        return "<Entity name={name}, label={label}, created_date={createdDate}, last_insert_date={lit}, tags={tags}>".format(
+            name=self._name,
+            label=self._label,
+            createdDate=self._createdDate,
+            lit=self._lastInsertDate,
+            tags=self._tags)
 
     # Getters and setters
     @property
@@ -338,7 +335,7 @@ class Entity(object):
         return self._interpolate
 
     @property
-    def timeZone(self):
+    def time_zone(self):
         return self._timeZone
 
     @property
@@ -346,7 +343,7 @@ class Entity(object):
         return self._enabled
 
     @property
-    def lastInsertDate(self):
+    def last_insert_date(self):
         return self._lastInsertDate
 
     @property
@@ -354,7 +351,7 @@ class Entity(object):
         return self._tags
 
     @property
-    def createdDate(self):
+    def created_date(self):
         return self._createdDate
 
     @name.setter
@@ -369,8 +366,8 @@ class Entity(object):
     def interpolate(self, value):
         self._interpolate = value
 
-    @timeZone.setter
-    def timeZone(self, value):
+    @time_zone.setter
+    def time_zone(self, value):
         self._timeZone = value
 
     @enabled.setter
@@ -386,7 +383,7 @@ class Entity(object):
 
         :return: Time in minutes
         """
-        return timediff_in_minutes(self.lastInsertDate)
+        return timediff_in_minutes(self.last_insert_date)
 
 
 # ------------------------------------------------------------------------------

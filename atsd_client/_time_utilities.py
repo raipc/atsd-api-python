@@ -1,72 +1,83 @@
 import calendar
 import numbers
 
-import dateutil.parser
+import six
 import sys
 import time
 from datetime import datetime
-from dateutil.tz import tzlocal, tzutc
-
-import six
-
-
-def _current_aware_datetime():
-    return datetime.now(tzlocal())
+from dateutil.parser import parse
+from dateutil.tz import tzutc
+from tzlocal import get_localzone
 
 
-def _current_aware_timestring():
-    return str(datetime.now(tzlocal()).replace(microsecond=0).isoformat())
-
-
-def _iso_to_milliseconds(dt):
+def to_milliseconds(date):
     """
-    :param dt datetime
+    :param date: `str` in iso format | :class:`datetime` | `int`
     :return: timestamp in milliseconds
     """
-    return calendar.timegm(dt.timetuple()) * 1000
+    if isinstance(date, numbers.Number):
+        return date
+
+    elif isinstance(date, (six.binary_type, six.text_type)):
+        dt = parse(date)
+    elif isinstance(date, datetime):
+        dt = date
+    else:
+        raise ValueError('time should be either number, datetime instance or str')
+    dt_utc = timezone_ensure(dt).astimezone(tzutc())
+    ms = (calendar.timegm(dt_utc.timetuple()) + dt_utc.microsecond / 1000000.0) * 1000
+    return ms
 
 
-def _dt_to_tz(datetime_obj, tzinfo=tzlocal()):
+def to_date(time):
+    """
+    :param time: `str` in iso format | `int` | :class:`datetime`
+    :return: datetime
+    """
+    if time is None:
+        return None
+
+    if isinstance(time, datetime):
+        return timezone_ensure(time)
+    elif isinstance(time, (six.binary_type, six.text_type)):
+        date = parse(time)
+    elif isinstance(time, numbers.Number):
+        date = datetime.utcfromtimestamp(time * 0.001).replace(tzinfo=tzutc())
+    else:
+        raise ValueError('time should be either datetime instance, str or number')
+    return timezone_ensure(date)
+
+
+def to_iso(date):
+    """
+    :param date: :class:`datetime` | `str`
+    :return: `str`
+    """
+    if date is None:
+        return None
+
+    if isinstance(date, (six.binary_type, six.text_type)):
+        return date
+
+    if date.tzinfo is None:
+        date = date.replace(tzinfo=get_localzone())
+    microsecond = date.microsecond
+    millisecond = int(round(microsecond / 1000))
+    iso = date.isoformat().replace('.{:06d}'.format(microsecond), '.{:03d}'.format(millisecond))
+
+    return iso
+
+
+def timezone_ensure(datetime_obj, tz=get_localzone()):
     """
     :param datetime_obj: datetime object'
-    :param tzinfo: _datetime.tzinfo
+    :param tz: _datetime.tzinfo
     :return: datetime instance
     """
     if datetime_obj.tzinfo is None:
-        return datetime_obj.replace(tzinfo=tzinfo).astimezone(tzinfo)
+        return datetime_obj.replace(tzinfo=tz)
     else:
-        return datetime_obj.astimezone(tzinfo)
-
-
-def to_timestamp(time):
-    """
-    :param time: None | `str` in iso format | :class:`datetime` | `int`
-    :return: timestamp in milliseconds
-    """
-    return _iso_to_milliseconds(to_iso(time, tzutc()))
-
-
-def to_iso(time, tzinfo=tzlocal()):
-    """
-    :param time: None | iso `str` | :class:`datetime` | `int`
-    :param tzinfo: _datetime.tzinfo
-    :return: datetime
-    """
-    aux_time = None
-    if time is None:
-        aux_time = _current_aware_datetime()
-    if isinstance(time, (six.binary_type, six.text_type)):
-        try:
-            aux_time = dateutil.parser.parse(time)
-        except ValueError:
-            return time
-    elif isinstance(time, datetime):
-        aux_time = time
-    elif isinstance(time, numbers.Number):
-        aux_time = datetime.utcfromtimestamp(time * 0.001).replace(tzinfo=tzinfo)  # expecting milliseconds
-    elif aux_time is None:
-        raise ValueError('data "time" should be either number, datetime instance, None or str')
-    return _dt_to_tz(aux_time, tzinfo).replace(microsecond=0)
+        return datetime_obj.astimezone(tz)
 
 
 def timediff_in_minutes(prev_date, next_date=None):
@@ -80,34 +91,15 @@ def timediff_in_minutes(prev_date, next_date=None):
     """
     if prev_date is None:
         return sys.maxsize
-
-    if isinstance(prev_date, (six.binary_type, six.text_type)):
-        try:
-            prev_date = dateutil.parser.parse(prev_date)
-        except ValueError:
-            return prev_date
-    elif isinstance(prev_date, datetime):
-        prev_date = prev_date
-    elif isinstance(prev_date, numbers.Number):
-        prev_date = datetime.utcfromtimestamp(prev_date * 0.001).replace(tzinfo=tzlocal())  # expecting milliseconds
-    elif prev_date is None:
-        raise ValueError('date "prev_date" should be either number, datetime instance, None or str')
+    else:
+        prev_date = to_date(prev_date)
 
     if next_date is None:
-        next_date = datetime.now(tzlocal())
-    elif isinstance(next_date, (six.binary_type, six.text_type)):
-        try:
-            next_date = dateutil.parser.parse(next_date)
-        except ValueError:
-            return next_date
-    elif isinstance(next_date, datetime):
-        next_date = next_date
-    elif isinstance(next_date, numbers.Number):
-        next_date = datetime.utcfromtimestamp(next_date * 0.001).replace(tzinfo=tzlocal())  # expecting milliseconds
-    elif next_date is None:
-        raise ValueError('date "next_date" should be either number, datetime instance, None or str')
+        next_date = datetime.now(get_localzone())
+    else:
+        next_date = to_date(next_date)
 
-    prev_date_date_ts = time.mktime(_dt_to_tz(prev_date).timetuple())
-    next_date_ts = time.mktime(_dt_to_tz(next_date).timetuple())
+    prev_date_date_ts = time.mktime(timezone_ensure(prev_date).timetuple())
+    next_date_ts = time.mktime(timezone_ensure(next_date).timetuple())
 
     return int(next_date_ts - prev_date_date_ts) / 60

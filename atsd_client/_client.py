@@ -31,6 +31,7 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 logging.basicConfig(level=logging.INFO)
 
+
 class Client(object):
     """
     low level request wrapper

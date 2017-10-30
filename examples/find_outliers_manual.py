@@ -15,11 +15,11 @@ metric_service = MetricsService(connection)
 
 # set metric and entity
 metric = 'ca.daily.reservoir_storage_af'
-entity = 'ca.oro'
+entity = 'ca.nhg'
 
-sf = SeriesFilter(metric=metric, exactMatch=True)
+sf = SeriesFilter(metric=metric, exact_match=True)
 ef = EntityFilter(entity=entity)
-df = DateFilter(startDate="1970-01-01T00:00:00Z", endDate=datetime.now())
+df = DateFilter(start_date="1970-01-01T00:00:00Z", end_date=datetime.now())
 
 query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 series_list = svc.query(query)

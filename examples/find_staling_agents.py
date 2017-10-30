@@ -4,7 +4,7 @@ from atsd_client import connect_url
 from atsd_client.services import MetricsService, EntitiesService
 
 '''
-Locate series that have no data during the interval for one day before entity lastInsertDate.
+Locate series that have no data during the interval for one day before entity last_insert_date.
 '''
 
 # Connect to an ATSD server
@@ -25,10 +25,10 @@ for agent in agents:
     if entity is None:
         print('Agent %s not found' % agent)
         continue
-    date = entity.lastInsertDate
+    date = entity.last_insert_date
     # query all metrics collecting by agent
-    metrics = entities_service.metrics(entity, useEntityInsertTime=True)
+    metrics = entities_service.metrics(entity, use_entity_insert_time=True)
     for metric in metrics:
         # check actual data existence
-        if date - metric.lastInsertDate > timedelta(seconds=grace_interval_hours * 3600):
+        if date - metric.last_insert_date > timedelta(seconds=grace_interval_hours * 3600):
             print("%s, %s" % (metric.name, agent))

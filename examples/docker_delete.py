@@ -41,7 +41,7 @@ for docker_host_series in docker_hosts:
     entities = entity_service.list(expression=entity_filter, limit=0, tags="*")
 
     print(" - FOUND " + str(len(entities)) + " objects for docker_host= " + docker_host_series.entity +
-          " : " + docker_host_series.lastInsertDate.isoformat() + " : elapsed_minutes= " + str(elapsed_minutes))
+          " : " + docker_host_series.last_insert_date.isoformat() + " : elapsed_minutes= " + str(elapsed_minutes))
 
     # keep entities that have recent data (inserted within the last 7 days)
     if elapsed_minutes < 7*24*60:

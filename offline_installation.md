@@ -30,7 +30,7 @@ Download required modules (dependencies) into a temporary folder.
 
 ```sh
 mkdir modules
-pip download 'requests>=2.12.1' python-dateutil pandas -d modules
+pip download 'requests>=2.12.1' python-dateutil pandas tzlocal -d modules
 ```
 
 If your python version is less than 2.7.9 download the following additional modules:
@@ -47,8 +47,8 @@ ls modules
 
 ```
 asn1crypto-0.23.0-py2.py3-none-any.whl                  enum34-1.1.6-py2-none-any.whl                           pyOpenSSL-17.3.0-py2.py3-none-any.whl                   six-1.11.0-py2.py3-none-any.whl
-certifi-2017.7.27.1-py2.py3-none-any.whl                idna-2.6-py2.py3-none-any.whl                           pycparser-2.18.tar.gz                                   urllib3-1.22-py2.py3-none-any.whl
-cffi-1.11.1-cp27-cp27mu-manylinux1_x86_64.whl           ipaddress-1.0.18-py2-none-any.whl                       python_dateutil-2.6.1-py2.py3-none-any.whl
+certifi-2017.7.27.1-py2.py3-none-any.whl                idna-2.6-py2.py3-none-any.whl                           pycparser-2.18.tar.gz                                   tzlocal-1.4.tar.gz
+cffi-1.11.1-cp27-cp27mu-manylinux1_x86_64.whl           ipaddress-1.0.18-py2-none-any.whl                       python_dateutil-2.6.1-py2.py3-none-any.whl              urllib3-1.22-py2.py3-none-any.whl
 chardet-3.0.4-py2.py3-none-any.whl                      numpy-1.13.3-cp27-cp27mu-manylinux1_x86_64.whl          pytz-2017.2-py2.py3-none-any.whl
 cryptography-2.0.3-cp27-cp27mu-manylinux1_x86_64.whl    pandas-0.20.3-cp27-cp27mu-manylinux1_x86_64.whl         requests-2.18.4-py2.py3-none-any.whl
 ```
