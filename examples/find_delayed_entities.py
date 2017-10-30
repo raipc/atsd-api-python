@@ -13,7 +13,7 @@ Print entities of that the series.
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # specify metric name
-metric_name = "ca.reservoir_storage_af"
+metric_name = "ca.daily.reservoir_storage_af"
 # set lower boundary for lastInsertDate
 min_insert_date = "2017-09-01T00:00:00.000Z"
 

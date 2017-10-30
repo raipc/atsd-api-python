@@ -16,10 +16,10 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set export parameters
 start_date = "2017-10-01T00:00:00Z"
-end_date = "2017-10-02T00:00:00Z"
+end_date = "now"
 type = "logger"
-source = "com.axibase.tsd.service.sql.sqlqueryserviceimpl"
-entity = "nurswgvml007"
+source = "com.axibase.tsd.service.search.searchserviceimpl"
+entity = "7eacbc4723ed"
 
 message_service = MessageService(connection)
 
