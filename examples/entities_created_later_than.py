@@ -8,6 +8,6 @@ entities_service = EntitiesService(connection)
 # query all entities created after specified date
 entity_list = entities_service.list(expression="createdDate > '2017-10-16T00:00:00Z' AND tags.status != 'deleted'")
 
-print('entityName,entityLabel')
+print('entity_name,entity_label')
 for entity in entity_list:
     print('%s,%s' % (entity.name, entity.label if entity.label is not None else ''))

@@ -217,12 +217,12 @@ class MetricsService(_Service):
                 raise e
         return _jsonutil.deserialize(response, Metric)
 
-    def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
+    def list(self, expression=None, min_insert_date=None, max_insert_date=None, tags=None, limit=None):
         """Retrieve a `list` of metrics matching the specified filters.
 
         :param expression: `str`
-        :param minInsertDate: `int` | `str` | None | :class:`datetime`
-        :param maxInsertDate: `int` | `str` | None | :class:`datetime`
+        :param min_insert_date: `int` | `str` | None | :class:`datetime`
+        :param max_insert_date: `int` | `str` | None | :class:`datetime`
         :param tags: `str`
         :param limit: `int`
         :return: :class:`.Metric` objects
@@ -230,10 +230,10 @@ class MetricsService(_Service):
         params = {}
         if expression is not None:
             params['expression'] = expression
-        if minInsertDate is not None:
-            params['minInsertDate'] = to_iso(minInsertDate)
-        if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso(maxInsertDate)
+        if min_insert_date is not None:
+            params['minInsertDate'] = to_iso(min_insert_date)
+        if max_insert_date is not None:
+            params['maxInsertDate'] = to_iso(max_insert_date)
         if tags is not None:
             params['tags'] = tags
         if limit is not None:
@@ -268,14 +268,14 @@ class MetricsService(_Service):
         self.conn.delete(metric_delete_url.format(metric=quote(encode_if_required(metric_name), '')))
         return True
 
-    def series(self, metric, entity=None, tags=None, minInsertDate=None, maxInsertDate=None):
+    def series(self, metric, entity=None, tags=None, min_insert_date=None, max_insert_date=None):
         """Retrieve series for the specified metric.
 
         :param metric: `str` | :class:`.Metric`
         :param entity: `str` | :class:`.Entity`
         :param tags: `dict`
-        :param minInsertDate: `int` | `str` | None | :class:`datetime`
-        :param maxInsertDate: `int` | `str` | None | :class:`datetime`
+        :param min_insert_date: `int` | `str` | None | :class:`datetime`
+        :param max_insert_date: `int` | `str` | None | :class:`datetime`
 
         :return: :class:`.Series`
         """
@@ -288,10 +288,10 @@ class MetricsService(_Service):
         if tags is not None and isinstance(tags, dict):
             for k, v in six.iteritems(tags):
                 params['tags.%s' % k] = v
-        if minInsertDate is not None:
-            params['minInsertDate'] = to_iso(minInsertDate)
-        if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso(maxInsertDate)
+        if min_insert_date is not None:
+            params['minInsertDate'] = to_iso(min_insert_date)
+        if max_insert_date is not None:
+            params['maxInsertDate'] = to_iso(max_insert_date)
 
         try:
             response = self.conn.get(metric_series_url.format(metric=quote(encode_if_required(metric_name), '')), params)
@@ -321,12 +321,12 @@ class EntitiesService(_Service):
                 raise e
         return _jsonutil.deserialize(response, Entity)
 
-    def list(self, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
+    def list(self, expression=None, min_insert_date=None, max_insert_date=None, tags=None, limit=None):
         """Retrieve a list of entities matching the specified filters.
 
         :param expression: `str`
-        :param minInsertDate: `str` | `int` | :class:`datetime`
-        :param maxInsertDate: `str` | `int` | :class:`datetime`
+        :param min_insert_date: `str` | `int` | :class:`datetime`
+        :param max_insert_date: `str` | `int` | :class:`datetime`
         :param tags: `dict`
         :param limit: `int`
         :return: :class:`.Entity` objects
@@ -334,10 +334,10 @@ class EntitiesService(_Service):
         params = dict()
         if expression is not None:
             params["expression"] = expression
-        if minInsertDate is not None:
-            params["minInsertDate"] = to_iso(minInsertDate)
-        if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso(maxInsertDate)
+        if min_insert_date is not None:
+            params["minInsertDate"] = to_iso(min_insert_date)
+        if max_insert_date is not None:
+            params["maxInsertDate"] = to_iso(max_insert_date)
         if tags is not None:
             params["tags"] = tags
         if limit is not None:
@@ -373,15 +373,15 @@ class EntitiesService(_Service):
         self.conn.delete(ent_delete_url.format(entity=quote(encode_if_required(entity_name), '')))
         return True
 
-    def metrics(self, entity, expression=None, minInsertDate=None, maxInsertDate=None, useEntityInsertTime=False,
+    def metrics(self, entity, expression=None, min_insert_date=None, max_insert_date=None, use_entity_insert_time=False,
                 limit=None, tags=None):
         """Retrieve a `list` of metrics matching the specified filters.
 
         :param entity: `str` | :class:`.Entity`
         :param expression: `str`
-        :param minInsertDate: `int` | `str` | None | :class:`datetime`
-        :param maxInsertDate: `int` | `str` | None | :class:`datetime`
-        :param useEntityInsertTime: `bool` If true, lastInsertDate is calculated for the specified entity and metric
+        :param min_insert_date: `int` | `str` | None | :class:`datetime`
+        :param max_insert_date: `int` | `str` | None | :class:`datetime`
+        :param use_entity_insert_time: `bool` If true, last_insert_date is calculated for the specified entity and metric
         :param limit: `int`
         :param tags: `str`
         :return: :class:`.Metric` objects
@@ -391,11 +391,11 @@ class EntitiesService(_Service):
         params = {}
         if expression is not None:
             params['expression'] = expression
-        if minInsertDate is not None:
-            params['minInsertDate'] = to_iso(minInsertDate)
-        if maxInsertDate is not None:
-            params['maxInsertDate'] = to_iso(maxInsertDate)
-        params['useEntityInsertTime'] = useEntityInsertTime
+        if min_insert_date is not None:
+            params['minInsertDate'] = to_iso(min_insert_date)
+        if max_insert_date is not None:
+            params['maxInsertDate'] = to_iso(max_insert_date)
+        params['useEntityInsertTime'] = use_entity_insert_time
         if limit is not None:
             params['limit'] = limit
         if tags is not None:
@@ -477,13 +477,13 @@ class EntityGroupsService(_Service):
         self.conn.delete(eg_delete_url.format(group=quote(group.name, '')))
         return True
 
-    def get_entities(self, group_name, expression=None, minInsertDate=None, maxInsertDate=None, tags=None, limit=None):
+    def get_entities(self, group_name, expression=None, min_insert_date=None, max_insert_date=None, tags=None, limit=None):
         """Retrieve a list of entities that are members of the specified entity group and which match the specified expression filter.
 
         :param group_name: `str`
         :param expression: `str`
-        :param minInsertDate: `str` | `int` | :class:`datetime`
-        :param maxInsertDate: `str` | `int` | :class:`datetime`
+        :param min_insert_date: `str` | `int` | :class:`datetime`
+        :param max_insert_date: `str` | `int` | :class:`datetime`
         :param tags: `dict`
         :param limit: `int`
         :return: `list` of :class:`.Entity` objects
@@ -492,10 +492,10 @@ class EntityGroupsService(_Service):
         params = dict()
         if expression is not None:
             params["expression"] = expression
-        if minInsertDate is not None:
-            params["minInsertDate"] = to_iso(minInsertDate)
-        if maxInsertDate is not None:
-            params["maxInsertDate"] = to_iso(maxInsertDate)
+        if min_insert_date is not None:
+            params["minInsertDate"] = to_iso(min_insert_date)
+        if max_insert_date is not None:
+            params["maxInsertDate"] = to_iso(max_insert_date)
         if tags is not None:
             params["tags"] = tags
         if limit is not None:
@@ -503,25 +503,25 @@ class EntityGroupsService(_Service):
         resp = self.conn.get(eg_get_entities_url.format(group=quote(encode_if_required(group_name), '')), params)
         return _jsonutil.deserialize(resp, Entity)
 
-    def add_entities(self, group_name, entities, createEntities=None):
+    def add_entities(self, group_name, entities, create_entities=None):
         """Add entities as members to the specified entity group.
         Changing members of expression-based groups is not supported.
         Note that changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names
-        :param createEntities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
+        :param create_entities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
         :return: True if success
         """
         _check_name(group_name)
         data = []
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
-        params = {"createEntities": True if createEntities is None else createEntities}
+        params = {"createEntities": True if create_entities is None else create_entities}
         response = self.conn.post(eg_add_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
         return True
 
-    def set_entities(self, group_name, entities, createEntities=None):
+    def set_entities(self, group_name, entities, create_entities=None):
         """Set members of the entity group from the specified entity list.
         All existing members that are not included in the request will be removed from members.
         If the array in the request is empty, all entities are removed from the group and are replaced with an empty list.
@@ -529,14 +529,14 @@ class EntityGroupsService(_Service):
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
-        :param createEntities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
+        :param create_entities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
         :return: True if success
         """
         _check_name(group_name)
         data = []
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
-        params = {"createEntities": True if createEntities is None else createEntities}
+        params = {"createEntities": True if create_entities is None else create_entities}
         response = self.conn.post(eg_set_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
         return True
 
@@ -546,15 +546,15 @@ class EntityGroupsService(_Service):
         Note that changing members of expression-based groups is not supported.
 
         :param group_name: `str`
-        :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
+        :param data: `list` of :class:`.Entity` objects | `list` of `str` entity names
         :return: True if success
         """
         _check_name(group_name)
-        entities = []
+        data = []
         for e in entities:
-            entities.append(e.name if isinstance(e, Entity) else e)
+            data.append(e.name if isinstance(e, Entity) else e)
 
-        response = self.conn.post(eg_delete_entities_url.format(group=quote(encode_if_required(group_name), '')), data=entities)
+        response = self.conn.post(eg_delete_entities_url.format(group=quote(encode_if_required(group_name), '')), data=data)
         return True
 
 

@@ -2,21 +2,21 @@ from atsd_client import connect_url
 from atsd_client.services import MetricsService
 
 '''
-Locate a collection of metrics that have no lastInsertDate.
+Locate a collection of metrics that have no last_insert_date.
 '''
 
 # Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 metric_service = MetricsService(connection)
-# query entities without lastInsertDate
-metric_list = metric_service.list(maxInsertDate="1970-01-01T00:00:00.000Z")
+# query entities without last_insert_date
+metric_list = metric_service.list(max_insert_date="1970-01-01T00:00:00.000Z")
 metrics_count = 0
 
-print('metricName')
+print('metric_name')
 for metric in metric_list:
     if metric.enabled and metric.persistent \
-            and metric.retentionDays == 0 and metric.seriesRetentionDays == 0:
+            and metric.retention_days == 0 and metric.series_retention_days == 0:
         metrics_count += 1
         print(metric.name)
 

@@ -34,6 +34,9 @@ def to_date(time):
     :param time: `str` in iso format | `int` | :class:`datetime`
     :return: datetime
     """
+    if time is None:
+        return None
+
     if isinstance(time, datetime):
         return timezone_ensure(time)
     elif isinstance(time, (six.binary_type, six.text_type)):
@@ -50,6 +53,8 @@ def to_iso(date):
     :param date: :class:`datetime` | `str`
     :return: `str`
     """
+    if date is None:
+        return None
 
     if isinstance(date, (six.binary_type, six.text_type)):
         return date

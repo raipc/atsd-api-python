@@ -24,7 +24,7 @@ entity = "nurswgvml007"
 message_service = MessageService(connection)
 
 ef = EntityFilter(entity=entity)
-df = DateFilter(startDate=start_date, endDate=end_date)
+df = DateFilter(start_date=start_date, end_date=end_date)
 query = MessageQuery(entity_filter=ef, date_filter=df, type=type, source=source)
 
 messages = message_service.query(query)

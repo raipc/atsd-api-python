@@ -10,14 +10,14 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 metrics_service = MetricsService(connection)
 
-# query all metrics that have lastInsertDate, i.e. series
-metrics = metrics_service.list(minInsertDate="1970-01-01T00:00:00.000")
+# query all metrics that have last_insert_date, i.e. series
+metrics = metrics_service.list(min_insert_date="1970-01-01T00:00:00.000Z")
 
 # set cardinality
 cardinality = 8
 series_count = 0
 
-print('metric, entity, tags, lastInsertDate')
+print('metric, entity, tags, last_insert_date')
 for metric in metrics:
     # query series list for each metric
     series_list = metrics_service.series(metric)
@@ -25,6 +25,6 @@ for metric in metrics:
         # check tags cardinality for each series in list
         if len(s.tags) > cardinality:
             series_count += 1
-            print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.lastInsertDate))
+            print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.last_insert_date))
 
 print("Number of series that have more than %d tags combinations is %d " % (cardinality, series_count))

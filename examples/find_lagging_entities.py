@@ -12,15 +12,15 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set grace_interval to one day
 grace_interval_minutes = 24 * 60
-# query entities with lastInsertDate
-minInsertDate = "1970-01-01T00:00:00.000Z"
-# calculate the upper boundary for the allowed lastInsertDate values excluding grace_interval
-maxInsertDate = datetime.now() - timedelta(seconds=grace_interval_minutes * 60)
+# query entities with last_insert_date
+min_insert_date = "1970-01-01T00:00:00.000Z"
+# calculate the upper boundary for the allowed last_insert_date values excluding grace_interval
+max_insert_date = datetime.now() - timedelta(seconds=grace_interval_minutes * 60)
 
 entities_service = EntitiesService(connection)
-entities = entities_service.list(expression="name like 'nur*'", minInsertDate=minInsertDate,
-                                 maxInsertDate=maxInsertDate)
+entities = entities_service.list(expression="name like 'nur*'", min_insert_date=min_insert_date,
+                                 max_insert_date=max_insert_date)
 
-print('entityName,entityLabel')
+print('entity_name,entity_label')
 for entity in entities:
     print('%s,%s' % (entity.name, entity.label if entity.label is not None else ''))

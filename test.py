@@ -74,7 +74,7 @@ class TestSeriesService(unittest.TestCase):
         now = datetime.now()
         sf = SeriesFilter(metric=METRIC, tags={TAG: [TAG_VALUE]})
         ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(startDate=now - timedelta(hours=1), endDate=now)
+        df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 
         series = self.svc.query(query)
@@ -99,7 +99,7 @@ class TestSeriesService(unittest.TestCase):
         now = datetime.now()
         sf = SeriesFilter(metric=METRIC, tags={TAG: [TAG_VALUE]})
         ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(startDate=now - timedelta(hours=1), endDate=now)
+        df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         aggr = Aggregate(period={'count': 10, 'unit': TimeUnit.SECOND}, types=[AggregateType.MAX, AggregateType.MIN])
         tf = TransformationFilter(aggregate=aggr)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)
@@ -127,7 +127,7 @@ class TestSeriesService(unittest.TestCase):
 
         sf = SeriesFilter(metric=VERSION_METRIC)
         ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(startDate=now - timedelta(hours=1), endDate=now)
+        df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         vf = VersioningFilter(versioned=True)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
 
@@ -157,7 +157,7 @@ class TestSeriesService(unittest.TestCase):
         now = datetime.now()
         sf = SeriesFilter(metric=METRIC, tags={TAG: [TAG_VALUE]}, type=models.SeriesType.FORECAST)
         ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(startDate=now - timedelta(hours=1), endDate=now)
+        df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 
         series = self.svc.query(query)
@@ -172,7 +172,7 @@ class TestSeriesService(unittest.TestCase):
         now = datetime.now()
         sf = SeriesFilter(metric=METRIC, tags={TAG: [TAG_VALUE]})
         ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(startDate=now - timedelta(hours=1), endDate=now)
+        df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         tf = TransformationFilter(rate=Rate(counter=False))
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)
 
@@ -187,7 +187,7 @@ class TestSeriesService(unittest.TestCase):
         now = datetime.now()
         sf = SeriesFilter(metric=METRIC, tags={TAG: [TAG_VALUE]})
         ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(startDate=now - timedelta(hours=1), endDate=now)
+        df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         tf = TransformationFilter(group=Group(type=AggregateType.COUNT, period={'count': 1, 'unit': TimeUnit.SECOND}))
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)
 

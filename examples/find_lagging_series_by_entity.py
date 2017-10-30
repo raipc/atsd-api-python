@@ -13,10 +13,10 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 # set entity and grace_interval to one day
 entity = 'nurswgvml007'
 grace_interval_minutes = 24 * 60
-# query entities with lastInsertDate
-minInsertDate = "1970-01-01T00:00:00.000Z"
-# calculate the upper boundary for the allowed lastInsertDate values excluding grace_interval
-maxInsertDate = datetime.now() - timedelta(seconds=grace_interval_minutes * 60)
+# query entities with last_insert_date
+min_insert_date = "1970-01-01T00:00:00.000Z"
+# calculate the upper boundary for the allowed last_insert_date values excluding grace_interval
+max_insert_date = datetime.now() - timedelta(seconds=grace_interval_minutes * 60)
 
 entities_service = EntitiesService(connection)
 metrics_service = MetricsService(connection)
@@ -24,9 +24,9 @@ metrics_service = MetricsService(connection)
 # query all metrics for entity
 metrics = entities_service.metrics(entity)
 
-print('metric, entity, tags, lastInsertDate')
+print('metric, entity, tags, last_insert_date')
 for metric in metrics:
     # query all series for each metric and entity
-    series = metrics_service.series(metric, entity, minInsertDate=minInsertDate, maxInsertDate=maxInsertDate)
+    series = metrics_service.series(metric, entity, min_insert_date=min_insert_date, max_insert_date=max_insert_date)
     for s in series:
-        print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.lastInsertDate))
+        print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.last_insert_date))

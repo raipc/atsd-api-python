@@ -139,15 +139,15 @@ class DateFilter():
         return (self.startDate is not None and self.endDate is not None) or \
                 (self.interval is not None) and all(key in self.interval for key in ("count","unit"))
 
-    def __init__(self, startDate=None, endDate=None, interval=None):
+    def __init__(self, start_date=None, end_date=None, interval=None):
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches samples timestamped at or after the startDate. Examples: 2016-07-18T11:11:02Z, current_hour
-        self.startDate = to_iso(startDate) if startDate is not None else None
+        self.startDate = to_iso(start_date)
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped before the endDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
-        self.endDate = to_iso(endDate) if endDate is not None else None
+        self.endDate = to_iso(end_date)
         #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"}
         self.interval = interval
         if not self._validate():
-            raise ValueError("Invalid arguments for the date filter: startDate={}, endDate={}, interval={}".format(startDate, endDate, interval))
+            raise ValueError("Invalid arguments for the date filter: startDate={}, endDate={}, interval={}".format(start_date, end_date, interval))
 
     def set_start_date(self, value):
         self.startDate = to_iso(value)
@@ -198,7 +198,7 @@ class SeriesQuery():
 
 #------------------------------------------------------------------------------
 class SeriesFilter():
-    def __init__(self, metric, tags=None, type="HISTORY", tagExpression=None, exactMatch=None):
+    def __init__(self, metric, tags=None, type="HISTORY", tag_expression=None, exact_match=None):
         if not metric:
             raise ValueError("Metric is required.")
         #: `str` metric name
@@ -208,9 +208,9 @@ class SeriesFilter():
         #: :class:`.SeriesType` type of underlying data: HISTORY, FORECAST, FORECAST_DEVIATION. Default: HISTORY
         self.type = type
         #: `str` tag expression to include series that match the specified tag condition
-        self.tagExpression = tagExpression
+        self.tagExpression = tag_expression
         # : `bool` tags match operator: exact match if true, partial match if false
-        self.exactMatch = False if exactMatch is None else exactMatch
+        self.exactMatch = False if exact_match is None else exact_match
 
     def set_metric(self, value):
         self.metric = value
@@ -221,10 +221,10 @@ class SeriesFilter():
     def set_type(self, value):
         self.type = value
 
-    def set_tagExpression(self, value):
+    def set_tag_expression(self, value):
         self.tagExpression = value
 
-    def set_exactMatch(self, value):
+    def set_exact_match(self, value):
         self.exactMatch = value
 
 #------------------------------------------------------------------------------
@@ -238,33 +238,33 @@ class ForecastFilter():
 
 #------------------------------------------------------------------------------
 class VersioningFilter():
-    def __init__(self,versioned=None, versionFilter=None):
+    def __init__(self,versioned=None, version_filter=None):
         # : `bool` flag indicating if version status, source, and change date will be returned if metric is
         # versioned. Default: false.
         self.versioned = False if versioned is None else versioned
         # : `str` expression to filter value history (versions) by version status, source or time, for example:
         # version_status = 'Deleted' or version_source LIKE '*user*'
-        self.versionFilter = "" if versionFilter is None else versionFilter
+        self.versionFilter = "" if version_filter is None else version_filter
 
 #------------------------------------------------------------------------------
 class  ControlFilter():
-    def __init__(self,limit=None, direction=None, seriesLimit=None, cache=None, requestId=None, timeFormat=None, addMeta=None):
+    def __init__(self, limit=None, direction=None, series_limit=None, cache=None, request_id=None, time_format=None, add_meta=None):
         #: `int` maximum number of time:value samples returned for each series. Default: 0.
         self.limit = 0 if limit is None else limit
         #: `str` scan order for applying the limit: DESC - descending, ASC - ascending. Default: DESC
         self.direction= "DESC" if direction is None else direction
         #: `int` maximum number of series returned. Default: 0.
-        self.seriesLimit = 0 if seriesLimit is None else seriesLimit
+        self.seriesLimit = 0 if series_limit is None else series_limit
         # : `bool` flag. If true, execute the query against Last Insert table which results in faster response time
         # for last value queries. Default: false
         self.cache= False if cache is None else cache
         #: `str` optional identifier used to associate query object in request with series objects in response.
-        self.requestId= "" if requestId is None else requestId
+        self.requestId= "" if request_id is None else request_id
         #: `str` time format for data array. iso or milliseconds. Default: iso
-        self.timeFormat="iso" if timeFormat is None else timeFormat
+        self.timeFormat="iso" if time_format is None else time_format
         # : `bool` flag. If true, include metric and entity metadata (field, tags) under the meta object in response.
         # Default: false
-        self.addMeta= False if addMeta is None else addMeta
+        self.addMeta= False if add_meta is None else add_meta
 
     def set_limit(self, value):
         self.limit = value
@@ -395,7 +395,7 @@ class Aggregate():
         if calendar is not None:
             self.set_calendar(**calendar)
         if workingMinutes is not None:
-            self.set_workingMinutes(**workingMinutes)
+            self.set_working_minutes(**workingMinutes)
         if threshold is not None:
             self.set_threshold(**threshold)
         if period is not None:
@@ -415,7 +415,7 @@ class Aggregate():
             raise ValueError('Invalid threshold parameters, must be a number, found: min(' + unicode(type(min)) + ') end(' + unicode(type(max)))
         self.threshold = {'min': min, 'max': max}
 
-    def set_workingMinutes(self, start, end):
+    def set_working_minutes(self, start, end):
         if not isinstance(start, numbers.Number) or not isinstance(end, numbers.Number):
             raise ValueError('Invalid workingMinutes parameters, must be a number, found: start(' + unicode(type(start)) + ') end(' + unicode(type(end)))
         self.workingMinutes = {'start': start, 'end': end}
@@ -458,17 +458,17 @@ class PropertiesQuery():
     """
     Class to retrieve property records for the specified parameters.
     """
-    def __init__(self, entity_filter, date_filter, type, key=None, exactMatch=None, keyTagExpression=None, limit=None, last=None, offset=None, addMeta=None):
+    def __init__(self, entity_filter, date_filter, type, key=None, exact_match=None, key_tag_expression=None, limit=None, last=None, offset=None, add_meta=None):
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
         self.type=type
         self.key=key
-        self.exactMatch=False if exactMatch is None else exactMatch
-        self.keyTagExpression=keyTagExpression
+        self.exactMatch=False if exact_match is None else exact_match
+        self.keyTagExpression=key_tag_expression
         self.limit=0 if limit is None else limit
         self.last=False if last is None else last
         self.offset=-1 if offset is None else offset
-        self.addMeta= False if addMeta is None else addMeta
+        self.addMeta= False if add_meta is None else add_meta
 
     def set_entity_filter(self,value):
         copy_not_empty_attrs(value, self)
@@ -482,10 +482,10 @@ class PropertiesQuery():
     def set_key(self,value):
         self.key = value
 
-    def set_exactMatch(self,value):
+    def set_exact_match(self, value):
         self.exactMatch = value
 
-    def set_keyTagExpression(self,value):
+    def set_key_tag_expression(self, value):
         self.keyTagExpression = value
 
     def set_limit(self,value):
@@ -502,13 +502,13 @@ class PropertiesDeleteQuery():
     """
     Class to delete property records matching the specified filters.
     """
-    def __init__(self, type, entity, startDate=None, endDate=None, key=None, exactMatch=None):
+    def __init__(self, type, entity, start_date=None, end_date=None, key=None, exact_match=None):
         self.type=type
         self.entity=entity
-        self.startTime= to_iso(startDate) if startDate is not None else None
-        self.endTime=to_iso(endDate) if endDate is not None else None
+        self.startTime= to_iso(start_date)
+        self.endTime=to_iso(end_date)
         self.key=key
-        self.exactMatch=False if exactMatch is None else exactMatch
+        self.exactMatch=False if exact_match is None else exact_match
 
     def set_type(self,value):
         self.type = value
@@ -516,16 +516,16 @@ class PropertiesDeleteQuery():
     def set_entity(self,value):
         self.entity = value
 
-    def set_startDate(self,value):
+    def set_start_date(self, value):
         self.startDate = to_iso(value)
 
-    def set_endDate(self,value):
+    def set_end_date(self, value):
         self.endDate = to_iso(value)
 
     def set_key(self,value):
         self.key = value
 
-    def set_exactMatch(self,value):
+    def set_exact_match(self, value):
         self.exactMatch = value
 
 #===============================================================================
@@ -535,13 +535,13 @@ class AlertsQuery():
     """
     Class to retrieve open alert records for the specified filters.
     """
-    def __init__(self, entity_filter, date_filter, rules=None, metrics=None, severities=None, minSeverity=None, acknowledged=None):
+    def __init__(self, entity_filter, date_filter, rules=None, metrics=None, severities=None, min_severity=None, acknowledged=None):
         copy_not_empty_attrs(src=entity_filter, dst=self)
         copy_not_empty_attrs(src=date_filter,   dst=self)
         self.metrics = metrics
         self.rules = rules
         self.severities = severities
-        self.minSeverity = minSeverity
+        self.minSeverity = min_severity
         self.acknowledged = acknowledged
 
     def set_entity_filter(self,value):
@@ -559,7 +559,7 @@ class AlertsQuery():
     def set_severities(self,value):
         self.severities = value
 
-    def set_minSeverity(self,value):
+    def set_min_severity(self, value):
         self.minSeverity = value
 
     def set_acknowledged(self,value):
@@ -604,7 +604,7 @@ class MessageQuery():
     """
      Class to retrieve message records for the specified filters.
     """
-    def __init__(self, entity_filter, date_filter, type=None, source=None, tags=None, severity=None, severities=None, minSeverity=None, limit=None):
+    def __init__(self, entity_filter, date_filter, type=None, source=None, tags=None, severity=None, severities=None, min_severity=None, limit=None):
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
         self.type = type
@@ -612,7 +612,7 @@ class MessageQuery():
         self.tags = tags
         self.severity = severity
         self.severities = severities
-        self.minSeverity = minSeverity
+        self.minSeverity = min_severity
         self.limit = 1000 if limit is None else limit
 
     def set_entity_filter(self,value):
