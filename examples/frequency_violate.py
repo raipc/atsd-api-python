@@ -58,7 +58,7 @@ for metric in metric_list:
     # for each metric load series
     sf = SeriesFilter(metric=metric.name)
     ef = EntityFilter(entity='*')
-    df = DateFilter(startDate="1970-01-01T00:00:00Z", endDate=datetime.now())
+    df = DateFilter(start_date="1970-01-01T00:00:00Z", end_date=datetime.now())
     query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
     series_list = svc.query(query)
 

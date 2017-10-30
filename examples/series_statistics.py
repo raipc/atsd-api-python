@@ -23,8 +23,8 @@ print('entity, entityLabel, seriesTags, firstValueDate, firstValue, lastValueDat
 # query series with current metric for all entities with meta information in ascending order to get first value
 sf = SeriesFilter(metric=metric_name)
 ef = EntityFilter(entity='*')
-df = DateFilter(startDate="1970-01-01T00:00:00Z", endDate=datetime.now())
-cf = ControlFilter(limit=1, addMeta=True, direction="ASC")
+df = DateFilter(start_date="1970-01-01T00:00:00Z", end_date=datetime.now())
+cf = ControlFilter(limit=1, add_meta=True, direction="ASC")
 query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, control_filter=cf)
 series_list_asc = svc.query(query)
 
