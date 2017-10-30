@@ -14,6 +14,8 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # specify metric name
 metric_name = "ca.reservoir_storage_af"
+# set lower boundary for lastInsertDate
+min_insert_date = "2017-09-01T00:00:00.000Z"
 
 # set grace interval in hours
 grace_interval_hours = 24 * 7
@@ -34,7 +36,7 @@ elif metric.last_insert_date is None:
 max_insert_date = metric.last_insert_date - timedelta(seconds=grace_interval_hours * 3600)
 
 # query series list for the metric
-series_list = metrics_service.series(metric, min_insert_date="2017-09-01T00:00:00.000Z", max_insert_date=max_insert_date)
+series_list = metrics_service.series(metric, min_insert_date=min_insert_date, max_insert_date=max_insert_date)
 
 # make dictionary from entity and last_insert_date, store maximum value of last_insert_date
 various_entities = dict()
