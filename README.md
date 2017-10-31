@@ -153,7 +153,9 @@ Finally, to get a list of `Series` objects matching the specified filters, the `
     >>> result = svc.query(query_data)
     >>>
     >>> print(result[0]) #picking first Series object
-    
+```
+
+```
     2016-07-18T17:14:30+00:00             1
 	2016-07-18T17:16:30+00:00             2
 	metric: temperature
@@ -180,6 +182,9 @@ In order to access the Series object in [pandas](http://pandas.pydata.org/), a P
     >>> type(ts.index)
     <class 'pandas.tseries.index.DatetimeIndex'>
     >>> print(ts)
+```
+
+```
     2015-04-10 17:22:24.048000    11
     2015-04-10 17:23:14.893000    31
     2015-04-10 17:24:49.058000     7
@@ -193,7 +198,6 @@ In order to access the Series object in [pandas](http://pandas.pydata.org/), a P
 To plot the series with `matplotlib`, use `plot()`:
 
 ```python
-
     >>> import matplotlib.pyplot as plt
     >>> series.plot()
     >>> plt.show()
@@ -209,6 +213,9 @@ The returned table will be an instance of the `DataFrame` class.
     >>> sql = SQLService(conn)
     >>> df = sql.query('select * from jvm_memory_free limit 3')
     >>> df
+```
+
+```
       entity                  datetime        value     tags.host
     0   atsd  2017-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
     1   atsd  2017-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
@@ -244,6 +251,9 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
     >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
     >>> result = svc.query(query_data)
     >>> print(result[0])
+ ```
+ 
+ ```
 	           time         value   version_source   version_status
 	1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
 	1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
@@ -254,75 +264,26 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 	1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
 ```
 
-## Implemented Methods
-
-### Data API
-- Series
-    - Insert
-    - Query
-- Properties
-    - Insert
-    - Query
-    - Type Query
-- Alerts 
-    - Query
-    - Delete
-    - Update
-    - History Query
-- Messages
-	- Insert
-	- Query
-    
-### Meta API
-- Metrics 
-    - Get
-    - List
-    - Update
-    - Create or replace
-    - Delete
-- Entities
-    - Get
-    - List
-    - Update
-    - Create or replace
-    - Delete
-- Entity Group 
-    - Get
-    - List
-    - Update
-    - Create or replace
-    - Delete
-    - Get entities
-    - Add entities
-    - Set entities
-    - Delete entities
-    
-### SQL
-
-- Query
 
 ## Examples
 
-Some of the examples below use `prettytable` module to format displayed records. The module can be installed as follows:
+### Versions
 
-```
-pip install prettytable
-# or
-pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
-```
-
-### Basic Examples
-
-|**Name**| **Brief Description**|
+|**Name**| **Description**|
 |:---|:---|
-|[version_check.py](examples/version_check.py) | Print python version, timezone and module versions. |
-|[connect_url_check.py](examples/connect_url_check.py) | Connect to ATSD, retrieve ATSD version, timezone and current time using `connect_url('https://atsd_hostname:8443', 'user', 'password')`. |
-|[connect_path_check.py](examples/connect_path_check.py) | Connect to ATSD, retrieve ATSD version, timezone and current time using `connect(/home/axibase/connection.properties)`. |
-|[connect_check.py](examples/connect_check.py) | Connect to ATSD, retrieve ATSD version, timezone and current time using `connect()`. |
+|[version_check.py](examples/version_check.py) | Print out python and module versions. |
+
+### Connection
+
+|**Name**| **Description**|
+|:---|:---|
+|[connect_url_check.py](examples/connect_url_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect_url('https://atsd_hostname:8443', 'user', 'password')` function. |
+|[connect_path_check.py](examples/connect_path_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect(/home/axibase/connection.properties)` function. |
+|[connect_check.py](examples/connect_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect()` function. |
 
 ### Data Availability
 
-|**Name**| **Brief Description**|
+|**Name**| **Description**|
 |:---|:---|
 |[find_broken_retention.py](examples/find_broken_retention.py)| Find series that ignore metric retention days. |
 |[metrics_without_last_insert.py](examples/metrics_without_last_insert.py) | Find metrics without a last insert date. |
@@ -343,7 +304,7 @@ pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.
 
 ### Record Cleanup 
 
-|**Name**| **Brief Description**|
+|**Name**| **Description**|
 |:---|:---|
 |[find_non-positive_values.py](examples/find_non-positive_values.py) | Find series with non-positive values for the specified metric, delete if required. |
 |[delete_series_data_interval.py](examples/delete_series_data_interval.py) | Delete data for a given series with tags for the specified date interval. |
@@ -353,7 +314,16 @@ pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.
 
 ### Reporting
 
-|**Name**| **Brief Description**|
+|**Name**| **Description**|
 |:---|:---|
 |[export_messages.py](examples/export_messages.py) | Export messages from ATSD into CSV. |
+
+
+Note that some of the examples above use the `prettytable` module to format displayed records. The module can be installed as follows:
+
+```
+pip install prettytable
+# or
+pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
+```
 
