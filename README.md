@@ -347,6 +347,7 @@ pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.
 |[delete_series_data_interval.py](examples/delete_series_data_interval.py) | Delete data for a given series with tags for the specified date interval. |
 |[docker_delete.py](examples/docker_delete.py)| Delete docker host entities and related container/image/network/volume entities that have not inserted data for more than 7 days. |
 |[entities_expression_delete.py](examples/entities_expression_delete.py)| Delete entities that match the specified expression filter. |
+|[delete_entity_tags.py](examples/delete_entity_tags.py)| Delete specific entity tags from entities that match an expression. |
 
 ### Reporting
 
