@@ -1,5 +1,6 @@
 from atsd_client import connect_url
 from atsd_client.services import EntitiesService
+from atsd_client.utils import print_str
 
 '''
 Delete specific entity tags by name from entities that match an expression.
@@ -27,6 +28,6 @@ for entity in entities_list:
             # mark entity to be updated
             need_update = True
     if need_update:
-        print('%s,%s' % (entity.name, entity.label if entity.label is not None else ''))
+        print('%s,%s' % (entity.name, print_str(entity.label)))
         # Uncomment next line to delete tags
         # entities_service.update(entity)

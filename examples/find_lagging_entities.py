@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from atsd_client import connect_url
 from atsd_client.services import EntitiesService
+from atsd_client.utils import print_str
 
 '''
 Locate series that have no data during the actual time interval (grace_interval) for specified entities.
@@ -23,4 +24,4 @@ entities = entities_service.list(expression="name like 'nur*'", min_insert_date=
 
 print('entity_name,entity_label')
 for entity in entities:
-    print('%s,%s' % (entity.name, entity.label if entity.label is not None else ''))
+    print('%s,%s' % (entity.name, print_str(entity.label)))

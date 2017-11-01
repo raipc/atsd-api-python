@@ -1,8 +1,6 @@
-import six
-
 from atsd_client import connect_url
 from atsd_client.services import EntityGroupsService, EntitiesService
-from atsd_client.utils import print_tags
+from atsd_client.utils import print_tags, print_str
 
 '''
 Delete entity tags with names starting with the specified prefix from entities that belongs specific entity group.
@@ -13,22 +11,19 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set the name of entity_group and prefix for tag key
 entity_group_name = 'docker-images'
-tag_prefix = 'env.'
+tag_expression = 'env.*'
 
 eg_service = EntityGroupsService(connection)
 entities_service = EntitiesService(connection)
-entities_list = eg_service.get_entities(entity_group_name, tags='*')
+entities_list = eg_service.get_entities(entity_group_name, tags=tag_expression)
+# exclude entities that have no required tags
+entities = [entity for entity in entities_list if entity.tags]
 
 print('entity_name,entity_label,tags')
-for entity in entities_list:
-    tags_to_delete = {}
-    actual_tags = entity.tags
-    for key, value in six.iteritems(actual_tags):
-        if key.startswith(tag_prefix):
-            tags_to_delete[key] = value
-            actual_tags[key] = ''
-    # check if there are tags to delete for the entity
-    if tags_to_delete:
-        print('%s,%s,%s' % (entity.name, entity.label if entity.label is not None else '', print_tags(tags_to_delete)))
-        # Uncomment next line to delete tags
-        # entities_service.update(entity)
+for entity in entities:
+    pretty_tags = print_tags(entity.tags)
+    for key in entity.tags:
+        entity.tags[key] = ''
+    print('%s,%s,%s' % (entity.name, print_str(entity.label), pretty_tags))
+    # Uncomment next line to delete tags
+    # entities_service.update(entity)
