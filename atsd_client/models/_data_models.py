@@ -295,9 +295,6 @@ class Series(object):
         """
         return timediff_in_minutes(self.last_insert_date)
 
-    def get_tags(self):
-        return ';'.join(['%s=%s' % (k, v) for k, v in six.iteritems(self._tags)])
-
     def get_first_value(self):
         return self._data[0].v
 

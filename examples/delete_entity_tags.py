@@ -17,7 +17,7 @@ tags_to_delete = ['original_price', 'last_price', 'last_average_price', 'last_am
 
 entities_list = entities_service.list(expression=expression, tags=tags_to_delete)
 
-print('entityName,entityLabel')
+print('entity_name,entity_label')
 for entity in entities_list:
     need_update = False
     actual_tags = entity.tags
