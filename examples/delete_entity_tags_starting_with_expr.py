@@ -19,7 +19,7 @@ eg_service = EntityGroupsService(connection)
 entities_service = EntitiesService(connection)
 entities_list = eg_service.get_entities(entity_group_name, tags='*')
 
-print('entityName,entityLabel,tags')
+print('entity_name,entity_label,tags')
 for entity in entities_list:
     tags_to_delete = {}
     actual_tags = entity.tags
