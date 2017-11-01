@@ -311,7 +311,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[docker_delete.py](examples/docker_delete.py)| Delete docker host entities and related container/image/network/volume entities that have not inserted data for more than 7 days. |
 |[entities_expression_delete.py](examples/entities_expression_delete.py)| Delete entities that match the specified expression filter. |
 |[delete_entity_tags.py](examples/delete_entity_tags.py)| Delete specific entity tags from entities that match an expression. |
-|[delete_eg_tags_started_with.py](examples/delete_eg_tags_started_with.py)| Delete tags started with prefix from entities that belongs specific entity group. |
+|[delete_entity_tags_starting_with_expr.py](examples/delete_entity_tags_starting_with_expr.py)| Delete entity tags started with expression. |
 
 ### Reporting
 
