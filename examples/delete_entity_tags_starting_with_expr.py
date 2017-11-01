@@ -2,7 +2,7 @@ from atsd_client import connect_url
 from atsd_client.services import EntityGroupsService, EntitiesService
 
 '''
-Delete tags started with prefix from entities that belongs specific entity group.
+Delete entity tags with names starting with the specified prefix from entities that belongs specific entity group.
 '''
 
 # Connect to an ATSD server
