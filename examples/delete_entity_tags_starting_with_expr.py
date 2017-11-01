@@ -1,3 +1,5 @@
+import six
+
 from atsd_client import connect_url
 from atsd_client.services import EntityGroupsService, EntitiesService
 
@@ -16,16 +18,16 @@ eg_service = EntityGroupsService(connection)
 entities_service = EntitiesService(connection)
 entities_list = eg_service.get_entities(entity_group_name, tags='*')
 
-print('entityName,entityLabel')
+print('entityName,entityLabel,tags')
 for entity in entities_list:
-    need_update = False
+    tags_to_delete = {}
     actual_tags = entity.tags
-    for key in actual_tags:
+    for key, value in six.iteritems(actual_tags):
         if key.startswith(tag_prefix):
+            tags_to_delete[key] = value
             actual_tags[key] = ''
-            # mark entity to be updated
-            need_update = True
-    if need_update:
-        print('%s,%s' % (entity.name, entity.label if entity.label is not None else ''))
+    # check if there are tags to delete for the entity
+    if tags_to_delete:
+        print('%s,%s,%s' % (entity.name, entity.label if entity.label is not None else '', tags_to_delete))
         # Uncomment next line to delete tags
         # entities_service.update(entity)
