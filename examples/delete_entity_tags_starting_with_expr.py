@@ -2,6 +2,7 @@ import six
 
 from atsd_client import connect_url
 from atsd_client.services import EntityGroupsService, EntitiesService
+from atsd_client.utils import pretty_print_dict
 
 '''
 Delete entity tags with names starting with the specified prefix from entities that belongs specific entity group.
@@ -28,6 +29,6 @@ for entity in entities_list:
             actual_tags[key] = ''
     # check if there are tags to delete for the entity
     if tags_to_delete:
-        print('%s,%s,%s' % (entity.name, entity.label if entity.label is not None else '', tags_to_delete))
+        print('%s,%s,%s' % (entity.name, entity.label if entity.label is not None else '', pretty_print_dict(tags_to_delete)))
         # Uncomment next line to delete tags
         # entities_service.update(entity)
