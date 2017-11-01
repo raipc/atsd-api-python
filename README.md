@@ -312,6 +312,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[entities_expression_delete.py](examples/entities_expression_delete.py)| Delete entities that match the specified expression filter. |
 |[delete_entity_tags.py](examples/delete_entity_tags.py)| Delete specific entity tags from entities that match an expression. |
 |[delete_entity_tags_starting_with_expr.py](examples/delete_entity_tags_starting_with_expr.py)| Delete entity tags started with expression. |
+|[update_entity_tags_from_property.py](examples/update_entity_tags_from_property.py)| Update entity tags from the corresponding property tags. |
 
 ### Reporting
 
