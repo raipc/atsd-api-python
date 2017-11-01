@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from atsd_client import connect_url
-from atsd_client.utils import pretty_print_dict
+from atsd_client.utils import print_tags
 from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter
 from atsd_client.services import MetricsService, SeriesService
 
@@ -43,13 +43,13 @@ for series_asc in series_list_asc:
         # get label from meta information
         label = series_asc.meta['entity'].label if series_asc.meta['entity'].label is not None else ''
         # get first and last samples in series to output
-        print('%s, %s, %s, %s, %s, %s, %s' % (series_asc.entity, label, pretty_print_dict(series_asc.tags),
+        print('%s, %s, %s, %s, %s, %s, %s' % (series_asc.entity, label, print_tags(series_asc.tags),
                                               series_asc.get_first_value_date(), series_asc.get_first_value(),
                                               series_desc.get_first_value_date(), series_desc.get_first_value()))
 
 # print remaining series that are not in ascending list
 for series_desc in series_list_desc:
     label = series_desc.meta['entity'].label if series_desc.meta['entity'].label is not None else ''
-    print('%s, %s, %s, %s, %s, %s, %s' % (series_desc.entity, label, pretty_print_dict(series_desc.tags),
+    print('%s, %s, %s, %s, %s, %s, %s' % (series_desc.entity, label, print_tags(series_desc.tags),
                                           '', '',
                                           series_desc.get_first_value_date(), series_desc.get_first_value()))
