@@ -1,3 +1,4 @@
+import six
 from datetime import datetime
 
 from atsd_client import connect_url
@@ -33,18 +34,18 @@ property_query = PropertiesQuery(entity_filter=ef, date_filter=df, type=property
 
 print('entity_name,entity_label,tags')
 for entity in entities:
-    tags_keys = list(entity.tags)
     pretty_tags = print_tags(entity.tags)
+    for key in entity.tags:
+        entity.tags[key] = ''
 
     # set actual entity and execute property query
     property_query.set_entity_filter(EntityFilter(entity.name))
-    property_item, = properties_service.query(property_query)
-    property_tags = property_item.tags
-
-    for key in tags_keys:
-        entity.tags[key] = ''
-        new_key = key[len(tag_expression[:-1]):]
-        entity.tags[new_key] = property_tags[new_key]
+    properties_list = properties_service.query(property_query)
+    # set entity tags from property tags
+    if properties_list:
+        property_tags = properties_list[0].tags
+        for key, value in six.iteritems(property_tags):
+            entity.tags[key] = value
 
     print('%s,%s,%s' % (entity.name, print_str(entity.label), pretty_tags))
     # Uncomment next line to delete tags
