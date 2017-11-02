@@ -3,6 +3,7 @@ from datetime import timedelta
 
 from atsd_client import connect_url
 from atsd_client.services import MetricsService, EntitiesService
+from atsd_client.utils import print_str
 
 '''
 Find series with last_insert_date more than n hours behind the metric's last_insert_date.
@@ -16,8 +17,7 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 metric_name = "ca.daily.reservoir_storage_af"
 # set lower boundary for lastInsertDate
 min_insert_date = "2017-09-01T00:00:00.000Z"
-
-# set grace interval in hours
+# set grace interval in hours for 7 days
 grace_interval_hours = 24 * 7
 
 entities_service = EntitiesService(connection)
@@ -49,4 +49,4 @@ print('entity_name,entity_label,last_insert_date')
 for entity in various_entities:
     label = entities_service.get(entity).label
     last_insert_date = various_entities[entity]
-    print('%s,%s,%s' % (entity, label if label is not None else '', last_insert_date))
+    print('%s,%s,%s' % (entity, print_str(label), last_insert_date))
