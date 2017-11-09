@@ -10,6 +10,22 @@ from atsd_client.services import SeriesService
 '''
 The test should compare series query responses for the given metric, entity, tags, and start/end dates before and
 after ATSD migration, compare results.
+
+Naming convention: query-${metric}-${entity}-${tags}-${type}.json
+Tags must be divide with ';' between pairs and with '=' between tag key and value.
+Instead of query can be specified rate or group if required.
+
+query-cpu_busy-nurswgvml007-all-DETAIL.json
+query-cpu_busy-nurswgvml007-all-PERCENTILE_90+DELTA.json
+query-disk_used-nurswgvml006-all-all.json
+query-disk_used-nurswgvml006-all-DETAIL.json
+query-disk_used-nurswgvml006-all-MIN+MAX.json
+query-disk_used-nurswgvml006-all-MIN.json
+query-disk_used-nurswgvml006-all-WTAVG.json
+query-log_event_counter-nurswgvml007-command=com.axibase.tsd.Server;level=INFO;logger=com.axibase.tsd.service.config.ServerPropertiesReader-all.json
+rate-cpu_busy-nurswgvml007-all-DETAIL.json
+group-disk_used-nurswgvml006-all-DETAIL.json
+rate+group-collectd.cpu.busy-nurswghbs001-all-MIN.json
 '''
 
 # Connect to an ATSD server
