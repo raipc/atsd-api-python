@@ -29,9 +29,9 @@ from ._time_utilities import to_iso
 
 
 def serialize(target):
-    to_dict = getattr(target, "__to_dict", None)
+    to_dict = getattr(target, "_to_dict", None)
     if callable(to_dict):
-        return target.__to_dict()
+        return target._to_dict()
     if isinstance(target, dict):
         return dict([k, serialize(v)] for k, v in six.iteritems(target))
     elif isinstance(target, (list, tuple)):
