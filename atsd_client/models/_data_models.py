@@ -21,7 +21,7 @@ import six
 
 from ._meta_models import Entity, Metric
 from .._constants import display_series_threshold, display_series_part
-from .._jsonutil import deserialize
+from .._jsonutil import deserialize, serialize
 from .._time_utilities import timediff_in_minutes, to_milliseconds, to_date, to_iso
 from .._utilities import NoneDict
 
@@ -41,7 +41,7 @@ class Sample(object):
         # `.dict` version object including 'source' and 'status' keys
         self._version = version
 
-    def __to_dict(self):
+    def _to_dict(self):
         d = {'v': self._v, 't': self._t}
         if self.version is not None:
             d['version'] = self._version
@@ -88,7 +88,7 @@ class Sample(object):
         return self._compare(other) > 0
 
     def __eq__(self, other):
-        return self._compare(other) == 0
+        return self._compare(other) == 0 and self.v == other.v
 
     def __le__(self, other):
         return self._compare(other) <= 0
@@ -136,7 +136,7 @@ class Series(object):
                                                 'metric': deserialize(meta['metric'], Metric)}
 
     def __eq__(self, o):
-        return self._entity == o.entity and self._metric == o.metric and self._tags == o.tags
+        return self._entity == o.entity and self._metric == o.metric and self._tags == o.tags and self._data == o.data
 
     def __repr__(self):
         if len(self._data) > display_series_threshold:
@@ -172,6 +172,13 @@ class Series(object):
                 if attr is not None:
                     result += '\n{0}: {1}'.format(key, attr)
         return result
+
+    def to_dictionary(self):
+        return serialize(self)
+
+    @staticmethod
+    def from_dict(s):
+        return deserialize(s, Series)
 
     def add_samples(self, *samples):
         """

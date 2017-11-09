@@ -76,7 +76,8 @@ class AggregateType(object):
     PERCENTILE_95      = 'PERCENTILE_95'
     PERCENTILE_90      = 'PERCENTILE_90'
     PERCENTILE_75      = 'PERCENTILE_75'
-    PERCENTILE_50      = 'PERCENTILE_50'        #MEDIAN
+    PERCENTILE_50      = 'PERCENTILE_50'
+    MEDIAN             = 'MEDIAN'
     STANDARD_DEVIATION = 'STANDARD_DEVIATION'
     FIRST              = 'FIRST'
     LAST               = 'LAST'
@@ -359,8 +360,8 @@ class Group():
         self.period = {'count' : count, 'unit' : unit}
 
     def set_interpolate(self, type, value=None, extend=False):
-        if not isinstance(type, numbers.Number):
-            raise ValueError('Invalid interpolate parameter, must be a number, found: ' + unicode(type(type)))
+        if not hasattr(Interpolate, type):
+            raise ValueError('Invalid interpolate parameter, must be an Interpolate, found: ' + unicode(type(type)))
         self.interpolate = {'type' : type}
         if value is not None:
             if not isinstance(value, numbers.Number):
