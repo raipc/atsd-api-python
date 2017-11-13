@@ -230,9 +230,9 @@ class SeriesFilter():
 
 #------------------------------------------------------------------------------
 class ForecastFilter():
-    def __init__(self, forecastName=""):
+    def __init__(self, forecast_name=""):
         #: `str` unique forecast name. Identifies a custom forecast by name. If forecastName is not set, then the default forecast computed by the database will be returned. forecastName is applicable only when type is set to FORECAST or FORECAST_DEVIATION
-        self.forecastName = forecastName
+        self.forecastName = forecast_name
 
     def set_forecast_name(self, value):
         self.forecastName = value
