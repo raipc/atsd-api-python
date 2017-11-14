@@ -1,11 +1,10 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import six
-
 from atsd_client import connect_url
 from atsd_client.models import EntityFilter, DateFilter, MessageQuery
 from atsd_client.services import MessageService
+from atsd_client.utils import print_tags
 
 '''
 Export messages from ATSD into CSV-file using specified start_date, end_date, type, source and entity.
@@ -34,8 +33,6 @@ with open('export.csv', 'w') as f:
     for message in messages:
         # make message body single line
         msg = message.message.replace("\n", r"\n").replace("\t", r"\t")
-        # merge tags into one column divided by semicolon, i.e. k1=v1;k2=v2
-        tags = ';'.join(['%s=%s' % (k, v) for k, v in six.iteritems(message.tags)])
         print('%s, %s, %s, %s, %s, %s, %s' % (
-            message.date, message.entity, message.type, message.source, message.severity, tags, msg),
+            message.date, message.entity, message.type, message.source, message.severity, print_tags(message.tags), msg),
               file=f)

@@ -19,7 +19,7 @@ metric_service = MetricsService(connection)
 metric_name = "ca.daily.reservoir_storage_af"
 
 # print header
-print('entity, entityLabel, seriesTags, firstValueDate, firstValue, lastValueDate, lastValue')
+print('entity,entityLabel,seriesTags,firstValueDate,firstValue,lastValueDate,lastValue')
 
 # query series with current metric for all entities with meta information in ascending order to get first value
 sf = SeriesFilter(metric=metric_name)
@@ -37,19 +37,23 @@ for series_asc in series_list_asc:
     if len(series_asc.data) > 0:
 
         # get corresponding descending series and remove it from desc list
-        index_series_desc = series_list_desc.index(series_asc)
+        index_series_desc = -1
+        for idx, sd in enumerate(series_list_desc):
+            if sd.entity == series_asc.entity and sd.metric == series_asc.entity and sd.tags == series_asc.tags:
+                index_series_desc = idx
+                break
         series_desc = series_list_desc.pop(index_series_desc)
 
         # get label from meta information
         label = series_asc.meta['entity'].label if series_asc.meta['entity'].label is not None else ''
         # get first and last samples in series to output
-        print('%s, %s, %s, %s, %s, %s, %s' % (series_asc.entity, label, print_tags(series_asc.tags),
+        print('%s,%s,%s,%s,%s,%s,%s' % (series_asc.entity, label, print_tags(series_asc.tags),
                                               series_asc.get_first_value_date(), series_asc.get_first_value(),
                                               series_desc.get_first_value_date(), series_desc.get_first_value()))
 
 # print remaining series that are not in ascending list
 for series_desc in series_list_desc:
     label = series_desc.meta['entity'].label if series_desc.meta['entity'].label is not None else ''
-    print('%s, %s, %s, %s, %s, %s, %s' % (series_desc.entity, label, print_tags(series_desc.tags),
+    print('%s,%s,%s,%s,%s,%s,%s' % (series_desc.entity, label, print_tags(series_desc.tags),
                                           '', '',
                                           series_desc.get_first_value_date(), series_desc.get_first_value()))

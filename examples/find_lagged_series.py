@@ -20,7 +20,7 @@ metrics_service = MetricsService(connection)
 # query all entities that have last_insert_date, i.e. series
 entities = entities_service.list(expression="name LIKE '06*'", min_insert_date="1970-01-01T00:00:00.000Z")
 
-print('metric, entity, tags, last_insert_date')
+print('metric,entity,tags,last_insert_date')
 for entity in entities:
     # query all metrics for each entity
     metrics = entities_service.metrics(entity.name)
@@ -36,4 +36,4 @@ for entity in entities:
             for s in series_list:
                 # check actual data existence
                 if s.last_insert_date < lower_limit_date:
-                    print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.last_insert_date))
+                    print("%s,%s,%s,%s" % (s.metric, s.entity, s.tags, s.last_insert_date))

@@ -18,7 +18,7 @@ metrics = metrics_service.list(min_insert_date="1970-01-01T00:00:00.000Z")
 cardinality = 10
 metric_count = 0
 
-print('metric, maximum number of tags')
+print('metric,maximum number of tags')
 for metric in metrics:
     # query series list for each metric
     series_list = metrics_service.series(metric)
@@ -30,6 +30,6 @@ for metric in metrics:
             max_tags = tags_count
     if max_tags > -1:
         metric_count += 1
-        print('%s, %d' % (metric.name, max_tags))
+        print('%s,%d' % (metric.name, max_tags))
 
 print("Number of metrics that have more than %d tag combinations is %d " % (cardinality, metric_count))

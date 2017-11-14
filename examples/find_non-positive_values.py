@@ -33,13 +33,13 @@ if deleteValues:
 else:
     print('Leave as is inappropriate values.\n')
 
-print('metric, entity, tags, data')
+print('metric,entity,tags,data')
 for s in series:
     # filter non-positive values
     s.data = [sample for sample in s.data if sample.v is not None and sample.v <= 0]
 
     if len(s.data) > 0:
-        print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, [sample.v for sample in s.data]))
+        print("%s,%s,%s,%s" % (s.metric, s.entity, s.tags, [sample.v for sample in s.data]))
         if deleteValues:
             # delete replace inappropriate values with Nan
             for sample in s.data:
