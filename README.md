@@ -301,6 +301,14 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[find_delayed_entities.py](examples/find_delayed_entities.py) | Find entities more than n hours behind the metric's last_insert_date. |
 |[series_statistics.py](examples/series_statistics.py) | Retrieve series for a given metric, for each series fetch first and last value. |
 |[frequency_violate.py](examples/frequency_violate.py) | Print values that violate metric frequency. |
+|[migration.py](examples/migration.py) | Compare series query responses before and after ATSD migration. |
+|[data-availability.py](examples/data-availability.py) | Monitor availability of data using predefined CSV. |
+
+### Data Manipulation
+|**Name**| **Description**|
+|:---|:---|
+|[copy_data.py](examples/copy_data.py)| Copy data into a different period. |
+|[copy_data_for_the_metric.py](examples/copy_data_for_the_metric.py) | Copy data into a new metric. |
 
 ### Record Cleanup 
 

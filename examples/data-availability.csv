@@ -1,0 +1,4 @@
+# metric,entity,interval,end_date,forecast_name,comments
+# '-' serves as empty forecast name
+os.cpu,nurswghbs001,1-DAY,now,,chartlab
+disk_used_percent,nurswgvml502,2-HOUR,now,,

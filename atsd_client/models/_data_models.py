@@ -132,8 +132,17 @@ class Series(object):
         # metric by any series
         self._lastInsertDate = to_date(last_insert_date)
         #: `dict` of entity and metric objects
-        self._meta = None if meta is None else {'entity': deserialize(meta['entity'], Entity),
-                                                'metric': deserialize(meta['metric'], Metric)}
+        if meta is None:
+            self._meta = None
+        else:
+            self._meta = {}
+            for k, v in six.iteritems(meta):
+                if k == 'entity':
+                    self._meta[k] = deserialize(v, Entity)
+                elif k == 'metric':
+                    self._meta[k] = deserialize(v, Metric)
+                else:
+                    self._meta[k] = v
 
     def __eq__(self, o):
         return self._entity == o.entity and self._metric == o.metric and self._tags == o.tags and self._data == o.data
@@ -550,8 +559,10 @@ class AlertHistory(object):
     Class representing history of an alert, including such values as alert duration, alert open date, repeat count, etc.
     """
 
-    def __init__(self, alert=None, alert_duration=None, alert_open_date=None, entity=None, metric=None, received_date=None,
-                 repeat_count=None, rule=None, rule_expression=None, rule_filter=None, severity=None, tags=None, type=None,
+    def __init__(self, alert=None, alert_duration=None, alert_open_date=None, entity=None, metric=None,
+                 received_date=None,
+                 repeat_count=None, rule=None, rule_expression=None, rule_filter=None, severity=None, tags=None,
+                 type=None,
                  date=None, value=None, window=None):
         self._alert = alert
         #: `Number` time in milliseconds when alert was in OPEN or REPEAT state

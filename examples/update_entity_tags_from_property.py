@@ -45,7 +45,7 @@ for entity in entities:
     if properties_list:
         property_tags = properties_list[0].tags
         for key, value in six.iteritems(property_tags):
-            entity.tags[key] = value
+            entity.tags['env.%s' % key] = value
 
     print('%s,%s,%s' % (entity.name, print_str(entity.label), pretty_tags))
     # Uncomment next line to delete tags
