@@ -2,6 +2,7 @@ from datetime import datetime, timedelta
 
 from atsd_client import connect_url
 from atsd_client.services import MetricsService, EntitiesService
+from atsd_client.utils import print_tags
 
 '''
 Locate series that have no data during the actual time interval (grace_interval) using specific entity.
@@ -24,9 +25,9 @@ metrics_service = MetricsService(connection)
 # query all metrics for entity
 metrics = entities_service.metrics(entity)
 
-print('metric, entity, tags, last_insert_date')
+print('metric,entity,tags,last_insert_date')
 for metric in metrics:
     # query all series for each metric and entity
     series = metrics_service.series(metric, entity, min_insert_date=min_insert_date, max_insert_date=max_insert_date)
     for s in series:
-        print("%s, %s, %s, %s" % (s.metric, s.entity, s.tags, s.last_insert_date))
+        print("%s,%s,%s,%s" % (s.metric, s.entity, print_tags(s.tags), s.last_insert_date))
