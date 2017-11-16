@@ -21,7 +21,7 @@ from . import models, _constants, _utilities, _time_utilities
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '2.1.2'
+__version__ = '2.1.3'
 
 try:
     logging.debug("Checking 'python-requests' version...")
