@@ -33,8 +33,9 @@ class Sample(object):
     If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
     """
 
-    def __init__(self, value, time=None, version=None):
+    def __init__(self, value, x=None, time=None, version=None):
         self._v = copy.deepcopy(value) if not value == "Nan" else float("nan")
+        self._x = x
         #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date
         self._t = int(round(time.time() * 1000)) if time is None else to_milliseconds(time)
         self._d = to_date(self._t)
@@ -43,7 +44,9 @@ class Sample(object):
 
     def _to_dict(self):
         d = {'v': self._v, 't': self._t}
-        if self.version is not None:
+        if self._x:
+            d['x'] = self._x
+        if self.version:
             d['version'] = self._version
         return d
 
@@ -53,6 +56,10 @@ class Sample(object):
     @property
     def v(self):
         return self._v
+
+    @property
+    def x(self):
+        return self._x
 
     @property
     def t(self):
@@ -68,6 +75,10 @@ class Sample(object):
     @v.setter
     def v(self, v):
         self._v = v
+
+    @x.setter
+    def x(self, x):
+        self._x = x
 
     @t.setter
     def t(self, t):
