@@ -8,6 +8,11 @@ from atsd_client import connect_url
 from atsd_client.models import Entity, Series, Sample
 from atsd_client.services import EntitiesService, SeriesService
 
+
+'''
+py version of https://github.com/axibase/batch-viewer/blob/master/net-commands.js
+'''
+
 ASSET_COUNT = 10
 SITE_COUNT = 2
 BUILDING_PER_SITE_COUNT = 2
@@ -83,7 +88,7 @@ metrics = [['axi.temperature', {
 }], ]
 
 assets = []
-for i in range(10):
+for i in range(ASSET_COUNT):
     site = rand_int(SITE_COUNT)
     building = rand_int(BUILDING_PER_SITE_COUNT)
     assets.append({'id': 'axi.asset-%s' % i, 'site': sites[site], 'building': buildings[site][building]})
