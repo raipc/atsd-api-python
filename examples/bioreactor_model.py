@@ -31,7 +31,7 @@ def positive_spline(diff_value, start_value, t, l, x):
 
 
 def positive_inv_spline(diff_value, start_value, t, l, x):
-    return diff_value * ((((x - t).total_seconds() / l.total_seconds()) - 1) ** 3) + diff_value + start_value
+    return diff_value * (1 + (((x - t).total_seconds() / l.total_seconds()) - 1) ** 3) + start_value
 
 
 def negative_spline(diff_value, end_value, t, l, x):
@@ -39,11 +39,15 @@ def negative_spline(diff_value, end_value, t, l, x):
 
 
 def negative_inv_spline(diff_value, end_value, t, l, x):
-    return diff_value * ((1 - ((x - t).total_seconds() / l.total_seconds()) - 1) ** 3) + diff_value + end_value
+    return diff_value * (1-(x - t).total_seconds() / l.total_seconds() ** 3) + end_value
+
+
+def negative_smooth_spline(diff_value, end_value, t, l, x):
+    return diff_value * (1-(x - t).total_seconds() / l.total_seconds()) + end_value
 
 
 def linear(diff_value, start_value, t, l, x):
-    return start_value if diff_value == 0 else (x - t).total_seconds() * diff_value / l.total_seconds() + start_value
+    return start_value if diff_value == 0 else diff_value * (x - t).total_seconds() / l.total_seconds() + start_value
 
 
 def rand_int(n=65535):
@@ -236,9 +240,9 @@ metrics = [
         'Stage 3: Agitator disable': partial(negative_inv_spline, 1, 39.3),
         'Stage 3: Agitator enable': partial(positive_inv_spline, 0.7, 38.6),
         'Stage 3: Jacket Cooled Down': partial(linear, 0, 40.0),
-        'Stage 3: Jacket Heating': partial(negative_spline, 5, 35.0),
-        'Stage 3: Product Cooling': partial(negative_spline, 4.2, 30.8),
-        'Stage 3: Disable agitator 7': partial(negative_spline, 4.7, 26.1),
+        'Stage 3: Jacket Heating': partial(negative_smooth_spline, 3.3, 36.9),
+        'Stage 3: Product Cooling': partial(negative_smooth_spline, 6.6, 30.1),
+        'Stage 3: Disable agitator 7': partial(negative_smooth_spline, 4, 26.1),
         'Stage 3: Disable agitator 8': partial(negative_spline, 7.8, 18.3)
     }]
 ]
