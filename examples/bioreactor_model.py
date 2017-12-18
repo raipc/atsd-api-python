@@ -331,9 +331,12 @@ for asset in assets:
     if total_entity_duration > total_duration:
         total_duration = total_entity_duration
 
-for metric, labels in six.iteritems(metric_and_labels):
+for metric_name, labels in six.iteritems(metric_and_labels):
     for label in labels:
-        metrics_service.create_or_replace(Metric(label, label=metric))
+        metric = Metric(label, label=metric_name)
+        if metric_name == AGITATOR_SPEED:
+            metric.interpolate = 'PREVIOUS'
+        metrics_service.create_or_replace(metric)
 
 for [asset, splines] in data_command_splines:
     for [metric, d] in metrics:
