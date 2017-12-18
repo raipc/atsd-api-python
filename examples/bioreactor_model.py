@@ -1,5 +1,4 @@
 import random
-import string
 from datetime import timedelta
 from functools import partial
 
@@ -29,10 +28,13 @@ STAGE_2_DURATION_MAX = 10
 STAGE_3_DURATION_MIN = 16
 STAGE_3_DURATION_MAX = 24
 
+INTERVAL_MINUTES = 10
+THRESHOLD = 1
+
 USE_METRIC_IN_LABEL = True
-JACKET_TEMPERATURE = 'jacket_temperature'
-AGITATOR_SPEED = 'agitator_speed'
-PRODUCT_TEMPERATURE = 'product_temperature'
+JACKET_TEMPERATURE = 'Jacket Temperature'
+AGITATOR_SPEED = 'Agitator Speed'
+PRODUCT_TEMPERATURE = 'Product Temperature'
 
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
@@ -73,8 +75,8 @@ class SplineHolder:
         self.splines.append([t0, t1, metric, label, partial(spline_builder, t0, t1 - t0)])
 
     def get_spline(self, metric, t):
-        for [s, e, m, label, f] in self.splines:
-            if s <= t < e and m == metric:
+        for [start, end, m, label, f] in self.splines:
+            if start <= t < end and m == metric:
                 return f, label
         return None
 
@@ -240,11 +242,6 @@ def update_metrics_behaviour():
     ]
 
 
-def random_word(length):
-    letters = string.ascii_lowercase
-    return ''.join(random.choice(letters) for i in range(length))
-
-
 SITE_COUNT = 2
 BUILDING_PER_SITE_COUNT = 2
 
@@ -301,8 +298,8 @@ for asset in assets:
             procedures, td = update_durations(stage_2_leaps)
             total_entity_duration += timedelta(hours=td)
             series.append(Series(asset['id'], 'axi.Unit_BatchID', data=[Sample(time=t, x=batch_id, value=None)]))
-            if USE_METRIC_IN_LABEL:
-                label_prefix = 'axi.' + random_word(10) + '-2510'
+            if USE_METRIC_IN_LABEL and not label_prefix:
+                label_prefix = asset['id'] + '-2510'
             batch_id += 1
             batches_left -= 1
             procedure_name = 'Stage 1 Static Drying'
@@ -337,15 +334,29 @@ for metric, labels in six.iteritems(metric_and_labels):
 for [asset, splines] in data_command_splines:
     for [metric, d] in metrics:
         t = MIN_TIME
+        passed = True
         while t < MIN_TIME + total_duration:
             spline = splines.get_spline(metric, t)
             if spline:
                 value = spline[0](t)
-                label = spline[1]
-                if len(label) > 1:
-                    series.append(Series(asset['id'], label, data=[Sample(time=t, value=value)]))
-                else:
-                    series.append(Series(asset['id'], metric, data=[Sample(time=t, value=value)]))
+                if t > MIN_TIME and INTERVAL_MINUTES > 0:
+                    elapsed_time = t - previous_time
+                    diff = abs(value - previous_value)
+                    if metric == AGITATOR_SPEED and previous_value == value or elapsed_time <= timedelta(minutes=INTERVAL_MINUTES) and diff <= THRESHOLD * previous_value / 100:
+                        passed = False
+                    else:
+                        passed = True
+                if passed:
+                    label = spline[1]
+                    if len(label) > 1 and passed:
+                        m = label
+                    else:
+                        m = metric
+                    series.append(Series(asset['id'], m, data=[Sample(time=t, value=value)]))
+                    if INTERVAL_MINUTES > 0:
+                        previous_value = value
+                        previous_time = t
+
             t = next_time(t)
 
 svc.insert(*series)
