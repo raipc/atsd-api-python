@@ -36,6 +36,10 @@ JACKET_TEMPERATURE = 'Jacket Temperature'
 AGITATOR_SPEED = 'Agitator Speed'
 PRODUCT_TEMPERATURE = 'Product Temperature'
 
+UNIT_BATCH_ID = 'axi.bh-2510.Unit_BatchID'
+UNIT_PROCEDURE = 'axi.bh-2510.Unit_Procedure'
+
+
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 
@@ -297,14 +301,14 @@ for asset in assets:
             stage_2_leaps, metrics = update_metrics_behaviour()
             procedures, td = update_durations(stage_2_leaps)
             total_entity_duration += timedelta(hours=td)
-            series.append(Series(asset['id'], 'axi.Unit_BatchID', data=[Sample(time=t, x=batch_id, value=None)]))
+            series.append(Series(asset['id'], UNIT_BATCH_ID, data=[Sample(time=t, x=batch_id, value=None)]))
             if USE_METRIC_IN_LABEL and not label_prefix:
                 label_prefix = asset['id'] + '-2510'
             batch_id += 1
             batches_left -= 1
             procedure_name = 'Stage 1 Static Drying'
         elif procedures[proc][0] == 'Inactive':
-            series.append(Series(asset['id'], 'axi.Unit_BatchID', data=[Sample(time=t, x='Inactive', value=None)]))
+            series.append(Series(asset['id'], UNIT_BATCH_ID, data=[Sample(time=t, x='Inactive', value=None)]))
             procedure_name = 'Inactive'
         elif procedures[proc][0] == 'Stage 2: Enable agitator 0':
             procedure_name = 'Stage 2 Intermittent Agitation'
@@ -313,7 +317,7 @@ for asset in assets:
 
         if procedure_name:
             series.append(
-                Series(asset['id'], 'axi.Unit_Procedure', data=[Sample(time=t, x=procedure_name, value=None)]))
+                Series(asset['id'], UNIT_PROCEDURE, data=[Sample(time=t, x=procedure_name, value=None)]))
 
         next_t = next_time_p(procedures[proc], t)
         for [metric, splines] in metrics:
