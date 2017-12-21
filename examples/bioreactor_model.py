@@ -6,41 +6,35 @@ import six
 from dateutil.parser import parse
 
 from atsd_client import connect_url
-from atsd_client.models import Entity, Series, Sample, Metric
+from atsd_client.models import Entity, Metric, Series, Sample
 from atsd_client.services import EntitiesService, SeriesService, MetricsService
 
-# configuration parameters
+# configuration parameters: begin
+
+START_TIME = parse('2017-11-15T23:02:00Z')
 ENTITY_PREFIX = 'axi.asset'
 ASSET_COUNT = 10
-MIN_TIME = parse('2017-11-15T23:02:00Z')
 
-AGITATION_COUNT_MIN = 2
-AGITATION_COUNT_MAX = 5
+AGITATION_COUNT_MIN, AGITATION_COUNT_MAX = 2, 5
 
 BATCH_COUNT = 3
-BATCH_IDLE_DURATION_MIN = 1
-BATCH_IDLE_DURATION_MAX = 8
+BATCH_IDLE_DURATION_MIN, BATCH_IDLE_DURATION_MAX = 1, 8
 
-STAGE_1_DURATION_MIN = 4
-STAGE_1_DURATION_MAX = 8
-STAGE_2_DURATION_MIN = 5
-STAGE_2_DURATION_MAX = 10
-STAGE_3_DURATION_MIN = 16
-STAGE_3_DURATION_MAX = 24
+STAGE_1_DURATION_MIN, STAGE_1_DURATION_MAX = 4, 8
+STAGE_2_DURATION_MIN, STAGE_2_DURATION_MAX = 5, 10
+STAGE_3_DURATION_MIN, STAGE_3_DURATION_MAX = 16, 24
 
+# value caching: enabled when INTERVAL_MINUTES > 0
+THRESHOLD_PERCENT = 1
 INTERVAL_MINUTES = 10
-THRESHOLD = 1
-
-USE_METRIC_IN_LABEL = True
-JACKET_TEMPERATURE = 'Jacket Temperature'
-AGITATOR_SPEED = 'Agitator Speed'
-PRODUCT_TEMPERATURE = 'Product Temperature'
-
-UNIT_BATCH_ID = 'axi.bh-2510.Unit_BatchID'
-UNIT_PROCEDURE = 'axi.bh-2510.Unit_Procedure'
-
 
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+
+# configuration parameters: end
+
+entities_service = EntitiesService(connection)
+metrics_service = MetricsService(connection)
+svc = SeriesService(connection)
 
 
 def positive_spline(diff_value, start_value, t, l, x):
@@ -69,6 +63,14 @@ def next_time(time):
 
 def next_time_p(procedure, time):
     return time + timedelta(seconds=procedure[1] * 60)
+
+
+JACKET_TEMPERATURE = 'Jacket Temperature'
+AGITATOR_SPEED = 'Agitator Speed'
+PRODUCT_TEMPERATURE = 'Product Temperature'
+
+UNIT_BATCH_ID_SUFFIX = ':Unit_BatchID'
+UNIT_PROCEDURE_SUFFIX = ':Unit_Procedure'
 
 
 class SplineHolder:
@@ -246,23 +248,23 @@ def update_metrics_behaviour():
     ]
 
 
+def check_send_value(start_time, cur_time, prev_time, caching, cur_value, prev_value):
+    if start_time < cur_time and caching:
+        elapsed_time = cur_time - prev_time
+        diff = abs(cur_value - prev_value)
+        return not (metric == AGITATOR_SPEED and prev_value == cur_value or elapsed_time <= timedelta(
+            minutes=INTERVAL_MINUTES) and diff <= THRESHOLD_PERCENT * prev_value / 100)
+
+
 SITE_COUNT = 2
 BUILDING_PER_SITE_COUNT = 2
 
-
-MIN_JACKET_TEMPERATURE = -10
-MAX_JACKET_TEMPERATURE = 80
-MIN_AGITATOR_SPEED = 0
-MAX_AGITATOR_SPEED = 5
-MIN_PRODUCT_TEMPERATURE = 15
-MAX_PRODUCT_TEMPERATURE = 40
+MIN_JACKET_TEMPERATURE, MAX_JACKET_TEMPERATURE = -10, 80
+MIN_AGITATOR_SPEED, MAX_AGITATOR_SPEED = 0, 5
+MIN_PRODUCT_TEMPERATURE, MAX_PRODUCT_TEMPERATURE = 15, 40
 
 sites = ['svl', 'nur']
 buildings = [['A', 'B'], ['C', 'D']]
-
-entities_service = EntitiesService(connection)
-metrics_service = MetricsService(connection)
-svc = SeriesService(connection)
 
 # prepare entities meta
 assets = []
@@ -278,21 +280,21 @@ for i in range(ASSET_COUNT):
 batch_id = 1400
 data_command_splines = []
 series = []
-metric_and_labels = {JACKET_TEMPERATURE: [], PRODUCT_TEMPERATURE: [], AGITATOR_SPEED : []}
+metric_and_labels = {JACKET_TEMPERATURE: [], PRODUCT_TEMPERATURE: [], AGITATOR_SPEED: []}
 
 total_duration = timedelta()
 
 # prepare splines
 for asset in assets:
     proc = 0
-    t = MIN_TIME
+    t = START_TIME
+    entity = asset['id']
 
     dataSplines = SplineHolder()
     data_command_splines.append([asset, dataSplines])
 
     batches_left = BATCH_COUNT
     total_entity_duration = timedelta()
-    label_prefix = ''
 
     while batches_left >= 0:
         procedure_name = ''
@@ -301,14 +303,12 @@ for asset in assets:
             stage_2_leaps, metrics = update_metrics_behaviour()
             procedures, td = update_durations(stage_2_leaps)
             total_entity_duration += timedelta(hours=td)
-            series.append(Series(asset['id'], UNIT_BATCH_ID, data=[Sample(time=t, x=batch_id, value=None)]))
-            if USE_METRIC_IN_LABEL and not label_prefix:
-                label_prefix = asset['id'] + '-2510'
+            series.append(Series(entity, entity + UNIT_BATCH_ID_SUFFIX, data=[Sample(time=t, x=batch_id, value=None)]))
             batch_id += 1
             batches_left -= 1
             procedure_name = 'Stage 1 Static Drying'
         elif procedures[proc][0] == 'Inactive':
-            series.append(Series(asset['id'], UNIT_BATCH_ID, data=[Sample(time=t, x='Inactive', value=None)]))
+            series.append(Series(entity, entity + UNIT_BATCH_ID_SUFFIX, data=[Sample(time=t, x='Inactive', value=None)]))
             procedure_name = 'Inactive'
         elif procedures[proc][0] == 'Stage 2: Enable agitator 0':
             procedure_name = 'Stage 2 Intermittent Agitation'
@@ -317,11 +317,10 @@ for asset in assets:
 
         if procedure_name:
             series.append(
-                Series(asset['id'], UNIT_PROCEDURE, data=[Sample(time=t, x=procedure_name, value=None)]))
-
+                Series(entity, entity + UNIT_PROCEDURE_SUFFIX, data=[Sample(time=t, x=procedure_name, value=None)]))
         next_t = next_time_p(procedures[proc], t)
         for [metric, splines] in metrics:
-            label = label_prefix + metric[0]
+            label = entity + '-2510' + metric[0]
             dataSplines.put_spline(t, next_t, metric, label, splines[procedures[proc][0]])
             if label not in metric_and_labels[metric]:
                 metric_and_labels[metric].append(label)
@@ -338,30 +337,24 @@ for metric_name, labels in six.iteritems(metric_and_labels):
             metric.interpolate = 'PREVIOUS'
         metrics_service.create_or_replace(metric)
 
+caching = INTERVAL_MINUTES > 0
+previous_time = START_TIME
+previous_value = -1
+
 for [asset, splines] in data_command_splines:
     for [metric, d] in metrics:
-        t = MIN_TIME
-        passed = True
-        while t < MIN_TIME + total_duration:
+        t = START_TIME
+        send_value = True
+        while t < START_TIME + total_duration:
             spline = splines.get_spline(metric, t)
             if spline:
-                value = spline[0](t)
-                if t > MIN_TIME and INTERVAL_MINUTES > 0:
-                    elapsed_time = t - previous_time
-                    diff = abs(value - previous_value)
-                    if metric == AGITATOR_SPEED and previous_value == value or elapsed_time <= timedelta(minutes=INTERVAL_MINUTES) and diff <= THRESHOLD * previous_value / 100:
-                        passed = False
-                    else:
-                        passed = True
-                if passed:
-                    label = spline[1]
-                    if len(label) > 1 and passed:
-                        m = label
-                    else:
-                        m = metric
-                    series.append(Series(asset['id'], m, data=[Sample(time=t, value=value)]))
-                    if INTERVAL_MINUTES > 0:
-                        previous_value = value
+                current_value = spline[0](t)
+                send_value = check_send_value(START_TIME, t, previous_time, caching, current_value, previous_value);
+                if send_value:
+                    m = spline[1]
+                    series.append(Series(asset['id'], m, data=[Sample(time=t, value=current_value)]))
+                    if caching:
+                        previous_value = current_value
                         previous_time = t
 
             t = next_time(t)
