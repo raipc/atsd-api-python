@@ -6,7 +6,7 @@ The ATSD API Client for Python simplifies the process of interacting with [Axiba
 
 * ATSD [Data API](https://github.com/axibase/atsd-docs/tree/master/api/data#overview) documentation
 * ATSD [Meta API](https://github.com/axibase/atsd-docs/tree/master/api/meta#overview) documentation
-* ATSD [SQL Documentation](https://github.com/axibase/atsd-docs/tree/master/api/sql#overview) documentation  
+* ATSD [SQL Documentation](https://github.com/axibase/atsd-docs/tree/master/sql#overview) documentation  
 * [PyPI atsd_client](https://pypi.python.org/pypi/atsd_client)  
 * atsd_client documentation on [pythonhosted.org](http://pythonhosted.org/atsd_client)
 
