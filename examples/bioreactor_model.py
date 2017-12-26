@@ -6,14 +6,15 @@ import six
 from dateutil.parser import parse
 
 from atsd_client import connect_url
-from atsd_client.models import Entity, Metric, Series, Sample
+from atsd_client._time_utilities import to_iso
+from atsd_client.models import Entity, Series, Sample, Metric
 from atsd_client.services import EntitiesService, SeriesService, MetricsService
 
 # configuration parameters: begin
 
 START_TIME = parse('2017-11-15T23:02:00Z')
 ENTITY_PREFIX = 'axi.asset'
-ASSET_COUNT = 10
+ASSET_COUNT = 3
 
 AGITATION_COUNT_MIN, AGITATION_COUNT_MAX = 2, 5
 
@@ -27,6 +28,8 @@ STAGE_3_DURATION_MIN, STAGE_3_DURATION_MAX = 16, 24
 # value caching: enabled when INTERVAL_MINUTES > 0
 THRESHOLD_PERCENT = 1
 INTERVAL_MINUTES = 10
+
+SAVE_AS_COMMANDS = True
 
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
@@ -254,6 +257,7 @@ def check_send_value(start_time, cur_time, prev_time, caching, cur_value, prev_v
         diff = abs(cur_value - prev_value)
         return not (metric == AGITATOR_SPEED and prev_value == cur_value or elapsed_time <= timedelta(
             minutes=INTERVAL_MINUTES) and diff <= THRESHOLD_PERCENT * prev_value / 100)
+    return True
 
 
 SITE_COUNT = 2
@@ -266,97 +270,132 @@ MIN_PRODUCT_TEMPERATURE, MAX_PRODUCT_TEMPERATURE = 15, 40
 sites = ['svl', 'nur']
 buildings = [['A', 'B'], ['C', 'D']]
 
+batch_id = 1400
+data_command_splines = []
+series = []
+metric_and_labels = {JACKET_TEMPERATURE: [], PRODUCT_TEMPERATURE: [], AGITATOR_SPEED: []}
+
+total_asset_duration = {}
+commands = []
+
 # prepare entities meta
 assets = []
 for i in range(ASSET_COUNT):
     site = rand_int(SITE_COUNT)
     site_value = sites[site]
     building_value = buildings[site][rand_int(BUILDING_PER_SITE_COUNT)]
-    entity = '%s-%s' % (ENTITY_PREFIX, i)
+    entity_name = '%s-%s' % (ENTITY_PREFIX, i)
 
-    assets.append({'id': entity, 'site': site_value, 'building': building_value})
-    entities_service.create_or_replace(Entity(entity, tags={'site': site_value, 'building': building_value}))
+    assets.append({'id': entity_name, 'site': site_value, 'building': building_value})
+    entity = Entity(entity_name, tags={'site': site_value, 'building': building_value})
 
-batch_id = 1400
-data_command_splines = []
-series = []
-metric_and_labels = {JACKET_TEMPERATURE: [], PRODUCT_TEMPERATURE: [], AGITATOR_SPEED: []}
-
-total_duration = timedelta()
+    if SAVE_AS_COMMANDS:
+        commands.append('entity e:%s t:site=%s t:building=%s' % (entity_name, site_value, building_value))
+    else:
+        entities_service.create_or_replace(entity)
 
 # prepare splines
 for asset in assets:
     proc = 0
     t = START_TIME
-    entity = asset['id']
+    entity_name = asset['id']
 
     dataSplines = SplineHolder()
     data_command_splines.append([asset, dataSplines])
 
     batches_left = BATCH_COUNT
-    total_entity_duration = timedelta()
+    total_asset_duration[entity_name] = timedelta()
 
-    while batches_left >= 0:
+    while batches_left > 0:
         procedure_name = ''
 
         if proc == 0:
             stage_2_leaps, metrics = update_metrics_behaviour()
             procedures, td = update_durations(stage_2_leaps)
-            total_entity_duration += timedelta(hours=td)
-            series.append(Series(entity, entity + UNIT_BATCH_ID_SUFFIX, data=[Sample(time=t, x=batch_id, value=None)]))
+            total_asset_duration[entity_name] += timedelta(hours=td)
+            if SAVE_AS_COMMANDS:
+                commands.append(
+                    'series e:%s x:%s=%s d:%s' % (entity_name, entity_name + UNIT_BATCH_ID_SUFFIX, batch_id, to_iso(t)))
+            else:
+                series.append(Series(entity_name, entity_name + UNIT_BATCH_ID_SUFFIX,
+                                     data=[Sample(time=t, x=batch_id, value=None)]))
             batch_id += 1
-            batches_left -= 1
             procedure_name = 'Stage 1 Static Drying'
         elif procedures[proc][0] == 'Inactive':
-            series.append(Series(entity, entity + UNIT_BATCH_ID_SUFFIX, data=[Sample(time=t, x='Inactive', value=None)]))
+            if SAVE_AS_COMMANDS:
+                commands.append(
+                    'series e:%s x:%s=%s d:%s' % (
+                    entity_name, entity_name + UNIT_BATCH_ID_SUFFIX, 'Inactive', to_iso(t)))
+            else:
+                series.append(Series(entity_name, entity_name + UNIT_BATCH_ID_SUFFIX,
+                                     data=[Sample(time=t, x='Inactive', value=None)]))
             procedure_name = 'Inactive'
+            batches_left -= 1
         elif procedures[proc][0] == 'Stage 2: Enable agitator 0':
             procedure_name = 'Stage 2 Intermittent Agitation'
         elif procedures[proc][0] == 'Stage 3: Product Cooled Down':
             procedure_name = 'Stage 3 Continuous Agitation'
 
         if procedure_name:
-            series.append(
-                Series(entity, entity + UNIT_PROCEDURE_SUFFIX, data=[Sample(time=t, x=procedure_name, value=None)]))
+            if SAVE_AS_COMMANDS:
+                commands.append(
+                    'series e:%s x:%s="%s" d:%s' % (
+                    entity_name, entity_name + UNIT_PROCEDURE_SUFFIX, procedure_name, to_iso(t)))
+            else:
+                series.append(Series(entity_name, entity_name + UNIT_PROCEDURE_SUFFIX,
+                                     data=[Sample(time=t, x=procedure_name, value=None)]))
+
         next_t = next_time_p(procedures[proc], t)
         for [metric, splines] in metrics:
-            label = entity + '-2510' + metric[0]
+            label = entity_name + '-2510' + metric[0]
             dataSplines.put_spline(t, next_t, metric, label, splines[procedures[proc][0]])
             if label not in metric_and_labels[metric]:
                 metric_and_labels[metric].append(label)
         proc = (proc + 1) % len(procedures)
         t = next_t
 
-    if total_entity_duration > total_duration:
-        total_duration = total_entity_duration
-
 for metric_name, labels in six.iteritems(metric_and_labels):
     for label in labels:
         metric = Metric(label, label=metric_name)
         if metric_name == AGITATOR_SPEED:
             metric.interpolate = 'PREVIOUS'
-        metrics_service.create_or_replace(metric)
+        if SAVE_AS_COMMANDS:
+            if metric.interpolate:
+                c = 'metric m:%s l:"%s" i:%s' % (label, metric_name, metric.interpolate)
+            else:
+                c = 'metric m:%s l:"%s"' % (label, metric_name)
+            commands.append(c)
+        else:
+            metrics_service.create_or_replace(metric)
 
 caching = INTERVAL_MINUTES > 0
 previous_time = START_TIME
 previous_value = -1
 
 for [asset, splines] in data_command_splines:
+    asset_duration = total_asset_duration[asset['id']]
     for [metric, d] in metrics:
         t = START_TIME
-        send_value = True
-        while t < START_TIME + total_duration:
+        while t <= START_TIME + asset_duration:
             spline = splines.get_spline(metric, t)
             if spline:
                 current_value = spline[0](t)
-                send_value = check_send_value(START_TIME, t, previous_time, caching, current_value, previous_value);
+                send_value = check_send_value(START_TIME, t, previous_time, caching, current_value, previous_value)
                 if send_value:
                     m = spline[1]
-                    series.append(Series(asset['id'], m, data=[Sample(time=t, value=current_value)]))
+                    if SAVE_AS_COMMANDS:
+                        commands.append(
+                            'series e:%s m:%s=%s d:%s' % (asset['id'], m, current_value, to_iso(t)))
+                    else:
+                        series.append(Series(asset['id'], m, data=[Sample(time=t, value=current_value)]))
                     if caching:
                         previous_value = current_value
                         previous_time = t
 
             t = next_time(t)
 
-svc.insert(*series)
+if SAVE_AS_COMMANDS:
+    with open('commands.txt', 'w') as fp:
+        fp.write('\n'.join(commands) + '\n')
+else:
+    svc.insert(*series)
