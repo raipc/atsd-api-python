@@ -62,7 +62,7 @@ def to_iso(date):
     if date.tzinfo is None:
         date = date.replace(tzinfo=get_localzone())
     microsecond = date.microsecond
-    millisecond = int(round(microsecond / 1000))
+    millisecond = int(microsecond / 1000)
     iso = date.isoformat().replace('.{:06d}'.format(microsecond), '.{:03d}'.format(millisecond))
 
     return iso
