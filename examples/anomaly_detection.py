@@ -24,10 +24,11 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 parser = argparse.ArgumentParser()
 parser.add_argument('--last_hours')
 parser.add_argument('--min_score')
+parser.add_argument('--entity')
 args = parser.parse_args()
 
 # set entity
-entity = '060190011'
+entity = args.entity
 grace_interval_days = 14
 time_format = '%d-%m-%Y %H:%M:%S'
 
