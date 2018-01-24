@@ -50,6 +50,19 @@ class Interpolate(object):
 
 
 # ------------------------------------------------------------------------------
+class InterpolateFunction(object):
+    AUTO = 'AUTO'
+    LINEAR = 'LINEAR'
+    PREVIOUS = 'PREVIOUS'
+
+
+# ------------------------------------------------------------------------------
+class InterpolateBoundary(object):
+    INNER = 'INNER'
+    OUTER = 'OUTER'
+
+
+# ------------------------------------------------------------------------------
 class Metric(object):
     """
     Class representing a metric.
