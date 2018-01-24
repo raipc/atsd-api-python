@@ -293,13 +293,14 @@ class  ControlFilter():
 # Transformations 
 #=======================================================================
 class TransformationFilter():
-    def __init__(self, aggregate=None, group=None, rate=None):
+    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None):
         #: :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating statistics for each period. Default: DETAIL
         self.aggregate = aggregate
         #: :class:`.Group` object responsible for merging multiple series into one series
         self.group = group
         #: :class:`.Rate` object responsible for computing difference between consecutive samples per unit of time (rate period)
         self.rate = rate
+        self.interpolate = interpolate
 
     def set_aggregate(self, value):
         self.aggregate = value
@@ -309,6 +310,10 @@ class TransformationFilter():
 
     def set_rate(self, value):
         self.rate = value
+
+    def set_interpolate(self, value):
+        self.interpolate = value
+
 
 #------------------------------------------------------------------------------
 class Rate():
