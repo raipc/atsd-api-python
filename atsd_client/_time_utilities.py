@@ -13,9 +13,12 @@ from tzlocal import get_localzone
 
 def to_milliseconds(date):
     """
-    :param date: `str` in iso format | :class:`datetime` | `int`
+    :param date: None | `str` in iso format | :class:`datetime` | `int`
     :return: timestamp in milliseconds
     """
+    if date is None:
+        return int(time.time() * 1000)
+
     if isinstance(date, numbers.Number):
         return date
 
