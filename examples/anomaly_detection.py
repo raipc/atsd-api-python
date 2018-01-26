@@ -53,7 +53,7 @@ for metric in metrics:
     for series in series_list:
         # exclude empty series for specific tags
         if series.data:
-            ts = {sample.t / 1000: sample.v for sample in series.data}
+            ts = {int(sample.t / 1000): sample.v for sample in series.data}
 
             detector = AnomalyDetector(ts, score_threshold=args.min_score)
 
