@@ -33,11 +33,11 @@ class Sample(object):
     If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
     """
 
-    def __init__(self, value, x=None, time=None, version=None):
+    def __init__(self, value, time=None, version=None, x=None):
         self._v = copy.deepcopy(value) if not value == "Nan" else float("nan")
         self._x = x
         #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date
-        self._t = int(round(time.time() * 1000)) if time is None else to_milliseconds(time)
+        self._t = to_milliseconds(time)
         self._d = to_date(self._t)
         # `.dict` version object including 'source' and 'status' keys
         self._version = version

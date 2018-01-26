@@ -135,7 +135,7 @@ class TestSeriesService(unittest.TestCase):
         last_sample = series.data[-1]
 
         self.assertTrue(successful)
-        self.assertEquals(last_sample.v, val)
+        self.assertEqual(last_sample.v, val)
         self.assertIsNotNone(last_sample.version)
         self.assertEquals(last_sample.version['status'], test_status)
 
