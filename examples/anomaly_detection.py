@@ -21,14 +21,12 @@ during the last hours with minimal score for a given entity.
 # Connect to an ATSD server
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
-parser = argparse.ArgumentParser()
-parser.add_argument('--last_hours')
-parser.add_argument('--min_score')
-parser.add_argument('--entity')
+parser = argparse.ArgumentParser(description='Anomaly detection using luminol package.')
+parser.add_argument('--last_hours', type=float, help='interested number of hours', default=24)
+parser.add_argument('--min_score', type=float, help='score threshold', default=0)
+parser.add_argument('--entity', type=str, help='entity to monitor', default='060190011')
 args = parser.parse_args()
 
-# set entity
-entity = args.entity
 grace_interval_days = 14
 time_format = '%d-%m-%Y %H:%M:%S'
 
@@ -37,20 +35,16 @@ metrics_service = MetricsService(connection)
 message_service = MessageService(connection)
 svc = SeriesService(connection)
 
-last_hours = float(args.last_hours)
-min_score = float(args.min_score)
+message = ['entity: %s, last hours: %s, minimal score: %s\n' % (args.entity, args.last_hours, args.min_score)]
 
-message = ['entity: %s, last hours: %s, minimal score: %s\n' % (entity, last_hours, min_score)]
-
-# query all metrics for each entity
 now = datetime.now()
-metrics = entities_service.metrics(entity, min_insert_date=now - timedelta(seconds=last_hours * 3600),
+metrics = entities_service.metrics(args.entity, min_insert_date=now - timedelta(seconds=args.last_hours * 3600),
                                    use_entity_insert_time=True)
 for metric in metrics:
     sf = SeriesFilter(metric=metric.name)
-    ef = EntityFilter(entity=entity)
+    ef = EntityFilter(entity=args.entity)
     df = DateFilter(start_date=datetime(now.year, now.month, now.day) - timedelta(days=grace_interval_days),
-                    end_date=now)
+                    end_date='now')
     tf = TransformationFilter(
         interpolate={'function': InterpolateFunction.LINEAR, 'period': {'count': 1, 'unit': TimeUnit.HOUR}})
 
@@ -59,13 +53,13 @@ for metric in metrics:
     for series in series_list:
         # exclude empty series for specific tags
         if series.data:
-            ts = {sample.t / 1000: sample.v for sample in series.data}
+            ts = {int(sample.t / 1000): sample.v for sample in series.data}
 
-            detector = AnomalyDetector(ts, score_threshold=min_score)
+            detector = AnomalyDetector(ts, score_threshold=args.min_score)
 
             anomalies = []
             for anomaly in detector.get_anomalies():
-                if now.timestamp() - last_hours * 3600 <= anomaly.exact_timestamp:
+                if time.mktime(now.timetuple()) - args.last_hours * 3600 <= anomaly.exact_timestamp:
                     anomalies.append(anomaly)
 
             if anomalies:
@@ -81,5 +75,5 @@ for metric in metrics:
                     message.append(anomaly_msg)
 
 msg = '\n'.join(message)
-message_service.insert(Message('anomaly_detection', 'python_script', 'anomaly', None, 'INFO', {}, msg))
+message_service.insert(Message('anomaly_detection', 'python_script', 'anomaly', now, 'INFO', {}, msg))
 print(msg)
