@@ -99,7 +99,7 @@ def timediff_in_minutes(prev_date, next_date=None):
         prev_date = to_date(prev_date)
 
     if next_date is None:
-        next_date = get_localzone().localize(datetime.now)
+        next_date = get_localzone().localize(datetime.now())
     else:
         next_date = to_date(next_date)
 
