@@ -33,7 +33,7 @@ parser.add_argument('--last_hours', '-lh', type=float, help='interested number o
 parser.add_argument('--min_score', '-ms', type=float, help='score threshold', default=0)
 parser.add_argument('--entity', '-e', type=str, help='entity to monitor', default='060190011')
 parser.add_argument('--metric_filter', '-mf', type=str, help='filter for metric names')
-parser.add_argument('--period', '-p', type=int, help='interpolation period', default=60)
+parser.add_argument('--interpolate_period', '-ip', type=int, help='interpolate period', default=60)
 parser.add_argument('--verbose', '-v', action="count", help="enable series processing logging")
 args = parser.parse_args()
 
@@ -47,8 +47,8 @@ metrics_service = MetricsService(connection)
 message_service = MessageService(connection)
 svc = SeriesService(connection)
 
-title = '\nentity: %s, last hours: %s, minimal score: %s, interpolation period: %s' % (
-    args.entity, args.last_hours, args.min_score, args.period)
+title = '\nentity: %s, last hours: %s, minimal score: %s, interpolate period: %s min' % (
+    args.entity, args.last_hours, args.min_score, args.interpolate_period)
 
 if args.metric_filter is None:
     metric_expression = None
@@ -70,9 +70,9 @@ for metric in metrics:
     df = DateFilter(start_date=datetime(now.year, now.month, now.day) - timedelta(days=grace_interval_days),
                     end_date='now')
     query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
-    if args.period > 0:
+    if args.interpolate_period > 0:
         tf = TransformationFilter(
-            interpolate={'function': InterpolateFunction.LINEAR, 'period': {'count': args.period, 'unit': TimeUnit.MINUTE}})
+            interpolate={'function': InterpolateFunction.LINEAR, 'period': {'count': args.interpolate_period, 'unit': TimeUnit.MINUTE}})
         query.set_transformation_filter(tf)
 
     series_list = svc.query(query)
