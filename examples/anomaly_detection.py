@@ -8,8 +8,7 @@ from luminol.anomaly_detector import AnomalyDetector
 
 from atsd_client import connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, TransformationFilter, TimeUnit, \
-    Message, AggregateType, Aggregate
-from atsd_client.models._meta_models import InterpolateFunction
+    Message, Aggregate, AggregateType, Interpolate, InterpolateFunction
 from atsd_client.services import EntitiesService, MetricsService, SeriesService, MessageService
 from atsd_client.utils import print_tags
 
@@ -75,10 +74,12 @@ for metric in metrics:
     query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 
     if args.aggregate_period > 0:
-        tf.set_aggregate(Aggregate(period={'count': args.aggregate_period, 'unit': TimeUnit.MINUTE}, types=[AggregateType.MEDIAN]))
+        tf.set_aggregate(
+            Aggregate(period={'count': args.aggregate_period, 'unit': TimeUnit.MINUTE}, types=[AggregateType.MEDIAN]))
 
     if args.interpolate_period > 0:
-        tf.set_interpolate({'function': InterpolateFunction.LINEAR, 'period': {'count': args.interpolate_period, 'unit': TimeUnit.MINUTE}})
+        tf.set_interpolate(Interpolate(period={'count': args.interpolate_period, 'unit': TimeUnit.MINUTE},
+                                       function=InterpolateFunction.LINEAR))
 
     query.set_transformation_filter(tf)
 
