@@ -80,7 +80,7 @@ for metric in metrics:
         metric_id = '- %s %s' % (series.metric, print_tags(series.tags))
         log('\t' + metric_id)
         # exclude empty series for specific tags
-        if series.data:
+        if len(series.data) > 2:
             ts = {int(sample.t / 1000): sample.v for sample in series.data}
 
             detector = AnomalyDetector(ts, score_threshold=args.min_score)
