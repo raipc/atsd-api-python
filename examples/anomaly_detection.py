@@ -18,39 +18,67 @@ Find anomaly values through the all series that have at least one value
 during the last hours with minimal score for a given entity. 
 '''
 
-# Connect to an ATSD server
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+
+def log(logging_message):
+    if args.verbose == 1:
+        print(logging_message)
+
+
+def format_t(timestamp):
+    return time.strftime(time_format, time.localtime(timestamp))
+
 
 parser = argparse.ArgumentParser(description='Anomaly detection using luminol package.')
-parser.add_argument('--last_hours', type=float, help='interested number of hours', default=24)
-parser.add_argument('--min_score', type=float, help='score threshold', default=0)
-parser.add_argument('--entity', type=str, help='entity to monitor', default='060190011')
+parser.add_argument('--last_hours', '-lh', type=float, help='interested number of hours', default=24)
+parser.add_argument('--min_score', '-ms', type=float, help='score threshold', default=0)
+parser.add_argument('--entity', '-e', type=str, help='entity to monitor', default='060190011')
+parser.add_argument('--metric_filter', '-mf', type=str, help='filter for metric names')
+parser.add_argument('--interpolate_period', '-ip', type=int, help='interpolate period', default=60)
+parser.add_argument('--verbose', '-v', action="count", help="enable series processing logging")
 args = parser.parse_args()
 
 grace_interval_days = 14
 time_format = '%d-%m-%Y %H:%M:%S'
 
+# Connect to an ATSD server
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 entities_service = EntitiesService(connection)
 metrics_service = MetricsService(connection)
 message_service = MessageService(connection)
 svc = SeriesService(connection)
 
-message = ['entity: %s, last hours: %s, minimal score: %s\n' % (args.entity, args.last_hours, args.min_score)]
+title = '\nentity: %s, last hours: %s, minimal score: %s, interpolate period: %s min' % (
+    args.entity, args.last_hours, args.min_score, args.interpolate_period)
+
+if args.metric_filter is None:
+    metric_expression = None
+else:
+    metric_expression = "name like '%s'" % args.metric_filter
+    title = '%s, metric filter: %s' % (title, args.metric_filter)
+
+message = [title]
 
 now = datetime.now()
-metrics = entities_service.metrics(args.entity, min_insert_date=now - timedelta(seconds=args.last_hours * 3600),
+
+metrics = entities_service.metrics(args.entity, expression=metric_expression,
+                                   min_insert_date=now - timedelta(seconds=args.last_hours * 3600),
                                    use_entity_insert_time=True)
+log('Processing: ')
 for metric in metrics:
     sf = SeriesFilter(metric=metric.name)
     ef = EntityFilter(entity=args.entity)
     df = DateFilter(start_date=datetime(now.year, now.month, now.day) - timedelta(days=grace_interval_days),
                     end_date='now')
-    tf = TransformationFilter(
-        interpolate={'function': InterpolateFunction.LINEAR, 'period': {'count': 1, 'unit': TimeUnit.HOUR}})
+    query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
+    if args.interpolate_period > 0:
+        tf = TransformationFilter(
+            interpolate={'function': InterpolateFunction.LINEAR, 'period': {'count': args.interpolate_period, 'unit': TimeUnit.MINUTE}})
+        query.set_transformation_filter(tf)
 
-    query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)
     series_list = svc.query(query)
     for series in series_list:
+        metric_id = '- %s %s' % (series.metric, print_tags(series.tags))
+        log('\t' + metric_id)
         # exclude empty series for specific tags
         if series.data:
             ts = {int(sample.t / 1000): sample.v for sample in series.data}
@@ -63,13 +91,10 @@ for metric in metrics:
                     anomalies.append(anomaly)
 
             if anomalies:
-                metric_id = '%s %s' % (series.metric, print_tags(series.tags))
                 message.append(metric_id)
                 for anomaly in anomalies:
-                    score = anomaly.anomaly_score
-                    t_exact = time.strftime(time_format, time.localtime(anomaly.exact_timestamp))
-                    t_start = time.strftime(time_format, time.localtime(anomaly.start_timestamp))
-                    t_end = time.strftime(time_format, time.localtime(anomaly.end_timestamp))
+                    t_start, t_end = format_t(anomaly.start_timestamp), format_t(anomaly.end_timestamp)
+                    t_exact = format_t(anomaly.exact_timestamp)
                     anomaly_msg = '\tAnomaly from %s to %s with score %s: %s, %s' % (
                         t_start, t_end, anomaly.anomaly_score, t_exact, ts[anomaly.exact_timestamp])
                     message.append(anomaly_msg)
