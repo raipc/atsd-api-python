@@ -50,19 +50,6 @@ class Interpolate(object):
 
 
 # ------------------------------------------------------------------------------
-class InterpolateFunction(object):
-    AUTO = 'AUTO'
-    LINEAR = 'LINEAR'
-    PREVIOUS = 'PREVIOUS'
-
-
-# ------------------------------------------------------------------------------
-class InterpolateBoundary(object):
-    INNER = 'INNER'
-    OUTER = 'OUTER'
-
-
-# ------------------------------------------------------------------------------
 class Metric(object):
     """
     Class representing a metric.
@@ -125,7 +112,7 @@ class Metric(object):
         self._tags = NoneDict(tags)
         #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status
         self._versioned = versioned
-        #: :class:`.Interpolate`
+        #: :class:`.InterpolateType`
         self._interpolate = interpolate
         #: `str` metric units
         self._units = units
@@ -313,7 +300,7 @@ class Entity(object):
         self._name = name
         #: `str` entity label
         self._label = label
-        #: :class:`.Interpolate`
+        #: :class:`.InterpolateType`
         self._interpolate = interpolate
         #: `str` entity timezone
         self._timeZone = time_zone
