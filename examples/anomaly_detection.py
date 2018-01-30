@@ -8,7 +8,7 @@ from luminol.anomaly_detector import AnomalyDetector
 
 from atsd_client import connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, TransformationFilter, TimeUnit, \
-    Message
+    Message, AggregateType, Aggregate
 from atsd_client.models._meta_models import InterpolateFunction
 from atsd_client.services import EntitiesService, MetricsService, SeriesService, MessageService
 from atsd_client.utils import print_tags
@@ -33,11 +33,12 @@ parser.add_argument('--last_hours', '-lh', type=float, help='interested number o
 parser.add_argument('--min_score', '-ms', type=float, help='score threshold', default=0)
 parser.add_argument('--entity', '-e', type=str, help='entity to monitor', default='060190011')
 parser.add_argument('--metric_filter', '-mf', type=str, help='filter for metric names')
+parser.add_argument('--aggregate_period', '-ap', type=int, help='aggregate period', default=0)
 parser.add_argument('--interpolate_period', '-ip', type=int, help='interpolate period', default=60)
+parser.add_argument('--data_interval', '-di', type=int, help='requested data to analyze', default=24)
 parser.add_argument('--verbose', '-v', action="count", help="enable series processing logging")
 args = parser.parse_args()
 
-grace_interval_days = 14
 time_format = '%d-%m-%Y %H:%M:%S'
 
 # Connect to an ATSD server
@@ -47,8 +48,9 @@ metrics_service = MetricsService(connection)
 message_service = MessageService(connection)
 svc = SeriesService(connection)
 
-title = '\nentity: %s, last hours: %s, minimal score: %s, interpolate period: %s min' % (
-    args.entity, args.last_hours, args.min_score, args.interpolate_period)
+title = '\nentity: %s, last hours: %s, minimal score: %s, aggregate period: %s min, interpolate period: %s min, ' \
+        'data interval: %s days' % (
+    args.entity, args.last_hours, args.min_score, args.aggregate_period, args.interpolate_period, args.data_interval)
 
 if args.metric_filter is None:
     metric_expression = None
@@ -67,13 +69,18 @@ log('Processing: ')
 for metric in metrics:
     sf = SeriesFilter(metric=metric.name)
     ef = EntityFilter(entity=args.entity)
-    df = DateFilter(start_date=datetime(now.year, now.month, now.day) - timedelta(days=grace_interval_days),
+    df = DateFilter(start_date=datetime(now.year, now.month, now.day) - timedelta(days=args.data_interval),
                     end_date='now')
+    tf = TransformationFilter()
     query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
+
+    if args.aggregate_period > 0:
+        tf.set_aggregate(Aggregate(period={'count': args.aggregate_period, 'unit': TimeUnit.MINUTE}, types=[AggregateType.MEDIAN]))
+
     if args.interpolate_period > 0:
-        tf = TransformationFilter(
-            interpolate={'function': InterpolateFunction.LINEAR, 'period': {'count': args.interpolate_period, 'unit': TimeUnit.MINUTE}})
-        query.set_transformation_filter(tf)
+        tf.set_interpolate({'function': InterpolateFunction.LINEAR, 'period': {'count': args.interpolate_period, 'unit': TimeUnit.MINUTE}})
+
+    query.set_transformation_filter(tf)
 
     series_list = svc.query(query)
     for series in series_list:
