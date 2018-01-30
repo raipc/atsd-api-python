@@ -4,7 +4,7 @@ from os.path import splitext
 
 from atsd_client import connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, Series, Aggregate, \
-    TransformationFilter, TimeUnit, AggregateType, Rate, Group, Interpolate
+    TransformationFilter, TimeUnit, AggregateType, Rate, Group, InterpolateType
 from atsd_client.services import SeriesService
 
 '''
@@ -80,7 +80,7 @@ for filename in files:
                 tf.set_rate(Rate(period={'count': 3, 'unit': TimeUnit.MINUTE}))
             elif attr == 'group':
                 tf.set_group(Group(type=AggregateType.SUM, truncate=True, order=0,
-                                   interpolate={'type': Interpolate.LINEAR, 'extend': True},
+                                   interpolate={'type': InterpolateType.LINEAR, 'extend': True},
                                    period={'count': 4, 'unit': TimeUnit.MINUTE}))
 
     query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)

@@ -34,12 +34,25 @@ class SeriesType(object):
     FORECAST_DEVIATION = 'FORECAST_DEVIATION'
 
 #------------------------------------------------------------------------------
-class Interpolate(object):
+class InterpolateType(object):
     NONE   = 'NONE'
+    PREVIOUS = 'PREVIOUS'
+    NEXT = 'NEXT'
+    LINEAR = 'LINEAR'
+    VALUE = 'VALUE'
+
+#------------------------------------------------------------------------------
+class InterpolateFunction(object):
+    AUTO   = 'AUTO'
     LINEAR = 'LINEAR'
     PREVIOUS = 'PREVIOUS'
-    
-#------------------------------------------------------------------------------ 
+
+# ------------------------------------------------------------------------------
+class InterpolateBoundary(object):
+    INNER = 'INNER'
+    OUTER = 'OUTER'
+
+#------------------------------------------------------------------------------
 class TimeUnit(object):
     NANOSECOND  = 'NANOSECOND'
     MILLISECOND = 'MILLISECOND'
@@ -354,19 +367,19 @@ class Group():
 
     def set_type(self, value):
         if not hasattr(AggregateType, value):
-            raise ValueError('Invalid type parameter, expected Interpolate, found: ' + unicode(type(value)))
+            raise ValueError('Invalid type parameter, expected AggregateType, found: ' + unicode(type(value)))
         self.type = value
 
     def set_period(self, count, unit=TimeUnit.SECOND):
         if not isinstance(count, numbers.Number):
             raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid period unit parameter; should be TimeUnit, found: ' + unicode(type(value)))
+            raise ValueError('Invalid period unit parameter; should be TimeUnit, found: ' + unicode(type(unit)))
         self.period = {'count' : count, 'unit' : unit}
 
     def set_interpolate(self, type, value=None, extend=False):
-        if not hasattr(Interpolate, type):
-            raise ValueError('Invalid interpolate parameter, must be an Interpolate, found: ' + unicode(type(type)))
+        if not hasattr(InterpolateType, type):
+            raise ValueError('Invalid interpolate parameter, must be an InterpolateType, found: ' + unicode(type(type)))
         self.interpolate = {'type' : type}
         if value is not None:
             if not isinstance(value, numbers.Number):
@@ -413,7 +426,7 @@ class Aggregate():
         self.types = []
         for typ in types:
             if not hasattr(AggregateType, typ):
-                raise ValueError('Invalid aggregate type; should be AggregateType, found: ' + unicode(type(value)))
+                raise ValueError('Invalid aggregate type; should be AggregateType, found: ' + unicode(type(typ)))
             self.types.append(typ)
 
     def set_threshold(self, min, max):
@@ -431,7 +444,7 @@ class Aggregate():
             raise ValueError("Invalid name parameter, must be a string, found: " + unicode(type(name)))
         self.calendar = {'name': name}
 
-    def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR):
+    def set_period(self, count, unit=TimeUnit.SECOND, align=PeriodAlign.CALENDAR, timezone=None):
         if not isinstance(count, numbers.Number):
             raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
@@ -439,10 +452,12 @@ class Aggregate():
         self.period = {'count' : count, 'unit' : unit}
         if align is not None:
             self.period['align'] = align
+        if timezone is not None:
+            self.period['timezone'] = timezone
 
     def set_interpolate(self, type, value=None, extend=False):
-        if not hasattr(Interpolate, type) and not isinstance(value, numbers.Number):
-            raise ValueError('Invalid type parameter, expected Interpolate, found: ' + unicode(type(type)))
+        if not hasattr(InterpolateType, type) and not isinstance(value, numbers.Number):
+            raise ValueError('Invalid type parameter, expected InterpolateType, found: ' + unicode(type(type)))
         self.interpolate = {'type' : type}
         if value is not None:
             if not isinstance(value, numbers.Number):
@@ -456,6 +471,48 @@ class Aggregate():
         if not isinstance(order, numbers.Number):
             raise ValueError('Invalid order, must be a number, found: ' + unicode(type(order)))
         self.order = order if order is not None else 0
+
+
+class Interpolate():
+    """
+    Class representing aggregate param 'interpolate'
+    """
+    def __init__(self, period, function, boundary=None, fill=None):
+        if period is not None:
+            self.set_period(**period)
+        if function is not None:
+            self.set_function(function)
+        if boundary is not None:
+            self.set_boundary(boundary)
+        if fill is not None:
+            self.set_fill(fill)
+
+    def set_period(self, count, unit=TimeUnit.SECOND, align=None, timezone=None):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid period unit')
+        self.period = {'count' : count, 'unit' : unit}
+        if align is not None:
+            self.period['align'] = align
+        if timezone is not None:
+            self.period['timezone'] = timezone
+
+    def set_function(self, function):
+        if not hasattr(InterpolateFunction, function):
+            raise ValueError('Invalid function parameter, expected InterpolateFunction, found: ' + unicode(type(function)))
+        self.function = function
+
+    def set_boundary(self, boundary):
+        if not hasattr(InterpolateBoundary, boundary):
+            raise ValueError('Invalid boundary parameter, expected InterpolateBoundary, found: ' + unicode(type(boundary)))
+        self.boundary = boundary
+
+    def set_fill(self, fill):
+        if not isinstance(fill, (bool, numbers.Number)):
+            raise ValueError('Invalid fill parameter, expected bool or number, found: ' + unicode(type(fill)))
+        self.fill = fill
+
 
 #===============================================================================
 ################# Properties

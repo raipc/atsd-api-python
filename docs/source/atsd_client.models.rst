@@ -28,7 +28,7 @@ Constants
     :members:
     :undoc-members:
 
-.. autoclass:: atsd_client.models.Interpolate
+.. autoclass:: atsd_client.models.InterpolateType
     :members:
     :undoc-members:
 
