@@ -65,6 +65,27 @@ pip install atsd_client --upgrade --upgrade-strategy only-if-needed
 
 ## Usage
 
+### Hello World
+
+```python
+  from atsd_client import connect_url
+
+  connection = connect_url('https://atasd_hostname:8443', 'john.doe', 'password')
+
+  response = connection.get('v1/version')
+  build_info = response['buildInfo']
+  print('Revision: %s ' % build_info['revisionNumber'])
+```
+	
+```sh
+  $ python connect_url_check.py
+```
+
+```
+  INFO:root:Connecting to ATSD at https://atsd_hostname:8443 as john.doe user.
+  Revision: 19020 
+```
+
 ### Connecting to ATSD
 
 To connect to an ATSD instance, you need to know its hostname and port, and have a user account configured on the **Admin>Users** page. 
