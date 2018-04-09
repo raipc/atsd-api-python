@@ -347,10 +347,12 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 
 |**Name**| **Description**|
 |:---|:---|
-|[export_messages.py](examples/export_messages.py) | Export messages from ATSD into CSV. |
+|[entity_print_metrics_html.py](examples/entity_print_metrics_html.py) | Print metrics for entity into HTML or ASCII table. |
+|[export_messages.py](examples/export_messages.py) | Export messages into CSV. |
 
 
-Note that some of the examples above use the `prettytable` module to format displayed records. The module can be installed as follows:
+
+> Note that some of the examples above use the `prettytable` module to format displayed records. The module can be installed as follows:
 
 ```
 pip install prettytable
