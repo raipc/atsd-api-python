@@ -160,7 +160,7 @@ See the [Series Query documentation](https://github.com/axibase/atsd-docs/blob/m
 
 *Entity filter*: can be set by providing entity name, names of multiple entities, or the name of the entityGroup or entityExpression.
 
-*Date filter*: can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as  keywords from [endTime syntax](https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md), an ISO 8601 formatted string, number of Unix milliseconds, or a datetime object.
+*Date filter*: can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, number of Unix milliseconds, or a datetime object.
 
 Finally, to get a list of `Series` objects matching the specified filters, the `query` method of the service should be used.
 

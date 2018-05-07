@@ -21,7 +21,7 @@ Login into the intermediate server with internet access.
 
 Download the `atsd_client` source code.
 
-```
+```sh
 curl -OL https://github.com/axibase/atsd-api-python/archive/master.zip; \
 unzip master.zip; rm master.zip; mv atsd-api-python-master atsd-api-python
 ```
@@ -35,7 +35,7 @@ pip download 'requests>=2.12.1' python-dateutil pandas tzlocal -d modules
 
 If your python version is less than 2.7.9 download the following additional modules:
 
-```
+```sh
 pip download pyOpenSSL idna -d modules
 ```
 
@@ -45,7 +45,7 @@ The `modules` directory will contain a set of `*.whl`and `*.tar.gz` files.
 ls modules
 ```
 
-```
+```csv
 asn1crypto-0.23.0-py2.py3-none-any.whl                  enum34-1.1.6-py2-none-any.whl                           pyOpenSSL-17.3.0-py2.py3-none-any.whl                   six-1.11.0-py2.py3-none-any.whl
 certifi-2017.7.27.1-py2.py3-none-any.whl                idna-2.6-py2.py3-none-any.whl                           pycparser-2.18.tar.gz                                   tzlocal-1.4.tar.gz
 cffi-1.11.1-cp27-cp27mu-manylinux1_x86_64.whl           ipaddress-1.0.18-py2-none-any.whl                       python_dateutil-2.6.1-py2.py3-none-any.whl              urllib3-1.22-py2.py3-none-any.whl
@@ -55,11 +55,11 @@ cryptography-2.0.3-cp27-cp27mu-manylinux1_x86_64.whl    pandas-0.20.3-cp27-cp27m
 
 Unpack the downloaded modules.
 
-```
+```sh
 for i in `ls modules/*.whl`; do unzip "$i" -d modules/; rm -rf "$i"; done;
 ```
 
-```
+```sh
 for i in `ls modules/*.tar.gz`; do tar -xvf "$i" -C modules/; rm -rf "$i"; done;
 ```
 
