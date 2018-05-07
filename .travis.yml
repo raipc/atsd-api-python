@@ -9,8 +9,8 @@ python:
   - "3.5"
   - "3.6"
 install:
-  - docker run -d --name="atsd-api-test-python" -e axiname=axibase" -e axipass="axibase" -e timezone="Asia/Kathmandu" -p8443:8443 -p8088:8088 axibase/atsd:api_test
-  - pip install atsd_client
+  - docker run -d --name="atsd-api-test-python" -e axiname="axibase" -e axipass="axibase" -e timezone="Asia/Kathmandu" -p8443:8443 -p8088:8088 axibase/atsd:api_test
+  - python setup.py install
   - wget https://raw.githubusercontent.com/axibase/atsd/master/.travis-functions.sh && source .travis-functions.sh
   - install_checkers_in_non_doc_project
 script:
