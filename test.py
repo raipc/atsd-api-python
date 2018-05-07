@@ -35,7 +35,7 @@ VERSION_METRIC = 'pyapi.versioning.metric'
 
 
 def get_connection():
-    conn = atsd_client.connect_url('https://atsd_hostname:8443', 'user', 'password')
+    conn = atsd_client.connect_url('https://localhost:8443', 'axibase', 'axibase')
     return conn
 
 
