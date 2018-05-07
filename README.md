@@ -178,13 +178,13 @@ Finally, to get a list of `Series` objects matching the specified filters, the `
 
 ```
     2016-07-18T17:14:30+00:00             1
-	2016-07-18T17:16:30+00:00             2
-	metric: temperature
-	aggregate: {'type': 'DETAIL'}
-	type: HISTORY
-	tags: {}
-	data: [<Sample v=1, t=1468862070000.0, version=None>, <Sample v=2, t=1468862190000.0, version=None>]
-	entity: sensor123
+    2016-07-18T17:16:30+00:00             2
+    metric: temperature
+    aggregate: {'type': 'DETAIL'}
+    type: HISTORY
+    tags: {}
+    data: [<Sample v=1, t=1468862070000.0, version=None>, <Sample v=2, t=1468862190000.0, version=None>]
+    entity: sensor123
 ```
 
 ### Exploring Results
