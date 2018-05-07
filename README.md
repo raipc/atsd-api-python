@@ -70,7 +70,7 @@ pip install atsd_client --upgrade --upgrade-strategy only-if-needed
 ```python
   from atsd_client import connect_url
 
-  connection = connect_url('https://atasd_hostname:8443', 'john.doe', 'password')
+  connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
 
   response = connection.get('v1/version')
   build_info = response['buildInfo']
