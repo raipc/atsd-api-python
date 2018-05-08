@@ -6,8 +6,8 @@ The ATSD API Client for Python simplifies the process of interacting with [Axiba
 
 * ATSD [Data API](https://github.com/axibase/atsd-docs/tree/master/api/data#overview) documentation
 * ATSD [Meta API](https://github.com/axibase/atsd-docs/tree/master/api/meta#overview) documentation
-* ATSD [SQL Documentation](https://github.com/axibase/atsd-docs/tree/master/sql#overview) documentation  
-* [PyPI atsd_client](https://pypi.python.org/pypi/atsd_client)  
+* ATSD [SQL Documentation](https://github.com/axibase/atsd-docs/tree/master/sql#overview) documentation
+* [PyPI atsd_client](https://pypi.python.org/pypi/atsd_client)
 * atsd_client documentation on [pythonhosted.org](http://pythonhosted.org/atsd_client)
 
 ## Requirements
@@ -27,13 +27,13 @@ The client is supported for the following Python versions:
 
 Install `atsd_client` module using `pip`.
 
-```
+```sh
 pip install atsd_client
 ```
 
 Alternatively, clone the repository and run the installation manually.
 
-```
+```sh
 git clone https://github.com/axibase/atsd-api-python.git
 cd atsd-api-python
 python setup.py install
@@ -76,25 +76,25 @@ pip install atsd_client --upgrade --upgrade-strategy only-if-needed
   build_info = response['buildInfo']
   print('Revision: %s ' % build_info['revisionNumber'])
 ```
-	
+
 ```sh
-  $ python connect_url_check.py
+python connect_url_check.py
 ```
 
-```
+```txt
   INFO:root:Connecting to ATSD at https://atsd_hostname:8443 as john.doe user.
-  Revision: 19020 
+  Revision: 19020
 ```
 
 ### Connecting to ATSD
 
-To connect to an ATSD instance, you need to know its hostname and port, and have a user account configured on the **Admin>Users** page. 
+To connect to an ATSD instance, you need to know its hostname and port, and have a user account configured on the **Admin>Users** page.
 
 Establish a connection with the `connect_url` method.
 
 ```python
     >>> import atsd_client
-    >>> conn = atsd_client.connect_url('https://atsd_hostname:8443', 'usr', 'passwd')  
+    >>> conn = atsd_client.connect_url('https://atsd_hostname:8443', 'usr', 'passwd')
 ```
 
 Alternatively, create a `connection.properties` file and specify its path in the `connect` method.
@@ -108,21 +108,19 @@ ssl_verify=False
 
 ```python
     >>> import atsd_client
-    >>> conn = atsd_client.connect('/path/to/connection.properties')  
+    >>> conn = atsd_client.connect('/path/to/connection.properties')
 ```
 
 ### Initializing the Service
 
-The client provides a set of services for interacting with a particular type of records in ATSD, for example, `Series`, `Property`, and `Message` objects 
-as well as with metadata objects such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a service is provided below.
-
+The client provides a set of services for interacting with a particular type of records in ATSD, for example, `Series`, `Property`, and `Message` objects as well as with metadata objects such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a service is provided below.
 
 ```python
     >>> from atsd_client.services import SeriesService
     >>> svc = SeriesService(conn)
 ```
 
-### Logging 
+### Logging
 
 Logging to stdout is enabled by default. To disable logging, add the following lines at the beginning of the script:
 
@@ -141,9 +139,9 @@ To insert series values into ATSD, initialize a `Series` object and populate it 
     >>> from atsd_client.models import Sample, Series
     >>> series = Series(entity='sensor123', metric='temperature')
     >>> series.add_samples(
-    	    Sample(value=1, time="2016-07-18T17:14:30Z"),
-     	    Sample(value=2, time="2016-07-18T17:16:30Z")
-     	)
+            Sample(value=1, time="2016-07-18T17:14:30Z"),
+            Sample(value=2, time="2016-07-18T17:16:30Z")
+        )
     >>> svc.insert(series)
     True
 ```
@@ -176,7 +174,7 @@ Finally, to get a list of `Series` objects matching the specified filters, the `
     >>> print(result[0]) #picking first Series object
 ```
 
-```
+```txt
     2016-07-18T17:14:30+00:00             1
     2016-07-18T17:16:30+00:00             2
     metric: temperature
@@ -191,7 +189,7 @@ Finally, to get a list of `Series` objects matching the specified filters, the `
 
 Install the `pandas` module using pip:
 
-```
+```sh
 pip install pandas
 ```
 
@@ -205,7 +203,7 @@ In order to access the Series object in [pandas](http://pandas.pydata.org/), a P
     >>> print(ts)
 ```
 
-```
+```txt
     2015-04-10 17:22:24.048000    11
     2015-04-10 17:23:14.893000    31
     2015-04-10 17:24:49.058000     7
@@ -236,7 +234,7 @@ The returned table will be an instance of the `DataFrame` class.
     >>> df
 ```
 
-```
+```txt
       entity                  datetime        value     tags.host
     0   atsd  2017-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
     1   atsd  2017-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
@@ -247,7 +245,7 @@ The returned table will be an instance of the `DataFrame` class.
 
 Versioning enables keeping track of value changes and is described [here](https://axibase.com/products/axibase-time-series-database/data-model/versioning/).
 
-You can enable versioning for specific metrics and add optional versioning fields to Samples using the `version` argument. 
+You can enable versioning for specific metrics and add optional versioning fields to Samples using the `version` argument.
 
 ```python
 
@@ -273,18 +271,17 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
     >>> result = svc.query(query_data)
     >>> print(result[0])
  ```
- 
- ```
-	           time         value   version_source   version_status
-	1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
-	1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
-	1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
-	1468868308000.0           1.0      TEST_SOURCE      TEST_STATUS
-	1468868364000.0          15.0      TEST_SOURCE      TEST_STATUS
-	1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
-	1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
-```
 
+ ```txt
+               time         value   version_source   version_status
+    1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
+    1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
+    1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
+    1468868308000.0           1.0      TEST_SOURCE      TEST_STATUS
+    1468868364000.0          15.0      TEST_SOURCE      TEST_STATUS
+    1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
+    1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
+```
 
 ## Examples
 
@@ -326,12 +323,13 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[data-availability.py](examples/data-availability.py) | Monitor availability of data using predefined CSV. |
 
 ### Data Manipulation
+
 |**Name**| **Description**|
 |:---|:---|
 |[copy_data.py](examples/copy_data.py)| Copy data into a different period. |
 |[copy_data_for_the_metric.py](examples/copy_data_for_the_metric.py) | Copy data into a new metric. |
 
-### Record Cleanup 
+### Record Cleanup
 
 |**Name**| **Description**|
 |:---|:---|
@@ -350,13 +348,10 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[entity_print_metrics_html.py](examples/entity_print_metrics_html.py) | Print metrics for entity into HTML or ASCII table. |
 |[export_messages.py](examples/export_messages.py) | Export messages into CSV. |
 
-
-
 > Note that some of the examples above use the `prettytable` module to format displayed records. The module can be installed as follows:
 
-```
+```sh
 pip install prettytable
 # or
 pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
 ```
-

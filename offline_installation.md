@@ -1,6 +1,6 @@
 # Offline Installation
 
-The document describes how ATSD Python client can be installed on a machine without internet access. The process involves downloading the client module and its dependencies to an intermediate server from which the files can be copied to the target machine. 
+The document describes how ATSD Python client can be installed on a machine without internet access. The process involves downloading the client module and its dependencies to an intermediate server from which the files can be copied to the target machine.
 
 ## Check Version
 
@@ -45,7 +45,7 @@ The `modules` directory will contain a set of `*.whl`and `*.tar.gz` files.
 ls modules
 ```
 
-```csv
+```txt
 asn1crypto-0.23.0-py2.py3-none-any.whl                  enum34-1.1.6-py2-none-any.whl                           pyOpenSSL-17.3.0-py2.py3-none-any.whl                   six-1.11.0-py2.py3-none-any.whl
 certifi-2017.7.27.1-py2.py3-none-any.whl                idna-2.6-py2.py3-none-any.whl                           pycparser-2.18.tar.gz                                   tzlocal-1.4.tar.gz
 cffi-1.11.1-cp27-cp27mu-manylinux1_x86_64.whl           ipaddress-1.0.18-py2-none-any.whl                       python_dateutil-2.6.1-py2.py3-none-any.whl              urllib3-1.22-py2.py3-none-any.whl
@@ -94,7 +94,6 @@ Traceback (most recent call last):
   File "<string>", line 1, in <module>
 ImportError: No module named atsd_client
 ```
-
 
 ## Install From Prepared Modules
 
