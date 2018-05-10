@@ -70,9 +70,9 @@ pip install atsd_client --upgrade --upgrade-strategy only-if-needed
 ```python
   from atsd_client import connect_url
 
-  connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
+  conn = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
 
-  response = connection.get('v1/version')
+  response = conn.get('v1/version')
   build_info = response['buildInfo']
   print('Revision: %s ' % build_info['revisionNumber'])
 ```
@@ -228,7 +228,7 @@ To perform SQL queries, use the `query` method implemented in the SQLService.
 The returned table will be an instance of the `DataFrame` class.
 
 ```python
-
+    >>> from atsd_client.services import SQLService
     >>> sql = SQLService(conn)
     >>> df = sql.query('select * from jvm_memory_free limit 3')
     >>> df
