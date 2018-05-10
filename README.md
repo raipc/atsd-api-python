@@ -167,7 +167,7 @@ Finally, to get a list of `Series` objects matching the specified filters, the `
     >>> from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter
     >>> sf = SeriesFilter(metric="temperature")
     >>> ef = EntityFilter(entity="sensor123")
-    >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=datetime.now())
+    >>> df = DateFilter(start_date="2016-02-22T13:37:00Z", end_date=datetime.now())
     >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
     >>> result = svc.query(query_data)
     >>>
