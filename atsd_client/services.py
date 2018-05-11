@@ -83,6 +83,15 @@ class SeriesService(_Service):
         """
         raise NotImplementedError
 
+    def delete(self, delete_filter):
+        """Delete series matching delete_filter
+
+        :param delete_filter: :class:`.SeriesDeleteFilter`
+        :return: count of deleted series if success
+        """
+        print(delete_filter)
+        response = self.conn.post(series_delete_url, delete_filter)
+        return response
 
 # -------------------------------------------------------------------- PROPERTIES
 class PropertiesService(_Service):
