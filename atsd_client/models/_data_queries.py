@@ -227,9 +227,9 @@ class SeriesQuery():
 
 
 # ------------------------------------------------------------------------------
-class SeriesDeleteFilter:
+class SeriesDeleteQuery:
     """
-    Class representing a filter to match series for the specified entity, metric and tags to be deleted.
+    Class representing a series delete query for the specified entity, metric and series tags.
     """
 
     def __init__(self, entity, metric, tags=None, exact_match=None):
@@ -242,7 +242,7 @@ class SeriesDeleteFilter:
         #: `str` entity name
         self.entity = entity
         #: `dict` series tags
-        self.tags = {} if tags is None else tags
+        self.tags = tags
         # : `bool` tags match operator: exact match if true, partial match if false
         self.exactMatch = True if exact_match is None else exact_match
 

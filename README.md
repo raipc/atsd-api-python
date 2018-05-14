@@ -335,6 +335,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |:---|:---|
 |[find_non-positive_values.py](examples/find_non-positive_values.py) | Find series with non-positive values for the specified metric, delete if required. |
 |[delete_series_data_interval.py](examples/delete_series_data_interval.py) | Delete data for a given series with tags for the specified date interval. |
+|[delete_series_for_entity_metric_tags.py](examples/delete_series_for_entity_metric_tags.py)|Delete all series for the specified entity, metric and series tags.|
 |[docker_delete.py](examples/docker_delete.py)| Delete docker host entities and related container/image/network/volume entities that have not inserted data for more than 7 days. |
 |[entities_expression_delete.py](examples/entities_expression_delete.py)| Delete entities that match the specified expression filter. |
 |[delete_entity_tags.py](examples/delete_entity_tags.py)| Delete specific entity tags from entities that match an expression. |
