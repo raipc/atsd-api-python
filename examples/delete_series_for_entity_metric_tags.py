@@ -1,4 +1,5 @@
 from atsd_client import connect_url
+from atsd_client.services import SeriesService
 from atsd_client.models import SeriesDeleteQuery
 
 '''
@@ -12,6 +13,8 @@ conn = connect_url('https://atsd_hostname:8443', 'user', 'password')
 entity = 'entity'
 metric = 'metric'
 tags = {'tag_key_1': 'tag_value_1', 'tag_key_2': 'tag_value_2'}
+
+series_service = SeriesService(conn)
 
 # Query to match series to be deleted, use exact_match to exclude not specified tags.
 # exactMatch is set to True by default. Wildcards are not supported.
