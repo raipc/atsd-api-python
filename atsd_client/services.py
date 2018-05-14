@@ -83,6 +83,21 @@ class SeriesService(_Service):
         """
         raise NotImplementedError
 
+    def delete(self, *delete_query):
+        """Delete series matching delete_query tuple
+
+        :param delete_query: :class:`.SeriesDeleteQuery`
+        :return: json with count of deleted series if success
+        """
+        try:
+            response = self.conn.post(series_delete_url, delete_query)
+        except ServerException as e:
+            if e.status_code == 404:
+                return e.content
+            else:
+                raise e
+        return response
+
 
 # -------------------------------------------------------------------- PROPERTIES
 class PropertiesService(_Service):
