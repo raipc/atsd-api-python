@@ -1,13 +1,12 @@
 from atsd_client import connect_url
-from atsd_client.models import SeriesDeleteQuery, SeriesFilter, EntityFilter
-from atsd_client.services import SeriesService
+from atsd_client.models import SeriesDeleteQuery
 
 '''
 Delete all series for the specified entity, metric and series tags.
 '''
 
 # Connect to an ATSD server
-conn = connect_url('https://localhost:8443', 'axibase', 'axibase')
+conn = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Set query
 entity = 'entity'
