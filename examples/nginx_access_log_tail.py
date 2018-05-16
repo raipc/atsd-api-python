@@ -22,7 +22,7 @@ fieldnames = ['remote_addr','remote_user','time_iso8601','host','request_method'
 
 # string lists for ignoring requests from bots, requests to static resources. basic substring match
 ignore_user_agents = ['axibase', 'feedly', 'scollector', 'rome client', 'bot', 'crawl', 'qwant', 'slurp', 'spider', 'webmaster', 'faq', 'apache', 'scan']
-ignore_uris = ['.png', '.js', '.css', '.woff', '.jpg', '.gif', '.ico', 'robots.txt', '/feed/']
+ignore_uris = ['.png', '.js', '.css', '.woff', '.jpg', '.gif', '.ico', 'robots.txt', '/feed/', '.ttf', '.eot', 'wp-content']
 ignore_ip = ['10.20.30.40', '10.20.30.50']
 
 def lookup(addr):
