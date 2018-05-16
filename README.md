@@ -1,5 +1,7 @@
 # Axibase Time Series Database Client for Python
 
+## Overview
+
 The ATSD API Client for Python simplifies the process of interacting with [Axibase Time Series Database](https://axibase.com/products/axibase-time-series-database/) through REST API and SQL endpoints.
 
 ## References
@@ -111,9 +113,7 @@ wheel               0.24.0
 yum-metadata-parser 1.1.4
 ```
 
-## Usage
-
-### Hello World
+## Hello World
 
 Create a `connect_url_check.py` file with a basic connection test.
 
@@ -139,7 +139,7 @@ python connect_url_check.py
   Revision: 19020
 ```
 
-### Connecting to ATSD
+## Connecting to ATSD
 
 To connect to an ATSD instance, you need to know its hostname and port (default is `8443`), and have a user account configured on the **Settings > Users** [page](https://github.com/axibase/atsd/blob/master/administration/user-authorization.md).
 
@@ -164,7 +164,7 @@ import atsd_client
 conn = atsd_client.connect('/path/to/connection.properties')
 ```
 
-### Logging
+## Logging
 
 Logging to stdout is **enabled** by default. To disable logging, modify the logger at the beginning of the script.
 
@@ -174,7 +174,7 @@ logger = logging.getLogger()
 logger.disabled = True
 ```
 
-### Services
+## Services
 
 The client provides a set of services for inserting and querying particular type of records in the database, for example, `Series`, `Property`, and `Message` records as well as with metadata records such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a service is provided below.
 
@@ -194,11 +194,11 @@ Available services:
 * [`EntityGroupsService`](atsd_client/services.py#L423)
 * [`SQLService`](atsd_client/services.py#L577)
 
-### Models
+## Models
 
 The services can be used to insert and query particular type of records in the database which are implemented as Python classes for convenience.
 
-#### Data Models
+### Data Models
 
 * [`Series`](atsd_client/models/_data_models.py#L115)
 * [`Sample`](atsd_client/models/_data_models.py#L30)
@@ -207,13 +207,13 @@ The services can be used to insert and query particular type of records in the d
 * [`Alert`](atsd_client/models/_data_models.py#L412)
 * [`AlertHistory`](atsd_client/models/_data_models.py#L568)
 
-#### Meta Models
+### Meta Models
 
 * [`Metric`](atsd_client/models/_meta_models.py#L53)
 * [`Entity`](atsd_client/models/_meta_models.py#L291)
 * [`EntityGroup`](atsd_client/models/_meta_models.py#L390)
 
-### Inserting Data
+## Inserting Data
 
 ### Inserting Series
 
@@ -234,7 +234,7 @@ svc.insert(series)
 
 ### Inserting Messages
 
-### Querying Data
+## Querying Data
 
 ### Querying Series
 
@@ -277,9 +277,35 @@ Optional filters:
 
 Refer to [API documentation](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for additional details.
 
-### Exploring Results
+### Querying Data with SQL
 
-Install the [pandas](http://pandas.pydata.org/) module for advanced data analysis:
+To perform SQL queries, use the `query` method implemented in the SQLService.
+The returned table will be an instance of the `DataFrame` class.
+
+```python
+from atsd_client.services import *
+
+sql = SQLService(conn)
+df = sql.query('SELECT * FROM jvm_memory_free LIMIT 3')
+print(df)
+```
+
+```txt
+      entity                  datetime        value     tags.host
+    0   atsd  2018-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
+    1   atsd  2018-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
+    2   atsd  2018-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
+```
+
+### Querying Properties
+
+### Querying Messages
+
+## Analyzing Data
+
+### Convert to `pandas`
+
+Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manipulation and analysis.
 
 ```sh
 pip install pandas
@@ -303,7 +329,7 @@ print(ts)
     2018-04-13 15:00:38            3
 ```
 
-### Graphing Results
+### Graph Results
 
 To plot the series with `matplotlib`, use `plot()`:
 
@@ -311,26 +337,6 @@ To plot the series with `matplotlib`, use `plot()`:
 >>> import matplotlib.pyplot as plt
 >>> series.plot()
 >>> plt.show()
-```
-
-### SQL queries
-
-To perform SQL queries, use the `query` method implemented in the SQLService.
-The returned table will be an instance of the `DataFrame` class.
-
-```python
-from atsd_client.services import *
-
-sql = SQLService(conn)
-df = sql.query('SELECT * FROM jvm_memory_free LIMIT 3')
-print(df)
-```
-
-```txt
-      entity                  datetime        value     tags.host
-    0   atsd  2018-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
-    1   atsd  2018-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
-    2   atsd  2018-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
 ```
 
 ### Working with Versioned Data
@@ -378,7 +384,7 @@ print(result[0])
 
 ## Examples
 
-### Versions
+### Preparation
 
 |**Name**| **Description**|
 |:---|:---|
@@ -391,6 +397,12 @@ print(result[0])
 |[connect_url_check.py](examples/connect_url_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect_url('https://atsd_hostname:8443', 'user', 'password')` function. |
 |[connect_path_check.py](examples/connect_path_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect(/home/axibase/connection.properties)` function. |
 |[connect_check.py](examples/connect_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect()` function. |
+
+### Inserting Records
+
+|**Name**| **Description**|
+|:---|:---|
+|[nginx_access_log_tail.py](examples/nginx_access_log_tail.py) | Continuously read (`tail -F`) nginx `access.log`, parse request logs as CSV rows, discard bot requests, insert records as messages. |
 
 ### Data Availability
 
@@ -443,10 +455,9 @@ print(result[0])
 |[entity_print_metrics_html.py](examples/entity_print_metrics_html.py) | Print metrics for entity into HTML or ASCII table. |
 |[export_messages.py](examples/export_messages.py) | Export messages into CSV. |
 
-> Note that some of the examples above use the `prettytable` module to format displayed records. The module can be installed as follows:
+Some of the examples above use the `prettytable` module to format displayed records.
 
 ```sh
 pip install prettytable
-# or
-pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
+# pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
 ```
