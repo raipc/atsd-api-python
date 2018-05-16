@@ -1,6 +1,6 @@
 # Axibase Time Series Database Client for Python
 
-The ATSD API Client for Python simplifies the process of interacting with [Axibase Time Series Database](https://axibase.com/products/axibase-time-series-database/) through SQL and REST API.
+The ATSD API Client for Python simplifies the process of interacting with [Axibase Time Series Database](https://axibase.com/products/axibase-time-series-database/) through REST API and SQL endpoints.
 
 ## References
 
@@ -20,8 +20,8 @@ python -V
 
 The client is supported for the following Python versions:
 
-* Python 2.7.9 and later
-* Python 3, all versions
+* Python 2: **2.7.9** and later
+* Python 3: all versions
 
 ## Installation
 
@@ -45,7 +45,7 @@ Check that the modules have been installed successfully.
 python -c "import atsd_client, pandas, requests, dateutil"
 ```
 
-The output will be empty if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
+The output will be **empty** if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
 
 ```python
 Traceback (most recent call last):
@@ -63,18 +63,71 @@ Execute `pip install` command to upgrade the client to the latest version.
 pip install atsd_client --upgrade --upgrade-strategy only-if-needed
 ```
 
+Run `pip list` to view the currently installed modules.
+
+```sh
+pip list
+```
+
+```txt
+Package             Version
+------------------- ------------------
+asn1crypto          0.24.0
+atsd-client         2.2.1
+certifi             2018.4.16
+cffi                1.11.5
+chardet             3.0.4
+colorama            0.2.5
+cryptography        2.2.2
+duplicity           0.6.23
+enum34              1.1.6
+html5lib            0.999
+idna                2.6
+ipaddress           1.0.22
+lockfile            0.8
+numpy               1.14.3
+pandas              0.23.0
+pip                 10.0.1
+pycparser           2.18
+pycrypto            2.6.1
+pycurl              7.19.3
+pyliblzma           0.5.3
+pyOpenSSL           17.5.0
+pysqlite            1.0.1
+python-apt          0.9.3.5ubuntu2
+python-dateutil     2.7.3
+python-debian       0.1.21-nmu2ubuntu2
+pytz                2018.4
+requests            2.18.4
+setuptools          33.1.1
+sh                  1.12.14
+six                 1.11.0
+ssh-import-id       3.21
+tzlocal             1.5.1
+urlgrabber          3.9.1
+urllib3             1.22
+virtualenv          1.11.4
+wheel               0.24.0
+yum-metadata-parser 1.1.4
+```
+
 ## Usage
 
 ### Hello World
 
+Create a `connect_url_check.py` file with a basic connection test.
+
 ```python
-  from atsd_client import connect_url
+from atsd_client import connect_url
 
-  conn = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
+# Update connection properties and user credentials
+conn = connect_url('https://atsd_hostname:8443', 'john.doe', 'passwd')
 
-  response = conn.get('v1/version')
-  build_info = response['buildInfo']
-  print('Revision: %s ' % build_info['revisionNumber'])
+# Retrieve JSON from /api/v1/version endpoint
+# https://github.com/axibase/atsd/blob/master/api/meta/misc/version.md
+response = conn.get('v1/version')
+build_info = response['buildInfo']
+print('Revision: %s ' % build_info['revisionNumber'])
 ```
 
 ```sh
@@ -88,13 +141,13 @@ python connect_url_check.py
 
 ### Connecting to ATSD
 
-To connect to an ATSD instance, you need to know its hostname and port, and have a user account configured on the **Admin>Users** page.
+To connect to an ATSD instance, you need to know its hostname and port (default is `8443`), and have a user account configured on the **Settings > Users** [page](https://github.com/axibase/atsd/blob/master/administration/user-authorization.md).
 
 Establish a connection with the `connect_url` method.
 
 ```python
-    >>> import atsd_client
-    >>> conn = atsd_client.connect_url('https://atsd_hostname:8443', 'usr', 'passwd')
+from atsd_client import connect_url
+conn = connect_url('https://atsd_hostname:8443', 'usr', 'passwd')
 ```
 
 Alternatively, create a `connection.properties` file and specify its path in the `connect` method.
@@ -107,22 +160,13 @@ ssl_verify=False
 ```
 
 ```python
-    >>> import atsd_client
-    >>> conn = atsd_client.connect('/path/to/connection.properties')
-```
-
-### Initializing the Service
-
-The client provides a set of services for interacting with a particular type of records in ATSD, for example, `Series`, `Property`, and `Message` objects as well as with metadata objects such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a service is provided below.
-
-```python
-    >>> from atsd_client.services import SeriesService
-    >>> svc = SeriesService(conn)
+import atsd_client
+conn = atsd_client.connect('/path/to/connection.properties')
 ```
 
 ### Logging
 
-Logging to stdout is enabled by default. To disable logging, add the following lines at the beginning of the script:
+Logging to stdout is **enabled** by default. To disable logging, modify the logger at the beginning of the script.
 
 ```python
 import logging
@@ -130,53 +174,92 @@ logger = logging.getLogger()
 logger.disabled = True
 ```
 
-### Inserting Series Values
+### Services
 
-To insert series values into ATSD, initialize a `Series` object and populate it with timestamped values.
+The client provides a set of services for inserting and querying particular type of records in the database, for example, `Series`, `Property`, and `Message` records as well as with metadata records such as `Entity`, `Metric`, and `EntityGroup`. An example of creating a service is provided below.
 
 ```python
-
-    >>> from atsd_client.models import Sample, Series
-    >>> series = Series(entity='sensor123', metric='temperature')
-    >>> series.add_samples(
-            Sample(value=1, time="2016-07-18T17:14:30Z"),
-            Sample(value=2, time="2016-07-18T17:16:30Z")
-        )
-    >>> svc.insert(series)
-    True
+from atsd_client.services import *
+svc = SeriesService(conn)
 ```
 
-In addition to inserting records via `atsd_client` client, you can load datasets into ATSD by uploading CSV files or importing publicly available information from [data.gov](https://github.com/axibase/atsd-use-cases/blob/master/SocrataPython/README.md) using Axibase Collector.
+Available services:
 
-### Querying Series Values
+* [`SeriesService`](atsd_client/services.py#L52)
+* [`PropertiesService`](atsd_client/services.py#L103)
+* [`MessageService`](atsd_client/services.py#L187)
+* [`AlertsService`](atsd_client/services.py#L148)
+* [`MetricsService`](atsd_client/services.py#L218)
+* [`EntitiesService`](atsd_client/services.py#L322)
+* [`EntityGroupsService`](atsd_client/services.py#L423)
+* [`SQLService`](atsd_client/services.py#L577)
 
-When querying series values from the database, you need to specify *entity filter*, *date filter*, and *series filter*. <br>
-Forecast, Versioning, Control, and Transformation filters can also be used to filter the resulting `Series` objects.
-See the [Series Query documentation](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for more information.
+### Models
 
-*Series filter*: requires specifying the metric name. You can also include type, tags, and other parameters in this filter to get more specific series objects.
+The services can be used to insert and query particular type of records in the database which are implemented as Python classes for convenience.
 
-*Entity filter*: can be set by providing entity name, names of multiple entities, or the name of the entityGroup or entityExpression.
+#### Data Models
 
-*Date filter*: can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, number of Unix milliseconds, or a datetime object.
+* [`Series`](atsd_client/models/_data_models.py#L115)
+* [`Sample`](atsd_client/models/_data_models.py#L30)
+* [`Property`](atsd_client/models/_data_models.py#L339)
+* [`Message`](atsd_client/models/_data_models.py#L753)
+* [`Alert`](atsd_client/models/_data_models.py#L412)
+* [`AlertHistory`](atsd_client/models/_data_models.py#L568)
 
-Finally, to get a list of `Series` objects matching the specified filters, the `query` method of the service should be used.
+#### Meta Models
+
+* [`Metric`](atsd_client/models/_meta_models.py#L53)
+* [`Entity`](atsd_client/models/_meta_models.py#L291)
+* [`EntityGroup`](atsd_client/models/_meta_models.py#L390)
+
+### Inserting Data
+
+### Inserting Series
+
+Initialize a `Series` object and populate it with timestamped values.
 
 ```python
+from atsd_client.models import *
 
-    >>> from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter
-    >>> sf = SeriesFilter(metric="temperature")
-    >>> ef = EntityFilter(entity="sensor123")
-    >>> df = DateFilter(start_date="2016-02-22T13:37:00Z", end_date=datetime.now())
-    >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
-    >>> result = svc.query(query_data)
-    >>>
-    >>> print(result[0]) #picking first Series object
+series = Series(entity='sensor123', metric='temperature')
+series.add_samples(
+    Sample(value=1, time="2018-05-18T17:14:30Z"),
+    Sample(value=2, time="2018-05-18T17:16:30Z")
+)
+svc.insert(series)
+```
+
+### Inserting Properties
+
+### Inserting Messages
+
+### Querying Data
+
+### Querying Series
+
+When querying series from the database, you need to pass the following filters to the `SeriesService`:
+
+* [`SeriesFilter`](atsd_client/models/_data_queries.py#L263) requires specifying the metric name. You can also include data type (history or forecast), series tags, and other parameters.
+* [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
+* [`DateFilter`](atsd_client/models/_data_queries.py#L161) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
+
+```python
+from atsd_client.models import *
+
+sf = SeriesFilter(metric="temperature")
+ef = EntityFilter(entity="sensor123")
+df = DateFilter(start_date="2018-02-22T13:37:00Z", end_date=datetime.now())
+query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
+result = svc.query(query_data)
+
+# print first Series object
+print(result[0])
 ```
 
 ```txt
-    2016-07-18T17:14:30+00:00             1
-    2016-07-18T17:16:30+00:00             2
+    2018-07-18T17:14:30+00:00             1
+    2018-07-18T17:16:30+00:00             2
     metric: temperature
     aggregate: {'type': 'DETAIL'}
     type: HISTORY
@@ -185,31 +268,39 @@ Finally, to get a list of `Series` objects matching the specified filters, the `
     entity: sensor123
 ```
 
+Optional filters:
+
+* [`VersioningFilter`](atsd_client/models/_data_queries.py#L305)
+* [`TransformationFilter`](atsd_client/models/_data_queries.py#L361)
+* [`ForecastFilter`](atsd_client/models/_data_queries.py#L295)
+* [`ControlFilter`](atsd_client/models/_data_queries.py#L316)
+
+Refer to [API documentation](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for additional details.
+
 ### Exploring Results
 
-Install the `pandas` module using pip:
+Install the [pandas](http://pandas.pydata.org/) module for advanced data analysis:
 
 ```sh
 pip install pandas
 ```
 
-In order to access the Series object in [pandas](http://pandas.pydata.org/), a Python data analysis toolkit, utilize the built-in `to_pandas_series()` and `from_pandas_series()` methods.
+In order to access the Series object in `pandas`, use the built-in `to_pandas_series()` and `from_pandas_series()` methods.
 
 ```python
+ts = series.to_pandas_series()
 
-    >>> ts = series.to_pandas_series()
-    >>> type(ts.index)
-    <class 'pandas.tseries.index.DatetimeIndex'>
-    >>> print(ts)
+# pandas.tseries.index.DatetimeIndex
+print(ts)
 ```
 
 ```txt
-    2015-04-10 17:22:24.048000    11
-    2015-04-10 17:23:14.893000    31
-    2015-04-10 17:24:49.058000     7
-    2015-04-10 17:25:15.567000    22
-    2015-04-13 14:00:49.285000     9
-    2015-04-13 15:00:38            3
+    2018-04-10 17:22:24.048000    11
+    2018-04-10 17:23:14.893000    31
+    2018-04-10 17:24:49.058000     7
+    2018-04-10 17:25:15.567000    22
+    2018-04-13 14:00:49.285000     9
+    2018-04-13 15:00:38            3
 ```
 
 ### Graphing Results
@@ -217,9 +308,9 @@ In order to access the Series object in [pandas](http://pandas.pydata.org/), a P
 To plot the series with `matplotlib`, use `plot()`:
 
 ```python
-    >>> import matplotlib.pyplot as plt
-    >>> series.plot()
-    >>> plt.show()
+>>> import matplotlib.pyplot as plt
+>>> series.plot()
+>>> plt.show()
 ```
 
 ### SQL queries
@@ -228,17 +319,18 @@ To perform SQL queries, use the `query` method implemented in the SQLService.
 The returned table will be an instance of the `DataFrame` class.
 
 ```python
-    >>> from atsd_client.services import SQLService
-    >>> sql = SQLService(conn)
-    >>> df = sql.query('select * from jvm_memory_free limit 3')
-    >>> df
+from atsd_client.services import *
+
+sql = SQLService(conn)
+df = sql.query('SELECT * FROM jvm_memory_free LIMIT 3')
+print(df)
 ```
 
 ```txt
       entity                  datetime        value     tags.host
-    0   atsd  2017-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
-    1   atsd  2017-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
-    2   atsd  2017-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
+    0   atsd  2018-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
+    1   atsd  2018-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
+    2   atsd  2018-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
 ```
 
 ### Working with Versioned Data
@@ -248,29 +340,30 @@ Versioning enables keeping track of value changes and is described [here](https:
 You can enable versioning for specific metrics and add optional versioning fields to Samples using the `version` argument.
 
 ```python
-
-    >>> from datetime import datetime
-    >>> other_series = Series('sensor123', 'power')
-    >>> other_series.add_samples(
-                Sample(3, datetime.now(), version={"source":"TEST_SOURCE", "status":"TEST_STATUS"})
-        )
+from datetime import datetime
+other_series = Series('sensor123', 'power')
+other_series.add_samples(
+    Sample(3, datetime.now(), version={"source":"TEST_SOURCE", "status":"TEST_STATUS"})
+)
 ```
 
 To retrieve series values with versioning fields, add the `VersionedFilter` to the query with the `versioned` field equal to **True**.
 
 ```python
+import time
+from atsd_client.models import *
 
-    >>> import time
-    >>> from atsd_client.models import VersioningFilter
-    >>> cur_unix_milliseconds = int(time.time() * 1000)
-    >>> sf = SeriesFilter(metric="power")
-    >>> ef = EntityFilter(entity="sensor123")
-    >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
-    >>> vf = VersioningFilter(versioned=True)
-    >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
-    >>> result = svc.query(query_data)
-    >>> print(result[0])
- ```
+cur_unix_milliseconds = int(time.time() * 1000)
+sf = SeriesFilter(metric="power")
+ef = EntityFilter(entity="sensor123")
+df = DateFilter(startDate="2018-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
+vf = VersioningFilter(versioned=True)
+
+query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
+result = svc.query(query_data)
+
+print(result[0])
+```
 
  ```txt
                time         value   version_source   version_status
@@ -316,7 +409,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[find_stale_agents.py](examples/find_staling_agents.py) | Find entities that have stopped collecting data for a subset metrics.|
 |[metrics_created_later_than.py](examples/metrics_created_later_than.py) | Find metrics that have been created after the specified date. |
 |[entities_created_later_than.py](examples/entities_created_later_than.py) | Find entities that have been created after the specified date. |
-|[find_delayed_entities.py](examples/find_delayed_entities.py) | Find entities more than n hours behind the metric's last_insert_date. |
+|[find_delayed_entities.py](examples/find_delayed_entities.py) | Find entities more than `N` hours behind the metric last_insert_date. |
 |[series_statistics.py](examples/series_statistics.py) | Retrieve series for a given metric, for each series fetch first and last value. |
 |[frequency_violate.py](examples/frequency_violate.py) | Print values that violate metric frequency. |
 |[migration.py](examples/migration.py) | Compare series query responses before and after ATSD migration. |
@@ -329,7 +422,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[copy_data.py](examples/copy_data.py)| Copy data into a different period. |
 |[copy_data_for_the_metric.py](examples/copy_data_for_the_metric.py) | Copy data into a new metric. |
 
-### Record Cleanup
+### Data Removal and Cleanup
 
 |**Name**| **Description**|
 |:---|:---|
@@ -343,7 +436,7 @@ To retrieve series values with versioning fields, add the `VersionedFilter` to t
 |[delete_entity_tags_starting_with_expr.py](examples/delete_entity_tags_starting_with_expr.py)| Delete entity tags started with expression. |
 |[update_entity_tags_from_property.py](examples/update_entity_tags_from_property.py)| Update entity tags from the corresponding property tags. |
 
-### Reporting
+### Reports
 
 |**Name**| **Description**|
 |:---|:---|

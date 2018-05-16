@@ -12,7 +12,7 @@ from atsd_client.services import EntitiesService, SeriesService, MetricsService
 
 # configuration parameters: begin
 
-START_TIME = parse('2017-11-15T23:02:00Z')
+START_TIME = parse('2018-11-15T23:02:00Z')
 ENTITY_PREFIX = 'axi.asset'
 ASSET_COUNT = 3
 

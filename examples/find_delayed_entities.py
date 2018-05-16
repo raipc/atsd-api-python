@@ -16,7 +16,7 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 # specify metric name
 metric_name = "ca.daily.reservoir_storage_af"
 # set lower boundary for lastInsertDate
-min_insert_date = "2017-09-01T00:00:00.000Z"
+min_insert_date = "2018-05-01T00:00:00.000Z"
 # set grace interval in hours for 14 days
 grace_interval_hours = 24 * 14
 

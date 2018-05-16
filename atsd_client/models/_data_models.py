@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2017 Axibase Corporation or its affiliates. All Rights Reserved.
+Copyright 2018 Axibase Corporation or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may not use this file except in compliance with the License.
@@ -353,7 +353,7 @@ class Property(object):
         self._tags = NoneDict(tags)
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self._key = NoneDict(key)
-        #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2016-05-25T00:15:00Z. Set to server time at server side if omitted.
+        #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2018-05-25T00:15:00Z. Set to server time at server side if omitted.
         self._date = to_date(date)
         #: `dict` of entity and metric objects
         if meta is not None:

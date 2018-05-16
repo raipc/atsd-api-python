@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2017 Axibase Corporation or its affiliates. All Rights Reserved.
+Copyright 2018 Axibase Corporation or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ from . import models, _constants, _utilities, _time_utilities
 from . import services
 
 __all__ = ['services', 'models']
-__version__ = '2.2.0'
+__version__ = '2.2.1'
 
 try:
     logging.debug("Checking 'python-requests' version...")

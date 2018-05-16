@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2017 Axibase Corporation or its affiliates. All Rights Reserved.
+Copyright 2018 Axibase Corporation or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may not use this file except in compliance with the License.
@@ -164,9 +164,9 @@ class DateFilter():
                (self.interval is not None) and all(key in self.interval for key in ("count", "unit"))
 
     def __init__(self, start_date=None, end_date=None, interval=None):
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches samples timestamped at or after the startDate. Examples: 2016-07-18T11:11:02Z, current_hour
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches samples timestamped at or after the startDate. Examples: 2018-07-18T11:11:02Z, current_hour
         self.startDate = to_iso(start_date)
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped before the endDate. Examples: 2016-07-18T11:11:02+02:00, previous_day - 1 * HOUR
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped before the endDate. Examples: 2018-07-18T11:11:02+02:00, previous_day - 1 * HOUR
         self.endDate = to_iso(end_date)
         #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"}
         self.interval = interval

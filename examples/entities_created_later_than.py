@@ -7,7 +7,7 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 entities_service = EntitiesService(connection)
 # query all entities created after specified date
-entity_list = entities_service.list(expression="createdDate > '2017-10-16T00:00:00Z' AND tags.status != 'deleted'")
+entity_list = entities_service.list(expression="createdDate > '2018-05-16T00:00:00Z' AND tags.status != 'deleted'")
 
 print('entity_name,entity_label')
 for entity in entity_list:

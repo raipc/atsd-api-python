@@ -33,8 +33,8 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 svc = SeriesService(connection)
 
 # set start_date and end_date
-start_date = '2017-11-07T07:00:00Z'
-end_date = '2017-11-08T08:00:00Z'
+start_date = '2018-05-07T07:00:00Z'
+end_date = '2018-05-08T08:00:00Z'
 
 # list all json files from the current directory
 files = [f for f in os.listdir('.') if os.path.isfile(f) and f.endswith('.json')]

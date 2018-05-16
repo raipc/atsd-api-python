@@ -16,8 +16,8 @@ year_count = 5
 metric_name = 'sml.power-consumed'
 entity_name = '*'
 # specify date filter
-start_date = '2016-01-01T00:00:00Z'
-end_date = '2017-01-01T00:00:01Z'
+start_date = '2018-01-01T00:00:00Z'
+end_date = '2019-01-01T00:00:01Z'
 
 # prepare series_query and execute it
 sf = SeriesFilter(metric=metric_name)

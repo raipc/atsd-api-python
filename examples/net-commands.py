@@ -17,8 +17,8 @@ ASSET_COUNT = 10
 SITE_COUNT = 2
 BUILDING_PER_SITE_COUNT = 2
 
-MIN_TIME = parse('2017-11-15T00:00:00Z')
-MAX_TIME = parse('2017-11-16T00:00:00Z')
+MIN_TIME = parse('2018-05-15T00:00:00Z')
+MAX_TIME = parse('2018-05-16T00:00:00Z')
 
 sites = ['svl', 'nur']
 buildings = [['A', 'B'], ['C', 'D']]

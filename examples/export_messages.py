@@ -14,7 +14,7 @@ Export messages from ATSD into CSV-file using specified start_date, end_date, ty
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set export parameters
-start_date = "2017-10-01T00:00:00Z"
+start_date = "2018-05-01T00:00:00Z"
 end_date = "now"
 type = "logger"
 source = "com.axibase.tsd.service.search.searchserviceimpl"

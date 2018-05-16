@@ -1,5 +1,5 @@
 .. atsd_client documentation master file, created by
-   sphinx-quickstart on Fri Jul 22 13:16:12 2016.
+   sphinx-quickstart on Fri Jul 22 13:16:12 2018.
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
@@ -77,8 +77,8 @@ populate it with timestamped values.
         >>> from atsd_client.models import Sample, Series
         >>> series = Series(entity='sensor123', metric='temperature')
         >>> series.add_samples(
-                Sample(value=1, time="2016-07-18T17:14:30Z"),
-                Sample(value=2, time="2016-07-18T17:16:30Z")
+                Sample(value=1, time="2018-05-18T17:14:30Z"),
+                Sample(value=2, time="2018-05-18T17:16:30Z")
             )
         >>> svc.insert(series)
         True
@@ -123,14 +123,14 @@ used.
         >>> from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter
         >>> sf = SeriesFilter(metric="temperature")
         >>> ef = EntityFilter(entity="sensor123")
-        >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=datetime.now())
+        >>> df = DateFilter(startDate="2018-02-22T13:37:00Z", endDate=datetime.now())
         >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
         >>> result = svc.query(query_data)
         >>>
         >>> print(result[0]) #picking first Series object
         
-        2016-07-18T17:14:30+00:00             1
-        2016-07-18T17:16:30+00:00             2
+        2018-07-18T17:14:30+00:00             1
+        2018-07-18T17:16:30+00:00             2
         metric: temperature
         aggregate: {'type': 'DETAIL'}
         type: HISTORY
@@ -154,7 +154,7 @@ a date filter.
         >>> cur_unix_milliseconds = int(time.time() * 1000)
         >>> sf = SeriesFilter(metric="power")
         >>> ef = EntityFilter(entity="sensor123")
-        >>> df = DateFilter(startDate="2016-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
+        >>> df = DateFilter(startDate="2018-02-22T13:37:00Z", endDate=cur_unix_milliseconds)
         >>> vf = VersioningFilter(versioned=True)
         >>> query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
         >>> result = svc.query(query_data)
@@ -182,12 +182,12 @@ toolkit <http://pandas.pydata.org/>`_, you can utilize the built-in
         >>> type(ts.index)
         <class 'pandas.tseries.index.DatetimeIndex'>
         >>> print(ts)
-        2015-04-10 17:22:24.048000    11
-        2015-04-10 17:23:14.893000    31
-        2015-04-10 17:24:49.058000     7
-        2015-04-10 17:25:15.567000    22
-        2015-04-13 14:00:49.285000     9
-        2015-04-13 15:00:38            3
+        2018-04-10 17:22:24.048000    11
+        2018-04-10 17:23:14.893000    31
+        2018-04-10 17:24:49.058000     7
+        2018-04-10 17:25:15.567000    22
+        2018-04-13 14:00:49.285000     9
+        2018-04-13 15:00:38            3
 
 Graphing Results
 ~~~~~~~~~~~~~~~~
@@ -214,9 +214,9 @@ Returned table will be an instance of ``DataFrame`` class.
     >>> df = sql.query('select * from jvm_memory_free limit 3')
     >>> df
       entity                  datetime        value     tags.host
-    0   atsd  2017-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
-    1   atsd  2017-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
-    2   atsd  2017-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
+    0   atsd  2018-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
+    1   atsd  2018-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
+    2   atsd  2018-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
 
 
 

@@ -15,8 +15,8 @@ entity = 'e-to-delete'
 tags = {'tag_key_1': 'tag_value_1', 'tag_key_2': 'tag_value_2'}
 
 # specify date interval
-startDate = "2017-10-01T00:00:00Z"
-endDate = "2017-10-02T00:00:00Z"
+startDate = "2018-10-01T00:00:00Z"
+endDate = "2018-10-02T00:00:00Z"
 
 series_service = SeriesService(connection)
 

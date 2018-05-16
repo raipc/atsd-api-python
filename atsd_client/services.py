@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Copyright 2017 Axibase Corporation or its affiliates. All Rights Reserved.
+Copyright 2018 Axibase Corporation or its affiliates. All Rights Reserved.
 
 Licensed under the Apache License, Version 2.0 (the "License").
 You may not use this file except in compliance with the License.
@@ -191,7 +191,7 @@ class MessageService(_Service):
         :param messages: :class:`.Message`
         :return: True if success
         """
-        resp = self.conn.post(messages_insert_url, messages)
+        response = self.conn.post(messages_insert_url, messages)
         return True
 
     def query(self, *queries):
