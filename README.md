@@ -279,22 +279,37 @@ Refer to [API documentation](https://github.com/axibase/atsd-docs/blob/master/ap
 
 ### Querying Data with SQL
 
-To perform SQL queries, use the `query` method implemented in the SQLService.
+To perform SQL queries, use the `query` method implemented in the [`SQLService`](atsd_client/services.py#L577).
 The returned table will be an instance of the `DataFrame` class.
 
 ```python
-from atsd_client.services import *
+from atsd_client import connect_url
+from atsd_client.services import SQLService
 
-sql = SQLService(conn)
-df = sql.query('SELECT * FROM jvm_memory_free LIMIT 3')
+conn = connect_url('https://atsd_hostname:8443', 'user', 'passwd')
+
+# Single-line SQL query
+# query = 'SELECT datetime, time, entity, value FROM jvm_memory_free LIMIT 3';
+
+# Multi-line SQL query, use triple quotes (single or double)
+query = """
+SELECT datetime, time, entity, value
+  FROM "jvm_memory_free"
+ORDER BY datetime DESC
+  LIMIT 3
+"""
+
+svc = SQLService(conn)
+df = svc.query(query)
+
 print(df)
 ```
 
 ```txt
-      entity                  datetime        value     tags.host
-    0   atsd  2018-01-20T08:08:45.829Z  949637320.0  45D266DDE38F
-    1   atsd  2018-02-02T08:19:14.850Z  875839280.0  45D266DDE38F
-    2   atsd  2018-02-02T08:19:29.853Z  777757344.0  B779EDE9F45D
+                   datetime           time entity      value
+0  2018-05-17T12:36:36.971Z  1526560596971   atsd  795763936
+1  2018-05-17T12:36:21.970Z  1526560581970   atsd  833124808
+2  2018-05-17T12:36:06.973Z  1526560566973   atsd  785932984
 ```
 
 ### Querying Properties
@@ -452,6 +467,7 @@ print(result[0])
 
 |**Name**| **Description**|
 |:---|:---|
+|[sql_query.py](examples/sql_query.py) | Execute SQL query, convert results into a `DataFrame`. |
 |[entity_print_metrics_html.py](examples/entity_print_metrics_html.py) | Print metrics for entity into HTML or ASCII table. |
 |[export_messages.py](examples/export_messages.py) | Export messages into CSV. |
 
