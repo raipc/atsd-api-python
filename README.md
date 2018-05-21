@@ -23,11 +23,11 @@ The ATSD API Client for Python simplifies the process of interacting with [Axiba
 
 ## References
 
-* ATSD [Data API](https://github.com/axibase/atsd-docs/tree/master/api/data#overview) documentation
-* ATSD [Meta API](https://github.com/axibase/atsd-docs/tree/master/api/meta#overview) documentation
-* ATSD [SQL Documentation](https://github.com/axibase/atsd-docs/tree/master/sql#overview) documentation
-* [PyPI atsd_client](https://pypi.python.org/pypi/atsd_client)
-* atsd_client documentation on [pythonhosted.org](http://pythonhosted.org/atsd_client)
+- ATSD [Data API](https://github.com/axibase/atsd-docs/tree/master/api/data#overview) documentation
+- ATSD [Meta API](https://github.com/axibase/atsd-docs/tree/master/api/meta#overview) documentation
+- ATSD [SQL Documentation](https://github.com/axibase/atsd-docs/tree/master/sql#overview) documentation
+- [PyPI atsd_client](https://pypi.python.org/pypi/atsd_client)
+- atsd_client documentation on [pythonhosted.org](http://pythonhosted.org/atsd_client)
 
 ## Requirements
 
@@ -39,8 +39,8 @@ python -V
 
 The client is supported for the following Python versions:
 
-* Python 2: **2.7.9** and later
-* Python 3: all versions
+- Python 2: **2.7.9** and later
+- Python 3: all versions
 
 ## Installation
 
@@ -202,14 +202,14 @@ svc = SeriesService(conn)
 
 Available services:
 
-* [`SeriesService`](atsd_client/services.py#L52)
-* [`PropertiesService`](atsd_client/services.py#L103)
-* [`MessageService`](atsd_client/services.py#L187)
-* [`AlertsService`](atsd_client/services.py#L148)
-* [`MetricsService`](atsd_client/services.py#L218)
-* [`EntitiesService`](atsd_client/services.py#L322)
-* [`EntityGroupsService`](atsd_client/services.py#L423)
-* [`SQLService`](atsd_client/services.py#L577)
+- [`SeriesService`](atsd_client/services.py#L52)
+- [`PropertiesService`](atsd_client/services.py#L103)
+- [`MessageService`](atsd_client/services.py#L187)
+- [`AlertsService`](atsd_client/services.py#L148)
+- [`MetricsService`](atsd_client/services.py#L218)
+- [`EntitiesService`](atsd_client/services.py#L322)
+- [`EntityGroupsService`](atsd_client/services.py#L423)
+- [`SQLService`](atsd_client/services.py#L577)
 
 ## Models
 
@@ -217,18 +217,18 @@ The services can be used to insert and query particular type of records in the d
 
 ### Data Models
 
-* [`Series`](atsd_client/models/_data_models.py#L115)
-* [`Sample`](atsd_client/models/_data_models.py#L30)
-* [`Property`](atsd_client/models/_data_models.py#L339)
-* [`Message`](atsd_client/models/_data_models.py#L753)
-* [`Alert`](atsd_client/models/_data_models.py#L412)
-* [`AlertHistory`](atsd_client/models/_data_models.py#L568)
+- [`Series`](atsd_client/models/_data_models.py#L115)
+- [`Sample`](atsd_client/models/_data_models.py#L30)
+- [`Property`](atsd_client/models/_data_models.py#L339)
+- [`Message`](atsd_client/models/_data_models.py#L753)
+- [`Alert`](atsd_client/models/_data_models.py#L412)
+- [`AlertHistory`](atsd_client/models/_data_models.py#L568)
 
 ### Meta Models
 
-* [`Metric`](atsd_client/models/_meta_models.py#L53)
-* [`Entity`](atsd_client/models/_meta_models.py#L291)
-* [`EntityGroup`](atsd_client/models/_meta_models.py#L390)
+- [`Metric`](atsd_client/models/_meta_models.py#L53)
+- [`Entity`](atsd_client/models/_meta_models.py#L291)
+- [`EntityGroup`](atsd_client/models/_meta_models.py#L390)
 
 ## Inserting Data
 
@@ -279,9 +279,9 @@ ms.insert(message)  # ms = MessageService(conn)
 
 When querying series from the database, you need to pass the following filters to the `SeriesService`:
 
-* [`SeriesFilter`](atsd_client/models/_data_queries.py#L263) requires specifying the metric name. You can also include data type (history or forecast), series tags, and other parameters.
-* [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-* [`DateFilter`](atsd_client/models/_data_queries.py#L161) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
+- [`SeriesFilter`](atsd_client/models/_data_queries.py#L263) requires specifying the metric name. You can also include data type (history or forecast), series tags, and other parameters.
+- [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
+- [`DateFilter`](atsd_client/models/_data_queries.py#L161) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
 
 ```python
 from atsd_client.models import *
@@ -306,10 +306,10 @@ print(result[0])
 
 Optional filters:
 
-* [`VersioningFilter`](atsd_client/models/_data_queries.py#L305)
-* [`TransformationFilter`](atsd_client/models/_data_queries.py#L361)
-* [`ForecastFilter`](atsd_client/models/_data_queries.py#L295)
-* [`ControlFilter`](atsd_client/models/_data_queries.py#L316)
+- [`VersioningFilter`](atsd_client/models/_data_queries.py#L305)
+- [`TransformationFilter`](atsd_client/models/_data_queries.py#L361)
+- [`ForecastFilter`](atsd_client/models/_data_queries.py#L295)
+- [`ControlFilter`](atsd_client/models/_data_queries.py#L316)
 
 Refer to [API documentation](https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md) for additional details.
 
@@ -352,8 +352,8 @@ print(df)
 
 To retrieve property records from the database, you need to specify the property `type` name and pass the following filters to the `PropertiesService`:
 
-* [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-* [`DateFilter`](atsd_client/models/_data_queries.py#L161) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
+- [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
+- [`DateFilter`](atsd_client/models/_data_queries.py#L161) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
 
 ```python
 from atsd_client.models import *
@@ -381,8 +381,8 @@ Refer to [API documentation](https://github.com/axibase/atsd/blob/master/api/dat
 
 To query messages from the database, you need to specify the following filters for the `PropertiesService`:
 
-* [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-* [`DateFilter`](atsd_client/models/_data_queries.py#L161) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
+- [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
+- [`DateFilter`](atsd_client/models/_data_queries.py#L161) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://github.com/axibase/atsd/blob/master/shared/calendar.md), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
 
 ```python
 from atsd_client.models import *
