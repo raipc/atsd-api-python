@@ -29,8 +29,9 @@ from .._utilities import NoneDict
 # ------------------------------------------------------------------------------
 class Sample(object):
     """
-    Class that represents a numeric value observed at some time with an optional annotation and versioning fields.
-    If multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails, unless the metric is optionally enabled for version tracking.
+    Class that represents a numeric value observed at some time with an optional annotation and versioning fields. If
+    multiple samples have the same timestamp and are inserted for the same series, the latest sample prevails,
+    unless the metric is optionally enabled for version tracking.
     """
 
     def __init__(self, value, time=None, version=None, x=None):
@@ -344,24 +345,25 @@ class Property(object):
     The property values are are stored as text and only last value is stored for the given primary key.
     """
 
-    def __init__(self, type, entity, tags=None, key=None, date=None, meta=None):
+    def __init__(self, type, entity, tags, key=None, date=None, meta=None):
         #: `str` property type name
         self._type = type
         #: `str` entity name
         self._entity = entity
-        #: `dict` of ``name: value`` pairs that are not part of the key and contain descriptive information about the property record.
+        #: `dict` of ``name: value`` pairs that are not part of the key and contain descriptive information
+        # about the property record. At least one property tag is required.
         self._tags = NoneDict(tags)
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self._key = NoneDict(key)
-        #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date, for example 2018-05-25T00:15:00Z. Set to server time at server side if omitted.
+        #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date.
+        # Set to server time at server side if omitted.
         self._date = to_date(date)
         #: `dict` of entity and metric objects
         if meta is not None:
             self._meta = {'entity': deserialize(meta['entity'], Entity)}
 
     def __repr__(self):
-        return "<PROPERTY type={type}, entity={entity}, tags={tags}...>".format(type=self._type, entity=self._entity,
-                                                                                tags=self._tags)
+        return '\ntype: {_type}\nentity: {_entity}\nkey: {_key}\ntags: {_tags}\ndate: {_date}\n'.format(**vars(self))
 
     @property
     def type(self):
@@ -756,17 +758,19 @@ class Message(object):
     Messages are events collected from system logs and messaging systems.
     Each message is related to an entity, has a set of tags and a free-form text message.
     Messages for the same entity, time and type/source tags are automatically de-duplicated.
+    Message text or at least one tag is required, otherwise the message will be dropped silently.
     """
 
-    def __init__(self, type, source, entity, date, severity, tags, message, persist=True):
+    def __init__(self, entity, type, source, date=None, severity=None, tags=None, message=None, persist=True):
+        #: `str` entity name
+        self._entity = entity
         #: `str` message type
         self._type = type
         #: `str` message source
         self._source = source
-        #: `str` entity name
-        self._entity = entity
-        #:`datetime` | `long` milliseconds | `str` ISO 8601 date when the message record was created
-        self._date = to_date(date)
+        #: :class:`datetime` object  | `long` milliseconds | `str` ISO 8601 date when the message record was created
+        self._timestamp = to_milliseconds(date)
+        self._date = to_date(self._timestamp)
         #: :class:`.Severity`
         self._severity = severity
         #: `str` message tags
@@ -777,11 +781,8 @@ class Message(object):
         self._persist = persist
 
     def __repr__(self):
-        return "<MESSAGE type={t}, source={s}, entity={e}, message={m}, date={d}...>".format(t=self._type,
-                                                                                             s=self._source,
-                                                                                             e=self._entity,
-                                                                                             m=self._message,
-                                                                                             d=self._date)
+        return '\nentity: {_entity}\ntype: {_type}\nsource: {_source}\ndate: {_date}\nseverity: {_severity}' \
+               '\ntags: {_tags}\nmessage: {_message}\npersist: {_persist}\n'.format(**self.__dict__)
 
     # Getters and setters
     @property
@@ -830,7 +831,8 @@ class Message(object):
 
     @date.setter
     def date(self, value):
-        self._date = to_date(value)
+        self._timestamp = to_milliseconds(value)
+        self._date = to_date(self.timestamp)
 
     @severity.setter
     def severity(self, value):
