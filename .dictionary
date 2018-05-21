@@ -4,3 +4,5 @@ entityGroup
 entityExpression
 endTime
 SQLService
+MessageQuery
+PropertiesQuery

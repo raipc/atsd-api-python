@@ -297,11 +297,11 @@ print(result[0])
 ```
 
 ```txt
-    2018-07-18T17:14:30+00:00             1
-    2018-07-18T17:16:30+00:00             2
-    metric: temperature    
-    entity: sensor123
-    tags: {}
+2018-07-18T17:14:30+00:00             1
+2018-07-18T17:16:30+00:00             2
+metric: temperature    
+entity: sensor123
+tags: {}
 ```
 
 Optional filters:
@@ -366,6 +366,7 @@ result = ps.query(query)  # ps = PropertiesService(conn)
 # print first Property object
 print(result[0])
 ```
+
 ```txt
 type: disk
 entity: nurswgvml007
@@ -373,6 +374,7 @@ key: {}
 tags: {u'fs_type': u'ext4'}
 date: 2018-05-21 14:46:42.728000+03:00
 ```
+
 It is possible to use additional property filter fields in [PropertiesQuery](atsd_client/models/_data_queries.py#L588), for example, `key` and `key_tag_expression`.
 
 Refer to [API documentation](https://github.com/axibase/atsd/blob/master/api/data/properties/query.md) for additional details.
@@ -395,6 +397,7 @@ result = ms.query(query)  # ms = MessageService(conn)
 # print first Message object
 print(result[0])
 ```
+
 ```txt
 entity: nurswgvml007
 type: application
@@ -405,6 +408,7 @@ tags: {}
 message: NURSWGVML007 ssh: error: connect_to localhost port 8881: failed.
 persist: True
 ```
+
 It is possible to use additional message filter fields in [MessageQuery](atsd_client/models/_data_queries.py#L743), for example, `type`, `source` and `severity`.
 
 Refer to [API documentation](https://github.com/axibase/atsd/blob/master/api/data/messages/query.md) for additional details.
