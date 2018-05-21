@@ -299,7 +299,7 @@ print(result[0])
 ```txt
 2018-07-18T17:14:30+00:00             1
 2018-07-18T17:16:30+00:00             2
-metric: temperature    
+metric: temperature
 entity: sensor123
 tags: {}
 ```
