@@ -44,19 +44,60 @@ The client is supported for the following Python versions:
 
 ## Installation
 
-Install `atsd_client` module using `pip`.
+### Installing Module with `pip`
+
+Install `atsd_client` module using [`pip`](https://pip.pypa.io/en/stable/), the recommended tool for installing Python packages.
 
 ```sh
 pip install atsd_client
 ```
 
-Alternatively, clone the repository and run the installation manually.
+To install a specific version, specify it in the `pip install` command.
+
+```sh
+pip install atsd_client==2.2.1
+```
+
+> The same command can be used to downgrade the module.
+
+Check the currently installed `pip` module.
+
+```sh
+pip show atsd-client
+```
+
+```elm
+Name: atsd-client
+Version: 2.2.1
+Summary: Axibase Time Series Database API Client for Python
+Home-page: https://github.com/axibase/atsd-api-python
+Author: Axibase Corporation
+Author-email: axibase-api@axibase.com
+License: Apache 2.0
+Location: /usr/local/lib/python2.7/dist-packages
+Requires: tzlocal, requests, pandas, python-dateutil
+Required-by:
+```
+
+For installation on a system without Internet access, review the following [guide](offline_installation.md).
+
+### Installing from Source
+
+Clone the repository and run the installation manually.
 
 ```sh
 git clone https://github.com/axibase/atsd-api-python.git
+```
+
+```sh
 cd atsd-api-python
+```
+
+```sh
 python setup.py install
 ```
+
+### Verify Installation
 
 Check that the modules have been installed successfully.
 
@@ -71,8 +112,6 @@ Traceback (most recent call last):
   File "<string>", line 1, in <module>
 ImportError: No module named atsd_client
 ```
-
-For installation on a system without internet access, review the following [guide](offline_installation.md)
 
 ## Upgrade
 
