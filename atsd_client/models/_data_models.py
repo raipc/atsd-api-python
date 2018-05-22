@@ -116,7 +116,8 @@ class Sample(object):
 class Series(object):
     """
     Class representing a time series.
-    Series is a time-indexed array of samples (observations), each consisting of a timestamp and a numeric value, for example CPU utilization or temperature.
+    Series is a time-indexed array of samples (observations), each consisting of a timestamp and a numeric value,
+    for example CPU utilization or temperature.
     Each series is uniquely identified by metric name, entity name, and optional series tags.
     """
 

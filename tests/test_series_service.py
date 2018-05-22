@@ -62,6 +62,19 @@ class TestSeriesService(unittest.TestCase):
             get_connection()
         )
 
+    """
+    Check parameters were set as expected.
+    """
+
+    def test_fields_match(self):
+        sample = Sample(1, datetime.now())
+        series = Series(ENTITY, METRIC, tags={TAG: TAG_VALUE})
+        series.add_samples(sample)
+        self.assertEqual(ENTITY, series.entity)
+        self.assertEqual(METRIC, series.metric)
+        self.assertEqual({TAG: TAG_VALUE}, series.tags)
+        self.assertEqual([sample], series.data)
+
     def test_insert_retrieve_series(self):
         val = random.randint(0, VALUE - 1)
 
@@ -192,6 +205,6 @@ class TestSeriesService(unittest.TestCase):
         self.assertEqual(series[0].get_last_value(), 1)
 
 
-if __name__ == '__main__':
-    print('python version: ', sys.version, '\n')
-    unittest.main()
+# if __name__ == '__main__':
+#     print('python version: ', sys.version, '\n')
+#     unittest.main()

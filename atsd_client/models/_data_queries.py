@@ -139,7 +139,8 @@ class EntityFilter():
         self.entity = entity
         #: `list` of entity names or entity name patterns
         self.entities = [] if entities is None else entities
-        #: `str` entity group name. Returns records for member entities of the specified group. The result will be empty if the group doesn't exist or contains no entities.
+        #: `str` entity group name. Returns records for member entities of the specified group.
+        # The result will be empty if the group doesn't exist or contains no entities.
         self.entity_group = None if entity_group is None else entity_group
         #: `str` filter entities by name, field, entity tag, and properties
         self.entity_expression = None if entity_expression is None else entity_expression
@@ -158,17 +159,20 @@ class EntityFilter():
 
 
 # ------------------------------------------------------------------------------
-class DateFilter():
+class DateFilter:
     def _validate(self):
         return (self.startDate is not None and self.endDate is not None) or \
                (self.interval is not None) and all(key in self.interval for key in ("count", "unit"))
 
     def __init__(self, start_date=None, end_date=None, interval=None):
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval. Matches samples timestamped at or after the startDate. Examples: 2018-07-18T11:11:02Z, current_hour
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval.
+        # Matches samples timestamped at or after the startDate. Examples: 2018-07-18T11:11:02Z, current_hour
         self.startDate = to_iso(start_date)
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval. Matches records timestamped before the endDate. Examples: 2018-07-18T11:11:02+02:00, previous_day - 1 * HOUR
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. End of the selection interval.
+        # Matches records timestamped before the endDate. Examples: 2018-07-18T11:11:02+02:00, previous_day - 1 * HOUR
         self.endDate = to_iso(end_date)
-        #: `dict`. Duration of the selection interval, specified as count and unit. Example: {"count": 5, "unit": "MINUTE"}
+        #: `dict`. Duration of the selection interval, specified as count and unit.
+        # Example: {"count": 5, "unit": "MINUTE"}
         self.interval = interval
         if not self._validate():
             raise ValueError(

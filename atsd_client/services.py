@@ -137,7 +137,7 @@ class PropertiesService(_Service):
     def delete(self, *filters):
         """Delete properties for each query
 
-        :param filters: :class:`.PropertyDeleteFilter`
+        :param filters: :class:`.PropertiesDeleteQuery`
         :return: True if success
         """
         response = self.conn.post(properties_delete_url, filters)
