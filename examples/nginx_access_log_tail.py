@@ -100,5 +100,12 @@ for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
         # Replace example.org with actual DNS name
         msg = Message('web', 'access.log', 'example.org', datetime.now(), sev, tags, '')
 
-        res = svc.insert(msg)
-        print(res, msg.date, msg.tags)
+        try:
+          res = svc.insert(msg)
+          print(res, msg.date, msg.tags)
+        except IOError as ioe:
+          print "IOError ({0}):{1}".format(ioe.errno,ioe.strerror)
+          print(msg.date, msg.tags)
+        except:
+          print('Other error')
+          print(msg.date, msg.tags)	

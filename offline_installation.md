@@ -165,7 +165,7 @@ pip list
 Package             Version
 ------------------- ------------------
 asn1crypto          0.24.0
-atsd-client         2.2.1
+atsd-client         2.2.2
 certifi             2018.4.16
 cffi                1.11.5
 chardet             3.0.4
