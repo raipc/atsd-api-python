@@ -761,13 +761,13 @@ class Message(object):
     Message text or at least one tag is required, otherwise the message will be dropped silently.
     """
 
-    def __init__(self, entity, type, source, date=None, severity=None, tags=None, message=None, persist=True):
-        #: `str` entity name
-        self._entity = entity
+    def __init__(self, type, source, entity, date=None, severity=None, tags=None, message=None, persist=True):
         #: `str` message type
         self._type = type
         #: `str` message source
         self._source = source
+        #: `str` entity name
+        self._entity = entity
         #: :class:`datetime` object  | `long` milliseconds | `str` ISO 8601 date when the message record was created
         self._timestamp = to_milliseconds(date)
         self._date = to_date(self._timestamp)
@@ -781,7 +781,7 @@ class Message(object):
         self._persist = persist
 
     def __repr__(self):
-        return '\nentity: {_entity}\ntype: {_type}\nsource: {_source}\ndate: {_date}\nseverity: {_severity}' \
+        return '\ntype: {_type}\nsource: {_source}\nentity: {_entity}\ndate: {_date}\nseverity: {_severity}' \
                '\ntags: {_tags}\nmessage: {_message}\npersist: {_persist}\n'.format(**self.__dict__)
 
     # Getters and setters
@@ -832,7 +832,7 @@ class Message(object):
     @date.setter
     def date(self, value):
         self._timestamp = to_milliseconds(value)
-        self._date = to_date(self.timestamp)
+        self._date = to_date(self._timestamp)
 
     @severity.setter
     def severity(self, value):
