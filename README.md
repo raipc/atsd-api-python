@@ -19,7 +19,7 @@
 
 ## Overview
 
-The ATSD API Client for Python simplifies the process of interacting with [Axibase Time Series Database](https://axibase.com/products/axibase-time-series-database/) through REST API and SQL endpoints.
+The ATSD API Client for Python simplifies the process of interacting with [Axibase Time Series Database](https://axibase.com/docs/atsd/) through REST API and SQL endpoints.
 
 ## References
 
@@ -495,7 +495,7 @@ To plot the series with `matplotlib`, use `plot()`:
 
 ### Working with Versioned Data
 
-Versioning enables keeping track of value changes and is described [here](https://axibase.com/products/axibase-time-series-database/data-model/versioning/).
+Versioning enables keeping track of value changes and is described [here](https://axibase.com/docs/atsd/versioning/).
 
 You can enable versioning for specific metrics and add optional versioning fields to Samples using the `version` argument.
 
