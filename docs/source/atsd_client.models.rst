@@ -1,7 +1,7 @@
 atsd_client.models
 ==================
 
-to learn more visit  https://github.com/axibase/atsd-docs/tree/master/api
+to learn more visit  https://axibase.com/docs/atsd/api/data/
 
 API request attributes could be specified either in constructor or be explicitly setted to object via setters.
 

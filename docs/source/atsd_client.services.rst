@@ -1,7 +1,7 @@
 atsd_client.services
 ====================
 
-to learn more visit  https://github.com/axibase/atsd-docs/tree/master/api
+to learn more visit https://axibase.com/docs/atsd/api/data/
 
 .. module:: atsd_client.services
 

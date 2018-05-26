@@ -13,7 +13,7 @@ The Axibase Time-Series Database API Client for Python enables
 developers to easily read and write statistics and metadata from Axibase
 Time-Series Database.
 
-| `API documentation <https://github.com/axibase/atsd-docs/tree/master/api>`__
+| `API documentation <https://axibase.com/docs/atsd/api/data/>`__
 | `PyPI <https://pypi.python.org/pypi/atsd_client>`__
 | `Client documentation <http://pythonhosted.org/atsd_client>`__
 
@@ -102,7 +102,7 @@ When querying series values from ATSD you need to specify *entity
 filter*, *date filter* and *series filter*. Forecast, Versioning,
 Control, Transformation filters can also be used to filter result Series
 objects. See `SeriesQuery documentation
-page <https://github.com/axibase/atsd-docs/blob/master/api/data/series/query.md>`__
+page <https://axibase.com/docs/atsd/api/data/series/query.html>`__
 for more information. *Series filter* requires specifying metric name.
 You can also pass type, tags and exactMatch parameters to this filter to
 get more specific series objects. *Entity filter* can be set by
@@ -111,7 +111,7 @@ entityGroup or entityExpression. *Date filter* can be set by specifying
 ``startDate``, ``endDate`` or ``interval`` fields. Note that for correct
 work some **combination** of these parameters are needed. ``startDate``,
 ``endDate`` fields can be provided either as special words from `endTime
-syntax <https://github.com/axibase/atsd-docs/blob/master/end-time-syntax.md>`__
+syntax <https://axibase.com/docs/atsd/shared/calendar.html>`__
 or ISO 8601 formatted string or number of milliseconds since 01.01.1970
 or a datetime object. Finally, to get a list of ``Series`` objects,
 matching specified filters the ``query`` method of the service should be
