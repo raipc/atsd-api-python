@@ -25,6 +25,7 @@ else:
     # Delete series for each metric
     for metric in metrics:
         query = SeriesDeleteQuery(entity=entity, metric=metric.name, exact_match=False)
+        print("deleting ", entity, metric.name)
         # Uncomment next line to delete series
         #response = series_service.delete(query)
         #print(response)
