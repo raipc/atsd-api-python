@@ -37,7 +37,7 @@ class Sample(object):
     def __init__(self, value, time=None, version=None, x=None):
         self._v = copy.deepcopy(value) if not value == "Nan" else float("nan")
         self._x = x
-        #:class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date
+        #: class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date
         self._t = to_milliseconds(time)
         self._d = to_date(self._t)
         # `.dict` version object including 'source' and 'status' keys
