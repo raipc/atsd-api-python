@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import unittest
 import time
 
 from datetime import datetime
 
-import atsd_client
 from atsd_client import services
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Message
 from atsd_client.models import MessageQuery
 from atsd_client import _time_utilities as tu
+
+from service_test_base import ServiceTestBase
 
 logger = logging.getLogger()
 logger.disabled = True
@@ -26,16 +26,10 @@ SEVERITY = 'MINOR'
 MESSAGE = 'pyapi test message'
 
 
-def get_connection():
-    conn = atsd_client.connect_url('https://localhost:8443', 'axibase', 'axibase')
-    return conn
+class TestMessageService(ServiceTestBase):
 
-
-class TestMessageService(unittest.TestCase):
     def setUp(self):
-        self.ms = services.MessageService(
-            get_connection()
-        )
+        self.ms = services.MessageService(self.connection())
 
     """
     Check parameters were set as expected.
@@ -47,7 +41,7 @@ class TestMessageService(unittest.TestCase):
         self.assertEqual(TYPE, m.type)
         self.assertEqual(SOURCE, m.source)
         self.assertEqual(ENTITY, m.entity)
-        self.assertEqual(tu.to_date(DATE), m.date)
+        self.assertTrue(isinstance(m.date, datetime))
         self.assertEqual(SEVERITY, m.severity)
         self.assertEqual(TAGS, m.tags)
         self.assertEqual(MESSAGE, m.message)
@@ -69,7 +63,7 @@ class TestMessageService(unittest.TestCase):
         query = MessageQuery(entity_filter=ef, date_filter=df)
         result = self.ms.query(query)
 
-        print(result)
+        # print(result)
 
         self.assertIsNotNone(result)
         self.assertGreater(len(result), 0)
