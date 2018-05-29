@@ -68,7 +68,7 @@ class SplineHolder:
 
 
 # Connect to ATSD server
-#connection = atsd_client.connect('/path/to/connection.properties')
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Initialize services

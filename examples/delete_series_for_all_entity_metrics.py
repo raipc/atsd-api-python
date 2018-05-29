@@ -7,7 +7,7 @@ Delete series for all metrics for the specified entity with names starting with 
 '''
 
 # Connect to ATSD server
-#connection = atsd_client.connect('/path/to/connection.properties')
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Set query

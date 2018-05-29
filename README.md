@@ -177,18 +177,20 @@ from atsd_client import connect_url
 connection = connect_url('https://atsd_hostname:8443', 'usr', 'passwd')
 ```
 
-Alternatively, create a `connection.properties` file and specify its path in the `connect` method.
+Alternatively, create a `connection.properties` file.
 
-```ls
+```elm
 base_url=https://atsd_hostname:8443
 username=usr
 password=passwd
 ssl_verify=False
 ```
 
+Specify path to `connection.properties` file in the `connect` method.
+
 ```python
-import atsd_client
-connection = atsd_client.connect('/path/to/connection.properties')
+from atsd_client import connect
+connection = connect('/path/to/connection.properties')
 ```
 
 ## Logging

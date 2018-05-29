@@ -28,7 +28,7 @@ ignore_uris = ['.png', '.js', '.css', '.woff', '.jpg', '.gif', '.jpeg', '.ico', 
 ignore_ip = ['10.20.30.40', '127.0.0.1']
 
 # Connect to ATSD server
-#connection = atsd_client.connect('/path/to/connection.properties')
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Initialize services

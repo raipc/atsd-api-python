@@ -5,7 +5,7 @@ from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilt
 from atsd_client.services import MetricsService, SeriesService
 
 # Connect to ATSD server
-#connection = atsd_client.connect('/path/to/connection.properties')
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set minimum window size to make decision

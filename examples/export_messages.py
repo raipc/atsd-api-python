@@ -11,7 +11,7 @@ Export messages from ATSD into CSV-file using specified start_date, end_date, ty
 '''
 
 # Connect to ATSD server
-#connection = atsd_client.connect('/path/to/connection.properties')
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set export parameters

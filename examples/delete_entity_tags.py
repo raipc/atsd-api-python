@@ -7,7 +7,7 @@ Delete specific entity tags by name from entities that match an expression.
 '''
 
 # Connect to ATSD server
-#connection = atsd_client.connect('/path/to/connection.properties')
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Initialize services

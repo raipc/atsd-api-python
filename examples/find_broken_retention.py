@@ -10,7 +10,7 @@ Find series with data older than `now - (metric.retention_days + grace_interval_
 '''
 
 # Connect to ATSD server
-#connection = atsd_client.connect('/path/to/connection.properties')
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Initialize services
