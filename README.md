@@ -535,6 +535,7 @@ print(result[0])
 |[find_broken_retention.py](examples/find_broken_retention.py)| Find series that ignore metric retention days. |
 |[metrics_without_last_insert.py](examples/metrics_without_last_insert.py) | Find metrics without a last insert date. |
 |[entities_without_last_insert.py](examples/entities_without_last_insert.py) | Find entities without a last insert date. |
+|[find_series_by_value_filter.py](examples/find_series_by_value_filter.py)|Retrieve versioned series using value filter to discard the deleted values.|
 |[find_lagging_series_for_entity_expression.py](examples/find_lagging_series_by_entity_expression.py) | Find series for matching entities that have not been updated for more than 1 day. |
 |[find_lagging_series_for_entity.py](examples/find_lagging_series_by_entity.py) | Find series for the specified entity that have not been updated for more than 1 day. |
 |[find_lagging_series_for_metric.py](examples/find_lagging_series_by_metric.py) | Find series for the specified metric that have not been updated for more than 1 day. |

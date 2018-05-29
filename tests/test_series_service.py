@@ -3,18 +3,16 @@
 
 import logging
 import random
-import unittest
 
 import time
 from datetime import datetime
 from datetime import timedelta
 
-import atsd_client
 from atsd_client import models
 from atsd_client import services
 from atsd_client.exceptions import DataParseException
 from atsd_client.models import AggregateType, SeriesFilter, EntityFilter, DateFilter, VersioningFilter, Aggregate, \
-    TransformationFilter, Group, Rate
+    TransformationFilter, Group, Rate, ValueFilter
 from atsd_client.models import Series
 from atsd_client.models import SeriesQuery
 from atsd_client.models import TimeUnit, Sample
@@ -35,15 +33,7 @@ VALUE = 33333
 VERSION_METRIC = 'pyapi.versioning.metric'
 
 
-def get_connection():
-    conn = atsd_client.connect_url('https://localhost:8443', 'axibase', 'axibase')
-    return conn
-
-
 def insert_series_sample(data_service, val=None, *vals):
-    if val is None:
-        val = random.randint(0, VALUE - 1)
-
     series = Series(ENTITY, METRIC)
     series.tags = {TAG: TAG_VALUE}
     series.add_samples(Sample(val, datetime.now()))
@@ -203,3 +193,26 @@ class TestSeriesService(ServiceTestBase):
 
         series = self.svc.query(query)
         self.assertEqual(series[0].get_last_value(), 1)
+
+    """
+    Check value filter.
+    """
+
+    def test_value_filter(self):
+        insert_series_sample(self.svc, None, 2, 3)
+        time.sleep(WAIT_TIME)
+
+        sf = SeriesFilter(metric=METRIC, tags={TAG: TAG_VALUE}, exact_match=True)
+        ef = EntityFilter(entity=ENTITY)
+        df = DateFilter(start_date='now - 1 * MINUTE', end_date="now")
+        vf = ValueFilter('Float.isNaN(value) OR value=2')
+        query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, value_filter=vf)
+        series = self.svc.query(query)
+        # print(series)
+        self.assertIsNotNone(series)
+        self.assertEqual(1, len(series))
+        s = series[0]
+        self.assertIsInstance(s, Series)
+        self.assertEqual(2, len(s.data))
+        self.assertEqual(None, s.get_first_value())
+        self.assertEqual(2, s.get_last_value())
