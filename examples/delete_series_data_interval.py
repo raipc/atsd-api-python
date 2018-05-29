@@ -4,6 +4,7 @@ from atsd_client.services import SeriesService
 
 '''
 Delete data for a given series with tags for the specified date interval.
+Only a single matching series will be retrieved and delete by setting exact_match=True
 '''
 
 # Connect to ATSD server
@@ -13,6 +14,8 @@ connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 # set series
 metric = 'm-to-delete'
 entity = 'e-to-delete'
+
+# delete data 
 tags = {'tag_key_1': 'tag_value_1', 'tag_key_2': 'tag_value_2'}
 
 # specify date interval
@@ -39,6 +42,9 @@ if len(series.data) == 0:
 else:
     # replace value of samples with nan
     for sample in series.data:
+        if sample.v == None:
+            print("- value already deleted at %s " % (sample.get_date()))
+            continue
         print("- Deleting %s, %s " % (sample.get_date(), sample.v))
         sample.v = None
     series.aggregate = None
