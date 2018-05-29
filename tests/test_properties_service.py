@@ -1,17 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import unittest
 import time
 
 from datetime import datetime
 
-import atsd_client
 from atsd_client import services
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Property
 from atsd_client.models import PropertiesQuery
 from atsd_client import _time_utilities as tu
+
+from service_test_base import ServiceTestBase
 
 logger = logging.getLogger()
 logger.disabled = True
@@ -26,16 +26,10 @@ KEY_VALUE = 'pyapi.key-value'
 KEY = {KEY_NAME: KEY_VALUE}
 
 
-def get_connection():
-    conn = atsd_client.connect_url('https://localhost:8443', 'axibase', 'axibase')
-    return conn
+class TestPropertiesService(ServiceTestBase):
 
-
-class TestPropertiesService(unittest.TestCase):
     def setUp(self):
-        self.ps = services.PropertiesService(
-            get_connection()
-        )
+        self.ps = services.PropertiesService(self.connection())
 
     """
     Check parameters were set as expected.
@@ -66,7 +60,7 @@ class TestPropertiesService(unittest.TestCase):
         query = PropertiesQuery(type=TYPE, entity_filter=ef, date_filter=df)
         result = self.ps.query(query)
 
-        print(result)
+        # print(result)
 
         self.assertIsNotNone(result)
         self.assertGreater(len(result), 0)

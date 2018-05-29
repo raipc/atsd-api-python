@@ -5,7 +5,6 @@ import logging
 import random
 import unittest
 
-import sys
 import time
 from datetime import datetime
 from datetime import timedelta
@@ -19,6 +18,8 @@ from atsd_client.models import AggregateType, SeriesFilter, EntityFilter, DateFi
 from atsd_client.models import Series
 from atsd_client.models import SeriesQuery
 from atsd_client.models import TimeUnit, Sample
+
+from service_test_base import ServiceTestBase
 
 logger = logging.getLogger()
 logger.disabled = True
@@ -51,16 +52,15 @@ def insert_series_sample(data_service, val=None, *vals):
             time.sleep(WAIT_TIME + 2)
             series.add_samples(Sample(v, datetime.now()))
 
-    print('insertion =', series)
+    # print('insertion =', series)
 
     return data_service.insert(series)
 
 
-class TestSeriesService(unittest.TestCase):
+class TestSeriesService(ServiceTestBase):
+
     def setUp(self):
-        self.svc = services.SeriesService(
-            get_connection()
-        )
+        self.svc = services.SeriesService(self.connection())
 
     """
     Check parameters were set as expected.
@@ -88,8 +88,8 @@ class TestSeriesService(unittest.TestCase):
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 
         series = self.svc.query(query)
-        for s in series:
-            print(s)
+        # for s in series:
+        #     print(s)
 
         self.assertIsNotNone(series)
         self.assertGreater(len(series), 0)
@@ -144,19 +144,19 @@ class TestSeriesService(unittest.TestCase):
         successful = self.svc.insert(series)
         time.sleep(WAIT_TIME)
         series, = self.svc.query(query)
-        print(series)
+        # print(series)
         last_sample = series.data[-1]
 
         self.assertTrue(successful)
         self.assertEqual(last_sample.v, val)
         self.assertIsNotNone(last_sample.version)
-        self.assertEquals(last_sample.version['status'], test_status)
+        self.assertEqual(last_sample.version['status'], test_status)
 
     def test_series_data_field_empty(self):
         series = Series(entity=ENTITY,
                         metric=METRIC)
         series.tags = {TAG: TAG_VALUE}
-        print(series)
+        # print(series)
 
         with self.assertRaises(DataParseException) as cm:
             self.svc.insert(series)
@@ -203,8 +203,3 @@ class TestSeriesService(unittest.TestCase):
 
         series = self.svc.query(query)
         self.assertEqual(series[0].get_last_value(), 1)
-
-
-# if __name__ == '__main__':
-#     print('python version: ', sys.version, '\n')
-#     unittest.main()
