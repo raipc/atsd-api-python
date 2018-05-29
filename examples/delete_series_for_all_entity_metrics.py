@@ -1,4 +1,4 @@
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import EntitiesService, SeriesService
 from atsd_client.models import SeriesDeleteQuery
 
@@ -6,15 +6,17 @@ from atsd_client.models import SeriesDeleteQuery
 Delete series for all metrics for the specified entity with names starting with the specified prefix.
 '''
 
-# Connect to an ATSD server
-conn = connect_url('https://atsd_hostname:8443', 'user', 'password')
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Set query
 entity = "entity"
 metric_expr = "name LIKE 'me*'"
 
-entities_service = EntitiesService(conn)
-series_service = SeriesService(conn)
+# Initialize services
+entities_service = EntitiesService(connection)
+series_service = SeriesService(connection)
 
 # Query all metrics for entity
 metrics = entities_service.metrics(entity=entity, expression=metric_expr)

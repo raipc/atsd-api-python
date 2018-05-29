@@ -1,6 +1,6 @@
 from datetime import timedelta, datetime
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import MetricsService
 from atsd_client.utils import print_tags
 
@@ -8,7 +8,8 @@ from atsd_client.utils import print_tags
 Locate series that have no data during the actual time interval (grace_interval) using specific metric.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set metric and grace_interval to one day

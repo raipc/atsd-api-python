@@ -1,7 +1,7 @@
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import EntityFilter, DateFilter, MessageQuery
 from atsd_client.services import MessageService
 from atsd_client.utils import print_tags
@@ -10,7 +10,8 @@ from atsd_client.utils import print_tags
 Export messages from ATSD into CSV-file using specified start_date, end_date, type, source and entity.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set export parameters

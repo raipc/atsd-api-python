@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import EntitiesService
 
 '''
@@ -8,9 +8,11 @@ Locate entities by name, using an expression filter
 Iterate over the collection and delete each entity
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 entity_service = EntitiesService(connection)
 entity_expression = "name LIKE 'net.source*'"
 entity_limit = 1000

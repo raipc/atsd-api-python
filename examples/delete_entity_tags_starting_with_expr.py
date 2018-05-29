@@ -1,4 +1,4 @@
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import EntityGroupsService, EntitiesService
 from atsd_client.utils import print_tags, print_str
 
@@ -6,8 +6,11 @@ from atsd_client.utils import print_tags, print_str
 Delete entity tags with names starting with the specified prefix from entities that belongs specific entity group.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+
+# Initialize services
 
 # set the name of entity_group and prefix for tag key
 entity_group_name = 'docker-images'

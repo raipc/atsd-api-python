@@ -2,7 +2,7 @@ import ast
 import os
 from os.path import splitext
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, Series, Aggregate, \
     TransformationFilter, TimeUnit, AggregateType, Rate, Group, InterpolateType
 from atsd_client.services import SeriesService
@@ -28,8 +28,11 @@ group-disk_used-nurswgvml006-all-DETAIL.json
 rate+group-collectd.cpu.busy-nurswghbs001-all-MIN.json
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+
+# Initialize services
 svc = SeriesService(connection)
 
 # set start_date and end_date

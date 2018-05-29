@@ -1,13 +1,14 @@
 from datetime import timedelta
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import MetricsService, EntitiesService
 
 '''
 Locate series that have no data during the interval for one day before entity last_insert_date.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set grace interval in hours

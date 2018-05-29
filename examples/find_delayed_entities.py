@@ -1,7 +1,7 @@
 import sys
 from datetime import timedelta
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import MetricsService, EntitiesService
 from atsd_client.utils import print_str
 
@@ -10,7 +10,8 @@ Find series with last_insert_date more than n hours behind the metric's last_ins
 Print entities of that the series.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # specify metric name

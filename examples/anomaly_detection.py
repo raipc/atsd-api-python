@@ -6,7 +6,7 @@ from datetime import timedelta, datetime
 import time
 from luminol.anomaly_detector import AnomalyDetector
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, TransformationFilter, TimeUnit, \
     Message, Aggregate, AggregateType, Interpolate, InterpolateFunction
 from atsd_client.services import EntitiesService, MetricsService, SeriesService, MessageService
@@ -40,8 +40,11 @@ args = parser.parse_args()
 
 time_format = '%d-%m-%Y %H:%M:%S'
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+
+# Initialize services
 entities_service = EntitiesService(connection)
 metrics_service = MetricsService(connection)
 message_service = MessageService(connection)

@@ -1,4 +1,4 @@
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import *
 from atsd_client.services import *
 import socket
@@ -27,9 +27,12 @@ ignore_user_agents = ['axibase', 'feedly', 'scollector', 'rome client', 'bot', '
 ignore_uris = ['.png', '.js', '.css', '.woff', '.jpg', '.gif', '.jpeg', '.ico', '.svg', 'robots.txt', '/feed/', '.ttf', '.eot', 'wp-content', '.lzma', '.xz', '.bz2']
 ignore_ip = ['10.20.30.40', '127.0.0.1']
 
-conn = connect_url('https://atsd_hostname:8443', 'user', 'passwd')
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
+connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
-svc = MessageService(conn)
+# Initialize services
+svc = MessageService(connection)
 
 def lookup(addr):
     try:
@@ -43,7 +46,7 @@ def has_containing_element(lst, str):
             return True
     return False
 
-# runs forever
+# Current user must read permissions to access.log file, including after rollover chmod 0640 > 0644
 for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
     reader = csv.DictReader([line.strip()], fieldnames=fieldnames)
     for row in reader:

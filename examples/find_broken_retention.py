@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 from prettytable import PrettyTable
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, to_iso
 from atsd_client.services import MetricsService, SeriesService
 
@@ -9,9 +9,11 @@ from atsd_client.services import MetricsService, SeriesService
 Find series with data older than `now - (metric.retention_days + grace_interval_days)`.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 svc = SeriesService(connection)
 metric_service = MetricsService(connection)
 

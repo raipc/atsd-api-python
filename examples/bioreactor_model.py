@@ -5,7 +5,7 @@ from functools import partial
 import six
 from dateutil.parser import parse
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client._time_utilities import to_iso
 from atsd_client.models import Entity, Series, Sample, Metric
 from atsd_client.services import EntitiesService, SeriesService, MetricsService
@@ -31,6 +31,8 @@ INTERVAL_MINUTES = 10
 
 SAVE_AS_COMMANDS = True
 
+# Connect to ATSD server
+#connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # configuration parameters: end

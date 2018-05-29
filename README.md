@@ -137,39 +137,7 @@ asn1crypto          0.24.0
 atsd-client         2.2.2
 certifi             2018.4.16
 cffi                1.11.5
-chardet             3.0.4
-colorama            0.2.5
-cryptography        2.2.2
-duplicity           0.6.23
-enum34              1.1.6
-html5lib            0.999
-idna                2.6
-ipaddress           1.0.22
-lockfile            0.8
-numpy               1.14.3
-pandas              0.23.0
-pip                 10.0.1
-pycparser           2.18
-pycrypto            2.6.1
-pycurl              7.19.3
-pyliblzma           0.5.3
-pyOpenSSL           17.5.0
-pysqlite            1.0.1
-python-apt          0.9.3.5ubuntu2
-python-dateutil     2.7.3
-python-debian       0.1.21-nmu2ubuntu2
-pytz                2018.4
-requests            2.18.4
-setuptools          33.1.1
-sh                  1.12.14
-six                 1.11.0
-ssh-import-id       3.21
-tzlocal             1.5.1
-urlgrabber          3.9.1
-urllib3             1.22
-virtualenv          1.11.4
-wheel               0.24.0
-yum-metadata-parser 1.1.4
+...
 ```
 
 ## Hello World
@@ -180,11 +148,11 @@ Create a `connect_url_check.py` file with a basic connection test.
 from atsd_client import connect_url
 
 # Update connection properties and user credentials
-conn = connect_url('https://atsd_hostname:8443', 'john.doe', 'passwd')
+connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'passwd')
 
 # Retrieve JSON from /api/v1/version endpoint
 # https://axibase.com/docs/atsd/api/meta/misc/version.html
-response = conn.get('v1/version')
+response = connection.get('v1/version')
 build_info = response['buildInfo']
 print('Revision: %s ' % build_info['revisionNumber'])
 ```
@@ -194,8 +162,8 @@ python connect_url_check.py
 ```
 
 ```txt
-  INFO:root:Connecting to ATSD at https://atsd_hostname:8443 as john.doe user.
-  Revision: 19020
+INFO:root:Connecting to ATSD at https://atsd_hostname:8443 as john.doe user.
+Revision: 19020
 ```
 
 ## Connecting to ATSD
@@ -206,7 +174,7 @@ Establish a connection with the `connect_url` method.
 
 ```python
 from atsd_client import connect_url
-conn = connect_url('https://atsd_hostname:8443', 'usr', 'passwd')
+connection = connect_url('https://atsd_hostname:8443', 'usr', 'passwd')
 ```
 
 Alternatively, create a `connection.properties` file and specify its path in the `connect` method.
@@ -220,7 +188,7 @@ ssl_verify=False
 
 ```python
 import atsd_client
-conn = atsd_client.connect('/path/to/connection.properties')
+connection = atsd_client.connect('/path/to/connection.properties')
 ```
 
 ## Logging

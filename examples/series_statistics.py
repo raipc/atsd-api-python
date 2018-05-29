@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.utils import print_tags
 from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter
 from atsd_client.services import MetricsService, SeriesService
@@ -9,9 +9,11 @@ from atsd_client.services import MetricsService, SeriesService
 Retrieve series for a given metric, for each series fetch first and last value with corresponding dates.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 svc = SeriesService(connection)
 metric_service = MetricsService(connection)
 

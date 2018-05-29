@@ -3,7 +3,7 @@ import calendar
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery
 from atsd_client.services import MetricsService, SeriesService
 
@@ -12,9 +12,11 @@ Retrieve metrics with 'frequency' tag. Load series for this metric.
 Print values that violate frequency (but not data gaps if the gap is a multiple of the frequency period).
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 svc = SeriesService(connection)
 metric_service = MetricsService(connection)
 # query metrics with not empty frequency tag, include all metric tags to response

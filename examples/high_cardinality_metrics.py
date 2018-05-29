@@ -1,4 +1,4 @@
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import MetricsService
 
 '''
@@ -6,9 +6,11 @@ Locate metrics with series that have too many tags.
 Print out metric name and the maximum number of tags combinations.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 metrics_service = MetricsService(connection)
 
 # query all metrics that have last_insert_date, i.e. series

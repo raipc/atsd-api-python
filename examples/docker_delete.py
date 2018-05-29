@@ -3,7 +3,7 @@ import os
 import pprint
 import time
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import EntitiesService, MetricsService
 
 '''
@@ -18,9 +18,11 @@ Delete docker host entities.
 
 tags_printer = pprint.PrettyPrinter(indent=4)
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 entity_service = EntitiesService(connection)
 metric_service = MetricsService(connection)
 

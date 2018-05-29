@@ -1,4 +1,4 @@
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import EntitiesService
 from atsd_client.utils import print_str
 
@@ -6,9 +6,11 @@ from atsd_client.utils import print_str
 Delete specific entity tags by name from entities that match an expression.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 entities_service = EntitiesService(connection)
 
 # set an expression to query entities with non-empty 'category' and 'subcategory' tags

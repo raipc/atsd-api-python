@@ -4,7 +4,7 @@ from functools import partial
 
 from dateutil.parser import parse
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import Entity, Series, Sample
 from atsd_client.services import EntitiesService, SeriesService
 
@@ -67,7 +67,11 @@ class SplineHolder:
         return None
 
 
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+
+# Initialize services
 entities_service = EntitiesService(connection)
 svc = SeriesService(connection)
 

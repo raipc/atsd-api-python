@@ -1,13 +1,15 @@
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.services import MetricsService
 
 '''
 Locate a collection of metrics that have no last_insert_date.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
+# Initialize services
 metric_service = MetricsService(connection)
 # query entities without last_insert_date
 metric_list = metric_service.list(max_insert_date="1970-01-01T00:00:00.000Z")

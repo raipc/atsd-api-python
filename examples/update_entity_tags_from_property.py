@@ -1,7 +1,7 @@
 import six
 from datetime import datetime
 
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import PropertiesQuery, EntityFilter, DateFilter
 from atsd_client.services import EntityGroupsService, EntitiesService, PropertiesService
 from atsd_client.utils import print_tags, print_str
@@ -11,7 +11,8 @@ Load properties for all entities in group and for type, replace all entity tags 
 with property tags for the given type.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # set the name of entity_group and tag expression
@@ -19,6 +20,7 @@ entity_group_name = 'docker-containers'
 property_type = 'docker.container.config.env'
 tag_expression = 'env.*'
 
+# Initialize services
 eg_service = EntityGroupsService(connection)
 properties_service = PropertiesService(connection)
 entities_list = eg_service.get_entities(entity_group_name, tags=tag_expression)

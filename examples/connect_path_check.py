@@ -4,8 +4,8 @@ from atsd_client import connect
 Establishes a connection to ATSD, returns ATSD version, timezone and current time.
 '''
 
-# Connect to an ATSD server
-connection = connect('/home/axibase/connection.properties')
+# Connect to ATSD server
+connection = connect('/path/to/connection.properties')
 
 # query version info from ATSD
 response = connection.get('v1/version')

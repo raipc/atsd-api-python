@@ -1,4 +1,4 @@
-from atsd_client import connect_url
+from atsd_client import connect, connect_url
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, ForecastFilter
 from atsd_client.services import SeriesService
 
@@ -6,8 +6,11 @@ from atsd_client.services import SeriesService
 Monitor data availability. The inputs stored in a data-availability.csv table.
 '''
 
-# Connect to an ATSD server
+# Connect to ATSD server
+#connection = atsd_client.connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+
+# Initialize services
 svc = SeriesService(connection)
 
 filename = 'data-availability.csv'
