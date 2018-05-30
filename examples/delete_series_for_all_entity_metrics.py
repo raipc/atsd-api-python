@@ -7,7 +7,7 @@ Delete series for all metrics for the specified entity with names starting with 
 '''
 
 # Connect to ATSD server
-#connection = connect('/path/to/connection.properties')
+# connection = connect('/path/to/connection.properties')
 connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
 
 # Set query
@@ -29,5 +29,5 @@ else:
         query = SeriesDeleteQuery(entity=entity, metric=metric.name, exact_match=False)
         print("deleting ", entity, metric.name)
         # Uncomment next line to delete series
-        #response = series_service.delete(query)
-        #print(response)
+        # response = series_service.delete(query)
+        # print(response)
