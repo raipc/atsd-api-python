@@ -9,7 +9,6 @@ from atsd_client import services
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Property
 from atsd_client.models import PropertiesQuery
-from atsd_client import _time_utilities as tu
 
 from service_test_base import ServiceTestBase
 
@@ -42,7 +41,7 @@ class TestPropertiesService(ServiceTestBase):
         self.assertEqual(ENTITY, p.entity)
         self.assertEqual(TAGS, p.tags)
         self.assertEqual(KEY, p.key)
-        self.assertEqual(tu.to_date(DATE), p.date)
+        self.assertTrue(isinstance(p.date, datetime))
 
     """
     Check inserted and retrieved properties are equal.

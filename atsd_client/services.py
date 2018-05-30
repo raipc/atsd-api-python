@@ -309,7 +309,8 @@ class MetricsService(_Service):
             params['maxInsertDate'] = to_iso(max_insert_date)
 
         try:
-            response = self.conn.get(metric_series_url.format(metric=quote(encode_if_required(metric_name), '')), params)
+            response = self.conn.get(metric_series_url.format(metric=quote(encode_if_required(metric_name), '')),
+                                     params)
         except ServerException as e:
             if e.status_code == 404:
                 return []
@@ -492,7 +493,8 @@ class EntityGroupsService(_Service):
         self.conn.delete(eg_delete_url.format(group=quote(group.name, '')))
         return True
 
-    def get_entities(self, group_name, expression=None, min_insert_date=None, max_insert_date=None, tags=None, limit=None):
+    def get_entities(self, group_name, expression=None, min_insert_date=None, max_insert_date=None, tags=None,
+                     limit=None):
         """Retrieve a list of entities that are members of the specified entity group and which match the specified expression filter.
 
         :param group_name: `str`
@@ -533,7 +535,8 @@ class EntityGroupsService(_Service):
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
         params = {"createEntities": True if create_entities is None else create_entities}
-        response = self.conn.post(eg_add_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
+        response = self.conn.post(eg_add_entities_url.format(group=quote(encode_if_required(group_name), '')), data,
+                                  params=params)
         return True
 
     def set_entities(self, group_name, entities, create_entities=None):
@@ -552,7 +555,8 @@ class EntityGroupsService(_Service):
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
         params = {"createEntities": True if create_entities is None else create_entities}
-        response = self.conn.post(eg_set_entities_url.format(group=quote(encode_if_required(group_name), '')), data, params=params)
+        response = self.conn.post(eg_set_entities_url.format(group=quote(encode_if_required(group_name), '')), data,
+                                  params=params)
         return True
 
     def delete_entities(self, group_name, entities):
@@ -569,7 +573,8 @@ class EntityGroupsService(_Service):
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
 
-        response = self.conn.post(eg_delete_entities_url.format(group=quote(encode_if_required(group_name), '')), data=data)
+        response = self.conn.post(eg_delete_entities_url.format(group=quote(encode_if_required(group_name), '')),
+                                  data=data)
         return True
 
 
@@ -582,6 +587,7 @@ class SQLService(_Service):
         :return: :class:`.DataFrame` object
         """
         import pandas as pd
+        pd.set_option("display.expand_frame_repr", False)
         response = self.query_with_params(sql_query)
         return pd.read_csv(StringIO(response), sep=',')
 
@@ -631,4 +637,3 @@ class CommandsService(_Service):
 def encode_if_required(name):
     name = name.encode('utf-8') if isinstance(name, six.string_types) else name
     return name
-

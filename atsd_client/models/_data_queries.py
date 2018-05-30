@@ -601,7 +601,7 @@ class Interpolate():
 # ===============================================================================
 ################# Properties
 # ===============================================================================
-class PropertiesQuery():
+class PropertiesQuery:
     """
     Class to retrieve property records for the specified parameters.
     """
@@ -648,7 +648,7 @@ class PropertiesQuery():
 
 
 # ------------------------------------------------------------------------------
-class PropertiesDeleteQuery():
+class PropertiesDeleteQuery:
     """
     Class to delete property records matching the specified filters.
     """
@@ -683,7 +683,7 @@ class PropertiesDeleteQuery():
 # ===============================================================================
 ################# Alerts
 # ===============================================================================
-class AlertsQuery():
+class AlertsQuery:
     """
     Class to retrieve open alert records for the specified filters.
     """

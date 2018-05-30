@@ -358,8 +358,8 @@ class Property(object):
         #: `dict` of ``name: value`` pairs that uniquely identify the property record
         self._key = NoneDict(key)
         #: :class:`datetime` object | `long` milliseconds | `str`  ISO 8601 date.
-        # Set to server time at server side if omitted.
-        self._date = to_date(date)
+        self._timestamp = to_milliseconds(date)
+        self._date = to_date(self._timestamp)
         #: `dict` of entity and metric objects
         if meta is not None:
             self._meta = {'entity': deserialize(meta['entity'], Entity)}
@@ -387,6 +387,10 @@ class Property(object):
     def date(self):
         return self._date
 
+    @property
+    def timestamp(self):
+        return self._timestamp
+
     @type.setter
     def type(self, value):
         self._type = value
@@ -409,7 +413,8 @@ class Property(object):
 
     @date.setter
     def date(self, value):
-        self._date = to_date(value)
+        self._timestamp = to_milliseconds(value)
+        self._date = to_date(self._timestamp)
 
 
 # ------------------------------------------------------------------------------
@@ -417,7 +422,8 @@ class Alert(object):
     """
     Class representing an open alert record.
     Alert is an event produced by the rule engine by applying pre-defined rules to incoming data.
-    An alert is created when an expression specified in the rule evaluates to True. The alert is closed and deleted when the expression returns False.
+    An alert is created when an expression specified in the rule evaluates to True.
+    The alert is closed and deleted when the expression returns False.
     """
 
     def __init__(self, id, rule=None, entity=None, metric=None, last_event_date=None, open_date=None, value=None,

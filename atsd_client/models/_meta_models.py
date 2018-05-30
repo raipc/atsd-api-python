@@ -90,7 +90,8 @@ class Metric(object):
         self._dataType = data_type
         #: :class:`.TimePrecision`
         self._timePrecision = time_precision
-        #: `bool` persistence status. Non-persistent metrics are not stored in the database and are only processed by the rule engine
+        #: `bool` persistence status.
+        # Non-persistent metrics are not stored in the database and are only processed by the rule engine
         self._persistent = persistent
         #: If filter is specified, series commands that do not satisfy the filter condition are discarded
         self._filter = filter
@@ -106,11 +107,14 @@ class Metric(object):
         self._retentionDays = retention_days
         #: `Number` number of days after which lagging series are removed from the database
         self._seriesRetentionDays = series_retention_days
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this metric by any series
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date.
+        # Last time a value was received for this metric by any series
         self._lastInsertDate = to_date(last_insert_date)
         #: `dict`
         self._tags = NoneDict(tags)
-        #: `boolean` If set to true, enables versioning for the specified metric. When metrics is versioned, the database retains the history of series value changes for the same timestamp along with version_source and version_status
+        #: `boolean` If set to true, enables versioning for the specified metric.
+        # When metrics is versioned, the database retains the history of series value changes
+        # for the same timestamp along with version_source and version_status
         self._versioned = versioned
         #: :class:`.InterpolateType`
         self._interpolate = interpolate
@@ -294,7 +298,8 @@ class Entity(object):
     Entities describe objects being monitored, such as servers, sensors, buildings etc.
     """
 
-    def __init__(self, name, enabled=None, label=None, interpolate=None, time_zone=None, last_insert_date=None, tags=None,
+    def __init__(self, name, enabled=None, label=None, interpolate=None, time_zone=None, last_insert_date=None,
+                 tags=None,
                  created_date=None):
         #: `str` entity name
         self._name = name
@@ -306,7 +311,8 @@ class Entity(object):
         self._timeZone = time_zone
         #: `bool` enabled status. Incoming data is discarded for disabled entities
         self._enabled = enabled
-        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time when a value was received by the database for this entity
+        #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date.
+        # Last time when a value was received by the database for this entity
         self._lastInsertDate = to_date(last_insert_date)
         #: `dict`
         self._tags = NoneDict(tags)
@@ -395,7 +401,8 @@ class EntityGroup(object):
     def __init__(self, name, expression=None, tags=None, enabled=None):
         #: `str` entity group name
         self._name = name
-        #: `str` group membership expression. The expression is applied to entities to automatically add/remove members of this group
+        #: `str` group membership expression.
+        # The expression is applied to entities to automatically add/remove members of this group
         self._expression = expression
         #: `dict`
         self._tags = NoneDict(tags)
