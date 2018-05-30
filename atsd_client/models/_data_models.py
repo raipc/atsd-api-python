@@ -170,19 +170,20 @@ class Series(object):
         for sample in sorted(displayed_data):
             date = sample.get_date()
             value = sample.v
-            row = '{0}{1: >14}'.format(date, value)
+            row = '{!s:}{:>10}'.format(date, value)
             if sample.version is not None:
                 versioned = True
                 source = sample.version.get('source', '-')
                 status = sample.version.get('status', '-')
-                row += '{0: >17}{1: >17}'.format(source, status)
+                time = sample.version.get('d', '-')
+                row += '{:>19}{:>19}{:>27}'.format(source, status, time)
             rows.append(row)
         if versioned:
-            header = ('            date'
-                      '                  value'
-                      '   version_source'
-                      '   version_status'
-                      )
+            header = ('{:>24}{:>10}{:>19}{:>19}{:>27}'.format('date',
+                                                              'value',
+                                                              'version_source',
+                                                              'version_status',
+                                                              'version_time'))
             rows.insert(0, header)
         if len(self._data) > 20:
             result = '\n'.join(rows[:-display_series_part]) + '\n...\n' + '\n'.join(rows[-display_series_part:])

@@ -199,7 +199,7 @@ class SeriesQuery():
     """
 
     def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None,
-                 control_filter=None, transformation_filter=None):
+                 control_filter=None, transformation_filter=None, value_filter=None):
         copy_not_empty_attrs(series_filter, self)
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
@@ -207,6 +207,7 @@ class SeriesQuery():
         copy_not_empty_attrs(versioning_filter, self)
         copy_not_empty_attrs(transformation_filter, self)
         copy_not_empty_attrs(control_filter, self)
+        copy_not_empty_attrs(value_filter, self)
 
     def set_series_filter(self, value):
         copy_not_empty_attrs(value, self)
@@ -227,6 +228,9 @@ class SeriesQuery():
         copy_not_empty_attrs(value, self)
 
     def set_transformation_filter(self, value):
+        copy_not_empty_attrs(value, self)
+
+    def set_value_filter(self, value):
         copy_not_empty_attrs(value, self)
 
 
@@ -298,7 +302,9 @@ class SeriesFilter():
 # ------------------------------------------------------------------------------
 class ForecastFilter():
     def __init__(self, forecast_name=""):
-        #: `str` unique forecast name. Identifies a custom forecast by name. If forecastName is not set, then the default forecast computed by the database will be returned. forecastName is applicable only when type is set to FORECAST or FORECAST_DEVIATION
+        # : `str` unique forecast name. Identifies a custom forecast by name. If forecastName is not set,
+        # then the default forecast computed by the database will be returned. forecastName is applicable only when
+        # type is set to FORECAST or FORECAST_DEVIATION
         self.forecastName = forecast_name
 
     def set_forecast_name(self, value):
@@ -359,16 +365,27 @@ class ControlFilter():
         self.addMeta = value
 
 
+# ------------------------------------------------------------------------------
+class ValueFilter:
+    def __init__(self, value_filter=""):
+        # : `bool` expression applied to detailed samples. Samples that satisfy the condition are included,
+        # for example, value > 100. Value filter is applied before series transformations (interpolation,
+        # aggregation, grouping or the rate calculation). The value field in the expression refers to the sample value
+        self.valueFilter = "" if value_filter is None else value_filter
+
+
 # =======================================================================
 # Transformations 
 # =======================================================================
-class TransformationFilter():
+class TransformationFilter:
     def __init__(self, aggregate=None, group=None, rate=None, interpolate=None):
-        #: :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating statistics for each period. Default: DETAIL
+        # : :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating
+        # statistics for each period. Default: DETAIL
         self.aggregate = aggregate
         #: :class:`.Group` object responsible for merging multiple series into one series
         self.group = group
-        #: :class:`.Rate` object responsible for computing difference between consecutive samples per unit of time (rate period)
+        # : :class:`.Rate` object responsible for computing difference between consecutive samples per unit of time (
+        # rate period)
         self.rate = rate
         self.interpolate = interpolate
 
@@ -386,7 +403,7 @@ class TransformationFilter():
 
 
 # ------------------------------------------------------------------------------
-class Rate():
+class Rate:
     """
     Class representing aggregate param 'rate'
     """
@@ -410,7 +427,7 @@ class Rate():
 
 
 # ------------------------------------------------------------------------------
-class Group():
+class Group:
     """
     Class representing aggregate param 'group'
     """
