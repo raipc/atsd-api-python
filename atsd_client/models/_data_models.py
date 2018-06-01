@@ -24,6 +24,7 @@ from .._constants import display_series_threshold, display_series_part
 from .._jsonutil import deserialize, serialize
 from .._time_utilities import timediff_in_minutes, to_milliseconds, to_date, to_iso
 from .._utilities import NoneDict
+from ..utils import print_tags
 
 
 # ------------------------------------------------------------------------------
@@ -165,7 +166,7 @@ class Series(object):
             displayed_data = self._data[:display_series_part] + self._data[-display_series_part:]
         else:
             displayed_data = self._data
-        rows = []
+        rows = ['\n']
         versioned = False
         for sample in sorted(displayed_data):
             date = sample.get_date()
@@ -192,8 +193,11 @@ class Series(object):
         for key, value in six.iteritems(vars(type(self))):
             if isinstance(value, property) and key != 'data':
                 attr = getattr(self, key)
-                if attr is not None:
-                    result += '\n{0}: {1}'.format(key, attr)
+                if attr is not None and (len(attr) > 0):
+                    if key is 'tags':
+                        result += '\n{0}: {1}\n'.format('tags', print_tags(attr))
+                    else:
+                        result += '\n{0}: {1}'.format(key, attr)
         return result
 
     def to_dictionary(self):
@@ -365,7 +369,16 @@ class Property(object):
             self._meta = {'entity': deserialize(meta['entity'], Entity)}
 
     def __repr__(self):
-        return '\ntype: {_type}\nentity: {_entity}\nkey: {_key}\ntags: {_tags}\ndate: {_date}\n'.format(**vars(self))
+        result = '\n'
+        for k, value in six.iteritems(vars(self)):
+            attr = getattr(self, k)
+            if attr is not None:
+                if isinstance(attr, dict):
+                    result += '{0}: {1}\n'.format(k[len('_'):], print_tags(attr))
+                else:
+                    result += '{0}: {1}\n'.format(k[len('_'):], attr)
+
+        return result
 
     @property
     def type(self):
@@ -789,8 +802,16 @@ class Message(object):
         self._persist = persist
 
     def __repr__(self):
-        return '\ntype: {_type}\nsource: {_source}\nentity: {_entity}\ndate: {_date}\nseverity: {_severity}' \
-               '\ntags: {_tags}\nmessage: {_message}\npersist: {_persist}\n'.format(**self.__dict__)
+        result = '\n'
+        for k, value in six.iteritems(vars(self)):
+            attr = getattr(self, k)
+            if attr is not None:
+                if isinstance(attr, dict):
+                    result += '{0}: {1}\n'.format(k[len('_'):], print_tags(attr))
+                else:
+                    result += '{0}: {1}\n'.format(k[len('_'):], attr)
+
+        return result
 
     # Getters and setters
     @property

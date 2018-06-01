@@ -229,12 +229,12 @@ The services can be used to insert and query particular type of records in the d
 
 ### Data Models
 
-- [`Series`](atsd_client/models/_data_models.py#L116)
-- [`Sample`](atsd_client/models/_data_models.py#L30)
-- [`Property`](atsd_client/models/_data_models.py#L341)
-- [`Message`](atsd_client/models/_data_models.py#L756)
-- [`Alert`](atsd_client/models/_data_models.py#L415)
-- [`AlertHistory`](atsd_client/models/_data_models.py#L571)
+- [`Series`](atsd_client/models/_data_models.py#L117)
+- [`Sample`](atsd_client/models/_data_models.py#L31)
+- [`Property`](atsd_client/models/_data_models.py#L346)
+- [`Message`](atsd_client/models/_data_models.py#L776)
+- [`Alert`](atsd_client/models/_data_models.py#L434)
+- [`AlertHistory`](atsd_client/models/_data_models.py#L591)
 
 ### Meta Models
 
@@ -565,6 +565,7 @@ print(result[0])
 |**Name**| **Description**|
 |:---|:---|
 |[find_non-positive_values.py](examples/find_non-positive_values.py) | Find series with non-positive values for the specified metric, delete if required. |
+|[delete_series.py](examples/delete_series.py)|Delete data for the series within the specified date interval regardless of tags.<br>By default startDate = "1970-01-01T00:00:00Z", endDate is set to the current system time.Usage: <br> `python delete_series.py --entity e --metric m [--start 2018-06-01T16:00:00Z --end 2018-06-01T16:03:00Z]`|
 |[delete_series_data_interval.py](examples/delete_series_data_interval.py) | Delete data for a given series with tags for the specified date interval. |
 |[delete_series_for_all_entity_metrics.py](examples/delete_series_for_all_entity_metrics.py)|Delete series for all metrics for the specified entity with names starting with the specified prefix.|
 |[delete_series_for_entity_metric_tags.py](examples/delete_series_for_entity_metric_tags.py)|Delete all series for the specified entity, metric and series tags.|
