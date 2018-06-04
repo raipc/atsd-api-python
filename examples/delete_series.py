@@ -6,21 +6,18 @@ from datetime import datetime
 
 '''
 Delete data for the series within the specified date interval regardless of tags.
-By default startDate = "1970-01-01T00:00:00Z", endDate is set to the current system time.
 Usage:
-python delete_series.py --entity e --metric m [--start 2018-06-01T16:00:00Z --end 2018-06-01T16:03:00Z]
+python delete_series.py --entity e --metric m --start 2018-06-04T11:30:00Z --end "now - 1 * MINUTE"
 '''
 
 # Parse script arguments
 parser = argparse.ArgumentParser(
-    description='Delete data for a given series for the specified date interval regardless of tags.')
+    description='Delete data for the series within the specified date interval regardless of tags.')
 required = parser.add_argument_group('required arguments')
 required.add_argument('--entity', help='Entity for which series to be deleted', required=True)
 required.add_argument('--metric', help='Metric for which series to be deleted', required=True)
-parser.add_argument('--start', help='Start date from which series to be deleted. Default is "1970-01-01T00:00:00Z"',
-                    default="1970-01-01T00:00:00Z")
-parser.add_argument('--end', help='End date before which series to be deleted. Default is current time',
-                    default=datetime.now())
+required.add_argument('--start', help='Start date from which series to be deleted', required=True)
+required.add_argument('--end', help='End date before which series to be deleted', required=True)
 args = parser.parse_args()
 
 # Connect to ATSD server
