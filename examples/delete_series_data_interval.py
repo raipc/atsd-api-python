@@ -4,7 +4,7 @@ from atsd_client.services import SeriesService
 
 '''
 Delete data for a given series with tags for the specified date interval.
-Only a single matching series will be retrieved and delete by setting exact_match=True.
+Only a single matching series is retrieved and delete by setting exact_match=True.
 '''
 
 # Connect to ATSD server

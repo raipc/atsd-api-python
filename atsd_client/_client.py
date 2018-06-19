@@ -37,7 +37,7 @@ class Client(object):
     low level request wrapper
     sets method, path, payload
     returns response data
-        or True if request was successful without content
+        or True if request is successful without content
     """
 
     def __init__(self, base_url,

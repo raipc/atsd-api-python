@@ -70,13 +70,13 @@ class TestMessageService(ServiceTestBase):
         m = result[0]
         self.assertIsInstance(m, Message)
         """
-        In the future may be replaced with:
+        In the future can be replaced with:
         self.assertItemsEqual(msg.__dict__.items(), m.__dict__.items())
         """
         self.assertEqual(msg.type, m.type)
         self.assertEqual(msg.source, m.source)
         self.assertEqual(msg.entity, m.entity)
-        # Uncomment when JodaTime will be replaced
+        # Uncomment when JodaTime is replaced
         # self.assertEqual(msg.date, m.date)
         self.assertEqual(msg.severity, m.severity)
         self.assertEqual(msg.tags, m.tags)

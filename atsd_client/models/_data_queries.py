@@ -140,7 +140,7 @@ class EntityFilter():
         #: `list` of entity names or entity name patterns
         self.entities = [] if entities is None else entities
         #: `str` entity group name. Returns records for member entities of the specified group.
-        # The result will be empty if the group doesn't exist or contains no entities.
+        # The result is empty if the group doesn't exist or contains no entities.
         self.entity_group = None if entity_group is None else entity_group
         #: `str` filter entities by name, field, entity tag, and properties
         self.entity_expression = None if entity_expression is None else entity_expression
@@ -303,7 +303,7 @@ class SeriesFilter():
 class ForecastFilter():
     def __init__(self, forecast_name=""):
         # : `str` unique forecast name. Identifies a custom forecast by name. If forecastName is not set,
-        # then the default forecast computed by the database will be returned. forecastName is applicable only when
+        # then the default forecast computed by the database is returned. forecastName is applicable only when
         # type is set to FORECAST or FORECAST_DEVIATION
         self.forecastName = forecast_name
 
@@ -314,7 +314,7 @@ class ForecastFilter():
 # ------------------------------------------------------------------------------
 class VersioningFilter():
     def __init__(self, versioned=None, version_filter=None):
-        # : `bool` flag indicating if version status, source, and change date will be returned if metric is
+        # : `bool` option indicating if version status, source, and change date is returned if metric is
         # versioned. Default: false.
         self.versioned = False if versioned is None else versioned
         # : `str` expression to filter value history (versions) by version status, source or time, for example:
@@ -332,14 +332,14 @@ class ControlFilter():
         self.direction = "DESC" if direction is None else direction
         #: `int` maximum number of series returned. Default: 0.
         self.seriesLimit = 0 if series_limit is None else series_limit
-        # : `bool` flag. If true, execute the query against Last Insert table which results in faster response time
+        # : `bool` option. If true, execute the query against Last Insert table which results in faster response time
         # for last value queries. Default: false
         self.cache = False if cache is None else cache
         #: `str` optional identifier used to associate query object in request with series objects in response.
         self.requestId = "" if request_id is None else request_id
         #: `str` time format for data array. iso or milliseconds. Default: iso
         self.timeFormat = "iso" if time_format is None else time_format
-        # : `bool` flag. If true, include metric and entity metadata (field, tags) under the meta object in response.
+        # : `bool` option. If true, include metric and entity metadata (field, tags) under the meta object in response.
         # Default: false
         self.addMeta = False if add_meta is None else add_meta
 
@@ -450,7 +450,7 @@ class Group:
         if not isinstance(count, numbers.Number):
             raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid period unit parameter; should be TimeUnit, found: ' + unicode(type(unit)))
+            raise ValueError('Invalid period unit parameter; must be TimeUnit, found: ' + unicode(type(unit)))
         self.period = {'count': count, 'unit': unit}
 
     def set_interpolate(self, type, value=None, extend=False):
@@ -504,7 +504,7 @@ class Aggregate():
         self.types = []
         for typ in types:
             if not hasattr(AggregateType, typ):
-                raise ValueError('Invalid aggregate type; should be AggregateType, found: ' + unicode(type(typ)))
+                raise ValueError('Invalid aggregate type; must be AggregateType, found: ' + unicode(type(typ)))
             self.types.append(typ)
 
     def set_threshold(self, min, max):

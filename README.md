@@ -38,7 +38,7 @@ python -V
 
 The client is supported for the following Python versions:
 
-- Python 2: **2.7.9** and later
+- Python 2: `v2.7.9` and later
 - Python 3: all versions
 
 ## Installation
@@ -53,9 +53,9 @@ Install `atsd_client` module using [`pip`](https://pip.pypa.io/en/stable/), the 
 pip install atsd_client
 ```
 
-> You may need to upgrade setup tools with `pip install --upgrade setuptools`.
+> It is possible that upgrade setup tools with `pip install --upgrade setuptools`.
 
-To install a specific version, specify it in the `pip install` command.
+To install a specific version, specify version in the `pip install` command.
 
 ```sh
 pip install atsd_client==2.2.1
@@ -108,7 +108,7 @@ Check that the modules have been installed successfully.
 python -c "import atsd_client, pandas, requests, dateutil"
 ```
 
-The output will be **empty** if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
+The output is **empty** if all modules are installed correctly. Otherwise, an error is displayed showing which modules are missing.
 
 ```python
 Traceback (most recent call last):
@@ -246,7 +246,7 @@ The services can be used to insert and query particular type of records in the d
 
 ### Inserting Series
 
-Initialize a `Series` object and populate it with timestamped values.
+Initialize a `Series` object and populate object with timestamped values.
 
 ```python
 from atsd_client.models import Series
@@ -329,7 +329,7 @@ Refer to [API documentation](https://axibase.com/docs/atsd/api/data/series/query
 ### Querying Data with SQL
 
 To perform SQL queries, use the `query` method implemented in the [`SQLService`](atsd_client/services.py#L577).
-The returned table will be an instance of the `DataFrame` class.
+The returned table is an instance of the `DataFrame` class.
 
 ```python
 from atsd_client import connect_url
@@ -436,7 +436,7 @@ Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manip
 pip install pandas
 ```
 
-In order to access the Series object in `pandas`, use the built-in `to_pandas_series()` and `from_pandas_series()` methods.
+To access the Series object in `pandas`, use the built-in `to_pandas_series()` and `from_pandas_series()` methods.
 
 ```python
 ts = series.to_pandas_series()

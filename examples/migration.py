@@ -8,7 +8,7 @@ from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQue
 from atsd_client.services import SeriesService
 
 '''
-The test should compare series query responses for the given metric, entity, tags, and start/end dates before and
+The test compares series query responses for the given metric, entity, tags, and start/end dates before and
 after ATSD migration, compare results.
 
 Naming convention: query-${metric}-${entity}-${tags}-${type}.json

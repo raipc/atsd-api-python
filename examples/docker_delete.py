@@ -55,7 +55,7 @@ for docker_host_series in docker_hosts:
     for entity in entities:
 
         if entity.name == docker_host_series.entity:
-            # ignore the docker host itself, it will be deleted later
+            # ignore the docker host itself, host is deleted later
             continue
 
         print("- Deleting " + entity.tags.get('docker-type', '') + " : " + entity.name + " : " + entity.tags.get('name', ''))

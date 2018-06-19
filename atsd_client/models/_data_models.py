@@ -142,7 +142,7 @@ class Series(object):
                     )
                 else:
                     self._data.append(data_unit)
-        # : `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value was received for this
+        # : `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value is received for this
         # metric by any series
         self._lastInsertDate = to_date(last_insert_date)
         #: `dict` of entity and metric objects
@@ -449,9 +449,9 @@ class Alert(object):
         self._entity = entity
         #: `str` metric
         self._metric = metric
-        #: `str` | :class:`datetime` | `long` milliseconds when the last record was received
+        #: `str` | :class:`datetime` | `long` milliseconds when the last record is received
         self._lastEventDate = to_date(last_event_date)
-        #: `str` | :class:`datetime` | `long` milliseconds when the alert was open
+        #: `str` | :class:`datetime` | `long` milliseconds when alert is open
         self._openDate = to_date(open_date)
         #: `Number` last numeric value received
         self._value = value
@@ -599,7 +599,7 @@ class AlertHistory(object):
                  type=None,
                  date=None, value=None, window=None):
         self._alert = alert
-        #: `Number` time in milliseconds when alert was in OPEN or REPEAT state
+        #: `Number` time in milliseconds when alert is in OPEN or REPEAT state
         self._alertDuration = alert_duration
         #: `str` | :class:`datetime` | `long`
         self._alertOpenDate = to_date(alert_open_date)
@@ -779,7 +779,7 @@ class Message(object):
     Messages are events collected from system logs and messaging systems.
     Each message is related to an entity, has a set of tags and a free-form text message.
     Messages for the same entity, time and type/source tags are automatically de-duplicated.
-    Message text or at least one tag is required, otherwise the message will be dropped silently.
+    Message text or at least one tag is required, otherwise the message is dropped silently.
     """
 
     def __init__(self, type, source, entity, date=None, severity=None, tags=None, message=None, persist=True):
@@ -789,7 +789,7 @@ class Message(object):
         self._source = source
         #: `str` entity name
         self._entity = entity
-        #: :class:`datetime` object  | `long` milliseconds | `str` ISO 8601 date when the message record was created
+        #: :class:`datetime` object  | `long` milliseconds | `str` ISO 8601 date when the message record is created
         self._timestamp = to_milliseconds(date)
         self._date = to_date(self._timestamp)
         #: :class:`.Severity`
