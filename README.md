@@ -214,8 +214,8 @@ svc = SeriesService(conn)
 
 Available services:
 
-- [`SeriesService`](./atsd_client/services.py#L52)
-- [`PropertiesService`](./atsd_client/services.py#L103)
+- [`SeriesService`](./atsd_client/services.py#series-service)
+- [`PropertiesService`](./atsd_client/services.py#properties)
 - [`MessageService`](./atsd_client/services.py#L187)
 - [`AlertsService`](./atsd_client/services.py#L148)
 - [`MetricsService`](./atsd_client/services.py#L218)

@@ -17,7 +17,7 @@ If the versions are different, proceed to [Install from Prepared Modules](#insta
 
 ### Download Modules
 
-Login into the intermediate server with internet access.
+Log in to the intermediate server with internet access.
 
 Download the `atsd_client` source code.
 
