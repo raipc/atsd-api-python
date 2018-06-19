@@ -380,7 +380,7 @@ class ValueFilter:
 # Transformations 
 # =======================================================================
 
-#TransformationFilter
+# TransformationFilter
 class TransformationFilter:
     def __init__(self, aggregate=None, group=None, rate=None, interpolate=None):
         # : :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating
@@ -606,7 +606,7 @@ class Interpolate():
 ################# Properties
 # ===============================================================================
 
-#PropertiesQuery
+# PropertiesQuery
 class PropertiesQuery:
     """
     Class to retrieve property records for the specified parameters.
@@ -763,7 +763,7 @@ class AlertHistoryQuery():
 ################# Messages
 # ===============================================================================
 
-#MessageQuery
+# MessageQuery
 class MessageQuery():
     """
      Class to retrieve message records for the specified filters.
