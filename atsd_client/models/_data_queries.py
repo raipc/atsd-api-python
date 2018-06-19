@@ -123,6 +123,8 @@ class Severity(object):
 # ===============================================================================
 ################# General Filters
 # ===============================================================================
+
+# EntityFilter
 class EntityFilter():
     """
     Helper class to retrieve a list of entities for the specified filters.
@@ -158,7 +160,7 @@ class EntityFilter():
         self.entity_expression = value
 
 
-# ------------------------------------------------------------------------------
+# DateFilter
 class DateFilter:
     def _validate(self):
         return (self.startDate is not None and self.endDate is not None) or \
@@ -267,7 +269,7 @@ class SeriesDeleteQuery:
         self.exactMatch = value
 
 
-# ------------------------------------------------------------------------------
+# SeriesFilter
 class SeriesFilter():
     def __init__(self, metric, tags=None, type="HISTORY", tag_expression=None, exact_match=None):
         if not metric:
@@ -299,7 +301,7 @@ class SeriesFilter():
         self.exactMatch = value
 
 
-# ------------------------------------------------------------------------------
+# ForecastFilter
 class ForecastFilter():
     def __init__(self, forecast_name=""):
         # : `str` unique forecast name. Identifies a custom forecast by name. If forecastName is not set,
@@ -311,7 +313,7 @@ class ForecastFilter():
         self.forecastName = value
 
 
-# ------------------------------------------------------------------------------
+# VersioningFilter
 class VersioningFilter():
     def __init__(self, versioned=None, version_filter=None):
         # : `bool` option indicating if version status, source, and change date is returned if metric is
@@ -322,7 +324,7 @@ class VersioningFilter():
         self.versionFilter = "" if version_filter is None else version_filter
 
 
-# ------------------------------------------------------------------------------
+# ControlFilter
 class ControlFilter():
     def __init__(self, limit=None, direction=None, series_limit=None, cache=None, request_id=None, time_format=None,
                  add_meta=None):
@@ -365,7 +367,7 @@ class ControlFilter():
         self.addMeta = value
 
 
-# ------------------------------------------------------------------------------
+# ValueFilter
 class ValueFilter:
     def __init__(self, value_filter=""):
         # : `bool` expression applied to detailed samples. Samples that satisfy the condition are included,
@@ -377,6 +379,8 @@ class ValueFilter:
 # =======================================================================
 # Transformations 
 # =======================================================================
+
+#TransformationFilter
 class TransformationFilter:
     def __init__(self, aggregate=None, group=None, rate=None, interpolate=None):
         # : :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating
@@ -601,6 +605,8 @@ class Interpolate():
 # ===============================================================================
 ################# Properties
 # ===============================================================================
+
+#PropertiesQuery
 class PropertiesQuery:
     """
     Class to retrieve property records for the specified parameters.
@@ -756,6 +762,8 @@ class AlertHistoryQuery():
 # ===============================================================================
 ################# Messages
 # ===============================================================================
+
+#MessageQuery
 class MessageQuery():
     """
      Class to retrieve message records for the specified filters.

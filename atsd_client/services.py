@@ -145,7 +145,7 @@ class PropertiesService(_Service):
         return True
 
 
-# ------------------------------------------------------------------------ ALERTS
+# Alerts
 class AlertsService(_Service):
     def query(self, *queries):
         """Retrieve alert records for each query
@@ -184,7 +184,7 @@ class AlertsService(_Service):
         return True
 
 
-# ---------------------------------------------------------------------- MESSAGES
+# Messages
 class MessageService(_Service):
     def insert(self, *messages):
         """Insert specified messages
@@ -215,7 +215,7 @@ class MessageService(_Service):
 #################################  META   #####################################
 # ===============================================================================
 
-# ----------------------------------------------------------------------- METRICS
+# Metrics
 class MetricsService(_Service):
     def get(self, name):
         """Retrieve metric.
@@ -320,7 +320,7 @@ class MetricsService(_Service):
         return _jsonutil.deserialize(response, Series)
 
 
-# ------------------------------------------------------------------------------ ENTITIES
+# Entities
 class EntitiesService(_Service):
     def get(self, entity_name):
         """Retrieve the entity
@@ -421,7 +421,7 @@ class EntitiesService(_Service):
         return _jsonutil.deserialize(response, Metric)
 
 
-# ------------------------------------------------------------------------------ ENTITIY GROUPS
+# Entity Groups
 class EntityGroupsService(_Service):
     def get(self, group_name):
         """Retrieve the specified entity group.
@@ -579,7 +579,7 @@ class EntityGroupsService(_Service):
         return True
 
 
-# ------------------------------------------------------------------------ SQL
+# SQL
 class SQLService(_Service):
     def query(self, sql_query):
         """Execute SQL query.
