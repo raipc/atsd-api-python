@@ -142,7 +142,7 @@ class Series(object):
                     )
                 else:
                     self._data.append(data_unit)
-        # : `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time a value is received for this
+        # : `datetime` object | `long` milliseconds | `str` ISO 8601 date. Last time received value processed for this
         # metric by any series
         self._lastInsertDate = to_date(last_insert_date)
         #: `dict` of entity and metric objects

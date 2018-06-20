@@ -9,7 +9,7 @@ from atsd_client.services import SeriesService
 
 '''
 The test compares series query responses for the given metric, entity, tags, and start/end dates before and
-after ATSD migration, compare results.
+after ATSD migration.
 
 Naming convention: query-${metric}-${entity}-${tags}-${type}.json
 Tags must be divide with ';' between pairs and with '=' between tag key and value.

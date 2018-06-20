@@ -30,8 +30,7 @@ for entity in entities:
         series_list = metrics_service.series(m.name, entity.name)
         # for each list with more than 1 series
         if len(series_list) > 1:
-            # calculate maximum of all last_insert_date samples in list and subtract 1 hour
-            # from lower limit date to compare
+            # set lower limit to maximum last insert date over series list minus one hour
             lower_limit_date = max(s.last_insert_date for s in series_list) - timedelta(
                 seconds=grace_interval_hours * 3600)
             for s in series_list:

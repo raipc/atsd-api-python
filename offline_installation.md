@@ -80,7 +80,7 @@ Copy the `atsd-api-python` and `modules` directories from the intermediate serve
 
 ## Install Modules on the Target Server
 
-Log in into the target server where the ATSD client is being installed.
+Log in to the target server where the ATSD client is being installed.
 
 Copy module files to a user module directory. The directory is located at `python -m site --user-site`.
 

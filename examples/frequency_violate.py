@@ -53,7 +53,7 @@ def resolve_frequency(frequency):
 print('value, actual date, expected date, frequency, metric, entity, tags')
 for metric in metric_list:
 
-    # get metric frequency and trnasform frequency into relativedelta
+    # get metric frequency and transform frequency into relativedelta
     frequency = metric.tags['frequency']
     frequency_interval = resolve_frequency(frequency)
 
