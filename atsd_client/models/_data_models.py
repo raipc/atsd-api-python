@@ -27,7 +27,7 @@ from .._utilities import NoneDict
 from ..utils import print_tags
 
 
-# Sample
+# ------------------------------------------------------------------------------
 class Sample(object):
     """
     Class that represents a numeric value observed at some time with an optional annotation and versioning fields. If
@@ -113,7 +113,7 @@ class Sample(object):
         return self._compare(other) != 0
 
 
-# Series
+# ------------------------------------------------------------------------------
 class Series(object):
     """
     Class representing a time series.
@@ -342,7 +342,7 @@ class Series(object):
         return self._data[-1].get_date()
 
 
-# Property
+# ------------------------------------------------------------------------------
 class Property(object):
     """
     Class representing a property record which contains keys and tags of string type.
@@ -430,7 +430,7 @@ class Property(object):
         self._date = to_date(self._timestamp)
 
 
-# Alert
+# ------------------------------------------------------------------------------
 class Alert(object):
     """
     Class representing an open alert record.
@@ -587,7 +587,7 @@ class Alert(object):
         self._openValue = value
 
 
-# Alert History
+# ------------------------------------------------------------------------------
 class AlertHistory(object):
     """
     Class representing history of an alert, including such values as alert duration, alert open date, repeat count, etc.
@@ -772,7 +772,7 @@ class AlertHistory(object):
         self._window = value
 
 
-# Message
+# ------------------------------------------------------------------------------
 class Message(object):
     """
     Class representing a Message.

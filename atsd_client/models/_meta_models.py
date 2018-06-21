@@ -49,7 +49,7 @@ class Interpolate(object):
     PREVIOUS = 'PREVIOUS'
 
 
-# Metric
+# ------------------------------------------------------------------------------
 class Metric(object):
     """
     Class representing a metric.
@@ -291,7 +291,7 @@ class Metric(object):
         return timediff_in_minutes(self.last_insert_date)
 
 
-# Entity
+# ------------------------------------------------------------------------------
 class Entity(object):
     """
     Class representing an entity.
@@ -392,7 +392,7 @@ class Entity(object):
         return timediff_in_minutes(self.last_insert_date)
 
 
-# Entity Group
+# ------------------------------------------------------------------------------
 class EntityGroup(object):
     """
     Class representing an entity group.
