@@ -48,8 +48,7 @@ class _Service(object):
         self.conn = conn
 
 
-# series-service 
-
+# ------------------------------------------------------------------------ SERIES
 class SeriesService(_Service):
     def insert(self, *series_objects):
         """Insert an array of samples for a given series identified by metric, entity, and series tags
@@ -100,7 +99,7 @@ class SeriesService(_Service):
         return response
 
 
-# Properties
+# -------------------------------------------------------------------- PROPERTIES
 class PropertiesService(_Service):
     def insert(self, *properties):
         """Insert given properties
