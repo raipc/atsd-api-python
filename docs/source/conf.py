@@ -18,12 +18,12 @@ sys.path.append(os.path.abspath('.'))
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
-# documentation root, use os.path.abspath to make it absolute, like shown here.
+# documentation root, use os.path.abspath to make path absolute, like shown here.
 #sys.path.insert(0, os.path.abspath('.'))
 
 # -- General configuration ------------------------------------------------
 
-# If your documentation needs a minimal Sphinx version, state it here.
+# If your documentation needs a minimal Sphinx version, state that here.
 #needs_sphinx = '1.0'
 
 # Add any Sphinx extension module names here, as strings. They can be
@@ -63,7 +63,7 @@ release = '2.2.2'
 #language = None
 
 # There are two options for replacing |today|: either, you set today to some
-# non-false value, then it is used:
+# non-false value, then this value is used:
 #today = ''
 # Else, today_fmt is used as the format for a strftime call.
 #today_fmt = '%B %d, %Y'
@@ -76,14 +76,14 @@ exclude_patterns = []
 # documents.
 #default_role = None
 
-# If true, '()' will be appended to :func: etc. cross-reference text.
+# If true, '()' is appended to :func: etc. cross-reference text.
 #add_function_parentheses = True
 
-# If true, the current module name will be prepended to all description
+# If true, the current module name is prepended to all description
 # unit titles (such as .. function::).
 #add_module_names = True
 
-# If true, sectionauthor and moduleauthor directives will be shown in the
+# If true, sectionauthor and moduleauthor directives is shown in the
 # output. They are ignored by default.
 #show_authors = False
 
@@ -111,7 +111,7 @@ html_theme = 'default'
 # Add any paths that contain custom themes here, relative to this directory.
 #html_theme_path = []
 
-# The name for this set of Sphinx documents.  If None, it defaults to
+# The name for this set of Sphinx documents.  If None, name defaults to
 # "<project> v<release> documentation".
 #html_title = None
 
@@ -123,13 +123,13 @@ html_theme = 'default'
 #html_logo = None
 
 # The name of an image file (within the static path) to use as favicon of the
-# docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
+# docs.  This file must be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
 #html_favicon = None
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
+# a file named "default.css" overwrites the builtin "default.css".
 html_static_path = ['_static']
 
 # Add any extra paths that contain custom files (such as robots.txt or
@@ -141,14 +141,14 @@ html_static_path = ['_static']
 # using the given strftime format.
 #html_last_updated_fmt = '%b %d, %Y'
 
-# If true, SmartyPants will be used to convert quotes and dashes to
+# If true, SmartyPants is used to convert quotes and dashes to
 # typographically correct entities.
 #html_use_smartypants = True
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = {}
 
-# Additional templates that should be rendered to pages, maps page names to
+# Additional templates that must be rendered to pages, maps page names to
 # template names.
 #html_additional_pages = {}
 
@@ -170,7 +170,7 @@ html_static_path = ['_static']
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 #html_show_copyright = True
 
-# If true, an OpenSearch description file will be output, and all pages will
+# If true, an OpenSearch description file is output, and all pages
 # contain a <link> tag referring to it.  The value of this option must be the
 # base URL from which the finished HTML is served.
 #html_use_opensearch = ''
@@ -257,5 +257,5 @@ texinfo_documents = [
 # How to display URL addresses: 'footnote', 'no', or 'inline'.
 #texinfo_show_urls = 'footnote'
 
-# If true, do not generate a @detailmenu in the "Top" node's menu.
+# If true, do not generate a @detailmenu in the "Top" node menu.
 #texinfo_no_detailmenu = False

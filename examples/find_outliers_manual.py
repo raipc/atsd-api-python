@@ -61,7 +61,7 @@ for i, sample in enumerate(data):
         if delta > max_delta_after:
             max_delta_after = delta
 
-    # check that we have enough data to make decision
+    # check that there is enough data to make decision
     if len(previous_window) < min_window_size or len(next_window) < min_window_size:
         continue
 

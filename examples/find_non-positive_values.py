@@ -30,7 +30,7 @@ query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 series = svc.query(query)
 
 if deleteValues:
-    print('Inappropriate values will be deleted.\n')
+    print('Inappropriate values to be deleted.\n')
 else:
     print('Leave as is inappropriate values.\n')
 

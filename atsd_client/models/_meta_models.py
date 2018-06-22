@@ -55,7 +55,7 @@ class Metric(object):
     Class representing a metric.
     Metrics are names assigned to numeric measurements, for example, temperature or speed.
     A time-indexed array of measurements for a given metric and entity is called a time-series (or simply series).
-    Metrics describe what is being measured as well as control how incoming data should be validated, stored, and pruned.
+    Metrics describe what is being measured as well as control how incoming data must be validated, stored, and pruned.
     """
 
     def __init__(self,
@@ -108,7 +108,7 @@ class Metric(object):
         #: `Number` number of days after which lagging series are removed from the database
         self._seriesRetentionDays = series_retention_days
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date.
-        # Last time a value was received for this metric by any series
+        # Last time a value is received for this metric by any series
         self._lastInsertDate = to_date(last_insert_date)
         #: `dict`
         self._tags = NoneDict(tags)
@@ -312,7 +312,7 @@ class Entity(object):
         #: `bool` enabled status. Incoming data is discarded for disabled entities
         self._enabled = enabled
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date.
-        # Last time when a value was received by the database for this entity
+        # Last time when a value is received by the database for this entity
         self._lastInsertDate = to_date(last_insert_date)
         #: `dict`
         self._tags = NoneDict(tags)

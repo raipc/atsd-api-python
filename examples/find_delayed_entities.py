@@ -6,7 +6,7 @@ from atsd_client.services import MetricsService, EntitiesService
 from atsd_client.utils import print_str
 
 '''
-Find series with last_insert_date more than n hours behind the metric's last_insert_date.
+Find series with last_insert_date more than n hours behind the metric last_insert_date.
 Print entities of that the series.
 '''
 

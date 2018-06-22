@@ -40,7 +40,7 @@ def resolve_frequency(frequency):
                        'Monthly, Middle of Month']:
         return relativedelta(months=1)
     elif frequency in ['Quarterly (Q)', 'Quarterly', 'Quarterly, End of Period',
-                       "Quarterly, 2nd Month's 1st Full Week", 'Quarterly, End of Quarter']:
+                       "Quarterly, 2nd Month 1st Full Week", 'Quarterly, End of Quarter']:
         return relativedelta(months=3)
     elif frequency in ['Semiannual']:
         return relativedelta(months=6)
@@ -53,7 +53,7 @@ def resolve_frequency(frequency):
 print('value, actual date, expected date, frequency, metric, entity, tags')
 for metric in metric_list:
 
-    # get metric frequency and trnasform it into relativedelta
+    # get metric frequency and transform frequency into relativedelta
     frequency = metric.tags['frequency']
     frequency_interval = resolve_frequency(frequency)
 
@@ -70,7 +70,7 @@ for metric in metric_list:
         gap_shift = 0
         first_sample_date = data[0].get_date()
 
-        # check if series has samples on the last day and it's classified monthly, quarterly or annual
+        # check if series has samples on the last day and it is classified monthly, quarterly or annual
         is_last_day = calendar.monthrange(first_sample_date.year, first_sample_date.month)[1] == first_sample_date.day \
                       and frequency_interval in [relativedelta(months=1), relativedelta(months=3),
                                                  relativedelta(months=6), relativedelta(months=12)]
@@ -90,7 +90,7 @@ for metric in metric_list:
                     gap_shift += 1
                     expected_sample_date += frequency_interval
 
-                # if series should have samples on the last day so update the day
+                # if series has samples on the last day, update the day
                 if is_last_day:
                     expected_sample_date = expected_sample_date.replace(
                         day=calendar.monthrange(expected_sample_date.year, expected_sample_date.month)[1])

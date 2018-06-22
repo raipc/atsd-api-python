@@ -1,6 +1,6 @@
 .. atsd_client documentation master file, created by
    sphinx-quickstart on Fri Jul 22 13:16:12 2018.
-   You can adapt this file completely to your liking, but it should at least
+   You can adapt this file completely to your liking, but file must at least
    contain the root `toctree` directive.
 
 ATSD API client for Python
@@ -69,7 +69,7 @@ Inserting Series Values
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 To insert series values into ATSD initialize a ``Series`` object and
-populate it with timestamped values.
+populate the object with timestamped values.
 
 .. code:: python
 
@@ -114,7 +114,7 @@ work some **combination** of these parameters are needed. ``startDate``,
 syntax <https://axibase.com/docs/atsd/shared/calendar.html>`__
 or ISO 8601 formatted string or number of milliseconds since 01.01.1970
 or a datetime object. Finally, to get a list of ``Series`` objects,
-matching specified filters the ``query`` method of the service should be
+matching specified filters the ``query`` method of the service must be
 used.
 
 .. code:: python
@@ -171,7 +171,7 @@ a date filter.
 Exploring Results
 ~~~~~~~~~~~~~~~~~
 
-In order to consume the Series object in `pandas, a Python data analysis
+To consume the Series object in `pandas, a Python data analysis
 toolkit <http://pandas.pydata.org/>`_, you can utilize the built-in
 ``to_pandas_series()`` and ``from_pandas_series()`` methods.
 
@@ -205,7 +205,7 @@ SQL queries
 ~~~~~~~~~~~
 
 To perform SQL queries, use ``query`` method from SQLService.
-Returned table will be an instance of ``DataFrame`` class.
+Returned table is an instance of ``DataFrame`` class.
 
 .. code:: python
 
