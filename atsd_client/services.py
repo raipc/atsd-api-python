@@ -36,7 +36,7 @@ import six
 
 def _check_name(name):
     if not isinstance(name, (six.binary_type, six.text_type)):
-        raise TypeError('name should be str')
+        raise TypeError('name must be str')
     if len(name) == 0:
         raise ValueError('name is empty')
 
@@ -44,7 +44,7 @@ def _check_name(name):
 class _Service(object):
     def __init__(self, conn):
         if not isinstance(conn, Client):
-            raise ValueError('conn should be Client instance')
+            raise ValueError('conn must be Client instance')
         self.conn = conn
 
 
@@ -527,7 +527,7 @@ class EntityGroupsService(_Service):
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names
-        :param create_entities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
+        :param create_entities: `bool` option indicating if new entities from the submitted list is created if such entities don't exist
         :return: True if success
         """
         _check_name(group_name)
@@ -541,13 +541,13 @@ class EntityGroupsService(_Service):
 
     def set_entities(self, group_name, entities, create_entities=None):
         """Set members of the entity group from the specified entity list.
-        All existing members that are not included in the request will be removed from members.
+        All existing members that are not included in the request is removed from members.
         If the array in the request is empty, all entities are removed from the group and are replaced with an empty list.
         Note that changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
-        :param create_entities: `bool` flag indicating if new entities from the submitted list will be created if such entities don't exist
+        :param create_entities: `bool` option indicating if new entities from the submitted list is created if such entities don't exist
         :return: True if success
         """
         _check_name(group_name)

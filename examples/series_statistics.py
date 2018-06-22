@@ -38,7 +38,7 @@ series_list_desc = svc.query(query)
 for series_asc in series_list_asc:
     if len(series_asc.data) > 0:
 
-        # get corresponding descending series and remove it from desc list
+        # get corresponding descending series and remove series from desc list
         index_series_desc = -1
         for idx, sd in enumerate(series_list_desc):
             if sd.entity == series_asc.entity and sd.metric == series_asc.entity and sd.tags == series_asc.tags:

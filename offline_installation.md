@@ -17,7 +17,7 @@ If the versions are different, proceed to [Install from Prepared Modules](#insta
 
 ### Download Modules
 
-Login into the intermediate server with internet access.
+Log in to the intermediate server with internet access.
 
 Download the `atsd_client` source code.
 
@@ -80,7 +80,7 @@ Copy the `atsd-api-python` and `modules` directories from the intermediate serve
 
 ## Install Modules on the Target Server
 
-Login into the target server where the ATSD client will be installed.
+Log in to the target server where the ATSD client is being installed.
 
 Copy module files to a user module directory. The directory is located at `python -m site --user-site`.
 
@@ -100,7 +100,7 @@ Check that the modules have been installed successfully.
 python -c "import atsd_client, pandas, requests, dateutil"
 ```
 
-The output will be **empty** if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
+The output is **empty** if all modules are installed correctly. Otherwise, an error is displayed showing which modules are missing.
 
 ```python
 Traceback (most recent call last):
@@ -142,7 +142,7 @@ Check that the modules have been installed successfully.
 python -c "import atsd_client, pandas, requests, dateutil"
 ```
 
-The output will be empty if all modules are installed correctly. Otherwise, an error will be displayed showing which modules are missing.
+The output is empty if all modules are installed correctly. Otherwise, an error is displayed showing which modules are missing.
 
 ```python
 Traceback (most recent call last):

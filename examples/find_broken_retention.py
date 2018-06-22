@@ -25,11 +25,11 @@ grace_interval_days = 1
 
 t = PrettyTable(['Metric', 'Entity', 'Tags', 'Retention Days', 'Threshold', 'Presented Sample Date'])
 for metric in metric_list:
-    # calculate datetime before which there should be data
+    # calculate datetime before which there is data
     threshold = datetime.now() - timedelta(days=metric.retention_days + grace_interval_days)
 
     # query series with current metric and all entities from the beginning up to threshold
-    # enough to get at least one value so limit set to 1
+    # enough to get at least one value, limit set to 1
     sf = SeriesFilter(metric=metric.name)
     ef = EntityFilter(entity='*')
     df = DateFilter(start_date="1970-01-01T00:00:00Z", end_date=threshold)

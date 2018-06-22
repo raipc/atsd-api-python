@@ -3,7 +3,7 @@ from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQue
 from atsd_client.services import SeriesService
 
 '''
-Load data for one year and insert it with multiple year shift.
+Load data for one year and insert the data with multiple year shift.
 '''
 
 # Connect to ATSD server

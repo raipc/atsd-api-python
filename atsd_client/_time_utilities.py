@@ -27,7 +27,7 @@ def to_milliseconds(date):
     elif isinstance(date, datetime):
         dt = date
     else:
-        raise ValueError('time should be either number, datetime instance or str')
+        raise ValueError('time must be either number, datetime instance or str')
     dt_utc = timezone_ensure(dt).astimezone(tzutc())
     ms = (calendar.timegm(dt_utc.timetuple()) + dt_utc.microsecond / 1000000.0) * 1000
     return ms
@@ -48,7 +48,7 @@ def to_date(time):
     elif isinstance(time, numbers.Number):
         date = pytz.utc.localize(datetime.utcfromtimestamp(time * 0.001))
     else:
-        raise ValueError('time should be either datetime instance, str or number')
+        raise ValueError('time must be either datetime instance, str or number')
     return timezone_ensure(date)
 
 
