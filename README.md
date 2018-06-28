@@ -195,7 +195,7 @@ connection = connect('/path/to/connection.properties')
 
 ## Logging
 
-Logging to stdout is **enabled** by default. To disable logging, modify the logger at the beginning of the script.
+Logging to `stdout` is **enabled** by default. To disable logging, modify the logger at the beginning of the script.
 
 ```python
 import logging
@@ -478,7 +478,7 @@ other_series.add_samples(
 )
 ```
 
-To retrieve series values with versioning fields, add the `VersionedFilter` to the query with the `versioned` field equal to **True**.
+To retrieve series values with versioning fields, add the `VersionedFilter` to the query and enable the `versioned` field.
 
 ```python
 import time
@@ -565,8 +565,8 @@ print(result[0])
 |**Name**| **Description**|
 |:---|:---|
 |[find_non-positive_values.py](./examples/find_non-positive_values.py) | Find series with non-positive values for the specified metric, delete if required. |
-|[delete_series.py](./examples/delete_series.py)|Delete data for the series within the specified date interval regardless of tags.<br>By default startDate = "1970-01-01T00:00:00Z", endDate is set to the current system time.Usage: <br> `python delete_series.py --entity e --metric m [--start 2018-06-01T16:00:00Z --end 2018-06-01T16:03:00Z]`|
-|[delete_series_data_interval.py](./examples/delete_series_data_interval.py) | Delete data for a given series with tags for the specified date interval. |
+|[delete_series.py](./examples/delete_series.py)|Delete samples for the given metric and entity (any tags) within the specified date interval.|
+|[delete_series_data_interval.py](./examples/delete_series_data_interval.py) | Delete data for a given series with tags within the specified date interval. |
 |[delete_series_for_all_entity_metrics.py](./examples/delete_series_for_all_entity_metrics.py)|Delete series for all metrics for the specified entity with names starting with the specified prefix.|
 |[delete_series_for_entity_metric_tags.py](./examples/delete_series_for_entity_metric_tags.py)|Delete all series for the specified entity, metric and series tags.|
 |[docker_delete.py](./examples/docker_delete.py)| Delete docker host entities and related container/image/network/volume entities that have not inserted data for more than 7 days. |

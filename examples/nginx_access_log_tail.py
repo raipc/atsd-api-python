@@ -1,8 +1,9 @@
 from atsd_client import connect, connect_url
-from atsd_client.models import *
-from atsd_client.services import *
+from atsd_client.models import Message
+from atsd_client.services import MessageService, Severity
 import socket
 from datetime import datetime
+# Install sh module separately
 from sh import tail
 import csv
 import logging
@@ -46,7 +47,10 @@ def has_containing_element(lst, str):
             return True
     return False
 
-# Current user must read permissions to access.log file, including after rollover chmod 0640 > 0644
+# Current user must read permissions to access.log file, including after rollover
+# sudo chmod 0644 /var/log/nginx/access.log
+# sudo nano /etc/logrotate.d/nginx
+#      create 0644 www-data adm
 for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
     reader = csv.DictReader([line.strip()], fieldnames=fieldnames)
     for row in reader:
@@ -71,7 +75,7 @@ for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
           continue
 
 	      # Ignore 404 requests for apt language translation files
-        if row['status'] == '404' and '/public/repository/deb/./' in ruri:
+        if row['status'] == '404' and '/repository/deb/./' in ruri:
           continue
    
         # Ignore requests from ignored IP addresses
