@@ -32,7 +32,7 @@ The ATSD API Client for Python simplifies the process of interacting with [Axiba
 
 Check Python version.
 
-```sh
+```bash
 python -V
 ```
 
@@ -49,7 +49,7 @@ Install `atsd_client` module using [`pip`](https://pip.pypa.io/en/stable/), the 
 
 > If necessary, install `pip` with `apt-get install python-pip` command on Ubuntu.
 
-```sh
+```bash
 pip install atsd_client
 ```
 
@@ -57,7 +57,7 @@ pip install atsd_client
 
 To install a specific version, specify version in the `pip install` command.
 
-```sh
+```bash
 pip install atsd_client==2.2.1
 ```
 
@@ -65,7 +65,7 @@ pip install atsd_client==2.2.1
 
 Check the currently installed `pip` module.
 
-```sh
+```bash
 pip show atsd-client
 ```
 
@@ -75,7 +75,7 @@ Version: 2.2.1
 Summary: Axibase Time Series Database API Client for Python
 Home-page: https://github.com/axibase/atsd-api-python
 Author: Axibase Corporation
-Author-email: axibase-api@axibase.com
+Author-email: support-atsd@axibase.com
 License: Apache 2.0
 Location: /usr/local/lib/python2.7/dist-packages
 Requires: tzlocal, requests, pandas, python-dateutil
@@ -88,15 +88,15 @@ For installation on a system without Internet access, review the following [guid
 
 Clone the repository and run the installation manually.
 
-```sh
+```bash
 git clone https://github.com/axibase/atsd-api-python.git
 ```
 
-```sh
+```bash
 cd atsd-api-python
 ```
 
-```sh
+```bash
 python setup.py install
 ```
 
@@ -104,7 +104,7 @@ python setup.py install
 
 Check that the modules have been installed successfully.
 
-```sh
+```bash
 python -c "import atsd_client, pandas, requests, dateutil"
 ```
 
@@ -120,13 +120,13 @@ ImportError: No module named atsd_client
 
 Execute `pip install` command to upgrade the client to the latest version.
 
-```sh
+```bash
 pip install atsd_client --upgrade --upgrade-strategy only-if-needed
 ```
 
 Run `pip list` to view the currently installed modules.
 
-```sh
+```bash
 pip list
 ```
 
@@ -157,7 +157,7 @@ build_info = response['buildInfo']
 print('Revision: %s ' % build_info['revisionNumber'])
 ```
 
-```sh
+```bash
 python connect_url_check.py
 ```
 
@@ -281,7 +281,7 @@ from atsd_client.models import Message
 
 message = Message(entity='nurswgvml007', type="application", source="atsd", severity="MAJOR",
                   tags={"path": "/", "name": "sda"},
-                  message="NURSWGVML007 ssh: error: connect_to localhost port 8881: failed.")
+                  message="connect_to localhost port 8881 failed.")
 ms.insert(message)  # ms = MessageService(conn)
 ```
 
@@ -418,7 +418,7 @@ source: atsd
 date: 2018-05-21 15:42:04.452000+03:00
 severity: MAJOR
 tags: {}
-message: NURSWGVML007 ssh: error: connect_to localhost port 8881: failed.
+message: connect_to localhost port 8881 failed.
 persist: True
 ```
 
@@ -432,7 +432,7 @@ Refer to [API documentation](https://axibase.com/docs/atsd/api/data/messages/que
 
 Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manipulation and analysis.
 
-```sh
+```bash
 pip install pandas
 ```
 
@@ -585,7 +585,7 @@ print(result[0])
 
 Some of the examples above use the `prettytable` module to format displayed records.
 
-```sh
+```bash
 pip install prettytable
 # pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
 ```
