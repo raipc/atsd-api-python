@@ -54,7 +54,7 @@ Copy the `modules` directory from the intermediate server to the target server.
 
 Log in to the target server where the ATSD client is being installed.
 
-Copy module files to a user module directory. The directory is located at $(python -m site --user-site):
+Copy module files to a user module directory. The directory is located at `python -m site --user-site`:
 
 ```sh
 mkdir -p $(python -m site --user-site) && cd modules && mv $(ls --hide=*.tar.gz) -t $(python -m site --user-site)
@@ -66,7 +66,7 @@ Install other modules from sources:
 pip install $(ls)
 ```
 
-Check that the modules have been installed successfully.
+Check that the modules have been installed successfully:
 
 ```sh
 python -c "import tzlocal, pandas, requests, dateutil, atsd_client"
