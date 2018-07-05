@@ -105,7 +105,7 @@ python setup.py install
 Check that the modules have been installed successfully.
 
 ```bash
-python -c "import atsd_client, pandas, requests, dateutil"
+python -c "import tzlocal, pandas, requests, dateutil, atsd_client"
 ```
 
 The output is **empty** if all modules are installed correctly. Otherwise, an error is displayed showing which modules are missing.
@@ -174,15 +174,15 @@ Establish a connection with the `connect_url` method.
 
 ```python
 from atsd_client import connect_url
-connection = connect_url('https://atsd_hostname:8443', 'usr', 'passwd')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 ```
 
 Alternatively, create a `connection.properties` file.
 
 ```elm
 base_url=https://atsd_hostname:8443
-username=usr
-password=passwd
+username=username
+password=password
 ssl_verify=False
 ```
 
