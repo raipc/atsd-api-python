@@ -622,7 +622,7 @@ class SQLService(_Service):
 
 # ------------------------------------------------------------------------------ COMMANDS
 class CommandsService(_Service):
-    def send_commands(self, commands):
+    def send_commands(self, commands, commit=False):
         """Send a command or a batch of commands in Network API syntax via /api/v1/command
 
         :param commands: `str` | `list`
@@ -630,8 +630,9 @@ class CommandsService(_Service):
         """
         if type(commands) is not list: commands = [commands]
         data = '\n'.join(commands)
+        url = commands_url + "/commit=" + commit
         response = self.conn.post_plain_text(commands_url, data)
-        return True
+        return response
 
 
 def encode_if_required(name):
