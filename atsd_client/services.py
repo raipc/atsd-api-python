@@ -622,16 +622,20 @@ class SQLService(_Service):
 
 # ------------------------------------------------------------------------------ COMMANDS
 class CommandsService(_Service):
-    def send_commands(self, commands):
+    def send_commands(self, commands, commit=False):
         """Send a command or a batch of commands in Network API syntax via /api/v1/command
 
         :param commands: `str` | `list`
-        :return: True if success
+        :param commit: `bool` If True store the commands synchronously and return "stored" field in the response JSON.
+        Default: False.
+        :return: JSON with "fail","success" and "total" fields
         """
         if type(commands) is not list: commands = [commands]
         data = '\n'.join(commands)
-        response = self.conn.post_plain_text(commands_url, data)
-        return True
+        commit = 'true' if commit else 'false'
+        url = commands_url + "?commit=" + commit
+        response = self.conn.post_plain_text(url, data)
+        return response
 
 
 def encode_if_required(name):

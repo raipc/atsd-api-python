@@ -148,7 +148,7 @@ Create a `connect_url_check.py` file with a basic connection test.
 from atsd_client import connect_url
 
 # Update connection properties and user credentials
-connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'passwd')
+connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
 
 # Retrieve JSON from /api/v1/version endpoint
 # https://axibase.com/docs/atsd/api/meta/misc/version.html
@@ -222,6 +222,7 @@ Available services:
 - [`EntitiesService`](./atsd_client/services.py#L322)
 - [`EntityGroupsService`](./atsd_client/services.py#L423)
 - [`SQLService`](./atsd_client/services.py#L577)
+- [`CommandsService`](./atsd_client/services.py#L624)
 
 ## Models
 
