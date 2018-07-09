@@ -626,12 +626,15 @@ class CommandsService(_Service):
         """Send a command or a batch of commands in Network API syntax via /api/v1/command
 
         :param commands: `str` | `list`
-        :return: True if success
+        :param commit: `bool` If True store the commands synchronously and return "stored" field in the response JSON.
+        Default: False.
+        :return: JSON with "fail","success" and "total" fields
         """
         if type(commands) is not list: commands = [commands]
         data = '\n'.join(commands)
-        url = commands_url + "/commit=" + commit
-        response = self.conn.post_plain_text(commands_url, data)
+        commit = 'true' if commit else 'false'
+        url = commands_url + "?commit=" + commit
+        response = self.conn.post_plain_text(url, data)
         return response
 
 
