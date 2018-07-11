@@ -96,7 +96,7 @@ class TestMessageService(ServiceTestBase):
 
         exp = "message LIKE '* expression'"
         ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(start_date=DATE, end_date=datetime.now())
+        df = DateFilter(interval={"count": 5, "unit": "MINUTE"}, end_date=datetime.now())
         query = MessageQuery(entity_filter=ef, date_filter=df, expression=exp)
         result = self.ms.query(query)
 
