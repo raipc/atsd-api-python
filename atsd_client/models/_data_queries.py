@@ -762,7 +762,7 @@ class MessageQuery():
     """
 
     def __init__(self, entity_filter, date_filter, type=None, source=None, tags=None, severity=None, severities=None,
-                 min_severity=None, limit=None):
+                 min_severity=None, limit=None, expression=None):
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
         self.type = type
@@ -772,6 +772,7 @@ class MessageQuery():
         self.severities = severities
         self.minSeverity = min_severity
         self.limit = 1000 if limit is None else limit
+        self.expression = expression
 
     def set_entity_filter(self, value):
         copy_not_empty_attrs(value, self)
@@ -799,3 +800,6 @@ class MessageQuery():
 
     def set_limit(self, value):
         self.limit = value
+
+    def set_expression(self, value):
+        self.expression = value
