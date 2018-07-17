@@ -34,13 +34,13 @@ class BaseModel(object):
     """
 
     def __repr__(self):
-        result = '\n'
+        result = ['\n']
         for key, value in six.iteritems(vars(self)):
             if value is not None:
                 if isinstance(value, dict):
                     value = print_tags(value)
-                result += '{0}: {1}\n'.format(key[1:] if key.startswith('_') else key, value)
-        return result
+                result.append('{0}: {1}'.format(key[1:] if key.startswith('_') else key, value))
+        return '\n'.join(result)
 
     def to_dict(self):
         result = {}
