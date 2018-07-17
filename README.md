@@ -523,6 +523,7 @@ print(result[0])
 ```
 
 <!-- markdownlint-disable MD107 -->
+
 ```txt
               time         value   version_source   version_status
 1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
