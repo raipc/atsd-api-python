@@ -39,6 +39,7 @@ class ServerException(Exception):
                + ', content: ' + repr(self.content) \
                + ', message: ' + repr(self.msg)
 
+
 class SQLException(ServerException):
     def __init__(self, status_code, content, query=''):
         super(SQLException, self).__init__(status_code, SQLException.extract_reason(content),

@@ -230,12 +230,12 @@ The services can be used to insert and query particular type of records in the d
 
 ### Data Models
 
-- [`Series`](./atsd_client/models/_data_models.py#L117)
-- [`Sample`](./atsd_client/models/_data_models.py#L31)
-- [`Property`](./atsd_client/models/_data_models.py#L346)
-- [`Message`](./atsd_client/models/_data_models.py#L776)
-- [`Alert`](./atsd_client/models/_data_models.py#L434)
-- [`AlertHistory`](./atsd_client/models/_data_models.py#L591)
+- [`Series`](./atsd_client/models/_data_models.py#L142)
+- [`Sample`](./atsd_client/models/_data_models.py#L56)
+- [`Property`](./atsd_client/models/_data_models.py#L371)
+- [`Message`](./atsd_client/models/_data_models.py#L789)
+- [`Alert`](./atsd_client/models/_data_models.py#L447)
+- [`AlertHistory`](./atsd_client/models/_data_models.py#L604)
 
 ### Meta Models
 
@@ -294,7 +294,7 @@ When querying series from the database, you need to pass the following filters t
 
 - [`SeriesFilter`](./atsd_client/models/_data_queries.py#L267) requires specifying the metric name. You can also include data type (history or forecast), series tags, and other parameters.
 - [`EntityFilter`](./atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-- [`DateFilter`](./atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
+- [`DateFilter`](./atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html), an ISO 8601 formatted string, Unix milliseconds, or a Python datetime object.
 
 ```python
 from atsd_client.models import *
@@ -355,6 +355,8 @@ df = svc.query(query)
 print(df)
 ```
 
+<!-- markdownlint-disable MD107 -->
+
 ```txt
                    datetime           time entity      value
 0  2018-05-17T12:36:36.971Z  1526560596971   atsd  795763936
@@ -362,12 +364,14 @@ print(df)
 2  2018-05-17T12:36:06.973Z  1526560566973   atsd  785932984
 ```
 
+<!-- markdownlint-enable MD107 -->
+
 ### Querying Properties
 
 To retrieve property records from the database, you need to specify the property `type` name and pass the following filters to the `PropertiesService`:
 
 - [`EntityFilter`](./atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-- [`DateFilter`](./atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
+- [`DateFilter`](./atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html), an ISO 8601 formatted string, Unix milliseconds, or a Python datetime object.
 
 ```python
 from atsd_client.models import *
@@ -398,7 +402,7 @@ Refer to [API documentation](https://axibase.com/docs/atsd/api/data/properties/q
 To query messages from the database, you need to specify the following filters for the `PropertiesService`:
 
 - [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-- [`DateFilter`](atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html), an ISO 8601 formatted string, UNIX milliseconds, or a Python datetime object.
+- [`DateFilter`](atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html), an ISO 8601 formatted string, Unix milliseconds, or a Python datetime object.
 
 ```python
 from atsd_client.models import *
@@ -447,13 +451,34 @@ print(ts)
 ```
 
 ```txt
-    2018-04-10 17:22:24.048000    11
-    2018-04-10 17:23:14.893000    31
-    2018-04-10 17:24:49.058000     7
-    2018-04-10 17:25:15.567000    22
-    2018-04-13 14:00:49.285000     9
-    2018-04-13 15:00:38            3
+2018-04-10 17:22:24.048000    11
+2018-04-10 17:23:14.893000    31
+2018-04-10 17:24:49.058000     7
+2018-04-10 17:25:15.567000    22
+2018-04-13 14:00:49.285000     9
+2018-04-13 15:00:38            3
 ```
+
+To convert list of Message or Property objects to DataFrame apply `to_dict()` method for each object.
+
+```python
+import pandas as pd
+pd.set_option("display.expand_frame_repr", False)
+
+messages = message_service.query(query)
+print(pd.DataFrame([m.to_dict() for m in messages], columns=['entity', 'date', 'message']))
+```
+
+<!-- markdownlint-disable MD107 -->
+
+```txt
+         entity                             date                                            message
+0  nurswgvml007 2018-07-17 18:49:24.749000+03:00  Scanned 0 directive(s) and 0 block(s) in 0 mil...
+1  nurswgvml007 2018-07-17 18:48:24.790000+03:00  Scanned 0 directive(s) and 0 block(s) in 0 mil...
+2  nurswgvml007 2018-07-17 18:48:16.129000+03:00                Indexing started, type: incremental
+```
+
+<!-- markdownlint-enable MD107 -->
 
 ### Graph Results
 
@@ -497,16 +522,19 @@ result = svc.query(query_data)
 print(result[0])
 ```
 
- ```txt
-               time         value   version_source   version_status
-    1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
-    1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
-    1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
-    1468868308000.0           1.0      TEST_SOURCE      TEST_STATUS
-    1468868364000.0          15.0      TEST_SOURCE      TEST_STATUS
-    1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
-    1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
+<!-- markdownlint-disable MD107 -->
+```txt
+              time         value   version_source   version_status
+1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
+1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
+1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
+1468868308000.0           1.0      TEST_SOURCE      TEST_STATUS
+1468868364000.0          15.0      TEST_SOURCE      TEST_STATUS
+1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
+1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
 ```
+
+<!-- markdownlint-enable MD107 -->
 
 ## Examples
 
