@@ -28,6 +28,31 @@ from ..utils import print_tags
 
 
 # ------------------------------------------------------------------------------
+class BaseModel(object):
+    """
+    Base class for Message and Property models.
+    """
+
+    def __repr__(self):
+        result = ['\n']
+        for key, value in six.iteritems(vars(self)):
+            if value is not None:
+                if isinstance(value, dict):
+                    value = print_tags(value)
+                result.append('{0}: {1}'.format(key[1:] if key.startswith('_') else key, value))
+        return '\n'.join(result)
+
+    def to_dict(self):
+        result = {}
+        for key, value in six.iteritems(vars(self)):
+            if value is not None:
+                if isinstance(value, dict):
+                    value = print_tags(value)
+                result[key[1:] if key.startswith('_') else key] = value
+        return result
+
+
+# ------------------------------------------------------------------------------
 class Sample(object):
     """
     Class that represents a numeric value observed at some time with an optional annotation and versioning fields. If
@@ -343,7 +368,7 @@ class Series(object):
 
 
 # ------------------------------------------------------------------------------
-class Property(object):
+class Property(BaseModel):
     """
     Class representing a property record which contains keys and tags of string type.
     Properties represent metadata describing entities, such as device model, OS version, and location. 
@@ -367,18 +392,6 @@ class Property(object):
         #: `dict` of entity and metric objects
         if meta is not None:
             self._meta = {'entity': deserialize(meta['entity'], Entity)}
-
-    def __repr__(self):
-        result = '\n'
-        for k, value in six.iteritems(vars(self)):
-            attr = getattr(self, k)
-            if attr is not None:
-                if isinstance(attr, dict):
-                    result += '{0}: {1}\n'.format(k[len('_'):], print_tags(attr))
-                else:
-                    result += '{0}: {1}\n'.format(k[len('_'):], attr)
-
-        return result
 
     @property
     def type(self):
@@ -773,7 +786,7 @@ class AlertHistory(object):
 
 
 # ------------------------------------------------------------------------------
-class Message(object):
+class Message(BaseModel):
     """
     Class representing a Message.
     Messages are events collected from system logs and messaging systems.
@@ -800,18 +813,6 @@ class Message(object):
         self._message = message
         #: `bool`
         self._persist = persist
-
-    def __repr__(self):
-        result = '\n'
-        for k, value in six.iteritems(vars(self)):
-            attr = getattr(self, k)
-            if attr is not None:
-                if isinstance(attr, dict):
-                    result += '{0}: {1}\n'.format(k[len('_'):], print_tags(attr))
-                else:
-                    result += '{0}: {1}\n'.format(k[len('_'):], attr)
-
-        return result
 
     # Getters and setters
     @property

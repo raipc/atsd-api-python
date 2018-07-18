@@ -76,8 +76,6 @@ class TestMessageService(ServiceTestBase):
         self.assertEqual(msg.type, m.type)
         self.assertEqual(msg.source, m.source)
         self.assertEqual(msg.entity, m.entity)
-        # Uncomment when JodaTime is replaced
-        # self.assertEqual(msg.date, m.date)
         self.assertEqual(msg.severity, m.severity)
         self.assertEqual(msg.tags, m.tags)
         self.assertEqual(msg.message, m.message)

@@ -64,14 +64,8 @@ class TestPropertiesService(ServiceTestBase):
         self.assertIsNotNone(result)
         self.assertGreater(len(result), 0)
         p = result[0]
-        """
-        In the future can be replaced with:
-        self.assertItemsEqual(prop.__dict__.items(), p.__dict__.items())
-        """
         self.assertIsInstance(p, Property)
         self.assertEqual(prop.type, p.type)
         self.assertEqual(prop.entity, p.entity)
-        # Uncomment when JodaTime is replaced
-        # self.assertEqual(prop.date, p.date)
         self.assertEqual(prop.key, p.key)
         self.assertEqual(prop.tags, p.tags)
