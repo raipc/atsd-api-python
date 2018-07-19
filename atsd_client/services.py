@@ -15,7 +15,7 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-from . import _jsonutil
+from . import _jsonutil, utils
 from ._client import Client
 from ._constants import *
 from ._time_utilities import to_iso
@@ -32,6 +32,9 @@ except ImportError:
     from urllib.parse import urlencode
 
 import six
+import pandas as pd
+
+pd.set_option("display.expand_frame_repr", False)
 
 
 def _check_name(name):
@@ -46,6 +49,26 @@ class _Service(object):
         if not isinstance(conn, Client):
             raise ValueError('conn must be Client instance')
         self.conn = conn
+
+    def get_query_url(self):
+        raise NotImplementedError("Implement get_query_url method")
+
+    def query_to_pandas(self, *queries, **params):
+        """Retrieve Messages and Property records as DataFrame
+
+        :param queries: :class:`.MessageQuery` | `.PropertiesQuery`
+        :param params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
+        :return: `list` of :class:`.Message` | `.Property` objects
+        """
+        query_url = self.get_query_url()
+        resp = self.conn.post(query_url, queries)
+        enc_resp = []
+        for el in resp:
+            el.update({'tags': utils.print_tags(el['tags'])})
+            if 'key' in el:
+                el.update({'key': utils.print_tags(el['key'])})
+            enc_resp.append(el)
+        return pd.DataFrame(enc_resp, **params)
 
 
 # ------------------------------------------------------------------------ SERIES
@@ -143,6 +166,9 @@ class PropertiesService(_Service):
         response = self.conn.post(properties_delete_url, filters)
         return True
 
+    def get_query_url(self):
+        return properties_query_url
+
 
 # ------------------------------------------------------------------------ ALERTS
 class AlertsService(_Service):
@@ -202,6 +228,9 @@ class MessageService(_Service):
         """
         resp = self.conn.post(messages_query_url, queries)
         return _jsonutil.deserialize(resp, Message)
+
+    def get_query_url(self):
+        return messages_query_url
 
     def statistics(self, *params):
         """
@@ -586,8 +615,6 @@ class SQLService(_Service):
         :param sql_query: `str`
         :return: :class:`.DataFrame` object
         """
-        import pandas as pd
-        pd.set_option("display.expand_frame_repr", False)
         response = self.query_with_params(sql_query)
         return pd.read_csv(StringIO(response), sep=',')
 
