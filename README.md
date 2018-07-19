@@ -228,17 +228,12 @@ Available services:
 
 The services can be used to insert and query particular type of records in the database which are implemented as Python classes for convenience.
 
-### Data Models
-
 - [`Series`](./atsd_client/models/_data_models.py#L142)
 - [`Sample`](./atsd_client/models/_data_models.py#L56)
 - [`Property`](./atsd_client/models/_data_models.py#L371)
 - [`Message`](./atsd_client/models/_data_models.py#L789)
 - [`Alert`](./atsd_client/models/_data_models.py#L447)
 - [`AlertHistory`](./atsd_client/models/_data_models.py#L604)
-
-### Meta Models
-
 - [`Metric`](./atsd_client/models/_meta_models.py#L53)
 - [`Entity`](./atsd_client/models/_meta_models.py#L291)
 - [`EntityGroup`](./atsd_client/models/_meta_models.py#L390)
@@ -270,7 +265,9 @@ from atsd_client.models import Property
 property = Property(type='disk', entity='nurswgvml007',
                     key={"mount_point": "sda1"},
                     tags={"fs_type": "ext4"})
-ps.insert(property) # ps = PropertiesService(conn)
+
+svc = PropertiesService(conn)
+svc.insert(property)
 ```
 
 ### Inserting Messages
@@ -283,7 +280,9 @@ from atsd_client.models import Message
 message = Message(entity='nurswgvml007', type="application", source="atsd", severity="MAJOR",
                   tags={"path": "/", "name": "sda"},
                   message="connect_to localhost port 8881 failed.")
-ms.insert(message)  # ms = MessageService(conn)
+
+svc = MessageService(conn)
+svc.insert(message)
 ```
 
 ## Querying Data
@@ -303,6 +302,7 @@ sf = SeriesFilter(metric="temperature")
 ef = EntityFilter(entity="sensor123")
 df = DateFilter(start_date="2018-02-22T13:37:00Z", end_date=datetime.now())
 query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
+svc = SeriesService(conn)
 result = svc.query(query_data)
 
 # print first Series object
@@ -379,7 +379,8 @@ from atsd_client.models import *
 ef = EntityFilter(entity="nurswgvml007")
 df = DateFilter(start_date="today", end_date="now")
 query = PropertiesQuery(type="disk", entity_filter=ef, date_filter=df)
-result = ps.query(query)  # ps = PropertiesService(conn)
+svc = PropertiesService(conn)
+result = svc.query(query)
 
 # print first Property object
 print(result[0])
@@ -390,7 +391,7 @@ type: disk
 entity: nurswgvml007
 key: {}
 tags: {u'fs_type': u'ext4'}
-date: 2018-05-21 14:46:42.728000+03:00
+date: 2018-05-21 14:46:42.728000+00:00
 ```
 
 It is possible to use additional property filter fields in [PropertiesQuery](./atsd_client/models/_data_queries.py#L588), for example, `key` and `key_tag_expression`.
@@ -399,35 +400,37 @@ Refer to [API documentation](https://axibase.com/docs/atsd/api/data/properties/q
 
 ### Querying Messages
 
-To query messages from the database, you need to specify the following filters for the `PropertiesService`:
+To query messages, initialize a `MessageQuery` object and pass it to the `MessageService` with the following filters:
 
-- [`EntityFilter`](atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-- [`DateFilter`](atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. The `startDate` and `endDate` fields can be provided either as keywords from [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html), an ISO 8601 formatted string, Unix milliseconds, or a Python datetime object.
+- [`EntityFilter`](atsd_client/models/_data_queries.py#L126) containing a specific entity name, multiple entity names, entity group name or entity filter expression.
+- [`DateFilter`](atsd_client/models/_data_queries.py#L162) consisting of `startDate`, `endDate`, and `interval` fields. At least two of these fields are required to establish a specific time range. The `startDate` and `endDate` fields can be set as a Python datetime object, a [calendar keyword](https://axibase.com/docs/atsd/shared/calendar.html), a literal date string in ISO 8601 format, or as UNIX milliseconds.
+- Additional [filter](./atsd_client/models/_data_queries.py#L743) fields: `type`, `source`, `severity`, and `tags`. To select records with a non-empty value for the given tag, set the filter value to `*` wildcard.
 
 ```python
 from atsd_client.models import *
 
 ef = EntityFilter(entity="nurswgvml007")
 df = DateFilter(start_date="today", end_date="now")
-query = MessageQuery(entity_filter=ef, date_filter=df)
-result = ms.query(query)  # ms = MessageService(conn)
+query = MessageQuery(entity_filter=ef, date_filter=df, type="application", tags={"syslog": "*"}, limit=1000)
+svc = MessageService(conn)
+messages = svc.query(query)
 
-# print first Message object
-print(result[0])
+print("received messages: ", len(messages))
+
+for msg in messages:
+  print(msg)
 ```
 
 ```txt
 entity: nurswgvml007
 type: application
 source: atsd
-date: 2018-05-21 15:42:04.452000+03:00
+date: 2018-05-21 15:42:04.452000+00:00
 severity: MAJOR
-tags: {}
+tags: {u'syslog': u'ssh'}
 message: connect_to localhost port 8881 failed.
 persist: True
 ```
-
-It is possible to use additional message filter fields in [MessageQuery](./atsd_client/models/_data_queries.py#L743), for example, `type`, `source` and `severity`.
 
 Refer to [API documentation](https://axibase.com/docs/atsd/api/data/messages/query.html) for additional details.
 
@@ -459,7 +462,7 @@ print(ts)
 2018-04-13 15:00:38            3
 ```
 
-To convert list of Message or Property objects to DataFrame apply `to_dict()` method for each object.
+To convert a list of Message or Property objects to a DataFrame apply `to_dict()` method for each object.
 
 ```python
 import pandas as pd
