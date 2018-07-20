@@ -45,7 +45,7 @@ The client supports the following versions of Python:
 
 ### Installing Module with `pip`
 
-Install `atsd_client` module using [`pip`](https://pip.pypa.io/en/stable/).
+Install `atsd_client` module with [`pip`](https://pip.pypa.io/en/stable/).
 
 > If necessary, install `pip` with `apt-get install python-pip` on Ubuntu.
 
@@ -108,7 +108,7 @@ Check that modules are installed.
 python -c "import tzlocal, pandas, requests, dateutil, atsd_client"
 ```
 
-An **empty** output corresponds to a successful installation. Otherwise, the output displays an error describing missing modules.
+An **empty** output corresponds to a successful installation. Otherwise, the output displays an error which enumerates missing modules.
 
 ```python
 Traceback (most recent call last):
@@ -195,7 +195,7 @@ connection = connect('/path/to/connection.properties')
 
 ## Logging
 
-Logging to `stdout` is **enabled** by default. To disable logging, append the `logger.disabled` setting the `logging` method.
+Logging to `stdout` is **enabled** by default. To disable logging, append the `logger.disabled` parameter to the script.
 
 ```python
 import logging
@@ -289,11 +289,11 @@ svc.insert(message)
 
 ### Querying Series
 
-When querying series in the database, pass the following filters to the `SeriesService`:
+To query series in the database, pass the following filters to the `SeriesService`:
 
-* [`SeriesFilter`](./atsd_client/models/_data_queries.py#L267): Requires specifying the metric name. Alternatively, include data type, series tags, and other parameters.
-* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Set by providing one or more entity names for entity groups or expressions.
-* [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
+* [`SeriesFilter`](./atsd_client/models/_data_queries.py#L267): Defines the metric name. Alternatively, include data type, series tags, and other parameters.
+* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Provides one or more entity names for entity groups or expressions.
+* [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Specifies `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
 
 ```python
 from atsd_client.models import *
@@ -370,8 +370,8 @@ print(df)
 
 To retrieve property records from the database, specify the property `type` name and pass the following filters to the `PropertiesService`:
 
-* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126) can be set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-* [`DateFilter`](./atsd_client/models/_data_queries.py#L162) can be set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
+* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
+* [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
 
 ```python
 from atsd_client.models import *
@@ -402,8 +402,8 @@ Optionally use additional property filter fields in [`PropertiesQuery`](./atsd_c
 
 To query messages, initialize a `MessageQuery` object and pass it to the `MessageService` with the following filters:
 
-* [`EntityFilter`](atsd_client/models/_data_queries.py#L126) containing a specific entity name, multiple entity names, entity group name or entity filter expression.
-* [`DateFilter`](atsd_client/models/_data_queries.py#L162) consisting of `startDate`, `endDate`, and `interval` fields. At least two of these fields are required to establish a specific time range. Set `startDate` and `endDate` fields as a Python `datetime` object, a [calendar keyword](https://axibase.com/docs/atsd/shared/calendar.html), a literal date string in ISO 8601 format, or Unix milliseconds.
+* [`EntityFilter`](atsd_client/models/_data_queries.py#L126) which contains a specific entity name, multiple entity names, entity group name or entity filter expression.
+* [`DateFilter`](atsd_client/models/_data_queries.py#L162) which consists of `startDate`, `endDate`, and `interval` fields. At least two of these fields are required to establish a specific time range. Set `startDate` and `endDate` fields as a Python `datetime` object, a [calendar keyword](https://axibase.com/docs/atsd/shared/calendar.html), a literal date string in ISO 8601 format, or Unix milliseconds.
 * Additional [filter](./atsd_client/models/_data_queries.py#L743) fields: `type`, `source`, `severity`, and `tags`. To select records with a non-empty value for the given tag, set the filter value to `*` wildcard.
 
 ```python
@@ -497,7 +497,7 @@ To plot a series with `matplotlib`, use the `plot()` function:
 
 Versioning enables keeping track of value changes. See [Versioning Documentation](https://axibase.com/docs/atsd/versioning/) for more information.
 
-Enable versioning for specific metrics and add optional versioning fields to Samples using the `version` argument.
+Enable versioning for specific metrics and add optional versioning fields to samples which contain the `version` argument.
 
 ```python
 from datetime import datetime
@@ -552,9 +552,9 @@ print(result[0])
 
 |**Name**| **Description**|
 |:---|:---|
-|[`connect_url_check.py`](./examples/connect_url_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect_url('https://atsd_hostname:8443', 'user', 'password')` function. |
-|[`connect_path_check.py`](./examples/connect_path_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect(/home/axibase/connection.properties)` function. |
-|[`connect_check.py`](./examples/connect_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time using `connect()` function. |
+|[`connect_url_check.py`](./examples/connect_url_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time with the `connect_url('https://atsd_hostname:8443', 'user', 'password')` function. |
+|[`connect_path_check.py`](./examples/connect_path_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time with the `connect(/home/axibase/connection.properties)` function. |
+|[`connect_check.py`](./examples/connect_check.py) | Connect to the target ATSD instance, retrieve the database version, timezone and current time with the `connect()` function. |
 
 ### Inserting Records
 
@@ -569,22 +569,22 @@ print(result[0])
 |[`find_broken_retention.py`](./examples/find_broken_retention.py)| Find series that ignore metric retention days. |
 |[`metrics_without_last_insert.py`](./examples/metrics_without_last_insert.py) | Find metrics without a last insert date. |
 |[`entities_without_last_insert.py`](./examples/entities_without_last_insert.py) | Find entities without a last insert date. |
-|[`find_series_by_value_filter.py`](./examples/find_series_by_value_filter.py)|Retrieve versioned series using value filter to discard the deleted values.|
+|[`find_series_by_value_filter.py`](./examples/find_series_by_value_filter.py)|Retrieve versioned series with value filter to discard the deleted values.|
 |[`find_lagging_series_for_entity_expression.py`](./examples/find_lagging_series_by_entity_expression.py) | Find series for matching entities that have not been updated for more than one day. |
 |[`find_lagging_series_for_entity.py`](./examples/find_lagging_series_by_entity.py) | Find series for the specified entity that have not been updated for more than one day. |
 |[`find_lagging_series_for_metric.py`](./examples/find_lagging_series_by_metric.py) | Find series for the specified metric that have not been updated for more than one day. |
-|[`find_lagging_series.py`](./examples/find_lagged_series.py) | Find series with last insert date lagging the maximum last insert date by more than specified grace interval.  |
+|[`find_lagging_series.py`](./examples/find_lagged_series.py) | Find series with last insert date which lag behind the maximum last insert date by more than specified grace interval.  |
 |[`high_cardinality_series.py`](./examples/high_cardinality_series.py) | Find series with excessive tag combinations. |
 |[`high_cardinality_metrics.py`](./examples/high_cardinality_metrics.py) | Find metrics with series that have too many tag combinations. |
 |[`find_lagging_entities.py`](./examples/find_lagging_entities.py) | Find entities that match the specified expression filter which no longer collect data. |
-|[`find_stale_agents.py`](./examples/find_staling_agents.py) | Find entities no longer collecting data for a subset metrics.|
+|[`find_stale_agents.py`](./examples/find_staling_agents.py) | Find entities which no longer collect data for a subset metrics.|
 |[`metrics_created_later_than.py`](./examples/metrics_created_later_than.py) | Find metrics created after the specified date. |
 |[`entities_created_later_than.py`](./examples/entities_created_later_than.py) | Find entities created after the specified date. |
 |[`find_delayed_entities.py`](./examples/find_delayed_entities.py) | Find entities more than `N` hours behind the metric `last_insert_date`. |
 |[`series_statistics.py`](./examples/series_statistics.py) | Retrieve series for a given metric, for each series fetch first and last value. |
 |[`frequency_violate.py`](./examples/frequency_violate.py) | Print values that violate metric frequency. |
 |[`migration.py`](./examples/migration.py) | Compare series query responses before and after ATSD migration. |
-|[`data-availability.py`](./examples/data-availability.py) | Monitor availability of data using predefined CSV. |
+|[`data-availability.py`](./examples/data-availability.py) | Monitor availability of data for parameters defined in [`data-availability.csv`](./examples/data-availability.csv). |
 
 ### Data Manipulation
 
