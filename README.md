@@ -214,15 +214,15 @@ svc = SeriesService(conn)
 
 Available services:
 
-- [`SeriesService`](./atsd_client/services.py#L52)
-- [`PropertiesService`](./atsd_client/services.py#L103)
-- [`MessageService`](./atsd_client/services.py#L187)
-- [`AlertsService`](./atsd_client/services.py#L148)
-- [`MetricsService`](./atsd_client/services.py#L218)
-- [`EntitiesService`](./atsd_client/services.py#L322)
-- [`EntityGroupsService`](./atsd_client/services.py#L423)
-- [`SQLService`](./atsd_client/services.py#L577)
-- [`CommandsService`](./atsd_client/services.py#L624)
+- [`SeriesService`](./atsd_client/services.py#L77)
+- [`PropertiesService`](./atsd_client/services.py#L128)
+- [`MessageService`](./atsd_client/services.py#L176)
+- [`AlertsService`](./atsd_client/services.py#L215)
+- [`MetricsService`](./atsd_client/services.py#L249)
+- [`EntitiesService`](./atsd_client/services.py#L354)
+- [`EntityGroupsService`](./atsd_client/services.py#L455)
+- [`SQLService`](./atsd_client/services.py#L613)
+- [`CommandsService`](./atsd_client/services.py#L655)
 
 ## Models
 
@@ -314,7 +314,7 @@ print(result[0])
 2018-07-18T17:16:30+00:00             2
 metric: temperature
 entity: sensor123
-tags: {}
+tags: tz=local
 ```
 
 Optional filters:
@@ -458,7 +458,7 @@ print(ts)
 2018-04-13 15:00:38            3
 ```
 
-To retrieve `Message` and `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_to_pandas`](./atsd_client/services.py#L55) method:
+To retrieve `Message` and `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_pandas_dataframe`](./atsd_client/services.py#L53) method:
 
 ```python
 messages = svc.query_to_pandas(query, columns=['entity', 'date', 'message'])

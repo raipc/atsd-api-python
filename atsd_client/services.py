@@ -32,9 +32,6 @@ except ImportError:
     from urllib.parse import urlencode
 
 import six
-import pandas as pd
-
-pd.set_option("display.expand_frame_repr", False)
 
 
 def _check_name(name):
@@ -53,7 +50,7 @@ class _Service(object):
     def get_query_url(self):
         raise NotImplementedError("Implement get_query_url method")
 
-    def query_to_pandas(self, *queries, **params):
+    def query_pandas_dataframe(self, *queries, **params):
         """Retrieve Messages and Property records as DataFrame
 
         :param queries: :class:`.MessageQuery` | `.PropertiesQuery`
@@ -71,6 +68,8 @@ class _Service(object):
             if 'key' in el:
                 el.update({'key': utils.print_tags(el['key'])})
             enc_resp.append(el)
+        import pandas as pd
+        pd.set_option("display.expand_frame_repr", False)
         return pd.DataFrame(enc_resp, **params)
 
 
@@ -619,6 +618,8 @@ class SQLService(_Service):
         :return: :class:`.DataFrame` object
         """
         response = self.query_with_params(sql_query)
+        import pandas as pd
+        pd.set_option("display.expand_frame_repr", False)
         return pd.read_csv(StringIO(response), sep=',')
 
     def query_with_params(self, sql_query, params=None):
