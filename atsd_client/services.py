@@ -58,13 +58,16 @@ class _Service(object):
 
         :param queries: :class:`.MessageQuery` | `.PropertiesQuery`
         :param params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
+        :param expand_tags: `bool` If True response tags are converted to columns. Default: True
         :return: `list` of :class:`.Message` | `.Property` objects
         """
         query_url = self.get_query_url()
         resp = self.conn.post(query_url, queries)
         enc_resp = []
+        expand_tags = params.pop('expand_tags') if params.has_key('expand_tags') else True
         for el in resp:
-            el.update({'tags': utils.print_tags(el['tags'])})
+            if 'tags' in el:
+                el.update(el.pop('tags', None)) if expand_tags else el.update({'tags': utils.print_tags(el['tags'])})
             if 'key' in el:
                 el.update({'key': utils.print_tags(el['key'])})
             enc_resp.append(el)
