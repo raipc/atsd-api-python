@@ -291,9 +291,11 @@ svc.insert(message)
 
 To query series in the database, pass the following filters to the `SeriesService`:
 
+> `SeriesFilter` is **required**. Optionally use other filters to further specify series more precisely.
+
 * [`SeriesFilter`](./atsd_client/models/_data_queries.py#L267): Defines the metric name. Alternatively, include data type, series tags, and other parameters.
-* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Provides one or more entity names for entity groups or expressions.
-* [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Specifies `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
+* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Accepts a single `entity` name, an array of multiple `entity` name, an `entity group` name, or an expression to filter entities.
+* [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Specifies `startDate`, `endDate`, and `interval` fields. Provide either `startDate` and `endDate` fields **or** either `startDate` or `endDate` and `interval` **or** only `interval` to define period. If only `interval` is defined, current time is set as `endtime`. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
 
 ```python
 from atsd_client.models import *
@@ -370,8 +372,8 @@ print(df)
 
 To retrieve property records from the database, specify the property `type` name and pass the following filters to the `PropertiesService`:
 
-* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Set by providing entity name, names of multiple entities, or the name of the entity group or entity expression.
-* [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Set by specifying the `startDate`, `endDate`, or `interval` fields. Some **combination** of these parameters is required to establish a specific time range. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
+* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Accepts a single `entity` name, an array of multiple `entity` name, an `entity group` name, or an expression to filter entities.
+* [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Specifies `startDate`, `endDate`, and `interval` fields. Provide either `startDate` and `endDate` fields **or** either `startDate` or `endDate` and `interval` **or** only `interval` to define period. If only `interval` is defined, current time is set as `endtime`. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
 
 ```python
 from atsd_client.models import *
@@ -402,8 +404,8 @@ Optionally use additional property filter fields in [`PropertiesQuery`](./atsd_c
 
 To query messages, initialize a `MessageQuery` object and pass it to the `MessageService` with the following filters:
 
-* [`EntityFilter`](atsd_client/models/_data_queries.py#L126) which contains a specific entity name, multiple entity names, entity group name or entity filter expression.
-* [`DateFilter`](atsd_client/models/_data_queries.py#L162) which consists of `startDate`, `endDate`, and `interval` fields. At least two of these fields are required to establish a specific time range. Set `startDate` and `endDate` fields as a Python `datetime` object, a [calendar keyword](https://axibase.com/docs/atsd/shared/calendar.html), a literal date string in ISO 8601 format, or Unix milliseconds.
+* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Accepts a single `entity` name, an array of multiple `entity` name, an `entity group` name, or an expression to filter entities.
+* [`DateFilter`](atsd_client/models/_data_queries.py#L162): Specifies `startDate`, `endDate`, and `interval` fields. Provide either `startDate` and `endDate` fields **or** either `startDate` or `endDate` and `interval` **or** only `interval` to define period. If only `interval` is defined, current time is set as `endtime`. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
 * Additional [filter](./atsd_client/models/_data_queries.py#L743) fields: `type`, `source`, `severity`, and `tags`. To select records with a non-empty value for the given tag, set the filter value to `*` wildcard.
 
 ```python
