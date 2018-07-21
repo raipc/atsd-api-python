@@ -1,6 +1,6 @@
 # Offline Installation
 
-The document describes how ATSD Python client can be installed on a machine without internet access. The process involves downloading the client module and its dependencies to an intermediate server from which the files can be copied to the target machine.
+Install the ATSD Python Client on a machine without internet access. Download the client module and dependencies to an intermediate server and copy the files to the target machine.
 
 ## Check Version
 
@@ -52,7 +52,7 @@ Copy the `modules` directory from the intermediate server to the target server.
 
 ## Install Modules on the Target Server
 
-Log in to the target server where the ATSD client is being installed.
+Log in to the target server.
 
 Copy module files to a user module directory. The directory is located at `python -m site --user-site`:
 
@@ -66,13 +66,13 @@ Install other modules from sources:
 pip install $(ls)
 ```
 
-Check that the modules have been installed successfully:
+Check that the modules are successfully installed:
 
 ```sh
 python -c "import tzlocal, pandas, requests, dateutil, atsd_client"
 ```
 
-The output is **empty** if all modules are installed correctly. Otherwise, an error is displayed showing which modules are missing.
+An **empty** output corresponds to a successful installation. Otherwise, the output displays an error which describes missing modules.
 
 ```python
 Traceback (most recent call last):
