@@ -214,29 +214,29 @@ svc = SeriesService(conn)
 
 Available services:
 
-- [`SeriesService`](./atsd_client/services.py#L52)
-- [`PropertiesService`](./atsd_client/services.py#L103)
-- [`MessageService`](./atsd_client/services.py#L199)
-- [`AlertsService`](./atsd_client/services.py#L160)
-- [`MetricsService`](./atsd_client/services.py#L242)
-- [`EntitiesService`](./atsd_client/services.py#L347)
-- [`EntityGroupsService`](./atsd_client/services.py#L476)
-- [`SQLService`](./atsd_client/services.py#L634)
-- [`CommandsService`](./atsd_client/services.py#L676)
+* [`SeriesService`](./atsd_client/services.py#L52)
+* [`PropertiesService`](./atsd_client/services.py#L103)
+* [`MessageService`](./atsd_client/services.py#L199)
+* [`AlertsService`](./atsd_client/services.py#L160)
+* [`MetricsService`](./atsd_client/services.py#L242)
+* [`EntitiesService`](./atsd_client/services.py#L347)
+* [`EntityGroupsService`](./atsd_client/services.py#L476)
+* [`SQLService`](./atsd_client/services.py#L634)
+* [`CommandsService`](./atsd_client/services.py#L676)
 
 ## Models
 
 The services can be used to insert and query particular type of records in the database which are implemented as Python classes for convenience.
 
-- [`Series`](./atsd_client/models/_data_models.py#L133)
-- [`Sample`](./atsd_client/models/_data_models.py#L47)
-- [`Property`](./atsd_client/models/_data_models.py#L360)
-- [`Message`](./atsd_client/models/_data_models.py#L778)
-- [`Alert`](./atsd_client/models/_data_models.py#L436)
-- [`AlertHistory`](./atsd_client/models/_data_models.py#L593)
-- [`Metric`](./atsd_client/models/_meta_models.py#L53)
-- [`Entity`](./atsd_client/models/_meta_models.py#L295)
-- [`EntityGroup`](./atsd_client/models/_meta_models.py#L396)
+* [`Series`](./atsd_client/models/_data_models.py#L133)
+* [`Sample`](./atsd_client/models/_data_models.py#L47)
+* [`Property`](./atsd_client/models/_data_models.py#L360)
+* [`Message`](./atsd_client/models/_data_models.py#L778)
+* [`Alert`](./atsd_client/models/_data_models.py#L436)
+* [`AlertHistory`](./atsd_client/models/_data_models.py#L593)
+* [`Metric`](./atsd_client/models/_meta_models.py#L53)
+* [`Entity`](./atsd_client/models/_meta_models.py#L295)
+* [`EntityGroup`](./atsd_client/models/_meta_models.py#L396)
 
 ## Inserting Data
 
