@@ -214,15 +214,15 @@ svc = SeriesService(conn)
 
 Available services:
 
-- [`SeriesService`](./atsd_client/services.py#L77)
-- [`PropertiesService`](./atsd_client/services.py#L128)
-- [`MessageService`](./atsd_client/services.py#L176)
-- [`AlertsService`](./atsd_client/services.py#L215)
-- [`MetricsService`](./atsd_client/services.py#L249)
-- [`EntitiesService`](./atsd_client/services.py#L354)
-- [`EntityGroupsService`](./atsd_client/services.py#L455)
-- [`SQLService`](./atsd_client/services.py#L613)
-- [`CommandsService`](./atsd_client/services.py#L655)
+- [`SeriesService`](./atsd_client/services.py#L52)
+- [`PropertiesService`](./atsd_client/services.py#L103)
+- [`MessageService`](./atsd_client/services.py#L199)
+- [`AlertsService`](./atsd_client/services.py#L160)
+- [`MetricsService`](./atsd_client/services.py#L242)
+- [`EntitiesService`](./atsd_client/services.py#L347)
+- [`EntityGroupsService`](./atsd_client/services.py#L476)
+- [`SQLService`](./atsd_client/services.py#L634)
+- [`CommandsService`](./atsd_client/services.py#L676)
 
 ## Models
 
