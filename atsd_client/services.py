@@ -15,7 +15,7 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 
-from . import _jsonutil, utils
+from . import _jsonutil
 from ._client import Client
 from ._constants import *
 from ._time_utilities import to_iso
@@ -46,31 +46,6 @@ class _Service(object):
         if not isinstance(conn, Client):
             raise ValueError('conn must be Client instance')
         self.conn = conn
-
-    def get_query_url(self):
-        raise NotImplementedError("Implement get_query_url method")
-
-    def query_pandas_dataframe(self, *queries, **params):
-        """Retrieve Messages and Property records as DataFrame
-
-        :param queries: :class:`.MessageQuery` | `.PropertiesQuery`
-        :param params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
-        :param expand_tags: `bool` If True response tags are converted to columns. Default: True
-        :return: `list` of :class:`.Message` | `.Property` objects
-        """
-        query_url = self.get_query_url()
-        resp = self.conn.post(query_url, queries)
-        enc_resp = []
-        expand_tags = params.pop('expand_tags') if params.has_key('expand_tags') else True
-        for el in resp:
-            if 'tags' in el:
-                el.update(el.pop('tags', None)) if expand_tags else el.update({'tags': utils.print_tags(el['tags'])})
-            if 'key' in el:
-                el.update({'key': utils.print_tags(el['key'])})
-            enc_resp.append(el)
-        import pandas as pd
-        pd.set_option("display.expand_frame_repr", False)
-        return pd.DataFrame(enc_resp, **params)
 
 
 # ------------------------------------------------------------------------ SERIES
@@ -144,6 +119,18 @@ class PropertiesService(_Service):
         resp = self.conn.post(properties_query_url, queries)
         return _jsonutil.deserialize(resp, Property)
 
+    def query_dataframe(self, *queries, **frame_params):
+        """Retrieve Property records as DataFrame
+
+        :param queries: :class: `.PropertiesQuery`
+        :param frame_params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
+        :param expand_tags: `bool` If True response tags are converted to columns. Default: True
+        :return: :class:`.DataFrame`
+        """
+        resp = self.conn.post(properties_query_url, queries)
+        reserved = ['type', 'entity', 'tags', 'key', 'date']
+        return response_to_dataframe(resp, reserved, **frame_params)
+
     def type_query(self, entity):
         """Returns an array of property types for the entity.
 
@@ -167,9 +154,6 @@ class PropertiesService(_Service):
         """
         response = self.conn.post(properties_delete_url, filters)
         return True
-
-    def get_query_url(self):
-        return properties_query_url
 
 
 # ------------------------------------------------------------------------ ALERTS
@@ -231,8 +215,17 @@ class MessageService(_Service):
         resp = self.conn.post(messages_query_url, queries)
         return _jsonutil.deserialize(resp, Message)
 
-    def get_query_url(self):
-        return messages_query_url
+    def query_dataframe(self, *queries, **frame_params):
+        """Retrieve Message records as DataFrame
+
+        :param queries: :class: `.MessageQuery`
+        :param frame_params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
+        :param expand_tags: `bool` If True response tags are converted to columns. Default: True
+        :return: :class:`.DataFrame`
+        """
+        resp = self.conn.post(messages_query_url, queries)
+        reserved = ['type', 'entity', 'tags', 'source', 'date', 'message', 'severity']
+        return response_to_dataframe(resp, reserved, **frame_params)
 
     def statistics(self, *params):
         """
@@ -391,6 +384,34 @@ class EntitiesService(_Service):
             params["limit"] = limit
         resp = self.conn.get(ent_list_url, params)
         return _jsonutil.deserialize(resp, Entity)
+
+    def list_dataframe(self, expression=None, min_insert_date=None,
+                       max_insert_date=None, tags=None, limit=None, **frame_params):
+        """Retrieve a list of entities matching the specified filters as DataFrame.
+
+        :param expression: `str`
+        :param min_insert_date: `str` | `int` | :class:`datetime`
+        :param max_insert_date: `str` | `int` | :class:`datetime`
+        :param tags: `dict`
+        :param limit: `int`
+        :param frame_params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
+        :param expand_tags: `bool` If True response tags are converted to columns. Default: True
+        :return: :class:`.DataFrame`
+        """
+        params = dict()
+        if expression is not None:
+            params["expression"] = expression
+        if min_insert_date is not None:
+            params["minInsertDate"] = to_iso(min_insert_date)
+        if max_insert_date is not None:
+            params["maxInsertDate"] = to_iso(max_insert_date)
+        if tags is not None:
+            params["tags"] = tags
+        if limit is not None:
+            params["limit"] = limit
+        resp = self.conn.get(ent_list_url, params)
+        reserved = ['name', 'tags', 'enabled', 'time_zone', 'interpolate', 'label', 'created_date', 'last_insert_date']
+        return response_to_dataframe(resp, reserved, **frame_params)
 
     def update(self, entity):
         """Update the specified entity.
@@ -672,3 +693,24 @@ class CommandsService(_Service):
 def encode_if_required(name):
     name = name.encode('utf-8') if isinstance(name, six.string_types) else name
     return name
+
+
+def response_to_dataframe(resp, reserved, **frame_params):
+    expand_tags = frame_params.pop('expand_tags', True)
+    enc_resp = []
+    fields = ['tags', 'key']
+    for el in resp:
+        for field in fields:
+            dictionary = el.pop(field, None)
+            if dictionary is not None:
+                sanitized_tags = {}
+                for k in dictionary:
+                    if (expand_tags and (k in reserved)) or not expand_tags:
+                        sanitized_tags.update({'{}.{}'.format(field, k): dictionary.get(k)})
+                    else:
+                        sanitized_tags.update({k: dictionary.get(k)})
+                el.update(sanitized_tags)
+        enc_resp.append(el)
+    import pandas as pd
+    pd.set_option("display.expand_frame_repr", False)
+    return pd.DataFrame(enc_resp, **frame_params)

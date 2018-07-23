@@ -440,6 +440,8 @@ Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manip
 pip install pandas
 ```
 
+#### Series
+
 To access the `Series` object in `pandas`, use the built-in `to_pandas_series()` and `from_pandas_series()` methods.
 
 ```python
@@ -458,10 +460,29 @@ print(ts)
 2018-04-13 15:00:38            3
 ```
 
-To retrieve `Message` and `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_pandas_dataframe`](./atsd_client/services.py#L53) method:
+#### Entities
+
+To retrieve `Entity` list as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`list_dataframe`](./atsd_client/services.py#L388) method:
 
 ```python
-messages = svc.query_to_pandas(query, columns=['entity', 'date', 'message'])
+entities = svc.list_dataframe(expression="createdDate > '2018-05-16T00:00:00Z'")
+
+print(entities)
+```
+
+```txt
+                createdDate  enabled            lastInsertDate          name
+0  2018-07-12T14:52:21.599Z     True  2018-07-23T15:39:51.542Z  nurswgvml007
+1  2018-07-17T20:08:02.213Z     True  2018-07-17T20:08:04.813Z  nurswghbs001
+2  2018-07-12T14:52:21.310Z     True  2018-07-23T15:39:49.164Z          atsd
+```
+
+#### Messages
+
+To retrieve `Message` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L218) method:
+
+```python
+messages = svc.query_dataframe(query, columns=['entity', 'date', 'message'])
 
 print(messages)
 ```
@@ -471,6 +492,23 @@ print(messages)
 0  nurswgvml007 2018-07-17 18:49:24.749000+03:00  Scanned 0 directive(s) and 0 block(s) in 0 mil...
 1  nurswgvml007 2018-07-17 18:48:24.790000+03:00  Scanned 0 directive(s) and 0 block(s) in 0 mil...
 2  nurswgvml007 2018-07-17 18:48:16.129000+03:00                Indexing started, type: incremental
+```
+
+#### Properties
+
+To retrieve `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L122) method:
+
+```python
+properties = svc.query_dataframe(query)
+
+print(properties)
+```
+
+```txt
+                       date        entity    id  type  fs_type
+0  2018-07-23T15:31:03.000Z  nurswgvml007   fd0  disk     ext3
+1  2018-07-23T15:31:03.000Z  nurswgvml007   sda  disk     ext4
+2  2018-07-23T15:31:03.000Z  nurswgvml007  sda1  disk     ext4
 ```
 
 ### Graph Results
