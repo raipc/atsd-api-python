@@ -238,7 +238,6 @@ Use this service to insert and query particular types of records in the database
 * [`Entity`](./atsd_client/models/_meta_models.py#L295)
 * [`EntityGroup`](./atsd_client/models/_meta_models.py#L396)
 
-
 ## Inserting Data
 
 ### Inserting Series
