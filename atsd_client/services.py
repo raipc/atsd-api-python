@@ -128,7 +128,7 @@ class PropertiesService(_Service):
         :return: :class:`.DataFrame`
         """
         resp = self.conn.post(properties_query_url, queries)
-        reserved = ['type', 'entity', 'tags', 'key', 'date']
+        reserved = {'type', 'entity', 'tags', 'key', 'date'}
         return response_to_dataframe(resp, reserved, **frame_params)
 
     def type_query(self, entity):
@@ -224,7 +224,7 @@ class MessageService(_Service):
         :return: :class:`.DataFrame`
         """
         resp = self.conn.post(messages_query_url, queries)
-        reserved = ['type', 'entity', 'tags', 'source', 'date', 'message', 'severity']
+        reserved = {'type', 'entity', 'tags', 'source', 'date', 'message', 'severity'}
         return response_to_dataframe(resp, reserved, **frame_params)
 
     def statistics(self, *params):
@@ -410,7 +410,7 @@ class EntitiesService(_Service):
         if limit is not None:
             params["limit"] = limit
         resp = self.conn.get(ent_list_url, params)
-        reserved = ['name', 'tags', 'enabled', 'time_zone', 'interpolate', 'label', 'created_date', 'last_insert_date']
+        reserved = {'name', 'tags', 'enabled', 'time_zone', 'interpolate', 'label', 'created_date', 'last_insert_date'}
         return response_to_dataframe(resp, reserved, **frame_params)
 
     def update(self, entity):
@@ -703,12 +703,9 @@ def response_to_dataframe(resp, reserved, **frame_params):
         for field in fields:
             dictionary = el.pop(field, None)
             if dictionary is not None:
-                sanitized_tags = {}
-                for k in dictionary:
-                    if (expand_tags and (k in reserved)) or not expand_tags:
-                        sanitized_tags.update({'{}.{}'.format(field, k): dictionary.get(k)})
-                    else:
-                        sanitized_tags.update({k: dictionary.get(k)})
+                sanitized_tags = {
+                    ('{}.{}'.format(field, k) if ((expand_tags and (k in reserved)) or not expand_tags) else k): v
+                    for k, v in six.iteritems(dictionary)}
                 el.update(sanitized_tags)
         enc_resp.append(el)
     import pandas as pd
