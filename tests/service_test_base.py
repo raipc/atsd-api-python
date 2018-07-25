@@ -13,4 +13,4 @@ class ServiceTestBase(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        cls._connection.session.close()
+        cls._connection.close()

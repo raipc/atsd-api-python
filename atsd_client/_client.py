@@ -94,3 +94,6 @@ class Client(object):
 
     def delete(self, path):
         return self._request('DELETE', path)
+
+    def close(self):
+        self.session.close()
