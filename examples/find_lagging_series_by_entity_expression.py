@@ -10,7 +10,7 @@ Locate series that have no data during the actual time interval (grace_interval)
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # set grace_interval to one day
 grace_interval_minutes = 24 * 60

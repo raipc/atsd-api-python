@@ -42,7 +42,7 @@ time_format = '%d-%m-%Y %H:%M:%S'
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Initialize services
 entities_service = EntitiesService(connection)

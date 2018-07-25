@@ -7,7 +7,7 @@ Locate a collection of metrics that have been created after specified date.
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Initialize services
 metrics_service = MetricsService(connection)
