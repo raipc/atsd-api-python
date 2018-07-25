@@ -17,7 +17,7 @@ logger.disabled = True
 # geoip_city /etc/nginx/geoip/GeoLiteCity.dat; # city IP database
 # geoip_org /etc/nginx/geoip/GeoIPASNum.dat;   # org/network database
 #
-# log_format custom '"$remote_addr","$remote_user","$time_iso8601","$host","$request_method","$server_protocol","$scheme","$request_uri",$status,$body_bytes_sent,"$http_referer","$http_user_agent","$http_x_forwarded_for","$geoip_country_code","$geoip_region",$geoip_region_name","$geoip_city",$geoip_latitude,$geoip_longitude,"$geoip_org"';
+# log_format custom '"$remote_addr","$remote_user","$time_iso8601","$host","$request_method","$server_protocol","$scheme","$request_uri",$status,$body_bytes_sent,"$http_referer","$http_user_agent","$http_x_forwarded_for","$geoip_country_code","$geoip_region","$geoip_region_name","$geoip_city",$geoip_latitude,$geoip_longitude,"$geoip_org"';
 # access_log /var/log/nginx/access.log custom;
 
 # fieldnames must match the custom log_format
