@@ -50,7 +50,7 @@ def insert_series_sample(data_service, val=None, *vals):
 class TestSeriesService(ServiceTestBase):
 
     def setUp(self):
-        self.svc = services.SeriesService(self.connection())
+        self.svc = services.SeriesService(self._connection)
 
     """
     Check parameters were set as expected.

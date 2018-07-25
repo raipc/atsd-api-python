@@ -70,7 +70,7 @@ class Client(object):
         )
         prepared_request = self.session.prepare_request(request)
         response = self.session.send(prepared_request, timeout=self.timeout)
-        if response.status_code is not 200:
+        if response.status_code not in [200, 204]:
             raise ServerException(response.status_code, response.text)
         try:
             return response.json()

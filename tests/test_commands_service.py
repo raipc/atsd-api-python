@@ -18,7 +18,7 @@ MESSAGE_COMMAND = 'message e:'+ENTITY + ' m:"pyapi test"'
 class TestCommandsService(ServiceTestBase):
 
     def setUp(self):
-        self.cs = services.CommandsService(self.connection())
+        self.cs = services.CommandsService(self._connection)
 
     def test_single_command(self):
         result = self.cs.send_commands(SERIES_COMMAND, True)
