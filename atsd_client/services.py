@@ -703,10 +703,8 @@ def response_to_dataframe(resp, reserved, **frame_params):
         for field in fields:
             dictionary = el.pop(field, None)
             if dictionary is not None:
-                sanitized_tags = {
-                    ('{}.{}'.format(field, k) if ((expand_tags and (k in reserved)) or not expand_tags) else k): v
-                    for k, v in six.iteritems(dictionary)}
-                el.update(sanitized_tags)
+                el.update({('{}.{}'.format(field, k) if ((expand_tags and (k in reserved)) or not expand_tags) else k): v
+                    for k, v in six.iteritems(dictionary)})
         enc_resp.append(el)
     import pandas as pd
     pd.set_option("display.expand_frame_repr", False)
