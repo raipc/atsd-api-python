@@ -360,9 +360,9 @@ class Series(object):
 class Property(BaseModel):
     """
     Class representing a property record which contains keys and tags of string type.
-    Properties represent metadata describing entities, such as device model, OS version, and location. 
+    Properties represent metadata which describe entities, such as device model, OS version, or location. 
     Each properties record is uniquely identified by entity name, property type and optional property keys.
-    The property values are are stored as text and only last value is stored for the given primary key.
+    The property values are stored as text and only the last value is stored for the given primary key.
     """
 
     def __init__(self, type, entity, tags, key=None, date=None, meta=None):
@@ -436,7 +436,7 @@ class Property(BaseModel):
 class Alert(object):
     """
     Class representing an open alert record.
-    Alert is an event produced by the rule engine by applying pre-defined rules to incoming data.
+    Alert is an event produced by the rule engine via the application of pre-defined rules to incoming data.
     An alert is created when an expression specified in the rule evaluates to True.
     The alert is closed and deleted when the expression returns False.
     """

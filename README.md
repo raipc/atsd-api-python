@@ -38,8 +38,8 @@ python -V
 
 The client supports the following versions of Python:
 
-* Python 2: `v2.7.9` and later
-* Python 3: all versions
+* Python `2`: `v2.7.9` and later
+* Python `3`: all versions
 
 ## Installation
 
@@ -150,7 +150,7 @@ from atsd_client import connect_url
 # Update connection properties and user credentials
 connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
 
-# Retrieve JSON from /api/v1/version endpoint
+# Retrieve JSON from '/api/v1/version' endpoint
 # https://axibase.com/docs/atsd/api/meta/misc/version.html
 response = connection.get('v1/version')
 build_info = response['buildInfo']
@@ -307,7 +307,7 @@ query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 svc = SeriesService(conn)
 result = svc.query(query_data)
 
-# print first Series object
+# Print first Series object
 print(result[0])
 ```
 
@@ -343,7 +343,7 @@ conn = connect_url('https://atsd_hostname:8443', 'user', 'passwd')
 # Single-line SQL query
 # query = 'SELECT datetime, time, entity, value FROM jvm_memory_free LIMIT 3';
 
-# Multi-line SQL query, use triple quotes (single or double)
+# Multi-line SQL query, enclose in triple quotes (single or double)
 query = """
 SELECT datetime, time, entity, value
   FROM "jvm_memory_free"
@@ -380,7 +380,7 @@ query = PropertiesQuery(type="disk", entity_filter=ef, date_filter=df)
 svc = PropertiesService(conn)
 result = svc.query(query)
 
-# print first Property object
+# Print first Property object
 print(result[0])
 ```
 
@@ -449,7 +449,7 @@ Access the `Series` object in `pandas` with the built-in `to_pandas_series()` an
 ```python
 ts = series.to_pandas_series()
 
-# pandas.tseries.index.DatetimeIndex
+# 'pandas.tseries.index.DatetimeIndex'
 print(ts)
 ```
 
