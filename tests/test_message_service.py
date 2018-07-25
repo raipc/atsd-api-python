@@ -29,7 +29,7 @@ MESSAGE_2 = 'pyapi test message expression'
 class TestMessageService(ServiceTestBase):
 
     def setUp(self):
-        self.ms = services.MessageService(self.connection())
+        self.ms = services.MessageService(self._connection)
 
     """
     Check parameters were set as expected.

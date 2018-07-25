@@ -28,7 +28,7 @@ KEY = {KEY_NAME: KEY_VALUE}
 class TestPropertiesService(ServiceTestBase):
 
     def setUp(self):
-        self.ps = services.PropertiesService(self.connection())
+        self.ps = services.PropertiesService(self._connection)
 
     """
     Check parameters were set as expected.
