@@ -58,7 +58,7 @@ pip install atsd_client
 To install a specific version, specify that version in the `pip install` command.
 
 ```bash
-pip install atsd_client==2.2.1
+pip install atsd_client==2.3.0
 ```
 
 > Use this command to downgrade the module as well.
@@ -71,14 +71,14 @@ pip show atsd-client
 
 ```txt
 Name: atsd-client
-Version: 2.2.1
+Version: 2.3.0
 Summary: Axibase Time Series Database API Client for Python
 Home-page: https://github.com/axibase/atsd-api-python
 Author: Axibase Corporation
 Author-email: support-atsd@axibase.com
 License: Apache 2.0
 Location: /usr/local/lib/python2.7/dist-packages
-Requires: tzlocal, requests, pandas, python-dateutil
+Requires: tzlocal, requests, python-dateutil
 Required-by:
 ```
 
@@ -105,7 +105,7 @@ python setup.py install
 Check that modules are installed.
 
 ```bash
-python -c "import tzlocal, pandas, requests, dateutil, atsd_client"
+python -c "import tzlocal, requests, dateutil, atsd_client"
 ```
 
 An **empty** output corresponds to a successful installation. Otherwise, the output displays an error which enumerates missing modules.

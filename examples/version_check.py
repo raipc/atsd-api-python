@@ -9,7 +9,7 @@ Print timezone, python version, dependencies version.
 print('Python version is %s' % platform.python_version())
 print('Current timezone %s\n' % str(time.tzname))
 
-required_packages = ['dateutil', 'requests', 'pandas', 'atsd_client']
+required_packages = ['dateutil', 'requests', 'atsd_client']
 
 for package in required_packages:
     try:
