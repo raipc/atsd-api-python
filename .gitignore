@@ -29,3 +29,6 @@ docs/build/
 
 # Debug utilities
 *_debug_*
+
+# Visual Studio Code workspace settings
+.vscode/
