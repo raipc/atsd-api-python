@@ -556,7 +556,7 @@ print(result[0])
 ```
 
 ```txt
-              time         value   version_source   version_status
+           time         value   version_source   version_status
 1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
 1468868140000.0           4.0      TEST_SOURCE      TEST_STATUS
 1468868189000.0           2.0      TEST_SOURCE      TEST_STATUS
@@ -638,9 +638,12 @@ print(result[0])
 
 |**Name**| **Description**|
 |:---|:---|
-|[sql_query.py](./examples/sql_query.py) | Execute SQL query and convert results into a `DataFrame`. |
-|[entity_print_metrics_html.py](./examples/entity_print_metrics_html.py) | Print metrics for entity into HTML or ASCII table. |
-|[export_messages.py](./examples/export_messages.py) | Export messages into CSV. |
+|[`sql_query.py`](./examples/sql_query.py) | Execute SQL query and convert results into a `DataFrame`. |
+|[`entity_print_metrics_html.py`](./examples/entity_print_metrics_html.py) | Print metrics for entity into HTML or ASCII table. |
+|[`export_messages.py`](./examples/export_messages.py) | Export messages into CSV. |
+|[`message_dataframe.py`](./examples/message_dataframe.py) | Execute `Message` query and convert results into a `DataFrame`. |
+|[`message_dataframe_filtered.py`](./examples/message_dataframe_filtered.py) | Execute `Message` query, convert results into a `DataFrame`, group by tag and filter. |
+|[`message_dataframe_filtered_and_ordered.py`](./examples/message_dataframe_filtered_and_ordered.py) | Execute `Message` query, convert results into a `DataFrame`, group by tag, filter, and sort by date. |
 
 Some of the examples above use the `prettytable` module to format displayed records.
 
