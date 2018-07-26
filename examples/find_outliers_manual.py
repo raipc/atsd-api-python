@@ -6,7 +6,7 @@ from atsd_client.services import MetricsService, SeriesService
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # set minimum window size to make decision
 min_window_size = 5

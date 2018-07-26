@@ -10,7 +10,7 @@ grace interval.
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # set grace interval in hours
 grace_interval_hours = 1

@@ -8,7 +8,7 @@ Print out metric name and the maximum number of tags combinations.
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Initialize services
 metrics_service = MetricsService(connection)

@@ -3,7 +3,7 @@ from atsd_client.services import SQLService
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Initialize SQL service
 svc = SQLService(connection)

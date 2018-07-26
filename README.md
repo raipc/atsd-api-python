@@ -38,8 +38,8 @@ python -V
 
 The client supports the following versions of Python:
 
-* Python 2: `v2.7.9` and later
-* Python 3: all versions
+* Python `2`: `v2.7.9` and later
+* Python `3`: all versions
 
 ## Installation
 
@@ -150,7 +150,7 @@ from atsd_client import connect_url
 # Update connection properties and user credentials
 connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
 
-# Retrieve JSON from /api/v1/version endpoint
+# Retrieve JSON from '/api/v1/version' endpoint
 # https://axibase.com/docs/atsd/api/meta/misc/version.html
 response = connection.get('v1/version')
 build_info = response['buildInfo']
@@ -216,27 +216,27 @@ Available services:
 
 * [`SeriesService`](./atsd_client/services.py#L52)
 * [`PropertiesService`](./atsd_client/services.py#L103)
-* [`MessageService`](./atsd_client/services.py#L187)
-* [`AlertsService`](./atsd_client/services.py#L148)
-* [`MetricsService`](./atsd_client/services.py#L218)
-* [`EntitiesService`](./atsd_client/services.py#L322)
-* [`EntityGroupsService`](./atsd_client/services.py#L423)
-* [`SQLService`](./atsd_client/services.py#L577)
-* [`CommandsService`](./atsd_client/services.py#L624)
+* [`MessageService`](./atsd_client/services.py#L199)
+* [`AlertsService`](./atsd_client/services.py#L160)
+* [`MetricsService`](./atsd_client/services.py#L242)
+* [`EntitiesService`](./atsd_client/services.py#L347)
+* [`EntityGroupsService`](./atsd_client/services.py#L476)
+* [`SQLService`](./atsd_client/services.py#L634)
+* [`CommandsService`](./atsd_client/services.py#L676)
 
 ## Models
 
 Use this service to insert and query particular types of records in the database, which are implemented as Python classes for convenience.
 
-* [`Series`](./atsd_client/models/_data_models.py#L142)
-* [`Sample`](./atsd_client/models/_data_models.py#L56)
-* [`Property`](./atsd_client/models/_data_models.py#L371)
-* [`Message`](./atsd_client/models/_data_models.py#L789)
-* [`Alert`](./atsd_client/models/_data_models.py#L447)
-* [`AlertHistory`](./atsd_client/models/_data_models.py#L604)
+* [`Series`](./atsd_client/models/_data_models.py#L133)
+* [`Sample`](./atsd_client/models/_data_models.py#L47)
+* [`Property`](./atsd_client/models/_data_models.py#L360)
+* [`Message`](./atsd_client/models/_data_models.py#L778)
+* [`Alert`](./atsd_client/models/_data_models.py#L436)
+* [`AlertHistory`](./atsd_client/models/_data_models.py#L593)
 * [`Metric`](./atsd_client/models/_meta_models.py#L53)
-* [`Entity`](./atsd_client/models/_meta_models.py#L291)
-* [`EntityGroup`](./atsd_client/models/_meta_models.py#L390)
+* [`Entity`](./atsd_client/models/_meta_models.py#L295)
+* [`EntityGroup`](./atsd_client/models/_meta_models.py#L396)
 
 ## Inserting Data
 
@@ -307,7 +307,7 @@ query_data = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 svc = SeriesService(conn)
 result = svc.query(query_data)
 
-# print first Series object
+# Print first Series object
 print(result[0])
 ```
 
@@ -316,7 +316,7 @@ print(result[0])
 2018-07-18T17:16:30+00:00             2
 metric: temperature
 entity: sensor123
-tags: {}
+tags: tz=local
 ```
 
 Optional filters:
@@ -343,7 +343,7 @@ conn = connect_url('https://atsd_hostname:8443', 'user', 'passwd')
 # Single-line SQL query
 # query = 'SELECT datetime, time, entity, value FROM jvm_memory_free LIMIT 3';
 
-# Multi-line SQL query, use triple quotes (single or double)
+# Multi-line SQL query, enclose in triple quotes (single or double)
 query = """
 SELECT datetime, time, entity, value
   FROM "jvm_memory_free"
@@ -357,16 +357,12 @@ df = svc.query(query)
 print(df)
 ```
 
-<!-- markdownlint-disable MD107 -->
-
 ```txt
                    datetime           time entity      value
 0  2018-05-17T12:36:36.971Z  1526560596971   atsd  795763936
 1  2018-05-17T12:36:21.970Z  1526560581970   atsd  833124808
 2  2018-05-17T12:36:06.973Z  1526560566973   atsd  785932984
 ```
-
-<!-- markdownlint-enable MD107 -->
 
 ### Querying Properties
 
@@ -384,15 +380,15 @@ query = PropertiesQuery(type="disk", entity_filter=ef, date_filter=df)
 svc = PropertiesService(conn)
 result = svc.query(query)
 
-# print first Property object
+# Print first Property object
 print(result[0])
 ```
 
 ```txt
 type: disk
 entity: nurswgvml007
-key: {}
-tags: {u'fs_type': u'ext4'}
+key: command=com.axibase.tsd.Server
+tags: fs_type=ext4
 date: 2018-05-21 14:46:42.728000+00:00
 ```
 
@@ -429,7 +425,7 @@ type: application
 source: atsd
 date: 2018-05-21 15:42:04.452000+00:00
 severity: MAJOR
-tags: {u'syslog': u'ssh'}
+tags: syslog=ssh
 message: connect_to localhost port 8881 failed.
 persist: True
 ```
@@ -446,12 +442,14 @@ Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manip
 pip install pandas
 ```
 
+#### Series
+
 Access the `Series` object in `pandas` with the built-in `to_pandas_series()` and `from_pandas_series()` methods.
 
 ```python
 ts = series.to_pandas_series()
 
-# pandas.tseries.index.DatetimeIndex
+# 'pandas.tseries.index.DatetimeIndex'
 print(ts)
 ```
 
@@ -464,17 +462,32 @@ print(ts)
 2018-04-13 15:00:38            3
 ```
 
-To convert a list of `Message` or `Property` objects to a `DataFrame` apply `to_dict()` method for each object.
+#### Entities
+
+To retrieve `Entity` list as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`list_dataframe`](./atsd_client/services.py#L388) method:
 
 ```python
-import pandas as pd
-pd.set_option("display.expand_frame_repr", False)
+entities = svc.list_dataframe(expression="createdDate > '2018-05-16T00:00:00Z'")
 
-messages = message_service.query(query)
-print(pd.DataFrame([m.to_dict() for m in messages], columns=['entity', 'date', 'message']))
+print(entities)
 ```
 
-<!-- markdownlint-disable MD107 -->
+```txt
+                createdDate  enabled            lastInsertDate          name
+0  2018-07-12T14:52:21.599Z     True  2018-07-23T15:39:51.542Z  nurswgvml007
+1  2018-07-17T20:08:02.213Z     True  2018-07-17T20:08:04.813Z  nurswghbs001
+2  2018-07-12T14:52:21.310Z     True  2018-07-23T15:39:49.164Z          atsd
+```
+
+#### Messages
+
+To retrieve `Message` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L218) method:
+
+```python
+messages = svc.query_dataframe(query, columns=['entity', 'date', 'message'])
+
+print(messages)
+```
 
 ```txt
          entity                             date                                            message
@@ -483,7 +496,22 @@ print(pd.DataFrame([m.to_dict() for m in messages], columns=['entity', 'date', '
 2  nurswgvml007 2018-07-17 18:48:16.129000+03:00                Indexing started, type: incremental
 ```
 
-<!-- markdownlint-enable MD107 -->
+#### Properties
+
+To retrieve `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L122) method:
+
+```python
+properties = svc.query_dataframe(query)
+
+print(properties)
+```
+
+```txt
+                       date        entity    id  type  fs_type
+0  2018-07-23T15:31:03.000Z  nurswgvml007   fd0  disk     ext3
+1  2018-07-23T15:31:03.000Z  nurswgvml007   sda  disk     ext4
+2  2018-07-23T15:31:03.000Z  nurswgvml007  sda1  disk     ext4
+```
 
 ### Graph Results
 
@@ -527,8 +555,6 @@ result = svc.query(query_data)
 print(result[0])
 ```
 
-<!-- markdownlint-disable MD107 -->
-
 ```txt
               time         value   version_source   version_status
 1468868125000.0           3.0      TEST_SOURCE      TEST_STATUS
@@ -539,8 +565,6 @@ print(result[0])
 1468868462000.0          99.0      TEST_SOURCE      TEST_STATUS
 1468868483000.0          54.0      TEST_SOURCE      TEST_STATUS
 ```
-
-<!-- markdownlint-enable MD107 -->
 
 ## Examples
 

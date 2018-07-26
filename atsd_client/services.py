@@ -119,6 +119,18 @@ class PropertiesService(_Service):
         resp = self.conn.post(properties_query_url, queries)
         return _jsonutil.deserialize(resp, Property)
 
+    def query_dataframe(self, *queries, **frame_params):
+        """Retrieve Property records as DataFrame
+
+        :param queries: :class: `.PropertiesQuery`
+        :param frame_params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
+        :param expand_tags: `bool` If True response key and tags are converted to columns. Default: True
+        :return: :class:`.DataFrame`
+        """
+        resp = self.conn.post(properties_query_url, queries)
+        reserved = {'type', 'entity', 'tags', 'key', 'date'}
+        return response_to_dataframe(resp, reserved, **frame_params)
+
     def type_query(self, entity):
         """Returns an array of property types for the entity.
 
@@ -202,6 +214,18 @@ class MessageService(_Service):
         """
         resp = self.conn.post(messages_query_url, queries)
         return _jsonutil.deserialize(resp, Message)
+
+    def query_dataframe(self, *queries, **frame_params):
+        """Retrieve Message records as DataFrame
+
+        :param queries: :class: `.MessageQuery`
+        :param frame_params: parameters for DataFrame constructor, for example, columns=['entity', 'tags', 'message']
+        :param expand_tags: `bool` If True response tags are converted to columns. Default: True
+        :return: :class:`.DataFrame`
+        """
+        resp = self.conn.post(messages_query_url, queries)
+        reserved = {'type', 'entity', 'tags', 'source', 'date', 'message', 'severity'}
+        return response_to_dataframe(resp, reserved, **frame_params)
 
     def statistics(self, *params):
         """
@@ -361,6 +385,34 @@ class EntitiesService(_Service):
         resp = self.conn.get(ent_list_url, params)
         return _jsonutil.deserialize(resp, Entity)
 
+    def query_dataframe(self, expression=None, min_insert_date=None,
+                       max_insert_date=None, tags=None, limit=None, **frame_params):
+        """Retrieve a list of entities matching specified filters as DataFrame.
+
+        :param expression: `str`
+        :param min_insert_date: `str` | `int` | :class:`datetime`
+        :param max_insert_date: `str` | `int` | :class:`datetime`
+        :param tags: `dict`
+        :param limit: `int`
+        :param frame_params: parameters for DataFrame constructor. For example, columns=['entity', 'tags', 'message']
+        :param expand_tags: `bool` If True response tags are converted to columns. Default: True
+        :return: :class:`.DataFrame`
+        """
+        params = dict()
+        if expression is not None:
+            params["expression"] = expression
+        if min_insert_date is not None:
+            params["minInsertDate"] = to_iso(min_insert_date)
+        if max_insert_date is not None:
+            params["maxInsertDate"] = to_iso(max_insert_date)
+        if tags is not None:
+            params["tags"] = tags
+        if limit is not None:
+            params["limit"] = limit
+        resp = self.conn.get(ent_list_url, params)
+        reserved = {'name', 'tags', 'enabled', 'time_zone', 'interpolate', 'label', 'created_date', 'last_insert_date'}
+        return response_to_dataframe(resp, reserved, **frame_params)
+
     def update(self, entity):
         """Update the specified entity.
 
@@ -459,7 +511,7 @@ class EntityGroupsService(_Service):
 
     def update(self, group):
         """Update the specified entity group.
-        Unlike the replace method, fields and tags that are not specified in the request are left unchanged.
+        Unlike replace method, fields and tags not specified in the request remain unchanged.
 
         :param group: :class:`.EntityGroup`
         :return: True if success
@@ -473,7 +525,7 @@ class EntityGroupsService(_Service):
         :param group: :class:`.EntityGroup`
         :param expression: `str` describe entities that match a filter expression consisting of fields and operators
         :param tags: `dict` Entity tags, as requested with the tags parameter.
-        :return: True if success
+        :return: True if successful
         """
         data = dict()
         if expression is not None:
@@ -485,7 +537,7 @@ class EntityGroupsService(_Service):
 
     def delete(self, group):
         """Delete the specified entity group.
-        Member entities and their data is not affected by this operation.
+        Member entities and their data are not affected by this operation.
 
         :param group: :class:`.EntityGroup`
         :return: True if success
@@ -495,7 +547,7 @@ class EntityGroupsService(_Service):
 
     def get_entities(self, group_name, expression=None, min_insert_date=None, max_insert_date=None, tags=None,
                      limit=None):
-        """Retrieve a list of entities that are members of the specified entity group and which match the specified expression filter.
+        """Retrieve a list of entities that are members of the specified entity group and match the specified expression filter.
 
         :param group_name: `str`
         :param expression: `str`
@@ -527,7 +579,7 @@ class EntityGroupsService(_Service):
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names
-        :param create_entities: `bool` option indicating if new entities from the submitted list is created if such entities don't exist
+        :param create_entities: `bool` option indicating new entities from the submitted list are created if such entities do not exist
         :return: True if success
         """
         _check_name(group_name)
@@ -541,9 +593,9 @@ class EntityGroupsService(_Service):
 
     def set_entities(self, group_name, entities, create_entities=None):
         """Set members of the entity group from the specified entity list.
-        All existing members that are not included in the request is removed from members.
+        All existing members that are not included in the request are removed from members.
         If the array in the request is empty, all entities are removed from the group and are replaced with an empty list.
-        Note that changing members of expression-based groups is not supported.
+        Changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names 
@@ -562,7 +614,7 @@ class EntityGroupsService(_Service):
     def delete_entities(self, group_name, entities):
         """Remove specified entities from members of the specified entity group.
         To delete all entities, submit an empty list [] using the set_entities method.
-        Note that changing members of expression-based groups is not supported.
+        Changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param data: `list` of :class:`.Entity` objects | `list` of `str` entity names
@@ -586,9 +638,9 @@ class SQLService(_Service):
         :param sql_query: `str`
         :return: :class:`.DataFrame` object
         """
+        response = self.query_with_params(sql_query)
         import pandas as pd
         pd.set_option("display.expand_frame_repr", False)
-        response = self.query_with_params(sql_query)
         return pd.read_csv(StringIO(response), sep=',')
 
     def query_with_params(self, sql_query, params=None):
@@ -641,3 +693,21 @@ class CommandsService(_Service):
 def encode_if_required(name):
     name = name.encode('utf-8') if isinstance(name, six.string_types) else name
     return name
+
+
+def response_to_dataframe(resp, reserved, **frame_params):
+    expand_tags = frame_params.pop('expand_tags', True)
+    enc_resp = []
+    fields = ['tags', 'key']
+    for el in resp:
+        for field in fields:
+            dictionary = el.pop(field, None)
+            if dictionary is not None:
+                for k, v in six.iteritems(dictionary):
+                    if (expand_tags and (k in reserved)) or not expand_tags:
+                        k = '{}.{}'.format(field, k)
+                    el[k] = v
+        enc_resp.append(el)
+    import pandas as pd
+    pd.set_option("display.expand_frame_repr", False)
+    return pd.DataFrame(enc_resp, **frame_params)

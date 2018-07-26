@@ -5,7 +5,7 @@ Establishes a connection to ATSD, returns ATSD version, timezone and current tim
 '''
 
 # Connect to ATSD server
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # query version info from ATSD
 response = connection.get('v1/version')

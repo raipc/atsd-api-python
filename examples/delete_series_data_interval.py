@@ -9,7 +9,7 @@ Only a single matching series is retrieved and delete by setting exact_match=Tru
 
 # Connect to ATSD server
 # connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Series filter
 metric = 'm-to-delete'

@@ -12,7 +12,7 @@ Print entities of that the series.
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # specify metric name
 metric_name = "ca.daily.reservoir_storage_af"
