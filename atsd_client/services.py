@@ -385,7 +385,7 @@ class EntitiesService(_Service):
         resp = self.conn.get(ent_list_url, params)
         return _jsonutil.deserialize(resp, Entity)
 
-    def list_dataframe(self, expression=None, min_insert_date=None,
+    def query_dataframe(self, expression=None, min_insert_date=None,
                        max_insert_date=None, tags=None, limit=None, **frame_params):
         """Retrieve a list of entities matching specified filters as DataFrame.
 
