@@ -464,10 +464,10 @@ print(ts)
 
 #### Entities
 
-To retrieve `Entity` list as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`list_dataframe`](./atsd_client/services.py#L388) method:
+To retrieve `Entity` list as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L388) method:
 
 ```python
-entities = svc.list_dataframe(expression="createdDate > '2018-05-16T00:00:00Z'")
+entities = svc.query_dataframe(expression="createdDate > '2018-05-16T00:00:00Z'")
 
 print(entities)
 ```
