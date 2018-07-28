@@ -18,7 +18,7 @@ permissions and limitations under the License.
 from . import _jsonutil
 from ._client import Client
 from ._constants import *
-from ._time_utilities import to_iso
+from ._time_utilities import to_iso, to_date
 from .exceptions import DataParseException, SQLException, ServerException
 from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, Message
 
@@ -707,6 +707,7 @@ def response_to_dataframe(resp, reserved, **frame_params):
                     if (expand_tags and (k in reserved)) or not expand_tags:
                         k = '{}.{}'.format(field, k)
                     el[k] = v
+        el['date'] = to_date(el['date'])
         enc_resp.append(el)
     import pandas as pd
     pd.set_option("display.expand_frame_repr", False)
