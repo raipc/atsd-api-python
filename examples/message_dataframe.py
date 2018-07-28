@@ -33,8 +33,8 @@ messages = message_service.query_dataframe(query, columns=['date', 'entity', 'ge
 print(messages)
 
 #                        date       entity geoip_city geoip_country_code geoip_region_name
-# 0  2018-07-26T17:56:39.303Z  axibase.com      Kazan                 RU         Tatarstan
-# 1  2018-07-26T17:55:10.231Z  axibase.com   Helsinki                 FI  Southern Finland
-# 2  2018-07-26T17:51:42.308Z  axibase.com     Tandil                 AR      Buenos Aires
-# 3  2018-07-26T17:47:17.579Z  axibase.com   L'aquila                 IT           Abruzzi
-# 4  2018-07-26T17:45:07.582Z  axibase.com   New York                 US          New York
+# 0  2018-07-26T17:56:39.303Z  example.org      Kazan                 RU         Tatarstan
+# 1  2018-07-26T17:55:10.231Z  example.org   Helsinki                 FI  Southern Finland
+# 2  2018-07-26T17:51:42.308Z  example.org     Tandil                 AR      Buenos Aires
+# 3  2018-07-26T17:47:17.579Z  example.org   L'aquila                 IT           Abruzzi
+# 4  2018-07-26T17:45:07.582Z  example.org   New York                 US          New York
