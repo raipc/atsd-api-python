@@ -14,7 +14,7 @@ discard groups with count of records less than N.
 connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Set query
-entity = "axibase.com"
+entity = "example.org"
 type = 'web'
 source = 'access.log'
 
@@ -39,31 +39,31 @@ filtered = messages.groupby(grouping_tag).filter(lambda x: len(x) > N).reset_ind
 print(messages)
 
 #                         date       entity        geoip_city geoip_country_code      geoip_region_name
-# 0   2018-07-26T17:56:39.303Z  axibase.com             Kazan                 RU              Tatarstan
-# 1   2018-07-26T17:55:10.231Z  axibase.com          Helsinki                 FI       Southern Finland
-# 2   2018-07-26T17:51:42.308Z  axibase.com            Tandil                 AR           Buenos Aires
-# 3   2018-07-26T17:47:17.579Z  axibase.com          L'aquila                 IT                Abruzzi
-# 4   2018-07-26T17:45:07.582Z  axibase.com          New York                 US               New York
-# 5   2018-07-26T17:41:11.683Z  axibase.com            Athens                 GR                 Attiki
-# 6   2018-07-26T17:31:37.156Z  axibase.com        Glen Ellyn                 US               Illinois
-# 7   2018-07-26T17:23:12.427Z  axibase.com            Polska                 PL     Kujawsko-Pomorskie
-# 8   2018-07-26T17:22:12.387Z  axibase.com             Niles                 US               Michigan
-# 9   2018-07-26T17:20:27.015Z  axibase.com  Saint Petersburg                 RU  Saint Petersburg City
-# 10  2018-07-26T17:19:20.233Z  axibase.com             Niles                 US               Michigan
-# 11  2018-07-26T17:19:15.875Z  axibase.com             Niles                 US               Michigan
-# 12  2018-07-26T17:12:42.447Z  axibase.com             Miami                 US                Florida
-# 13  2018-07-26T17:05:27.190Z  axibase.com          San Jose                 US             California
-# 14  2018-07-26T17:04:09.875Z  axibase.com    Estancia Velha                 BR      Rio Grande do Sul
+# 0   2018-07-26T17:56:39.303Z  example.org             Kazan                 RU              Tatarstan
+# 1   2018-07-26T17:55:10.231Z  example.org          Helsinki                 FI       Southern Finland
+# 2   2018-07-26T17:51:42.308Z  example.org            Tandil                 AR           Buenos Aires
+# 3   2018-07-26T17:47:17.579Z  example.org          L'aquila                 IT                Abruzzi
+# 4   2018-07-26T17:45:07.582Z  example.org          New York                 US               New York
+# 5   2018-07-26T17:41:11.683Z  example.org            Athens                 GR                 Attiki
+# 6   2018-07-26T17:31:37.156Z  example.org        Glen Ellyn                 US               Illinois
+# 7   2018-07-26T17:23:12.427Z  example.org            Polska                 PL     Kujawsko-Pomorskie
+# 8   2018-07-26T17:22:12.387Z  example.org             Niles                 US               Michigan
+# 9   2018-07-26T17:20:27.015Z  example.org  Saint Petersburg                 RU  Saint Petersburg City
+# 10  2018-07-26T17:19:20.233Z  example.org             Niles                 US               Michigan
+# 11  2018-07-26T17:19:15.875Z  example.org             Niles                 US               Michigan
+# 12  2018-07-26T17:12:42.447Z  example.org             Miami                 US                Florida
+# 13  2018-07-26T17:05:27.190Z  example.org          San Jose                 US             California
+# 14  2018-07-26T17:04:09.875Z  example.org    Estancia Velha                 BR      Rio Grande do Sul
 
 print(filtered)
 
 #    index                      date       entity        geoip_city geoip_country_code      geoip_region_name
-# 0      0  2018-07-26T17:56:39.303Z  axibase.com             Kazan                 RU              Tatarstan
-# 1      4  2018-07-26T17:45:07.582Z  axibase.com          New York                 US               New York
-# 2      6  2018-07-26T17:31:37.156Z  axibase.com        Glen Ellyn                 US               Illinois
-# 3      8  2018-07-26T17:22:12.387Z  axibase.com             Niles                 US               Michigan
-# 4      9  2018-07-26T17:20:27.015Z  axibase.com  Saint Petersburg                 RU  Saint Petersburg City
-# 5     10  2018-07-26T17:19:20.233Z  axibase.com             Niles                 US               Michigan
-# 6     11  2018-07-26T17:19:15.875Z  axibase.com             Niles                 US               Michigan
-# 7     12  2018-07-26T17:12:42.447Z  axibase.com             Miami                 US                Florida
-# 8     13  2018-07-26T17:05:27.190Z  axibase.com          San Jose                 US             California
+# 0      0  2018-07-26T17:56:39.303Z  example.org             Kazan                 RU              Tatarstan
+# 1      4  2018-07-26T17:45:07.582Z  example.org          New York                 US               New York
+# 2      6  2018-07-26T17:31:37.156Z  example.org        Glen Ellyn                 US               Illinois
+# 3      8  2018-07-26T17:22:12.387Z  example.org             Niles                 US               Michigan
+# 4      9  2018-07-26T17:20:27.015Z  example.org  Saint Petersburg                 RU  Saint Petersburg City
+# 5     10  2018-07-26T17:19:20.233Z  example.org             Niles                 US               Michigan
+# 6     11  2018-07-26T17:19:15.875Z  example.org             Niles                 US               Michigan
+# 7     12  2018-07-26T17:12:42.447Z  example.org             Miami                 US                Florida
+# 8     13  2018-07-26T17:05:27.190Z  example.org          San Jose                 US             California
