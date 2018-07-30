@@ -364,6 +364,12 @@ print(df)
 2  2018-05-17T12:36:06.973Z  1526560566973   atsd  785932984
 ```
 
+Pandas options used by `atsd_client`:
+
+```txt
+'display.expand_frame_repr' = False
+```
+
 ### Querying Properties
 
 To retrieve property records from the database, specify the property `type` name and pass the following filters to the `PropertiesService`:
@@ -442,9 +448,22 @@ Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manip
 pip install pandas
 ```
 
+Use Pandas [`set_option`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.set_option.html#pandas.set_option) to locate correct formation options:
+
+```python
+import pandas as pd
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.width', 2000)
+pd.set_option('max_rows', None)
+pd.set_option('max_columns', None)
+pd.set_option('max_colwidth', -1) 
+pd.set_option('display.expand_frame_repr', False)
+``` 
+
 #### Series
 
-Access the `Series` object in `pandas` with the built-in `to_pandas_series()` and `from_pandas_series()` methods.
+Access the `Series` object in Pandas with the built-in `to_pandas_series()` and `from_pandas_series()` methods.
 
 ```python
 ts = series.to_pandas_series()
@@ -479,6 +498,13 @@ print(entities)
 2  2018-07-12T14:52:21.310Z     True  2018-07-23T15:39:49.164Z          atsd
 ```
 
+Pandas options used by `atsd_client`:
+
+```txt
+'display.expand_frame_repr' = False
+'max_colwidth' = -1 
+```
+
 #### Messages
 
 To retrieve `Message` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L218) method:
@@ -496,6 +522,13 @@ print(messages)
 2  nurswgvml007 2018-07-17 18:48:16.129000+03:00                Indexing started, type: incremental
 ```
 
+Pandas options used by `atsd_client`:
+
+```txt
+'display.expand_frame_repr' = False
+'max_colwidth' = -1 
+```
+
 #### Properties
 
 To retrieve `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L122) method:
@@ -511,6 +544,13 @@ print(properties)
 0  2018-07-23T15:31:03.000Z  nurswgvml007   fd0  disk     ext3
 1  2018-07-23T15:31:03.000Z  nurswgvml007   sda  disk     ext4
 2  2018-07-23T15:31:03.000Z  nurswgvml007  sda1  disk     ext4
+```
+
+Pandas options used by `atsd_client`:
+
+```txt
+'display.expand_frame_repr' = False
+'max_colwidth' = -1 
 ```
 
 ### Graph Results
@@ -644,6 +684,7 @@ print(result[0])
 |[`message_dataframe.py`](./examples/message_dataframe.py) | Execute `Message` query and convert results into a `DataFrame`. |
 |[`message_dataframe_filtered.py`](./examples/message_dataframe_filtered.py) | Execute `Message` query, convert results into a `DataFrame`, group by tag and filter. |
 |[`message_dataframe_filtered_and_ordered.py`](./examples/message_dataframe_filtered_and_ordered.py) | Execute `Message` query, convert results into a `DataFrame`, group by tag, filter, and sort by date. |
+|[`message_referrer_report.py`](./examples/message_referrer_report.py) | Query messages convert result into a HTML table. |
 
 Some of the examples above use the `prettytable` module to format displayed records.
 
