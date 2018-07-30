@@ -448,7 +448,7 @@ Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manip
 pip install pandas
 ```
 
-Use Pandas [`set_option`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.set_option.html#pandas.set_option) to locate correct formation options:
+Use Pandas [`set_option`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.set_option.html#pandas.set_option) to format output:
 
 ```python
 import pandas as pd
