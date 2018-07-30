@@ -457,9 +457,9 @@ pd.set_option('display.max_columns', None)
 pd.set_option('display.width', 2000)
 pd.set_option('max_rows', None)
 pd.set_option('max_columns', None)
-pd.set_option('max_colwidth', -1) 
+pd.set_option('max_colwidth', -1)
 pd.set_option('display.expand_frame_repr', False)
-``` 
+```
 
 #### Series
 
@@ -502,7 +502,7 @@ Pandas options used by `atsd_client`:
 
 ```txt
 'display.expand_frame_repr' = False
-'max_colwidth' = -1 
+'max_colwidth' = -1
 ```
 
 #### Messages
@@ -526,7 +526,7 @@ Pandas options used by `atsd_client`:
 
 ```txt
 'display.expand_frame_repr' = False
-'max_colwidth' = -1 
+'max_colwidth' = -1
 ```
 
 #### Properties
@@ -550,7 +550,7 @@ Pandas options used by `atsd_client`:
 
 ```txt
 'display.expand_frame_repr' = False
-'max_colwidth' = -1 
+'max_colwidth' = -1
 ```
 
 ### Graph Results
