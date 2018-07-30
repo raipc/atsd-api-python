@@ -8,7 +8,7 @@ Monitor data availability. The inputs stored in a data-availability.csv table.
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Initialize services
 svc = SeriesService(connection)

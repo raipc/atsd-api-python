@@ -8,7 +8,7 @@ Delete all series for the specified entity, metric and series tags.
 
 # Connect to ATSD server
 # connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Set query
 entity = 'entity'

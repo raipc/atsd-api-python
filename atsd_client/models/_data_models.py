@@ -42,15 +42,6 @@ class BaseModel(object):
                 result.append('{0}: {1}'.format(key[1:] if key.startswith('_') else key, value))
         return '\n'.join(result)
 
-    def to_dict(self):
-        result = {}
-        for key, value in six.iteritems(vars(self)):
-            if value is not None:
-                if isinstance(value, dict):
-                    value = print_tags(value)
-                result[key[1:] if key.startswith('_') else key] = value
-        return result
-
 
 # ------------------------------------------------------------------------------
 class Sample(object):
@@ -191,7 +182,7 @@ class Series(object):
             displayed_data = self._data[:display_series_part] + self._data[-display_series_part:]
         else:
             displayed_data = self._data
-        rows = ['\n']
+        rows = []
         versioned = False
         for sample in sorted(displayed_data):
             date = sample.get_date()
@@ -205,7 +196,7 @@ class Series(object):
                 row += '{:>19}{:>19}{:>27}'.format(source, status, time)
             rows.append(row)
         if versioned:
-            header = ('{:>24}{:>10}{:>19}{:>19}{:>27}'.format('date',
+            header = ('{:>32}{:>10}{:>19}{:>19}{:>27}'.format('date',
                                                               'value',
                                                               'version_source',
                                                               'version_status',
@@ -215,15 +206,13 @@ class Series(object):
             result = '\n'.join(rows[:-display_series_part]) + '\n...\n' + '\n'.join(rows[-display_series_part:])
         else:
             result = '\n'.join(rows)
+        other_fields = []
         for key, value in six.iteritems(vars(type(self))):
             if isinstance(value, property) and key != 'data':
                 attr = getattr(self, key)
                 if attr is not None and (len(attr) > 0):
-                    if key is 'tags':
-                        result += '\n{0}: {1}\n'.format('tags', print_tags(attr))
-                    else:
-                        result += '\n{0}: {1}'.format(key, attr)
-        return result
+                    other_fields.append('\n{0}: {1}'.format(key, print_tags(attr) if key is 'tags' else attr))
+        return result + ''.join(other_fields)
 
     def to_dictionary(self):
         return serialize(self)
@@ -371,9 +360,9 @@ class Series(object):
 class Property(BaseModel):
     """
     Class representing a property record which contains keys and tags of string type.
-    Properties represent metadata describing entities, such as device model, OS version, and location. 
+    Properties represent metadata which describe entities, such as device model, OS version, or location. 
     Each properties record is uniquely identified by entity name, property type and optional property keys.
-    The property values are are stored as text and only last value is stored for the given primary key.
+    The property values are stored as text and only the last value is stored for the given primary key.
     """
 
     def __init__(self, type, entity, tags, key=None, date=None, meta=None):
@@ -447,7 +436,7 @@ class Property(BaseModel):
 class Alert(object):
     """
     Class representing an open alert record.
-    Alert is an event produced by the rule engine by applying pre-defined rules to incoming data.
+    Alert is an event produced by the rule engine via the application of pre-defined rules to incoming data.
     An alert is created when an expression specified in the rule evaluates to True.
     The alert is closed and deleted when the expression returns False.
     """

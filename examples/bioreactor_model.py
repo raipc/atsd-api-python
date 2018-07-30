@@ -33,7 +33,7 @@ SAVE_AS_COMMANDS = True
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # configuration parameters: end
 

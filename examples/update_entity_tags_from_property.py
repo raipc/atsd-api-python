@@ -13,7 +13,7 @@ with property tags for the given type.
 
 # Connect to ATSD server
 #connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # set the name of entity_group and tag expression
 entity_group_name = 'docker-containers'

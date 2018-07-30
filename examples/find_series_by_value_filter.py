@@ -8,7 +8,7 @@ Retrieve series using value filter to discard out of range values.
 
 # Connect to ATSD server
 # connection = connect('/path/to/connection.properties')
-connection = connect_url('https://atsd_hostname:8443', 'user', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Set query
 metric = 'm-1'
