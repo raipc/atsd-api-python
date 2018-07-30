@@ -26,7 +26,6 @@ Download `pandas` to use `SQLService` and support transformations from ATSD API 
 pip download pandas -d modules
 ```
 
-
 > Upgrade `pip` if the above command fails with error `unknown command "download"`.
 
 Check Python version:
@@ -79,7 +78,7 @@ Check that the modules are successfully installed:
 python -c "import tzlocal, pandas, requests, dateutil, atsd_client"
 ```
 
-If `pandas` functions will be used, check that `pandas` module is installed:
+If `pandas` integration is required, check that `pandas` module is installed:
 
 ```sh
 python -c "import pandas"
