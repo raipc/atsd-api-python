@@ -1,3 +1,4 @@
+from __future__ import print_function
 from atsd_client import connect, connect_url
 from atsd_client.models import Message
 from atsd_client.services import MessageService, Severity
@@ -33,7 +34,7 @@ ignore_user_agents = ['axibase', 'feedly', 'scollector', 'rome client', 'bot', '
                       'webmaster', 'faq', 'apache', 'scan']
 ignore_uris = ['.png', '.js', '.css', '.woff', '.jpg', '.gif', '.jpeg', '.ico', '.svg', 'robots.txt', '/feed/', '.ttf',
                '.eot', 'wp-content', '.lzma', '.xz', '.bz2']
-ignore_ip = ['10.20.30.40', '127.0.0.1']
+ignore_ip = ['192.0.2.1', '127.0.0.1']
 
 # Connect to ATSD server
 # connection = connect('/path/to/connection.properties')
@@ -74,7 +75,7 @@ for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
         if row['status'] == '301' and row['scheme'] == 'http':
             continue
 
-            # Ignore bots
+        # Ignore bots
         user_agent = row['http_user_agent'].lower()
         if has_containing_element(ignore_user_agents, user_agent):
             continue
@@ -84,7 +85,7 @@ for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
         if has_containing_element(ignore_uris, ruri):
             continue
 
-            # Ignore 404 requests for apt language translation files
+        # Ignore 404 requests for apt language translation files
         if row['status'] == '404' and '/repository/deb/./' in ruri:
             continue
 
@@ -94,16 +95,16 @@ for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
             continue
 
         dns = lookup(radr)
-        if dns != None and 'localhost' not in dns:
+        if dns is not None and 'localhost' not in dns:
             row['remote_host'] = dns
 
         # Handle proxy-forwarded requests
         xadr = row['http_x_forwarded_for']
-        if xadr != None and xadr != '-':
+        if xadr is not None and xadr != '-':
             if has_containing_element(ignore_ip, xadr):
                 continue
             xdns = lookup(xadr)
-            if xdns != None and 'localhost' not in xdns:
+            if xdns is not None and 'localhost' not in xdns:
                 row['remote_x_host'] = xdns
 
         sev = Severity.NORMAL
@@ -121,7 +122,7 @@ for line in tail("-F", "/var/log/nginx/access.log", _iter=True):
             res = svc.insert(msg)
             print(res, msg.date, msg.tags)
         except IOError as ioe:
-            print "IOError ({0}):{1}".format(ioe.errno, ioe.strerror)
+            print("IOError ({0}):{1}".format(ioe.errno, ioe.strerror))
             print(msg.date, msg.tags)
         except:
             print('Other error')

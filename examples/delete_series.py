@@ -2,7 +2,6 @@ from atsd_client import connect, connect_url, utils
 from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, ValueFilter, SeriesQuery
 from atsd_client.services import SeriesService
 import argparse
-from datetime import datetime
 
 '''
 Delete data for the series within the specified date interval regardless of tags.

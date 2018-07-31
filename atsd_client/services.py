@@ -711,4 +711,5 @@ def response_to_dataframe(resp, reserved, **frame_params):
         enc_resp.append(el)
     import pandas as pd
     pd.set_option("display.expand_frame_repr", False)
+    pd.set_option('max_colwidth', -1)
     return pd.DataFrame(enc_resp, **frame_params)
