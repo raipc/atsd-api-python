@@ -17,7 +17,13 @@ Log in to the intermediate server with internet access.
 Download `atsd_client` and dependencies into a temporary folder:
 
 ```sh
-pip download 'requests>=2.12.1' python-dateutil pandas tzlocal atsd_client -d modules
+pip download 'requests>=2.12.1' python-dateutil tzlocal atsd_client -d modules
+```
+
+Download `pandas` to use `SQLService` and support transformations from ATSD API client data structures to `pandas` DataFrame.
+
+```sh
+pip download pandas -d modules
 ```
 
 > Upgrade `pip` if the above command fails with error `unknown command "download"`.
@@ -70,6 +76,12 @@ Check that the modules are successfully installed:
 
 ```sh
 python -c "import tzlocal, pandas, requests, dateutil, atsd_client"
+```
+
+If `pandas` integration is required, check that `pandas` module is installed:
+
+```sh
+python -c "import pandas"
 ```
 
 An **empty** output corresponds to a successful installation. Otherwise, the output displays an error which describes missing modules.
