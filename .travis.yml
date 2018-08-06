@@ -19,9 +19,9 @@ install:
   - curl --user ${ATSD_LOGIN}:${ATSD_PASSWORD} ${VERSION_URL}
 script:
   - pip list
-  - python -m unittest discover -v tests
+  - python -m unittest discover -v -s tests
   - pip install pandas
-  - python -m unittest discover -v tests.pandas
+  - python -m unittest discover -v -s tests.pandas
   - spellcheck
   - linkcheck
   - stylecheck
