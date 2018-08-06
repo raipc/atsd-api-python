@@ -36,10 +36,7 @@ Check Python version.
 python -V
 ```
 
-The client supports the following versions of Python:
-
-* Python `2`: `v2.7.9` and later
-* Python `3`: all versions
+The client supports Python `>=3.3`.
 
 ## Installation
 
@@ -71,13 +68,13 @@ pip show atsd-client
 
 ```txt
 Name: atsd-client
-Version: 2.3.0
+Version: 3.0.0
 Summary: Axibase Time Series Database API Client for Python
 Home-page: https://github.com/axibase/atsd-api-python
 Author: Axibase Corporation
 Author-email: support-atsd@axibase.com
 License: Apache 2.0
-Location: /usr/local/lib/python2.7/dist-packages
+Location: /usr/local/lib/python3.5/dist-packages
 Requires: tzlocal, requests, python-dateutil
 Required-by:
 ```
@@ -134,7 +131,7 @@ pip list
 Package             Version
 ------------------- ------------------
 asn1crypto          0.24.0
-atsd-client         2.2.2
+atsd-client         3.0.0
 certifi             2018.4.16
 cffi                1.11.5
 ...

@@ -21,22 +21,12 @@ from ._constants import *
 from ._time_utilities import to_iso, to_date
 from .exceptions import DataParseException, SQLException, ServerException
 from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, Message
-
-try:
-    from urllib import quote
-    from StringIO import StringIO
-    from urllib import urlencode
-except ImportError:
-    from urllib.parse import quote
-    from io import StringIO
-    from urllib.parse import urlencode
-
-import six
-
+from io import StringIO
+from requests.compat import quote
 
 def _check_name(name):
-    if not isinstance(name, (six.binary_type, six.text_type)):
-        raise TypeError('name must be str')
+    if not isinstance(name, (bytes, str)):
+        raise TypeError('name must be str or bytes')
     if len(name) == 0:
         raise ValueError('name is empty')
 
@@ -137,7 +127,8 @@ class PropertiesService(_Service):
         :param entity: :class:`.Entity`
         :return: returns `list` of property types for the entity.
         """
-        response = self.conn.get(properties_types_url.format(entity=quote(encode_if_required(entity.name), '')))
+        entity_name = entity.name if isinstance(entity, Entity) else entity
+        response = self.conn.get(properties_types_url.format(entity=quote(entity_name, '')))
         return response
 
     def url_query(self, *queries):
@@ -248,7 +239,7 @@ class MetricsService(_Service):
         """
         _check_name(name)
         try:
-            response = self.conn.get(metric_get_url.format(metric=quote(encode_if_required(name), '')))
+            response = self.conn.get(metric_get_url.format(metric=quote(name, '')))
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -286,7 +277,7 @@ class MetricsService(_Service):
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.patch(metric_update_url.format(metric=quote(encode_if_required(metric.name), '')), metric)
+        self.conn.patch(metric_update_url.format(metric=quote(metric.name, '')), metric)
         return True
 
     def create_or_replace(self, metric):
@@ -295,7 +286,7 @@ class MetricsService(_Service):
         :param metric: :class:`.Metric`
         :return: True if success
         """
-        self.conn.put(metric_create_or_replace_url.format(metric=quote(encode_if_required(metric.name), '')), metric)
+        self.conn.put(metric_create_or_replace_url.format(metric=quote(metric.name, '')), metric)
         return True
 
     def delete(self, metric_name):
@@ -304,7 +295,7 @@ class MetricsService(_Service):
         :param metric_name: :class:`.Metric`
         :return: True if success
         """
-        self.conn.delete(metric_delete_url.format(metric=quote(encode_if_required(metric_name), '')))
+        self.conn.delete(metric_delete_url.format(metric=quote(metric_name, '')))
         return True
 
     def series(self, metric, entity=None, tags=None, min_insert_date=None, max_insert_date=None):
@@ -325,7 +316,7 @@ class MetricsService(_Service):
         if entity is not None:
             params['entity'] = entity.name if isinstance(entity, Entity) else entity
         if tags is not None and isinstance(tags, dict):
-            for k, v in six.iteritems(tags):
+            for k, v in tags.items():
                 params['tags.%s' % k] = v
         if min_insert_date is not None:
             params['minInsertDate'] = to_iso(min_insert_date)
@@ -333,7 +324,7 @@ class MetricsService(_Service):
             params['maxInsertDate'] = to_iso(max_insert_date)
 
         try:
-            response = self.conn.get(metric_series_url.format(metric=quote(encode_if_required(metric_name), '')),
+            response = self.conn.get(metric_series_url.format(metric=quote(metric_name, '')),
                                      params)
         except ServerException as e:
             if e.status_code == 404:
@@ -343,7 +334,7 @@ class MetricsService(_Service):
         return _jsonutil.deserialize(response, Series)
 
 
-# ------------------------------------------------------------------------------ ENTITIES
+# ---------------------------------------------------------------------- ENTITIES
 class EntitiesService(_Service):
     def get(self, entity_name):
         """Retrieve the entity
@@ -353,7 +344,7 @@ class EntitiesService(_Service):
         """
         _check_name(entity_name)
         try:
-            response = self.conn.get(ent_get_url.format(entity=quote(encode_if_required(entity_name), '')))
+            response = self.conn.get(ent_get_url.format(entity=quote(entity_name, '')))
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -371,7 +362,7 @@ class EntitiesService(_Service):
         :param limit: `int`
         :return: :class:`.Entity` objects
         """
-        params = dict()
+        params = {}
         if expression is not None:
             params["expression"] = expression
         if min_insert_date is not None:
@@ -386,7 +377,7 @@ class EntitiesService(_Service):
         return _jsonutil.deserialize(resp, Entity)
 
     def query_dataframe(self, expression=None, min_insert_date=None,
-                       max_insert_date=None, tags=None, limit=None, **frame_params):
+                        max_insert_date=None, tags=None, limit=None, **frame_params):
         """Retrieve a list of entities matching specified filters as DataFrame.
 
         :param expression: `str`
@@ -398,7 +389,7 @@ class EntitiesService(_Service):
         :param expand_tags: `bool` If True response tags are converted to columns. Default: True
         :return: :class:`.DataFrame`
         """
-        params = dict()
+        params = {}
         if expression is not None:
             params["expression"] = expression
         if min_insert_date is not None:
@@ -419,26 +410,26 @@ class EntitiesService(_Service):
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.patch(ent_update_url.format(entity=quote(encode_if_required(entity.name), '')), entity)
+        self.conn.patch(ent_update_url.format(entity=quote(entity.name, '')), entity)
         return True
 
     def create_or_replace(self, entity):
-        """Create an entity or an existing entity.
+        """Create an entity or update an existing entity.
 
         :param entity: :class:`.Entity`
         :return: True if success
         """
-        self.conn.put(ent_create_or_replace_url.format(entity=quote(encode_if_required(entity.name), '')), entity)
+        self.conn.put(ent_create_or_replace_url.format(entity=quote(entity.name, '')), entity)
         return True
 
     def delete(self, entity):
         """Delete the specified entity.
 
-        :param entity: :class:`.Entity`
+        :param entity: :class:`.Entity` | `str` Entity name.
         :return: True if success
         """
         entity_name = entity.name if isinstance(entity, Entity) else entity
-        self.conn.delete(ent_delete_url.format(entity=quote(encode_if_required(entity_name), '')))
+        self.conn.delete(ent_delete_url.format(entity=quote(entity_name, '')))
         return True
 
     def metrics(self, entity, expression=None, min_insert_date=None, max_insert_date=None, use_entity_insert_time=False,
@@ -468,11 +459,11 @@ class EntitiesService(_Service):
             params['limit'] = limit
         if tags is not None:
             params['tags'] = tags
-        response = self.conn.get(ent_metrics_url.format(entity=quote(encode_if_required(entity_name), '')), params)
+        response = self.conn.get(ent_metrics_url.format(entity=quote(entity_name, '')), params)
         return _jsonutil.deserialize(response, Metric)
 
 
-# ------------------------------------------------------------------------------ ENTITIY GROUPS
+# ----------------------------------------------------------------- ENTITY GROUPS
 class EntityGroupsService(_Service):
     def get(self, group_name):
         """Retrieve the specified entity group.
@@ -482,7 +473,6 @@ class EntityGroupsService(_Service):
         """
         _check_name(group_name)
         try:
-            group_name = encode_if_required(group_name)
             resp = self.conn.get(eg_get_url.format(group=quote(group_name, '')))
         except ServerException as e:
             if e.status_code == 404:
@@ -494,12 +484,12 @@ class EntityGroupsService(_Service):
     def list(self, expression=None, tags=None, limit=None):
         """Retrieve a list of entity groups.
 
-        :param expression: `str`
-        :param tags: `dict`
-        :param limit: `int`
+        :param expression: `str` Expression to include entity groups by name or tags.
+        :param tags: `dict` Comma-separated list of entity group tag names to be displayed in the response.
+        :param limit: `int` Maximum number of entity groups to retrieve, ordered by name.
         :return: :class:`.EntityGroup` objects
         """
-        params = dict()
+        params = {}
         if expression is not None:
             params["expression"] = expression
         if tags is not None:
@@ -516,33 +506,27 @@ class EntityGroupsService(_Service):
         :param group: :class:`.EntityGroup`
         :return: True if success
         """
-        self.conn.patch(eg_update_url.format(group=quote(encode_if_required(group.name), '')), group)
+        self.conn.patch(eg_update_url.format(group=quote(group.name, '')), group)
         return True
 
-    def create_or_replace(self, group, expression=None, tags=None):
+    def create_or_replace(self, group):
         """Create an entity group or replace an existing entity group.
 
         :param group: :class:`.EntityGroup`
-        :param expression: `str` describe entities that match a filter expression consisting of fields and operators
-        :param tags: `dict` Entity tags, as requested with the tags parameter.
         :return: True if successful
         """
-        data = dict()
-        if expression is not None:
-            data["expression"] = expression
-        if tags is not None:
-            data["tags"] = tags
-        self.conn.put(eg_create_or_replace_url.format(group=quote(group.name, '')), data)
+        self.conn.put(eg_create_or_replace_url.format(group=quote(group.name, '')), group)
         return True
 
     def delete(self, group):
         """Delete the specified entity group.
         Member entities and their data are not affected by this operation.
 
-        :param group: :class:`.EntityGroup`
+        :param group: :class:`.EntityGroup` | `str` Entity Group name.
         :return: True if success
         """
-        self.conn.delete(eg_delete_url.format(group=quote(group.name, '')))
+        group_name = group.name if isinstance(group, EntityGroup) else group
+        self.conn.delete(eg_delete_url.format(group=quote(group_name, '')))
         return True
 
     def get_entities(self, group_name, expression=None, min_insert_date=None, max_insert_date=None, tags=None,
@@ -558,7 +542,7 @@ class EntityGroupsService(_Service):
         :return: `list` of :class:`.Entity` objects
         """
         _check_name(group_name)
-        params = dict()
+        params = {}
         if expression is not None:
             params["expression"] = expression
         if min_insert_date is not None:
@@ -569,25 +553,24 @@ class EntityGroupsService(_Service):
             params["tags"] = tags
         if limit is not None:
             params["limit"] = limit
-        resp = self.conn.get(eg_get_entities_url.format(group=quote(encode_if_required(group_name), '')), params)
+        resp = self.conn.get(eg_get_entities_url.format(group=quote(group_name, '')), params)
         return _jsonutil.deserialize(resp, Entity)
 
     def add_entities(self, group_name, entities, create_entities=None):
         """Add entities as members to the specified entity group.
         Changing members of expression-based groups is not supported.
-        Note that changing members of expression-based groups is not supported.
 
         :param group_name: `str`
         :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names
-        :param create_entities: `bool` option indicating new entities from the submitted list are created if such entities do not exist
-        :return: True if success
+        :param create_entities: `bool` option indicating new entities from the submitted list are created if such
+        entities do not exist :return: True if success
         """
         _check_name(group_name)
         data = []
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
         params = {"createEntities": True if create_entities is None else create_entities}
-        response = self.conn.post(eg_add_entities_url.format(group=quote(encode_if_required(group_name), '')), data,
+        response = self.conn.post(eg_add_entities_url.format(group=quote(group_name, '')), data,
                                   params=params)
         return True
 
@@ -607,7 +590,7 @@ class EntityGroupsService(_Service):
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
         params = {"createEntities": True if create_entities is None else create_entities}
-        response = self.conn.post(eg_set_entities_url.format(group=quote(encode_if_required(group_name), '')), data,
+        response = self.conn.post(eg_set_entities_url.format(group=quote(group_name, '')), data,
                                   params=params)
         return True
 
@@ -617,7 +600,7 @@ class EntityGroupsService(_Service):
         Changing members of expression-based groups is not supported.
 
         :param group_name: `str`
-        :param data: `list` of :class:`.Entity` objects | `list` of `str` entity names
+        :param entities: `list` of :class:`.Entity` objects | `list` of `str` entity names
         :return: True if success
         """
         _check_name(group_name)
@@ -625,12 +608,12 @@ class EntityGroupsService(_Service):
         for e in entities:
             data.append(e.name if isinstance(e, Entity) else e)
 
-        response = self.conn.post(eg_delete_entities_url.format(group=quote(encode_if_required(group_name), '')),
+        response = self.conn.post(eg_delete_entities_url.format(group=quote(group_name, '')),
                                   data=data)
         return True
 
 
-# ------------------------------------------------------------------------ SQL
+# --------------------------------------------------------------------------- SQL
 class SQLService(_Service):
     def query(self, sql_query):
         """Execute SQL query.
@@ -654,7 +637,7 @@ class SQLService(_Service):
             params = {'outputFormat': 'csv'}
         params['q'] = sql_query
         try:
-            response_text = self.conn.post(sql_query_url, None, urlencode(params))
+            response_text = self.conn.post(sql_query_url, None, params)
         except ServerException as e:
             if e.status_code == 404:
                 return None
@@ -668,11 +651,11 @@ class SQLService(_Service):
         :param query_id: `str`
         :return: True if success
         """
-        response = self.conn.get(sql_cancel_url, urlencode({'queryId': query_id}))
+        response = self.conn.get(sql_cancel_url, {'queryId': query_id})
         return True
 
 
-# ------------------------------------------------------------------------------ COMMANDS
+# ---------------------------------------------------------------------- COMMANDS
 class CommandsService(_Service):
     def send_commands(self, commands, commit=False):
         """Send a command or a batch of commands in Network API syntax via /api/v1/command
@@ -690,11 +673,6 @@ class CommandsService(_Service):
         return response
 
 
-def encode_if_required(name):
-    name = name.encode('utf-8') if isinstance(name, six.string_types) else name
-    return name
-
-
 def response_to_dataframe(resp, reserved, **frame_params):
     expand_tags = frame_params.pop('expand_tags', True)
     enc_resp = []
@@ -703,11 +681,18 @@ def response_to_dataframe(resp, reserved, **frame_params):
         for field in fields:
             dictionary = el.pop(field, None)
             if dictionary is not None:
-                for k, v in six.iteritems(dictionary):
+                for k, v in dictionary.items():
                     if (expand_tags and (k in reserved)) or not expand_tags:
                         k = '{}.{}'.format(field, k)
                     el[k] = v
-        el['date'] = to_date(el['date'])
+        if 'date' in el:
+            # Message or Property
+            el['date'] = to_date(el['date'])
+        else:
+            # Entity
+            el['createdDate'] = to_date(el['createdDate'])
+            if 'lastInsertDate' in el:
+                el['lastInsertDate'] = to_date(el['lastInsertDate'])
         enc_resp.append(el)
     import pandas as pd
     pd.set_option("display.expand_frame_repr", False)

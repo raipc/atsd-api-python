@@ -10,15 +10,19 @@ python:
 before_install:
   - export ATSD_LOGIN=axibase
   - export ATSD_PASSWORD=axibase
+  - export VERSION_URL=http://localhost:8088/version
 install:
   - docker run -d --name="atsd-api-test-python" -e axiname="$ATSD_LOGIN" -e axipass="$ATSD_PASSWORD" -e timezone="Asia/Kathmandu" -p8443:8443 -p8088:8088 axibase/atsd:api_test
-  - pip install . .[analysis]
+  - pip install .
   - wget https://raw.githubusercontent.com/axibase/atsd/master/.travis-functions.sh && source .travis-functions.sh
   - install_checkers_in_non_doc_project
-  - while [[ $(curl --user $ATSD_LOGIN:$ATSD_PASSWORD --write-out %{http_code} --silent --output /dev/null http://localhost:8088/version) != 200 ]]; do  echo "waiting to start ATSD server ..."; sleep 3; done
+  - while [[ $(curl --user $ATSD_LOGIN:$ATSD_PASSWORD --write-out %{http_code} --silent --output /dev/null ${VERSION_URL}) != 200 ]]; do  echo "waiting to start ATSD server ..."; sleep 3; done
+  - curl --user ${ATSD_LOGIN}:${ATSD_PASSWORD} ${VERSION_URL}
 script:
   - pip list
   - python -m unittest discover -v tests
+  - pip install pandas
+  - python -m unittest discover -v tests.pandas
   - spellcheck
   - linkcheck
   - stylecheck

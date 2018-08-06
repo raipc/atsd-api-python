@@ -6,10 +6,10 @@
 ATSD API client for Python
 =======================================
 
-Axibase Time-Series Database Client for Python
+Axibase Time Series Database Client for Python
 ==============================================
 
-The Axibase Time-Series Database API Client for Python enables
+The Axibase Time Series Database API Client for Python enables
 developers to easily read and write statistics and metadata from Axibase
 Time-Series Database.
 
@@ -26,11 +26,11 @@ Install atsd\_client with pip
 
     pip install atsd_client
 
-or clone GitHub repository and run
+or clone GitHub `repository <https://github.com/axibase/atsd-api-python.git>`__ and run
 
 ::
 
-    python setup.py install
+    cd atsd-api-python && python setup.py install
 
 Usage
 -----
@@ -38,21 +38,17 @@ Usage
 Connecting to ATSD
 ~~~~~~~~~~~~~~~~~~
 
-To retrieve data from the Axibase Time-Series Database (ATSD), establish
+To retrieve data from the Axibase Time Series Database (ATSD), establish
 a connection with atsd\_client module as follows:
 
 .. code:: python
 
 
-        >>> import atsd_client
-        >>> from atsd_client.services import SeriesService
-        >>> conn = atsd_client.connect()
- 
+        >>> from atsd_client import connect_url
+        >>> connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
+
 Initializing the Service
 ~~~~~~~~~~~~~~~~~~~~~~~~
-
-All data needed to connect and authorize at ATSD is by default taken
-from special 'connection.properties' file.
 
 The Service implements a set of methods for interacting with a
 particular type of objects in ATSD, for example, ``Series``,
@@ -63,7 +59,7 @@ creating a service is provided below.
 .. code:: python
 
 
-        >>> svc = SeriesService(conn)
+        >>> svc = SeriesService(connection)
 
 Inserting Series Values
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -98,13 +94,12 @@ is supposed that ``power`` metric is versioned)
 Querying Series Values
 ~~~~~~~~~~~~~~~~~~~~~~
 
-When querying series values from ATSD you need to specify *entity
-filter*, *date filter* and *series filter*. Forecast, Versioning,
+When querying series values from ATSD you need to specify *EntityFilter*, *DateFilter* and *SeriesFilter*. Forecast, Versioning,
 Control, Transformation filters can also be used to filter result Series
 objects. See `SeriesQuery documentation
 page <https://axibase.com/docs/atsd/api/data/series/query.html>`__
 for more information. *Series filter* requires specifying metric name.
-You can also pass type, tags and exactMatch parameters to this filter to
+You can also pass ``type``, ``tags`` and ``exactMatch`` parameters to this filter to
 get more specific series objects. *Entity filter* can be set by
 providing either entity name, names of multiple entities, name of
 entityGroup or entityExpression. *Date filter* can be set by specifying
@@ -132,10 +127,9 @@ used.
         2018-07-18T17:14:30+00:00             1
         2018-07-18T17:16:30+00:00             2
         metric: temperature
-        aggregate: {'type': 'DETAIL'}
+        aggregate: type=DETAIL
         type: HISTORY
-        tags: {}
-        data: [<Sample v=1, t=1468862070000.0, version=None>, <Sample v=2, t=1468862190000.0, version=None>]
+        tags:
         entity: sensor123
 
 Querying Versioned Series Values
@@ -171,7 +165,7 @@ a date filter.
 Exploring Results
 ~~~~~~~~~~~~~~~~~
 
-To consume the Series object in `pandas, a Python data analysis
+To consume the Series object in `Pandas, a Python data analysis
 toolkit <http://pandas.pydata.org/>`_, you can utilize the built-in
 ``to_pandas_series()`` and ``from_pandas_series()`` methods.
 
@@ -192,7 +186,7 @@ toolkit <http://pandas.pydata.org/>`_, you can utilize the built-in
 Graphing Results
 ~~~~~~~~~~~~~~~~
 
-To plot series with ``matplotlib`` use the built-in ``plot()`` method
+To plot series with ``matplotlib`` use the built-in ``plot()`` method.
 
 .. code:: python
 
@@ -229,13 +223,17 @@ Data API
 -  Series
 
    -  Insert
+   -  Insert CSV
    -  Query
+   -  Delete
 
 -  Properties
 
    -  Insert
    -  Query
+   -  Query DataFrame
    -  Type Query
+   -  Delete
 
 -  Alerts
 
@@ -248,10 +246,13 @@ Data API
 
    -  Insert
    -  Query
+   -  Query DataFrame
 
 -  Extended
 
    - Commands
+
+      - Send Commands
 
 Meta API
 ~~~~~~~~
@@ -261,33 +262,37 @@ Meta API
    -  Get
    -  List
    -  Update
-   -  Create or replace
+   -  Create or Replace
    -  Delete
+   -  Series
 
 -  Entities
 
    -  Get
    -  List
+   -  Query DataFrame
    -  Update
-   -  Create or replace
+   -  Create or Replace
    -  Delete
+   -  Metrics
 
 -  Entity Group
 
    -  Get
    -  List
    -  Update
-   -  Create or replace
+   -  Create or Replace
    -  Delete
-   -  Get entities
-   -  Add entities
-   -  Set entities
-   -  Delete entities
+   -  Get Entities
+   -  Add Entities
+   -  Set Entities
+   -  Delete Entities
 
 SQL
 ~~~
 
 - Query API Endpoint
+- Cancel Query
 
 Client Documentation
 ====================

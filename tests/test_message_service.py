@@ -2,20 +2,16 @@
 
 import logging
 import time
-
 from datetime import datetime
-
-from atsd_client import services
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Message
 from atsd_client.models import MessageQuery
-
 from service_test_base import ServiceTestBase
 
 logger = logging.getLogger()
 logger.disabled = True
 
-ENTITY = 'pyapi.entity'
+ENTITY = 'pyapi.message_service.entity'
 TYPE = 'pyapi.type'
 SOURCE = 'pyapi.source'
 TAG = 'pyapi.tag'
@@ -24,83 +20,66 @@ TAGS = {TAG: TAG_VALUE}
 SEVERITY = 'MINOR'
 MESSAGE_1 = 'pyapi test message'
 MESSAGE_2 = 'pyapi test message expression'
+DATE = datetime.now()
+INTERVAL = {"count": 5, "unit": "MINUTE"}
+ef = EntityFilter(entity=ENTITY)
+df = DateFilter(start_date=DATE, interval=INTERVAL)
 
 
 class TestMessageService(ServiceTestBase):
 
-    def setUp(self):
-        self.ms = services.MessageService(self._connection)
-
-    """
-    Check parameters were set as expected.
-    """
+    @classmethod
+    def setUpClass(cls):
+        """
+        Insert messages.
+        """
+        super().setUpClass()
+        msg_1 = Message(TYPE, SOURCE, ENTITY, DATE, SEVERITY, TAGS, MESSAGE_1)
+        msg_2 = Message(TYPE, SOURCE, ENTITY, DATE, SEVERITY, TAGS, MESSAGE_2)
+        cls.service.insert(msg_1)
+        cls.service.insert(msg_2)
+        time.sleep(cls.wait_time)
 
     def test_fields_match(self):
-        DATE = datetime.now()
-        m = Message(TYPE, SOURCE, ENTITY, DATE, SEVERITY, TAGS, MESSAGE_1, persist=False)
-        self.assertEqual(TYPE, m.type)
-        self.assertEqual(SOURCE, m.source)
-        self.assertEqual(ENTITY, m.entity)
-        self.assertTrue(isinstance(m.date, datetime))
-        self.assertEqual(SEVERITY, m.severity)
-        self.assertEqual(TAGS, m.tags)
+        """
+        Check fields of Message model were set as expected.
+        """
+        m = Message(TYPE, SOURCE, ENTITY, DATE, SEVERITY, TAGS, MESSAGE_1)
         self.assertEqual(MESSAGE_1, m.message)
-        self.assertFalse(m.persist)
+        self.common_checks(m)
 
-    """
-    Check inserted and retrieved messages are equal.
-    """
-
-    def test_insert_retrieve(self):
-        DATE = datetime.now()
-        msg = Message(TYPE, SOURCE, ENTITY, DATE, SEVERITY, TAGS, MESSAGE_1)
-        self.ms.insert(msg)
-
-        time.sleep(2)
-
-        ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(start_date=DATE, end_date=datetime.now())
+    def test_retrieve(self):
+        """
+        Check inserted and retrieved messages are equal.
+        """
         query = MessageQuery(entity_filter=ef, date_filter=df)
-        result = self.ms.query(query)
-
+        result = self.service.query(query)
         # print(result)
-
         self.assertIsNotNone(result)
         self.assertGreater(len(result), 0)
         m = result[0]
         self.assertIsInstance(m, Message)
-        """
-        In the future can be replaced with:
-        self.assertItemsEqual(msg.__dict__.items(), m.__dict__.items())
-        """
-        self.assertEqual(msg.type, m.type)
-        self.assertEqual(msg.source, m.source)
-        self.assertEqual(msg.entity, m.entity)
-        self.assertEqual(msg.severity, m.severity)
-        self.assertEqual(msg.tags, m.tags)
-        self.assertEqual(msg.message, m.message)
-        self.assertEqual(msg.persist, m.persist)
-
-    """
-    Check query method with expression field.
-    """
+        self.common_checks(m)
 
     def test_query_expr(self):
-        DATE = datetime.now()
-        msg = Message(TYPE, SOURCE, ENTITY, DATE, message=MESSAGE_2)
-        self.ms.insert(msg)
-
-        time.sleep(2)
-
+        """
+        Check query method with expression field.
+        """
         exp = "message LIKE '* expression'"
-        ef = EntityFilter(entity=ENTITY)
-        df = DateFilter(interval={"count": 5, "unit": "MINUTE"}, end_date=datetime.now())
         query = MessageQuery(entity_filter=ef, date_filter=df, expression=exp)
-        result = self.ms.query(query)
-
+        result = self.service.query(query)
+        # print(result)
         self.assertIsNotNone(result)
         self.assertGreater(len(result), 0)
         m = result[0]
-        self.assertIsInstance(m, Message)
-        self.assertEqual(ENTITY, m.entity)
         self.assertEqual(MESSAGE_2, m.message)
+        self.common_checks(m)
+
+    def common_checks(self, message):
+        self.assertEqual(TYPE, message.type)
+        self.assertEqual(SOURCE, message.source)
+        self.assertEqual(ENTITY, message.entity)
+        self.assertTrue(isinstance(message.date, datetime))
+        self.assertEqual(SEVERITY, message.severity)
+        self.assertEqual(TAGS, message.tags)
+        self.assertTrue(message.persist)

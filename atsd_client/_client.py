@@ -15,14 +15,9 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 import logging
-
-try:
-    import urlparse
-except ImportError:
-    import urllib.parse as urlparse
 import requests
+from requests.compat import urljoin
 from . import _jsonutil
-
 from .exceptions import ServerException
 
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
@@ -44,14 +39,14 @@ class Client(object):
                  username=None, password=None,
                  ssl_verify=False, timeout=None):
         """
-        :param base_url: atsd url
+        :param base_url: ATSD url
         :param username: login
         :param password:
         :param ssl_verify: verify ssl certificate
         :param timeout: request timeout
         """
         logging.info('Connecting to ATSD at %s as %s user.' % (base_url, username))
-        self.context = urlparse.urljoin(base_url, 'api/')
+        self.context = urljoin(base_url, 'api/')
         session = requests.Session()
         if ssl_verify is False or ssl_verify == 'False':
             session.verify = False
@@ -63,7 +58,7 @@ class Client(object):
     def _request(self, method, path, params=None, json=None, data=None):
         request = requests.Request(
             method=method,
-            url=urlparse.urljoin(self.context, path),
+            url=urljoin(self.context, path),
             data=data,
             json=_jsonutil.serialize(json),
             params=params

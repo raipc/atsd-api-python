@@ -19,7 +19,6 @@ import inspect
 import numbers
 import re
 
-import six
 from datetime import datetime
 
 _underscorer1 = re.compile(r'(.)([A-Z][a-z]+)')
@@ -29,18 +28,18 @@ from ._time_utilities import to_iso
 
 
 def serialize(target):
-    to_dict = getattr(target, "_to_dict", None)
+    to_dict = getattr(target, "to_dict", None)
     if callable(to_dict):
-        return target._to_dict()
+        return target.to_dict()
     if isinstance(target, dict):
-        return dict([k, serialize(v)] for k, v in six.iteritems(target))
+        return dict([k, serialize(v)] for k, v in target.items())
     elif isinstance(target, (list, tuple)):
         return [serialize(el) for el in target]
     elif isinstance(target, bool):
         return str(target).lower()
     elif isinstance(target, datetime):
         return to_iso(target)
-    elif isinstance(target, (six.text_type, six.binary_type, numbers.Number)):
+    elif isinstance(target, (str, bytes, numbers.Number)):
         return target
     elif target is None:
         return None
@@ -57,17 +56,17 @@ def serialize(target):
                     result[key] = serialized_property
             return result
         except AttributeError:
-            raise ValueError(six.text_type(target) + ' could not be serialized')
+            raise ValueError(str(target) + ' could not be serialized')
 
 
 def deserialize(target, model_class):
     if isinstance(target, (list, tuple)):
         return [deserialize(el, model_class) for el in target]
     try:
-        args = inspect.getargspec(model_class.__init__).args
+        args = inspect.getfullargspec(model_class.__init__).args
         args.remove('self')
         params = {}
-        target = {to_snake_case(k): v for k, v in six.iteritems(target)}
+        target = {to_snake_case(k): v for k, v in target.items()}
         for attr in target:
             if attr in args:
                 params[attr] = target[attr]
@@ -76,7 +75,7 @@ def deserialize(target, model_class):
             if attr not in args:
                 setattr(result_object, attr, target[attr])
     except:
-        raise ValueError(six.text_type(target) + ' could not be deserialized to ' + six.text_type(model_class))
+        raise ValueError(str(target) + ' could not be deserialized to ' + str(model_class))
     return result_object
 
 

@@ -19,10 +19,7 @@ import numbers
 from .._utilities import copy_not_empty_attrs
 from .._time_utilities import to_iso
 
-try:
-    unicode = unicode
-except NameError:
-    unicode = str
+unicode = str
 
 
 # ===============================================================================
@@ -121,7 +118,7 @@ class Severity(object):
 
 
 # ===============================================================================
-################# General Filters
+# General Filters
 # ===============================================================================
 class EntityFilter():
     """
@@ -191,9 +188,9 @@ class DateFilter:
 
 
 # ===============================================================================
-################# Series Queries
+# Series Queries
 # ===============================================================================
-class SeriesQuery():
+class SeriesQuery:
     """
     Class representing a series query to get sample for the specified filters and parameters.
     """
@@ -268,7 +265,7 @@ class SeriesDeleteQuery:
 
 
 # ------------------------------------------------------------------------------
-class SeriesFilter():
+class SeriesFilter:
     def __init__(self, metric, tags=None, type="HISTORY", tag_expression=None, exact_match=None):
         if not metric:
             raise ValueError("Metric is required.")
@@ -300,7 +297,7 @@ class SeriesFilter():
 
 
 # ------------------------------------------------------------------------------
-class ForecastFilter():
+class ForecastFilter:
     def __init__(self, forecast_name=""):
         # : `str` unique forecast name. Identifies a custom forecast by name. If forecastName is not set,
         # then the default forecast computed by the database is returned. forecastName is applicable only when
@@ -312,7 +309,7 @@ class ForecastFilter():
 
 
 # ------------------------------------------------------------------------------
-class VersioningFilter():
+class VersioningFilter:
     def __init__(self, versioned=None, version_filter=None):
         # : `bool` option indicating if version status, source, and change date is returned if metric is
         # versioned. Default: false.
@@ -323,7 +320,7 @@ class VersioningFilter():
 
 
 # ------------------------------------------------------------------------------
-class ControlFilter():
+class ControlFilter:
     def __init__(self, limit=None, direction=None, series_limit=None, cache=None, request_id=None, time_format=None,
                  add_meta=None):
         #: `int` maximum number of time:value samples returned for each series. Default: 0.
@@ -476,12 +473,12 @@ class Group:
         self.order = value if value is not None else 0
 
 
-class Aggregate():
+class Aggregate:
     """
     Class representing aggregate param 'aggregate'
     """
 
-    def __init__(self, period, types=None, interpolate=None, threshold=None, calendar=None, workingMinutes=None,
+    def __init__(self, period, types=None, interpolate=None, threshold=None, calendar=None, working_minutes=None,
                  order=None):
         if types is not None:
             self.set_types(*types)
@@ -491,8 +488,8 @@ class Aggregate():
             self.set_interpolate(**interpolate)
         if calendar is not None:
             self.set_calendar(**calendar)
-        if workingMinutes is not None:
-            self.set_working_minutes(**workingMinutes)
+        if working_minutes is not None:
+            self.set_working_minutes(**working_minutes)
         if threshold is not None:
             self.set_threshold(**threshold)
         if period is not None:
@@ -554,7 +551,7 @@ class Aggregate():
         self.order = order if order is not None else 0
 
 
-class Interpolate():
+class Interpolate:
     """
     Class representing aggregate param 'interpolate'
     """
@@ -599,7 +596,7 @@ class Interpolate():
 
 
 # ===============================================================================
-################# Properties
+# Properties
 # ===============================================================================
 class PropertiesQuery:
     """
@@ -681,7 +678,7 @@ class PropertiesDeleteQuery:
 
 
 # ===============================================================================
-################# Alerts
+# Alerts
 # ===============================================================================
 class AlertsQuery:
     """
@@ -721,7 +718,7 @@ class AlertsQuery:
 
 
 # ------------------------------------------------------------------------------
-class AlertHistoryQuery():
+class AlertHistoryQuery:
     """
     Class to retrieve alert history records for the specified filters.
     """
@@ -754,9 +751,9 @@ class AlertHistoryQuery():
 
 
 # ===============================================================================
-################# Messages
+# Messages
 # ===============================================================================
-class MessageQuery():
+class MessageQuery:
     """
      Class to retrieve message records for the specified filters.
     """
@@ -795,7 +792,7 @@ class MessageQuery():
     def set_severities(self, value):
         self.severities = value
 
-    def set_minSeverity(self, value):
+    def set_min_severity(self, value):
         self.minSeverity = value
 
     def set_limit(self, value):
