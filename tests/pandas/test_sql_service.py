@@ -3,7 +3,9 @@
 import logging
 from datetime import datetime
 import time
-from ..service_test_base import ServiceTestBase, SeriesService
+
+from atsd_client.services import SeriesService
+from tests import service_test_base
 from atsd_client.models import Series, Sample
 
 logger = logging.getLogger()
@@ -15,7 +17,7 @@ VALUE = 1
 QUERY = 'SELECT * FROM "{}"'.format(METRIC)
 
 
-class TestSQLService(ServiceTestBase):
+class TestSQLService(service_test_base.ServiceTestBase):
 
     def setUp(self):
         """

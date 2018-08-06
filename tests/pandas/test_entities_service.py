@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 from atsd_client.models import Entity
-from ..service_test_base import ServiceTestBase
+from tests import service_test_base
 logger = logging.getLogger()
 logger.disabled = True
 
@@ -21,7 +21,7 @@ TAGS = {TAG: TAG_VALUE}
 EXPRESSION = 'name="{}"'.format(NAME)
 
 
-class TestEntitiesService(ServiceTestBase):
+class TestEntitiesService(service_test_base.ServiceTestBase):
 
     def setUp(self):
         """

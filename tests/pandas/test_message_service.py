@@ -6,7 +6,7 @@ from datetime import datetime
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Message
 from atsd_client.models import MessageQuery
-from ..service_test_base import ServiceTestBase
+from tests import service_test_base
 
 logger = logging.getLogger()
 logger.disabled = True
@@ -23,7 +23,7 @@ DATE = datetime.now()
 INTERVAL = {"count": 5, "unit": "MINUTE"}
 
 
-class TestMessageService(ServiceTestBase):
+class TestMessageService(service_test_base.ServiceTestBase):
 
     def setUp(self):
         """
