@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import time
 from atsd_client.models import EntityGroup, Entity
 from service_test_base import ServiceTestBase, EntitiesService
-
-logger = logging.getLogger()
-logger.disabled = True
 
 NAME = 'pyapi.entity_groups_service.group'
 GROUP_SEARCH_EXPRESSION = 'name LIKE "*entity_groups_service*"'
@@ -17,6 +13,7 @@ TAG = 'pyapi.tag'
 TAG_VALUE = 'pyapi.tag-value'
 TAGS = {TAG: TAG_VALUE}
 ENTITY_SEARCH_EXPRESSION = 'name = "{}"'.format(ENTITY)
+
 
 class TestEntityGroupsService(ServiceTestBase):
 

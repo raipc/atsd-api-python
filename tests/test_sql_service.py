@@ -1,14 +1,8 @@
 # -*- coding: utf-8 -*-
-
-import logging
 from datetime import datetime
 import time
 from service_test_base import ServiceTestBase, SeriesService
-
 from atsd_client.models import Series, Sample
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.sql_service.entity'
 METRIC = 'pyapi.sql_service.metric'

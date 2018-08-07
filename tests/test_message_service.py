@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import time
 from datetime import datetime
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Message
 from atsd_client.models import MessageQuery
 from service_test_base import ServiceTestBase
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.message_service.entity'
 TYPE = 'pyapi.type'

@@ -1,13 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import time
 from datetime import datetime
 from atsd_client.models import Metric, Series, Sample
 from service_test_base import ServiceTestBase, SeriesService
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.metrics_service.entity'
 NAME = 'pyapi.metrics_service.metric'

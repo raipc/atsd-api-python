@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import time
 from datetime import datetime
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Property
 from atsd_client.models import PropertiesQuery
-
 from service_test_base import ServiceTestBase
 
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.properties_service.entity'
 TYPE = 'pyapi.type'

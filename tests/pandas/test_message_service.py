@@ -1,15 +1,11 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import time
 from datetime import datetime
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Message
 from atsd_client.models import MessageQuery
-from tests import service_test_base
-
-logger = logging.getLogger()
-logger.disabled = True
+from tests import ServiceTestBase
 
 ENTITY = 'pyapi.message_service_df.entity'
 TYPE = 'pyapi.type_df'
@@ -23,7 +19,7 @@ DATE = datetime.now()
 INTERVAL = {"count": 5, "unit": "MINUTE"}
 
 
-class TestMessageService(service_test_base.ServiceTestBase):
+class TestMessageService(ServiceTestBase):
 
     def setUp(self):
         """

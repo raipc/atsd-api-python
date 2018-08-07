@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
-import logging
 import random
 import time
 from datetime import datetime
@@ -15,9 +13,6 @@ from atsd_client.models import SeriesQuery
 from atsd_client.models import TimeUnit, Sample
 
 from service_test_base import ServiceTestBase
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.entity'
 METRIC = 'pyapi.metric'

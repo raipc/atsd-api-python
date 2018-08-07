@@ -6,7 +6,7 @@ from datetime import datetime
 from atsd_client.models import EntityFilter, DateFilter
 from atsd_client.models import Property
 from atsd_client.models import PropertiesQuery
-from tests import service_test_base
+from tests import ServiceTestBase
 logger = logging.getLogger()
 logger.disabled = True
 
@@ -21,7 +21,7 @@ KEY = {KEY_NAME: KEY_VALUE}
 DATE = datetime.now()
 
 
-class TestPropertiesService(service_test_base.ServiceTestBase):
+class TestPropertiesService(ServiceTestBase):
 
     def setUp(self):
         """

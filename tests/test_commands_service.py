@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
 
-
-import logging
 from service_test_base import ServiceTestBase
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.commands_service.entity'
 SERIES_COMMAND = 'series e:' + ENTITY + ' m:pyapi.commands_service.metric=1'

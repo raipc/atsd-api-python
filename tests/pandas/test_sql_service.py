@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import logging
 from datetime import datetime
 import time
-
 from atsd_client.services import SeriesService
-from tests import service_test_base
+from tests import ServiceTestBase
 from atsd_client.models import Series, Sample
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.sql_service_df.entity'
 METRIC = 'pyapi.sql_service_df.metric'
@@ -17,7 +12,7 @@ VALUE = 1
 QUERY = 'SELECT * FROM "{}"'.format(METRIC)
 
 
-class TestSQLService(service_test_base.ServiceTestBase):
+class TestSQLService(ServiceTestBase):
 
     def setUp(self):
         """

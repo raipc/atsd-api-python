@@ -1,14 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import logging
-import unittest
 from datetime import datetime
 import time
 from atsd_client.models import Alert, AlertsQuery, AlertHistoryQuery, EntityFilter, DateFilter, Series, Sample
 from service_test_base import ServiceTestBase, SeriesService
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.alerts_service.entity'
 METRIC = 'test_alert_metric_1'
