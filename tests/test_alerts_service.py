@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+import unittest
 from datetime import datetime
 import time
 from atsd_client.models import Alert, AlertsQuery, AlertHistoryQuery, EntityFilter, DateFilter, Series, Sample

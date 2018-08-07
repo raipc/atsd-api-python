@@ -20,7 +20,7 @@ install:
 script:
   - pip list
   - python -m unittest discover -v tests
-  - pip install pandas
+  - pip install pandas reload
   - python -m unittest discover -v -s tests/pandas
   - spellcheck
   - linkcheck
