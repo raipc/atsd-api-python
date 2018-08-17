@@ -1,4 +1,6 @@
-# Axibase Time Series Database Client for Python
+# ATSD Python Client
+
+![](./images/axibase-and-python.png)
 
 ## Table of Contents
 
