@@ -5,9 +5,10 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
-  - "pypy3.5"
 matrix:
   include:
+  - "pypy3.5"
+    before_install: pip install cython
   - python: 3.7
     dist: xenial
     sudo: true
