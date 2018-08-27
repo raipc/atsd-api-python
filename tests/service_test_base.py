@@ -5,6 +5,7 @@ import logging
 logger = logging.getLogger()
 logger.disabled = True
 
+
 class ServiceTestBase(unittest.TestCase):
     """
     Base class for Unit tests.

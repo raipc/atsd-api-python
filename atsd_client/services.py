@@ -24,6 +24,7 @@ from .models import Series, Property, Alert, AlertHistory, Metric, Entity, Entit
 from io import StringIO
 from requests.compat import quote
 
+
 def _check_name(name):
     if not isinstance(name, (bytes, str)):
         raise TypeError('name must be str or bytes')
