@@ -24,14 +24,14 @@ with open('atsd_client/__init__.py', 'r') as fd:
 sys.stdout.write('atsd_client version: {}'.format(version))
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 3)
+REQUIRED_PYTHON = (3, 4)
 
 if CURRENT_PYTHON < REQUIRED_PYTHON:
     sys.stderr.write("""
 ==========================
 Unsupported Python version
 ========================== 
-This version of atsd_client requires Python {}.{}, but you're trying to install it on Python {}.{}.
+This version of atsd_client requires Python >= {}.{}, but you're trying to install it on Python {}.{}.
 If you can't upgrade your pip (or Python), request an older version of atsd_client:
 
     python -m pip install "atsd_client<3.0.0"
@@ -53,7 +53,7 @@ setup(
     name='atsd_client',
     packages=['atsd_client', 'atsd_client.models'],
     version=version,
-    python_requires='>=3.3',
+    python_requires='>={}.{}'.format(*REQUIRED_PYTHON),
     description='Axibase Time Series Database API Client for Python',
     url='https://github.com/axibase/atsd-api-python',
     author='Axibase Corporation',
@@ -74,10 +74,10 @@ setup(
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3 :: Only',
         'Operating System :: OS Independent',
         'Topic :: Database',
