@@ -1,7 +1,6 @@
 sudo: required
 services: docker
 language: python
-env: PANDAS_PACKAGE="pandas"
 python:
   - "3.4"
   - "3.5"
@@ -9,7 +8,6 @@ python:
 matrix:
   include:
   - "pypy3.5"
-    env: PANDAS_PACKAGE="cython pandas"
   - python: 3.7
     dist: xenial
     sudo: true
@@ -27,7 +25,7 @@ install:
 script:
   - pip list
   - python -m unittest discover -v tests
-  - pip install $PANDAS_PACKAGE
+  - pip install cython pandas
   - python -m unittest discover -v -s tests/pandas
   - spellcheck
   - linkcheck
