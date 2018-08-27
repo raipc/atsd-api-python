@@ -1,7 +1,7 @@
 sudo: required
 services: docker
 language: python
-env PANDAS_PACKAGE="pandas"
+env: PANDAS_PACKAGE="pandas"
 python:
   - "3.4"
   - "3.5"
@@ -9,7 +9,7 @@ python:
 matrix:
   include:
   - "pypy3.5"
-    env PANDAS_PACKAGE="cython pandas"
+    env: PANDAS_PACKAGE="cython pandas"
   - python: 3.7
     dist: xenial
     sudo: true
