@@ -63,7 +63,6 @@ class Metric(object):
                  label=None,
                  enabled=None,
                  data_type=None,
-                 time_precision=None,
                  persistent=None,
                  filter=None,
                  min_value=None,
@@ -88,8 +87,6 @@ class Metric(object):
         self._enabled = enabled
         #: :class:`.DataType`
         self._dataType = data_type
-        #: :class:`.TimePrecision`
-        self._timePrecision = time_precision
         #: `bool` persistence status.
         # Non-persistent metrics are not stored in the database and are only processed by the rule engine
         self._persistent = persistent
@@ -146,10 +143,6 @@ class Metric(object):
     @property
     def data_type(self):
         return self._dataType
-
-    @property
-    def time_precision(self):
-        return self._timePrecision
 
     @property
     def persistent(self):
@@ -226,10 +219,6 @@ class Metric(object):
     @property
     def created_date(self):
         return self._createdDate
-
-    @time_precision.setter
-    def time_precision(self, value):
-        self._timePrecision = value
 
     @persistent.setter
     def persistent(self, value):

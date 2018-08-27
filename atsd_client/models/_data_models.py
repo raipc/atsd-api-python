@@ -17,8 +17,6 @@ permissions and limitations under the License.
 
 import copy
 
-import six
-
 from ._meta_models import Entity, Metric
 from .._constants import display_series_threshold, display_series_part
 from .._jsonutil import deserialize, serialize
@@ -35,7 +33,7 @@ class BaseModel(object):
 
     def __repr__(self):
         result = ['\n']
-        for key, value in six.iteritems(vars(self)):
+        for key, value in vars(self).items():
             if value is not None:
                 if isinstance(value, dict):
                     value = print_tags(value)
@@ -60,7 +58,7 @@ class Sample(object):
         # `.dict` version object including 'source' and 'status' keys
         self._version = version
 
-    def _to_dict(self):
+    def to_dict(self):
         d = {'v': self._v, 't': self._t}
         if self._x:
             d['x'] = self._x
@@ -166,7 +164,7 @@ class Series(object):
             self._meta = None
         else:
             self._meta = {}
-            for k, v in six.iteritems(meta):
+            for k, v in meta.items():
                 if k == 'entity':
                     self._meta[k] = deserialize(v, Entity)
                 elif k == 'metric':
@@ -207,11 +205,11 @@ class Series(object):
         else:
             result = '\n'.join(rows)
         other_fields = []
-        for key, value in six.iteritems(vars(type(self))):
+        for key, value in vars(type(self)).items():
             if isinstance(value, property) and key != 'data':
                 attr = getattr(self, key)
-                if attr is not None and (len(attr) > 0):
-                    other_fields.append('\n{0}: {1}'.format(key, print_tags(attr) if key is 'tags' else attr))
+                if attr is not None:
+                    other_fields.append('\n{0}: {1}'.format(key, print_tags(attr) if isinstance(key, dict) and (len(value) > 0) else attr))
         return result + ''.join(other_fields)
 
     def to_dictionary(self):

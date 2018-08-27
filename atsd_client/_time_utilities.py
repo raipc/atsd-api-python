@@ -3,7 +3,6 @@ import numbers
 from datetime import datetime
 
 import pytz
-import six
 import sys
 import time
 from dateutil.parser import parse
@@ -22,7 +21,7 @@ def to_milliseconds(date):
     if isinstance(date, numbers.Number):
         return date
 
-    elif isinstance(date, (six.binary_type, six.text_type)):
+    elif isinstance(date, (bytes, str)):
         dt = parse(date)
     elif isinstance(date, datetime):
         dt = date
@@ -43,10 +42,10 @@ def to_date(time):
 
     if isinstance(time, datetime):
         return timezone_ensure(time)
-    elif isinstance(time, (six.binary_type, six.text_type)):
+    elif isinstance(time, (bytes, str)):
         date = parse(time)
     elif isinstance(time, numbers.Number):
-        date = pytz.utc.localize(datetime.utcfromtimestamp(time * 0.001))
+        date = pytz.utc.localize(datetime.utcfromtimestamp(float(time) * 0.001))
     else:
         raise ValueError('time must be either datetime instance, str or number')
     return timezone_ensure(date)
@@ -60,7 +59,7 @@ def to_iso(date):
     if date is None:
         return None
 
-    if isinstance(date, (six.binary_type, six.text_type)):
+    if isinstance(date, (bytes, str)):
         return date
 
     if date.tzinfo is None:

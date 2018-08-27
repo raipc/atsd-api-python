@@ -1,15 +1,10 @@
 # -*- coding: utf-8 -*-
 
-
-import logging
 import random
-
 import time
 from datetime import datetime
 from datetime import timedelta
-
 from atsd_client import models
-from atsd_client import services
 from atsd_client.exceptions import DataParseException
 from atsd_client.models import AggregateType, SeriesFilter, EntityFilter, DateFilter, VersioningFilter, Aggregate, \
     TransformationFilter, Group, Rate, ValueFilter
@@ -18,9 +13,6 @@ from atsd_client.models import SeriesQuery
 from atsd_client.models import TimeUnit, Sample
 
 from service_test_base import ServiceTestBase
-
-logger = logging.getLogger()
-logger.disabled = True
 
 ENTITY = 'pyapi.entity'
 METRIC = 'pyapi.metric'
@@ -49,14 +41,10 @@ def insert_series_sample(data_service, val=None, *vals):
 
 class TestSeriesService(ServiceTestBase):
 
-    def setUp(self):
-        self.svc = services.SeriesService(self._connection)
-
-    """
-    Check parameters were set as expected.
-    """
-
     def test_fields_match(self):
+        """
+        Check fields of Series model were set as expected.
+        """
         sample = Sample(1, datetime.now())
         series = Series(ENTITY, METRIC, tags={TAG: TAG_VALUE})
         series.add_samples(sample)
@@ -68,7 +56,7 @@ class TestSeriesService(ServiceTestBase):
     def test_insert_retrieve_series(self):
         val = random.randint(0, VALUE - 1)
 
-        insert_series_sample(self.svc, val)
+        insert_series_sample(self.service, val)
         time.sleep(WAIT_TIME + 2)
 
         now = datetime.now()
@@ -77,7 +65,7 @@ class TestSeriesService(ServiceTestBase):
         df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 
-        series = self.svc.query(query)
+        series = self.service.query(query)
         # for s in series:
         #     print(s)
 
@@ -93,7 +81,7 @@ class TestSeriesService(ServiceTestBase):
     def test_aggregate_series(self):
         val = random.randint(0, VALUE - 1)
 
-        insert_series_sample(self.svc, val, val + 1)
+        insert_series_sample(self.service, val, val + 1)
         time.sleep(WAIT_TIME)
 
         now = datetime.now()
@@ -104,7 +92,7 @@ class TestSeriesService(ServiceTestBase):
         tf = TransformationFilter(aggregate=aggr)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)
 
-        series = self.svc.query(query)
+        series = self.service.query(query)
         self.assertEqual(len(series), 2)
 
         if series[0].aggregate['type'] == 'MAX':
@@ -131,9 +119,9 @@ class TestSeriesService(ServiceTestBase):
         vf = VersioningFilter(versioned=True)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, versioning_filter=vf)
 
-        successful = self.svc.insert(series)
+        successful = self.service.insert(series)
         time.sleep(WAIT_TIME)
-        series, = self.svc.query(query)
+        series, = self.service.query(query)
         # print(series)
         last_sample = series.data[-1]
 
@@ -149,7 +137,7 @@ class TestSeriesService(ServiceTestBase):
         # print(series)
 
         with self.assertRaises(DataParseException) as cm:
-            self.svc.insert(series)
+            self.service.insert(series)
 
         self.assertEqual(cm.exception.non_parsed_field, 'data')
 
@@ -160,13 +148,13 @@ class TestSeriesService(ServiceTestBase):
         df = DateFilter(start_date=now - timedelta(hours=1), end_date=now)
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df)
 
-        series = self.svc.query(query)
+        series = self.service.query(query)
         self.assertEqual(series[0].type, models.SeriesType.FORECAST)
 
     def test_rate(self):
         v1 = 5
         v2 = 3
-        insert_series_sample(self.svc, v1, v2)
+        insert_series_sample(self.service, v1, v2)
         time.sleep(WAIT_TIME + 2)
 
         now = datetime.now()
@@ -176,12 +164,12 @@ class TestSeriesService(ServiceTestBase):
         tf = TransformationFilter(rate=Rate(counter=False))
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)
 
-        series = self.svc.query(query)
+        series = self.service.query(query)
         self.assertEqual(int(series[0].get_last_value()), v2 - v1)
 
     def test_group(self):
         time.sleep(1)
-        insert_series_sample(self.svc, VALUE - 1)
+        insert_series_sample(self.service, VALUE - 1)
         time.sleep(WAIT_TIME)
 
         now = datetime.now()
@@ -191,15 +179,14 @@ class TestSeriesService(ServiceTestBase):
         tf = TransformationFilter(group=Group(type=AggregateType.COUNT, period={'count': 1, 'unit': TimeUnit.SECOND}))
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, transformation_filter=tf)
 
-        series = self.svc.query(query)
+        series = self.service.query(query)
         self.assertEqual(series[0].get_last_value(), 1)
 
-    """
-    Check value filter.
-    """
-
     def test_value_filter(self):
-        insert_series_sample(self.svc, None, 2, 3)
+        """
+        Check value filter.
+        """
+        insert_series_sample(self.service, None, 2, 3)
         time.sleep(WAIT_TIME)
 
         sf = SeriesFilter(metric=METRIC, tags={TAG: TAG_VALUE}, exact_match=True)
@@ -207,7 +194,7 @@ class TestSeriesService(ServiceTestBase):
         df = DateFilter(start_date='now - 1 * MINUTE', end_date="now")
         vf = ValueFilter('Float.isNaN(value) OR value=2')
         query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, value_filter=vf)
-        series = self.svc.query(query)
+        series = self.service.query(query)
         # print(series)
         self.assertIsNotNone(series)
         self.assertEqual(1, len(series))

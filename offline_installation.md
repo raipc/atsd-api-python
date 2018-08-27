@@ -28,12 +28,6 @@ pip download pandas -d modules
 
 > Upgrade `pip` if the above command fails with error `unknown command "download"`.
 
-Check Python version:
-
-```sh
-python -V
-```
-
 The `modules` directory now contains `*.whl`and `*.tar.gz` files:
 
 ```sh
