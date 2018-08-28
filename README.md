@@ -36,7 +36,7 @@ Check Python version.
 python -V
 ```
 
-The client supports Python `>=3.3`.
+The client supports Python `>=3.4`.
 
 ## Installation
 
