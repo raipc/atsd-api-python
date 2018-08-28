@@ -3,14 +3,10 @@ import re
 from atsd_client import connect, connect_url
 from atsd_client.models import *
 from atsd_client.services import *
-import logging
 
 '''
 Query messages matching specified type, source, tags, date interval and convert results into a HTML table.
 '''
-
-logger = logging.getLogger()
-logger.disabled = True
 
 # Connect to ATSD server
 # connection = connect('connection.properties')
