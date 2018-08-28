@@ -7,10 +7,6 @@ from datetime import datetime
 # Install sh module separately
 from sh import tail
 import csv
-import logging
-
-logger = logging.getLogger()
-logger.disabled = True
 
 # nginx must be configured to write logs in CSV format:
 #

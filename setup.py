@@ -45,8 +45,8 @@ except ImportError:
     from distutils.core import setup
 
 install_requires = ['python-dateutil', 'requests>=2.12.1', 'tzlocal']
-long_description = '''The [ATSD API Client for Python](https://github.com/axibase/atsd-api-python) simplifies the 
-process of interacting with [Axibase Time Series Database](https://axibase.com/docs/atsd/) through REST API and SQL 
+long_description = '''The `ATSD API Client for Python <https://github.com/axibase/atsd-api-python>`__ simplifies the 
+process of interacting with `Axibase Time Series Database <https://axibase.com/docs/atsd/>`__ through REST API and SQL 
 endpoints.'''
 
 setup(
