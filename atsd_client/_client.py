@@ -14,7 +14,7 @@ on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
 express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
-import logging
+import logging, requests, sys
 import requests
 from requests.compat import urljoin
 from . import _jsonutil
@@ -23,8 +23,6 @@ from .exceptions import ServerException
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
-
-logging.basicConfig(level=logging.INFO)
 
 
 class Client(object):
@@ -45,7 +43,7 @@ class Client(object):
         :param ssl_verify: verify ssl certificate
         :param timeout: request timeout
         """
-        logging.info('Connecting to ATSD at %s as %s user.' % (base_url, username))
+        logging.debug('Connecting to ATSD at %s as %s user.' % (base_url, username))
         self.context = urljoin(base_url, 'api/')
         session = requests.Session()
         if ssl_verify is False or ssl_verify == 'False':
@@ -54,6 +52,8 @@ class Client(object):
             session.auth = (username, password)
         self.session = session
         self.timeout = int(timeout) if timeout is not None else None
+        self.client_version = sys.modules[_jsonutil.__package__].__version__
+        self.python_version = sys.version_info[:3]
 
     def _request(self, method, path, params=None, json=None, data=None):
         request = requests.Request(
@@ -61,7 +61,9 @@ class Client(object):
             url=urljoin(self.context, path),
             data=data,
             json=_jsonutil.serialize(json),
-            params=params
+            params=params,
+            headers={
+                'user-agent': 'atsd-api-python/{} python/{}.{}.{}'.format(self.client_version, *self.python_version)}
         )
         prepared_request = self.session.prepare_request(request)
         response = self.session.send(prepared_request, timeout=self.timeout)

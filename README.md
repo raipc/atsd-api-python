@@ -11,7 +11,7 @@
 * [Upgrade](#upgrade)
 * [Hello World](#hello-world)
 * [Connecting to ATSD](#connecting-to-atsd)
-* [Logging](#logging)
+* [Debug](#debug)
 * [Services](#services)
 * [Models](#models)
 * [Inserting Data](#inserting-data)
@@ -192,14 +192,22 @@ from atsd_client import connect
 connection = connect('/path/to/connection.properties')
 ```
 
-## Logging
+## Debug
 
-Logging to `stdout` is **enabled** by default. To disable logging, append the `logger.disabled` parameter to the script.
+Specify `DEBUG` level **before** import of `atsd_client` to see additional info:
 
 ```python
 import logging
-logger = logging.getLogger()
-logger.disabled = True
+logging.basicConfig(level=logging.DEBUG)
+import atsd_client
+```
+
+```python
+DEBUG:root:Checking 'python-requests' version...
+DEBUG:root:Module 'python-requests' version is 2.19.1. The version is compatible.
+DEBUG:root:Connecting to ATSD at https://localhost:8443 as axibase user.
+DEBUG:urllib3.connectionpool:Starting new HTTPS connection (1): localhost:8443
+DEBUG:urllib3.connectionpool:https://localhost:8443 "GET /api/v1/entities?tags=%2A&expression=createdDate+%3E+%272018-05-16T00%3A00%3A00Z%27 HTTP/1.1" 200 None
 ```
 
 ## Services

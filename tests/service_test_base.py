@@ -1,9 +1,6 @@
 import atsd_client
 from atsd_client.services import *
 import unittest
-import logging
-logger = logging.getLogger()
-logger.disabled = True
 
 
 class ServiceTestBase(unittest.TestCase):
