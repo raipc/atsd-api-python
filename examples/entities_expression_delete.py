@@ -14,9 +14,21 @@ connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 
 # Initialize services
 entity_service = EntitiesService(connection)
-entity_expression = "name LIKE 'net.source*'"
 entity_limit = 1000
+
+# Define expression to delete matching entities
+entity_expression = "name LIKE 'net.source*'"
+
+# Retrieve entities for deletion
 entities = entity_service.list(expression=entity_expression, limit=entity_limit)
+
+'''
+# Example: delete entities without any tags and with insert date of Sep 1, 2018 or earlier.
+# entity_expression = "name.length() == 64 && tags.size() == 0"
+entity_expression = "tags.size() == 0"
+entity_max_insert_date = '2018-09-01T00:00:00Z'
+entity_list = entity_service.list(expression=entity_expression, max_insert_date=entity_max_insert_date, limit=entity_limit)
+'''
 
 entity_count = len(entities)
 print(
