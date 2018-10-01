@@ -7,9 +7,9 @@ from atsd_client import connect, connect_url
 from atsd_client.services import EntitiesService, MetricsService
 
 '''
-Locate a collection of entities (docker hosts in this cases) that have not inserted data for more than 7 days.
-Delete related entities (docker containers, images, network, volumes).
-Delete docker host entities.
+Locate a collection of entities (Docker hosts) that have not inserted data for more than 7 days.
+Delete related entities (containers, images, network, volumes) based on entity-tag set to the given Docker host.
+Delete Docker host entities.
 '''
 
 # Uncomment the next two lines to set custom local timezone
