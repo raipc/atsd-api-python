@@ -452,7 +452,7 @@ To [export](https://axibase.com/docs/atsd/api/meta/misc/portal.html) portal use 
 
 ```python
 ps = PortalsService(connection)
-ps.get_portal(id=192, portal_file="192.png", additional_params={"metrics": "property_writes_per_second"})
+ps.get_portal(id=192, portal_file="192.png", metrics="property_writes_per_second")
 ```
 
 ## Analyzing Data
