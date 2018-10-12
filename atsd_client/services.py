@@ -696,6 +696,7 @@ class PortalsService(_Service):
         """
         query_params = locals()
         del query_params['portal_file']
+        del query_params['kwargs']
         if id is None and name is None:
             raise ValueError("Either id or name parameter must be specified.")
 
@@ -704,7 +705,7 @@ class PortalsService(_Service):
             if theme.lower() not in possible_themes:
                 raise ValueError("Unsupported theme, use one of: {}".format(", ".join(possible_themes)))
 
-        if kwargs is not None:
+        if len(kwargs) > 0:
             query_params.update(kwargs)
         self.conn.get(portal_export, query_params, portal=True, portal_file=portal_file)
 
