@@ -674,6 +674,42 @@ class CommandsService(_Service):
         return response
 
 
+# ---------------------------------------------------------------------- PORTAL
+class PortalsService(_Service):
+    def get_portal(self, id=None, name=None, portal_file=None, entity=None, width=900, height=600, theme=None,
+                   **kwargs):
+        """Generates a screenshot of the specified portal in PNG format.
+
+        :param id: `int` Portal identifier. Either id or name parameter must be specified. If both parameters are
+        specified, id takes precedence.
+        :param name: `str` Portal name.
+        :param portal_file: `str` File name where portal to be saved.
+        Default: {portal-name}[_{entity_name}]_{yyyymmdd}.png.
+        :param entity: `str` Entity name. Required for template portals.
+        :param width: `int`  Screenshot width, in pixels. Default: 900.
+        :param height: `int` Screenshot height, in pixels. Default: 600.
+        :param theme: str` Portal theme. Possible values: Default, Black. Default value is set in portal
+        configuration.
+        :param kwargs: `str` Additional request parameters are passed to the target portal
+        and are accessible using the ${parameter_name} syntax.
+        :return: PNG file
+        """
+        query_params = locals()
+        del query_params['portal_file']
+        del query_params['kwargs']
+        if id is None and name is None:
+            raise ValueError("Either id or name parameter must be specified.")
+
+        possible_themes = ["default", "black"]
+        if theme is not None:
+            if theme.lower() not in possible_themes:
+                raise ValueError("Unsupported theme, use one of: {}".format(", ".join(possible_themes)))
+
+        if len(kwargs) > 0:
+            query_params.update(kwargs)
+        self.conn.get(portal_export, query_params, portal=True, portal_file=portal_file)
+
+
 def response_to_dataframe(resp, reserved, **frame_params):
     expand_tags = frame_params.pop('expand_tags', True)
     enc_resp = []

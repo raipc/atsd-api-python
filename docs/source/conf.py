@@ -54,7 +54,7 @@ copyright = u'2018, Axibase'
 # built documents.
 #
 # The short X.Y version.
-version = '3.0.0'
+version = '3.0.2'
 # The full version, including alpha/beta/rc tags.
 release = version
 
