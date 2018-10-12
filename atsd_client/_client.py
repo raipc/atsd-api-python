@@ -15,7 +15,6 @@ express or implied. See the License for the specific language governing
 permissions and limitations under the License.
 """
 import logging, requests, sys
-import requests
 from requests.compat import urljoin
 from . import _jsonutil
 from .exceptions import ServerException
@@ -55,7 +54,7 @@ class Client(object):
         self.client_version = sys.modules[_jsonutil.__package__].__version__
         self.python_version = sys.version_info[:3]
 
-    def _request(self, method, path, params=None, json=None, data=None):
+    def _request(self, method, path, params=None, json=None, data=None, portal_file=None):
         request = requests.Request(
             method=method,
             url=urljoin(self.context, path),
@@ -66,10 +65,15 @@ class Client(object):
                 'user-agent': 'atsd-api-python/{} python/{}.{}.{}'.format(self.client_version, *self.python_version)}
         )
         prepared_request = self.session.prepare_request(request)
-        response = self.session.send(prepared_request, timeout=self.timeout)
+        stream = portal_file is not None
+        response = self.session.send(prepared_request, timeout=self.timeout, stream=stream)
         if not (200 <= response.status_code < 300):
             raise ServerException(response.status_code, response.text)
         try:
+            if portal_file:
+                image = response.raw.read()
+                with open(portal_file, 'wb') as f:
+                    f.write(image)
             return response.json()
         except ValueError:
             return response.text
@@ -83,8 +87,8 @@ class Client(object):
     def patch(self, path, data):
         return self._request('PATCH', path, json=data)
 
-    def get(self, path, params=None):
-        return self._request('GET', path, params=params)
+    def get(self, path, params=None, portal_file=None):
+        return self._request('GET', path, params=params, portal_file=portal_file)
 
     def put(self, path, data):
         return self._request('PUT', path, json=data)

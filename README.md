@@ -221,19 +221,20 @@ svc = SeriesService(conn)
 
 Available services:
 
-* [`SeriesService`](./atsd_client/services.py#L52)
-* [`PropertiesService`](./atsd_client/services.py#L103)
-* [`MessageService`](./atsd_client/services.py#L199)
-* [`AlertsService`](./atsd_client/services.py#L160)
-* [`MetricsService`](./atsd_client/services.py#L242)
-* [`EntitiesService`](./atsd_client/services.py#L347)
-* [`EntityGroupsService`](./atsd_client/services.py#L476)
-* [`SQLService`](./atsd_client/services.py#L634)
-* [`CommandsService`](./atsd_client/services.py#L676)
+* [`SeriesService`](./atsd_client/services.py#L44)
+* [`PropertiesService`](./atsd_client/services.py#L95)
+* [`MessageService`](./atsd_client/services.py#L192)
+* [`AlertsService`](./atsd_client/services.py#L153)
+* [`MetricsService`](./atsd_client/services.py#L235)
+* [`EntitiesService`](./atsd_client/services.py#L340)
+* [`EntityGroupsService`](./atsd_client/services.py#L469)
+* [`SQLService`](./atsd_client/services.py#L619)
+* [`CommandsService`](./atsd_client/services.py#L661)
+* [`PortalsService`](./atsd_client/services.py#L679)
 
 ## Models
 
-Use this service to insert and query particular types of records in the database, which are implemented as Python classes for convenience.
+Use the service to insert and query particular types of records in the database, which are implemented as Python classes for convenience.
 
 * [`Series`](./atsd_client/models/_data_models.py#L133)
 * [`Sample`](./atsd_client/models/_data_models.py#L47)
@@ -445,6 +446,15 @@ persist: True
 
 Refer to [API Documentation](https://axibase.com/docs/atsd/api/data/messages/query.html) for additional details.
 
+### Querying Portal
+
+To [export](https://axibase.com/docs/atsd/api/meta/misc/portal.html) portal use `get_portal()` method declared in `PortalsService`:
+
+```python
+ps = PortalsService(connection)
+ps.get_portal(id=192, portal_file="192.png", additional_params={"metrics": "property_writes_per_second"})
+```
+
 ## Analyzing Data
 
 ### Convert to `pandas`
@@ -490,7 +500,7 @@ print(ts)
 
 #### Entities
 
-To retrieve `Entity` list as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L388) method:
+To retrieve `Entity` list as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L381) method:
 
 ```python
 entities = svc.query_dataframe(expression="createdDate > '2018-05-16T00:00:00Z'")
@@ -514,7 +524,7 @@ Pandas options used by `atsd_client`:
 
 #### Messages
 
-To retrieve `Message` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L218) method:
+To retrieve `Message` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L211) method:
 
 ```python
 messages = svc.query_dataframe(query, columns=['entity', 'date', 'message'])
@@ -538,7 +548,7 @@ Pandas options used by `atsd_client`:
 
 #### Properties
 
-To retrieve `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L122) method:
+To retrieve `Property` records as Pandas [`DataFrame`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.DataFrame.html) use [`query_dataframe`](./atsd_client/services.py#L114) method:
 
 ```python
 properties = svc.query_dataframe(query)

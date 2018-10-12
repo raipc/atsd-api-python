@@ -54,7 +54,7 @@ def connect(file_name=None):
         file_name = path.join(path.dirname(path.abspath(sys.argv[0])), 'connection.properties')
     f = open(file_name)
 
-    logging.info("Reading connection properties from file: %s" % file_name)
+    logging.debug("Reading connection properties from file: %s" % file_name)
 
     params = {}
     for line in f:
