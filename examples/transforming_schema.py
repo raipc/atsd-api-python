@@ -15,13 +15,26 @@ transformed_commands = []
 
 for index, row in sql_service.query(sql_query).iterrows():
     row_dict = row.to_dict()
+
+    # transforming
+    """
+    * Swap entity and metric
+    * Discard tags that contain false values
+    * Discard time_zone tag
+    * Discard _index tag if it is equal 1
+    * Discard status tag if it is equal 0
+    """
     filtered_row = {k: v for k, v in row_dict.iteritems()
                     if v and not (v == 1 and k == 'tags._index') and k != 'tags.time_zone'
                     and not (v == 0 and k == 'tags.status')}
+    # stores series tags
     tags = {k: v for k, v in filtered_row.iteritems()
             if k.startswith('tags.')}
+    # stores fixed series fields
     series = {k: v for k, v in filtered_row.iteritems()
               if not k.startswith('tags.')}
+
+    # Generate command to insert in new db
     command = Template('series e:$metric m:$entity=$value x:$entity=$text d:$datetime').safe_substitute(series) + \
               "".join(map(lambda x: ' t:' + x + '=' + str(tags[x]), tags.keys()))
     transformed_commands.append(command)
