@@ -452,8 +452,17 @@ To [export](https://axibase.com/docs/atsd/api/meta/misc/portal.html) portal use 
 
 ```python
 ps = PortalsService(connection)
-ps.get_portal(id=192, portal_file="192.png", metrics="property_writes_per_second")
+ps.get_portal(id=192, entity="atsd", width=1000, heigth=700, portal_file="192.png", theme="default")
 ```
+
+To pass additional parameters to the target portal specify them as `key=value` pairs:
+
+```python
+# Pass tag value (it can be accessed as ${fs_type})
+ps.get_portal(name="ActiveMQ", entity="atsd", fs_type="ext4")
+```
+
+By default `portal_file` is set to `{portal_name}[_{entity_name}]_{yyyymmdd}.png`, for example `ATSD_nurswghbs001_20181012.png`.
 
 ## Analyzing Data
 
@@ -698,6 +707,7 @@ print(result[0])
 |[`sql_query.py`](./examples/sql_query.py) | Execute SQL query and convert results into a `DataFrame`. |
 |[`entity_print_metrics_html.py`](./examples/entity_print_metrics_html.py) | Print metrics for entity into HTML or ASCII table. |
 |[`export_messages.py`](./examples/export_messages.py) | Export messages into CSV. |
+|[`export_portals_for_docker_hosts.py`](./examples/export_portals_for_docker_hosts.py) | Export a template portal by name for all entities that are docker hosts. |
 |[`message_dataframe.py`](./examples/message_dataframe.py) | Execute `Message` query and convert results into a `DataFrame`. |
 |[`message_dataframe_filtered.py`](./examples/message_dataframe_filtered.py) | Execute `Message` query, convert results into a `DataFrame`, group by tag and filter. |
 |[`message_dataframe_filtered_and_ordered.py`](./examples/message_dataframe_filtered_and_ordered.py) | Execute `Message` query, convert results into a `DataFrame`, group by tag, filter, and sort by date. |

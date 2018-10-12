@@ -23,7 +23,6 @@ from .exceptions import DataParseException, SQLException, ServerException
 from .models import Series, Property, Alert, AlertHistory, Metric, Entity, EntityGroup, Message
 from io import StringIO
 from requests.compat import quote
-import datetime
 
 
 def _check_name(name):
@@ -684,7 +683,8 @@ class PortalsService(_Service):
         :param id: `int` Portal identifier. Either id or name parameter must be specified. If both parameters are
         specified, id takes precedence.
         :param name: `str` Portal name.
-        :param portal_file: `str` File name where portal to be saved. Default is portal name defined in ATSD.
+        :param portal_file: `str` File name where portal to be saved.
+        Default: {portal-name}[_{entity_name}]_{yyyymmdd}.png.
         :param entity: `str` Entity name. Required for template portals.
         :param width: `int`  Screenshot width, in pixels. Default: 900.
         :param height: `int` Screenshot height, in pixels. Default: 600.

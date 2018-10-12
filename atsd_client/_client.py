@@ -18,6 +18,7 @@ import logging, requests, sys
 from requests.compat import urljoin
 from . import _jsonutil
 from .exceptions import ServerException
+import datetime
 
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 
@@ -70,7 +71,12 @@ class Client(object):
             raise ServerException(response.status_code, response.text)
         try:
             if portal:
-                portal_file = portal_file if portal_file else response.headers.get("Content-Disposition").split("\"")[1]
+                if not portal_file:
+                    portal_name = response.headers.get("Content-Disposition").split("\"")[1]
+                    file_name = {"name": portal_name.split(".")[0],
+                                 "entity": "" if params["entity"] is None else "_{}".format(params["entity"]),
+                                 "date": datetime.datetime.now().strftime("%Y%m%d")}
+                    portal_file = "{name}{entity}_{date}.png".format(**file_name)
                 image = response.raw.read()
                 with open(portal_file, 'wb') as f:
                     f.write(image)
