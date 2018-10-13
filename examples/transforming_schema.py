@@ -9,7 +9,7 @@ from atsd_client.services import SQLService, CommandsService
 # Connect to source ATSD
 
 # source_db_connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
-source_db_connection = connect('/path/to/source.db.properties')
+source_db_connection = connect('/path/to/source.connection.properties')
 
 sql_service = SQLService(source_db_connection)
 metric_name = "metric_name"
