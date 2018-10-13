@@ -16,7 +16,7 @@ metric_name = "metric_name"
 
 sql_query = 'SELECT entity,metric, value, text, datetime, tags.* FROM "' + metric_name + '"'
 
-print sql_query
+# print sql_query
 
 keys_to_remove = ["time_zone"]
 values_to_remove = [False]
