@@ -665,6 +665,7 @@ print(result[0])
 |:---|:---|
 |[`copy_data.py`](./examples/copy_data.py)| Copy data to a different period. |
 |[`copy_data_for_the_metric.py`](./examples/copy_data_for_the_metric.py) | Copy data to a new metric. |
+|[`transforming_schema.py`](./examples/transforming_schema.py) | Copy data with transforming schema. |
 
 ### Data Removal and Cleanup
 
