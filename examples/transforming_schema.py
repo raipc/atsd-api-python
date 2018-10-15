@@ -13,6 +13,8 @@ from atsd_client.services import SQLService, CommandsService
 source_db_connection = connect('/path/to/source.connection.properties')
 source_sql_service = SQLService(source_db_connection)
 
+# Connect to Target db
+
 # target_db_connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 target_db_connection = connect('/path/to/target.connection.properties')
 target_command_service = CommandsService(target_db_connection)
@@ -27,6 +29,7 @@ default_tags_to_remove = {
     '_index': '1',
     'status': '0'
 }
+
 batch_size = 1000
 transformed_commands_batch = []
 
@@ -36,15 +39,6 @@ df = pandas.read_csv(StringIO(response), dtype=str, sep=',')
 
 for index, row in df.where(pandas.notnull(df), None).iterrows():
     row_dict = row.to_dict()
-    # transforming
-    """
-    * Swap entity and metric
-    * Discard tags that contain false values
-    * Discard time_zone tag
-    * Discard _index tag if it is equal 1
-    * Discard status tag if it is equal 0
-    """
-
     # stores fixed series fields
     series = {k: v for k, v in row_dict.iteritems()
               if not k.startswith('tags.')}
