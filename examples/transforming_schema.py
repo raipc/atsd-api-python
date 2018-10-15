@@ -69,10 +69,10 @@ for index, row in df.where(pandas.notnull(df), None).iterrows():
     if len(transformed_commands_batch) == batch_size:
         for command in transformed_commands_batch:
             print(command)
+        # target_command_service.send_commands(transformed_commands_batch)
         transformed_commands_batch = [command]
     else:
         transformed_commands_batch.append(command)
-        # target_command_service.send_commands(transformed_commands_batch)
 
 if len(transformed_commands_batch) > 0:
     for command in transformed_commands_batch:
