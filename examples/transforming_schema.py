@@ -1,10 +1,10 @@
 # Create client for old-schema client
-from string import Template
 
-import pandas
 from io import StringIO
 
-from atsd_client import connect_url, connect
+import pandas
+
+from atsd_client import connect
 from atsd_client.services import SQLService, CommandsService
 
 # Connect to source ATSD
