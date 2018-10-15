@@ -30,8 +30,8 @@ fields_dict = {
 
 fields_transformations = {
     'step': lambda r: 'LINEAR' if r['step'] == 0 else 'PREVIOUS',
-    'tag_value_type': lambda r: 'DOUBLE' if r['tag_value_type'] == 'float64' else 'FLOAT'
-    if r['tag_value_type'] in ['float16', 'float32'] else 'LONG',
+    'tag_value_type': lambda r: 'DOUBLE' if r['tag_value_type'] == 'Double' else 'FLOAT'
+    if r['tag_value_type'] == 'Single' else 'LONG',
     'span': lambda r: float(r['zero']) + float(r['span'])
 }
 
