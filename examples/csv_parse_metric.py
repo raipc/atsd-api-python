@@ -28,7 +28,7 @@ fields_dict = {
     'span': 'max_value'
 }
 
-fields_transform = {
+fields_transformations = {
     'step': lambda r: 'LINEAR' if r['step'] == 0 else 'PREVIOUS',
     'tag_value_type': lambda r: 'DOUBLE' if r['tag_value_type'] == 'float64' else 'FLOAT'
     if r['tag_value_type'] in ['float16', 'float32'] else 'LONG',
@@ -41,8 +41,8 @@ def transform_field(r):
         column_name = kv[0]
         field_name = fields_dict[column_name]
         cell_value = kv[1]
-        if column_name in fields_transform:
-            return field_name, fields_transform[column_name](r)
+        if column_name in fields_transformations:
+            return field_name, fields_transformations[column_name](r)
         else:
             return field_name, cell_value
 
