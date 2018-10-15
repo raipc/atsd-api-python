@@ -11,12 +11,14 @@ from atsd_client.services import SQLService, CommandsService
 
 # source_db_connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 source_db_connection = connect('/path/to/source.connection.properties')
+source_sql_service = SQLService(source_db_connection)
 
-sql_service = SQLService(source_db_connection)
+# target_db_connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
+target_db_connection = connect('/path/to/target.connection.properties')
+target_command_service = CommandsService(target_db_connection)
+
 metric_name = 'metric_name'
-
 sql_query = 'SELECT entity,metric, value, text, datetime, tags.* FROM "' + metric_name + '"'
-
 # print sql_query
 
 keys_to_remove = ["time_zone"]
@@ -25,11 +27,11 @@ default_tags_to_remove = {
     '_index': '1',
     'status': '0'
 }
-
-transformed_commands = []
+batch_size = 2
+transformed_commands_batch = []
 
 # read df from response with string dtype
-response = sql_service.query_with_params(sql_query)
+response = source_sql_service.query_with_params(sql_query)
 df = pandas.read_csv(StringIO(response), dtype=str, sep=',')
 
 for index, row in df.where(pandas.notnull(df), None).iterrows():
@@ -63,15 +65,17 @@ for index, row in df.where(pandas.notnull(df), None).iterrows():
         datetime=series['datetime'],
         tags="".join(map(lambda x: ' t:' + x + '=' + str(tags[x]), filter_tags.keys()))
     )
+    # if reach batch size send commands
+    if len(transformed_commands_batch) == batch_size:
+        for command in transformed_commands_batch:
+            print(command)
+        transformed_commands_batch = [command]
+    else:
+        transformed_commands_batch.append(command)
+        # target_command_service.send_commands(transformed_commands_batch)
 
-    transformed_commands.append(command)
+if len(transformed_commands_batch) > 0:
+    for command in transformed_commands_batch:
+        print(command)
 
-# target_db_connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
-target_db_connection = connect('/path/to/target.connection.properties')
-
-command_service = CommandsService(target_db_connection)
-
-for command in transformed_commands:
-    print(command)
-
-# command_service.send_commands(transformed_commands)
+# target_command_service.send_commands(transformed_commands)
