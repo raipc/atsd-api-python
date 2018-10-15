@@ -2,6 +2,7 @@
 from string import Template
 
 import pandas
+from io import StringIO
 
 from atsd_client import connect_url, connect
 from atsd_client.services import SQLService, CommandsService
@@ -27,7 +28,10 @@ default_tags_to_remove = {
 
 transformed_commands = []
 
-df = sql_service.query(sql_query)
+# read df from response with string dtype
+response = sql_service.query_with_params(sql_query)
+df = pandas.read_csv(StringIO(response), dtype=str, sep=',')
+
 for index, row in df.where(pandas.notnull(df), None).iterrows():
     row_dict = row.to_dict()
     # transforming
@@ -52,9 +56,8 @@ for index, row in df.where(pandas.notnull(df), None).iterrows():
                            (default_tags_to_remove.has_key(k) and default_tags_to_remove[k] == v))}
 
     # Generate command to insert in new db
-    print(series)
-    command = 'series e:{metric} {value_part} {text_part} d:{datetime} {tags}'.format(
-        metric=series['entity'],
+    command = 'series e:{entity} {value_part} {text_part} d:{datetime} {tags}'.format(
+        entity=series['metric'],
         value_part='m:' + series['entity'] + '=' + str(series['value']) if series['value'] is not None else "",
         text_part='x:' + series['entity'] + '=' + series['text'] if series['text'] is not None else "",
         datetime=series['datetime'],
