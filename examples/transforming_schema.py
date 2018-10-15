@@ -27,7 +27,7 @@ default_tags_to_remove = {
     '_index': '1',
     'status': '0'
 }
-batch_size = 2
+batch_size = 1000
 transformed_commands_batch = []
 
 # read df from response with string dtype
