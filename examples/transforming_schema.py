@@ -13,17 +13,17 @@ from atsd_client.services import SQLService, CommandsService
 source_db_connection = connect('/path/to/source.connection.properties')
 
 sql_service = SQLService(source_db_connection)
-metric_name = "metric_name"
+metric_name = 'metric_name'
 
 sql_query = 'SELECT entity,metric, value, text, datetime, tags.* FROM "' + metric_name + '"'
 
 # print sql_query
 
 keys_to_remove = ["time_zone"]
-values_to_remove = [False]
+values_to_remove = ['false']
 default_tags_to_remove = {
-    "_index": 1,
-    "status": 0
+    '_index': '1',
+    'status': '0'
 }
 
 transformed_commands = []
