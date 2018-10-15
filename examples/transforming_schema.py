@@ -1,5 +1,3 @@
-# Create client for old-schema client
-
 from io import StringIO
 
 import pandas
