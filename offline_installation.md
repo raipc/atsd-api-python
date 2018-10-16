@@ -1,6 +1,6 @@
 # Offline Installation
 
-Install the ATSD Python Client on a machine without internet access. Download the client module and dependencies to an intermediate server and copy the files to the target machine.
+Install **ATSD Python Client** on a machine without internet access. Download the client module and dependencies to an intermediate server and copy the files to the target machine.
 
 ## Check Version
 
@@ -28,7 +28,7 @@ pip download pandas -d modules
 
 > Upgrade `pip` if the above command fails with error `unknown command "download"`.
 
-The `modules` directory now contains `*.whl`and `*.tar.gz` files:
+The `modules` directory contains `*.whl`and `*.tar.gz` files:
 
 ```sh
 ls modules
@@ -78,7 +78,7 @@ If `pandas` integration is required, check that `pandas` module is installed:
 python -c "import pandas"
 ```
 
-An **empty** output corresponds to a successful installation. Otherwise, the output displays an error which describes missing modules.
+An **empty** output indicates a successful installation. Otherwise, the output displays an error which describes missing modules.
 
 ```python
 Traceback (most recent call last):
