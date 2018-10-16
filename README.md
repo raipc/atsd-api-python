@@ -725,9 +725,9 @@ print(result[0])
 |[`message_dataframe_filtered_and_ordered.py`](./examples/message_dataframe_filtered_and_ordered.py) | Execute `Message` query, convert results into a `DataFrame`, group by tag, filter, and sort by date. |
 |[`message_referrer_report.py`](./examples/message_referrer_report.py) | Query messages convert result into a HTML table. |
 
-Some of the examples above use the `prettytable` module to format displayed records.
+Some of the examples above use the [`PrettyTable`](https://pypi.org/project/PrettyTable/) module to format displayed records.
 
 ```bash
-pip install prettytable
+pip install PrettyTable
 # pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
 ```
