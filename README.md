@@ -6,10 +6,10 @@
 
 * [Overview](#overview)
 * [External References](#external-references)
-* [Prerequisites](#prerequisites)
+* [Requirements](#requirements)
 * [Installation](#installation)
 * [Upgrade](#upgrade)
-* [Hello, World!](#hello-world)
+* [Connection Test](#connection-test)
 * [Connecting to ATSD](#connecting-to-atsd)
 * [Debug](#debug)
 * [Services](#services)
@@ -30,7 +30,7 @@
 * [`atsd_client`](https://pypi.python.org/pypi/atsd_client) on PyPI.
 * [`atsd_client` Documentation](http://pythonhosted.org/atsd_client) on `pythonhosted.org`.
 
-## Prerequisites
+## Requirements
 
 Check Python version.
 
@@ -40,11 +40,11 @@ python -V
 
 Client supports Python &ge; `3.4.0`.
 
+> If necessary, install `pip` with `apt-get install python-pip` on Ubuntu.
+
 ## Installation
 
 ### Installing Module with `pip`
-
-> If necessary, install `pip` with `apt-get install python-pip` on Ubuntu.
 
 Install the latest `atsd_client` module with [`pip`](https://pip.pypa.io/en/stable/).
 
@@ -99,7 +99,7 @@ python setup.py install
 
 ### Verify Installation
 
-Check that all required modules are installed.
+Confirm all required modules are installed.
 
 ```bash
 python -c "import tzlocal, requests, dateutil, atsd_client"
@@ -137,13 +137,9 @@ cffi                1.11.5
 ...
 ```
 
-<!-- markdownlint-disable MD026 -->
+## Connection Test
 
-## Hello, World!
-
-<!-- markdownlint-disable MD026 -->
-
-Create a `connect_url_check.py` file with a basic connection test.
+Create `connect_url_check.py` which contains a basic connection test.
 
 ```python
 from atsd_client import connect_url
@@ -158,7 +154,7 @@ build_info = response['buildInfo']
 print('Revision: %s ' % build_info['revisionNumber'])
 ```
 
-Navigate to the directory of the `connect_url_check.py` file.
+Navigate to the directory of the `connect_url_check.py` file and execute the test.
 
 ```bash
 cd ./path/to/connect_url_check.py
@@ -169,7 +165,7 @@ Console indicates successful connection:
 
 ```txt
 INFO:root:Connecting to ATSD at https://atsd_hostname:8443 as john.doe user.
-Revision: 19020
+Revision: 19###
 ```
 
 ## Connecting to ATSD
@@ -243,7 +239,7 @@ Available services:
 
 ## Models
 
-Insert and query particular types of records in the database, which are implemented as Python classes.
+Use the service to insert and query particular types of records in the database, which are implemented as Python classes.
 
 * [`Series`](./atsd_client/models/_data_models.py#L133)
 * [`Sample`](./atsd_client/models/_data_models.py#L47)
@@ -308,10 +304,8 @@ svc.insert(message)
 
 To query database series, pass the following filters to the `SeriesService`:
 
-> `SeriesFilter` is **required**. Optionally use other filters to further specify series more precisely.
-
-* [`SeriesFilter`](./atsd_client/models/_data_queries.py#L267): Defines metric name. Alternatively, include data type, series tags, and other parameters.
-* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): Accepts a single `entity` name, an array of multiple `entity` names, an `entity group` name, or an expression to filter entities.
+* [`SeriesFilter`](./atsd_client/models/_data_queries.py#L267): **Required**. Defines metric name. Alternatively, include data type, series tags, and other parameters.
+* [`EntityFilter`](./atsd_client/models/_data_queries.py#L126): **Optional**. Accepts a single `entity` name, an array of multiple `entity` names, an `entity group` name, or an expression to filter entities.
 * [`DateFilter`](./atsd_client/models/_data_queries.py#L162): Specifies `startDate`, `endDate`, and `interval`. Provide either `startDate` and `endDate` fields **or** either `startDate` or `endDate` and `interval` **or** only `interval` to define period. If only `interval` is defined, current time is set as `endtime`. Provide `startDate` and `endDate` fields as [calendar syntax](https://axibase.com/docs/atsd/shared/calendar.html) keywords, an ISO 8601 formatted string, Unix milliseconds, or a Python `datetime` object.
 
 ```python
@@ -600,7 +594,7 @@ To plot a series with `matplotlib`, use the [`plot()`](https://matplotlib.org/ap
 
 ### Working with Versioned Data
 
-Versioning tracks time series value changes for the purpose of audit trail and data reconciliation.
+[Versioning](https://axibase.com/docs/atsd/versioning/) tracks time series value changes for the purpose of audit trail and data reconciliation.
 
 Enable versioning for specific metrics and add optional versioning fields to samples which contain the `version` argument.
 
@@ -655,8 +649,8 @@ print(result[0])
 
 |**Name**| **Description**|
 |:---|:---|
-|[`connect_url_check.py`](./examples/connect_url_check.py) | Connect to the target ATSD instance, retrieve database version, timezone and current time with the function `connect_url('https://atsd_hostname:8443', 'user', 'password')`. |
-|[`connect_path_check.py`](./examples/connect_path_check.py) | Connect to the target ATSD instance, retrieve database version, timezone and current time with the function `connect(/home/axibase/connection.properties)`. |
+|[`connect_url_check.py`](./examples/connect_url_check.py) | Connect to the target ATSD instance, retrieve database version, timezone and current time with the `connect_url('https://atsd_hostname:8443', 'user', 'password')` function. |
+|[`connect_path_check.py`](./examples/connect_path_check.py) | Connect to the target ATSD instance, retrieve database version, timezone and current time with the `connect(/home/axibase/connection.properties)` function. |
 |[`connect_check.py`](./examples/connect_check.py) | Connect to the target ATSD instance, retrieve database version, timezone and current time with the `connect()` function. |
 
 ### Inserting Records
@@ -669,7 +663,7 @@ print(result[0])
 
 |**Name**| **Description**|
 |:---|:---|
-|[`find_broken_retention.py`](./examples/find_broken_retention.py)| Find series with broken retention date. |
+|[`find_broken_retention.py`](./examples/find_broken_retention.py)| Find series that ignore metric retention days. |
 |[`metrics_without_last_insert.py`](./examples/metrics_without_last_insert.py) | Find metrics without a last insert date. |
 |[`entities_without_last_insert.py`](./examples/entities_without_last_insert.py) | Find entities without a last insert date. |
 |[`find_series_by_value_filter.py`](./examples/find_series_by_value_filter.py)|Retrieve series matching value filter expression.|
