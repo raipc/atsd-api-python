@@ -11,7 +11,7 @@
   * [From `pip`](#installing-from-pip)
   * [From Source](#installing-from-source)
 * [Upgrade](#upgrade)
-* [Hello, World](#hello-world)
+* [Hello, World!](#hello-world)
 * [Connecting to ATSD](#connecting-to-atsd)
 * [Debug](#debug)
 * [Services](#services)
@@ -46,9 +46,9 @@ Client supports Python &ge; `3.4.0`.
 
 ### Installing Module with `pip`
 
-Install `atsd_client` module with [`pip`](https://pip.pypa.io/en/stable/).
-
 > If necessary, install `pip` with `apt-get install python-pip` on Ubuntu.
+
+Install the latest `atsd_client` module with [`pip`](https://pip.pypa.io/en/stable/).
 
 ```bash
 pip install atsd_client
@@ -56,7 +56,9 @@ pip install atsd_client
 
 Upgrade setup tools with `pip install --upgrade setuptools`.
 
-Include a version number in the `pip install` command to install specific version number.
+### Other Versions
+
+Include a version number in the `pip install` command to install a specific version number other than the latest.
 
 ```bash
 pip install atsd_client==2.3.0
@@ -64,7 +66,9 @@ pip install atsd_client==2.3.0
 
 > Use this command to downgrade the module as well.
 
-Confirm `atsd_client` module version.
+### Module Version
+
+Check `atsd_client` module version.
 
 ```bash
 pip show atsd-client
@@ -87,17 +91,11 @@ To install the client on a system without Internet access, follow the [Offline I
 
 ### Installing from Source
 
-Clone the repository and run the installation manually.
+Clone the repository and run installation manually.
 
 ```bash
 git clone https://github.com/axibase/atsd-api-python.git
-```
-
-```bash
 cd atsd-api-python
-```
-
-```bash
 python setup.py install
 ```
 
@@ -109,7 +107,7 @@ Check that all required modules are installed.
 python -c "import tzlocal, requests, dateutil, atsd_client"
 ```
 
-An **empty** output indicates a successful installation. Otherwise, the output displays an error which enumerates missing modules.
+**Empty** output indicates successful installation. Otherwise, the output displays an error which enumerates missing modules.
 
 ```python
 Traceback (most recent call last):
@@ -119,13 +117,13 @@ ImportError: No module named atsd_client
 
 ## Upgrade
 
-Execute `pip install` command to upgrade the client to the latest version.
+Execute `pip install` to upgrade client to the latest version.
 
 ```bash
 pip install atsd_client --upgrade --upgrade-strategy only-if-needed
 ```
 
-Run `pip list` to view the currently installed modules.
+Execute `pip list` to view currently installed modules.
 
 ```bash
 pip list
@@ -141,7 +139,7 @@ cffi                1.11.5
 ...
 ```
 
-## Hello, World
+## Hello, World!
 
 Create a `connect_url_check.py` file with a basic connection test.
 
@@ -158,9 +156,14 @@ build_info = response['buildInfo']
 print('Revision: %s ' % build_info['revisionNumber'])
 ```
 
+Navigate to the directory of the `connect_url_check.py` file.
+
 ```bash
+cd ./path/to/connect_url_check.py
 python connect_url_check.py
 ```
+
+Terminal indicates successful connection:
 
 ```txt
 INFO:root:Connecting to ATSD at https://atsd_hostname:8443 as john.doe user.
@@ -169,7 +172,9 @@ Revision: 19020
 
 ## Connecting to ATSD
 
-To connect to an ATSD instance, hostname and port information is required. By default, ATSD listens for connection requests on port `8443`. Create a user account on the [**Settings > Users**](https://axibase.com/docs/atsd/administration/user-authorization.html) page if needed.
+To connect to an ATSD instance, **hostname** and **port** information is required. By default, ATSD listens for connection requests on port `8443`.
+
+> Create a user account on the [**Settings > Users**](https://axibase.com/docs/atsd/administration/user-authorization.html) page, if needed.
 
 Establish a connection with the `connect_url` method.
 
@@ -187,7 +192,7 @@ password=password
 ssl_verify=False
 ```
 
-Specify path to `connection.properties` file in the `connect` method.
+Launch Python and specify the path to the file `connection.properties` in the `connect` method.
 
 ```python
 from atsd_client import connect
@@ -236,7 +241,7 @@ Available services:
 
 ## Models
 
-Insert and query particular types of records in the database, which are implemented as Python classes for convenience.
+Insert and query particular types of records in the database, which are implemented as Python classes.
 
 * [`Series`](./atsd_client/models/_data_models.py#L133)
 * [`Sample`](./atsd_client/models/_data_models.py#L47)
