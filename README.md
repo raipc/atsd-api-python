@@ -139,7 +139,11 @@ cffi                1.11.5
 ...
 ```
 
+<!-- markdownlint-disable MD026 -->
+
 ## Hello, World!
+
+<!-- markdownlint-disable MD026 -->
 
 Create a `connect_url_check.py` file with a basic connection test.
 
@@ -163,7 +167,7 @@ cd ./path/to/connect_url_check.py
 python connect_url_check.py
 ```
 
-Terminal indicates successful connection:
+Console indicates successful connection:
 
 ```txt
 INFO:root:Connecting to ATSD at https://atsd_hostname:8443 as john.doe user.
@@ -201,7 +205,7 @@ connection = connect('/path/to/connection.properties')
 
 ## Debug
 
-Specify the `DEBUG` argument **before** `import atsd_client` to include logs in terminal output:
+Specify the `DEBUG` argument **before** `import atsd_client` to include logs in console output:
 
 ```python
 import logging
