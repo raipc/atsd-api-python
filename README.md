@@ -8,8 +8,6 @@
 * [External References](#external-references)
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
-  * [From `pip`](#installing-from-pip)
-  * [From Source](#installing-from-source)
 * [Upgrade](#upgrade)
 * [Hello, World!](#hello-world)
 * [Connecting to ATSD](#connecting-to-atsd)
@@ -184,14 +182,14 @@ Establish a connection with the `connect_url` method.
 
 ```python
 from atsd_client import connect_url
-connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
+connection = connect_url('https://atsd_hostname:8443', 'john.doe', 'password')
 ```
 
 Alternatively, create a `connection.properties` file.
 
 ```txt
 base_url=https://atsd_hostname:8443
-username=username
+username=john.doe
 password=password
 ssl_verify=False
 ```
@@ -261,7 +259,7 @@ Insert and query particular types of records in the database, which are implemen
 
 ### Inserting Series
 
-Initialize a `Series` object and populate object with timestamped values.
+Initialize a `Series` object and populate the object with timestamped values.
 
 ```python
 from atsd_client.models import Series
