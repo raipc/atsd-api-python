@@ -6,7 +6,7 @@ import argparse
 '''
 Delete data for the series within the specified date interval regardless of tags.
 Usage:
-python delete_series.py --entity e --metric m --start 2018-06-04T11:30:00Z --end "now - 1 * MINUTE"
+python3 delete_series.py --entity e --metric m --start 2018-06-04T11:30:00Z --end "now - 1 * MINUTE"
 '''
 
 # Parse script arguments

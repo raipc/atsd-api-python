@@ -35,31 +35,31 @@
 Check Python version.
 
 ```bash
-python -V
+python3 -V
 ```
 
-Client supports Python &ge; `3.4.0`.
+The ATSD client supports Python &ge; `3.4.0`.
 
-> If necessary, install `pip` with `apt-get install python-pip` on Ubuntu.
+> If necessary, install `pip3` (`pip` for Python `3`) with `apt-get install python-pip3` on Ubuntu.
 
 ## Installation
 
-### Installing Module with `pip`
+### Installing Module with `pip3`
 
-Install the latest `atsd_client` module with [`pip`](https://pip.pypa.io/en/stable/).
+Install the latest `atsd_client` module with [`pip3`](https://pip.pypa.io/en/stable/).
 
 ```bash
-pip install atsd_client
+pip3 install atsd_client
 ```
 
-Upgrade setup tools with `pip install --upgrade setuptools`.
+Upgrade setup tools with `pip3 install --upgrade setuptools`.
 
 ### Other Versions
 
-Include a version number in the `pip install` command to install a specific version number other than the latest.
+Include a version number in the `pip3 install` command to install a specific version number other than the latest.
 
 ```bash
-pip install atsd_client==2.3.0
+pip3 install atsd_client==2.3.0
 ```
 
 > Use this command to downgrade the module as well.
@@ -69,7 +69,7 @@ pip install atsd_client==2.3.0
 Check `atsd_client` module version.
 
 ```bash
-pip show atsd-client
+pip3 show atsd-client
 ```
 
 ```txt
@@ -94,7 +94,7 @@ Clone the repository and run installation manually.
 ```bash
 git clone https://github.com/axibase/atsd-api-python.git
 cd atsd-api-python
-python setup.py install
+python3 setup.py install
 ```
 
 ### Verify Installation
@@ -102,7 +102,7 @@ python setup.py install
 Confirm all required modules are installed.
 
 ```bash
-python -c "import tzlocal, requests, dateutil, atsd_client"
+python3 -c "import tzlocal, requests, dateutil, atsd_client"
 ```
 
 **Empty** output indicates successful installation. Otherwise, the output displays an error which enumerates missing modules.
@@ -115,16 +115,16 @@ ImportError: No module named atsd_client
 
 ## Upgrade
 
-Execute `pip install` to upgrade client to the latest version.
+Execute `pip3 install` to upgrade client to the latest version.
 
 ```bash
-pip install atsd_client --upgrade --upgrade-strategy only-if-needed
+pip3 install atsd_client --upgrade --upgrade-strategy only-if-needed
 ```
 
-Execute `pip list` to view currently installed modules.
+Execute `pip3 list` to view currently installed modules.
 
 ```bash
-pip list
+pip3 list
 ```
 
 ```txt
@@ -158,7 +158,10 @@ Navigate to the directory of the `connect_url_check.py` file and execute the tes
 
 ```bash
 cd ./path/to/connect_url_check.py
-python connect_url_check.py
+```
+
+```bash
+python3 connect_url_check.py
 ```
 
 Console indicates successful connection:
@@ -474,7 +477,7 @@ By default `portal_file` is set to `{portal_name}_{entity_name}_{yyyymmdd}.png`,
 Install the [`pandas`](http://pandas.pydata.org/) module for advanced data manipulation and analysis.
 
 ```bash
-pip install pandas
+pip3 install pandas
 ```
 
 Use Pandas [`set_option`](https://pandas.pydata.org/pandas-docs/stable/generated/pandas.set_option.html#pandas.set_option) to format output:
@@ -722,6 +725,6 @@ print(result[0])
 Some of the examples above use the [`PrettyTable`](https://pypi.org/project/PrettyTable/) module to format displayed records.
 
 ```bash
-pip install PrettyTable
-# pip install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
+pip3 install PrettyTable
+# pip3 install https://pypi.python.org/packages/source/P/PrettyTable/prettytable-0.7.2.tar.gz
 ```

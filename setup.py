@@ -32,7 +32,7 @@ if CURRENT_PYTHON < REQUIRED_PYTHON:
 Unsupported Python version
 ========================== 
 This version of atsd_client requires Python >= {}.{}, but you're trying to install it on Python {}.{}.
-If you can't upgrade your pip (or Python), request an older version of atsd_client:
+If you can't upgrade your pip (or Python), install an older version of atsd_client:
 
     python -m pip install "atsd_client<3.0.0"
     

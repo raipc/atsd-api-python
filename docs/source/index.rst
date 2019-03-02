@@ -24,13 +24,13 @@ Install atsd\_client with pip
 
 ::
 
-    pip install atsd_client
+    pip3 install atsd_client
 
 or clone GitHub `repository <https://github.com/axibase/atsd-api-python.git>`__ and run
 
 ::
 
-    cd atsd-api-python && python setup.py install
+    cd atsd-api-python && python3 setup.py install
 
 Usage
 -----
