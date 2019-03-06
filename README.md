@@ -118,7 +118,7 @@ ImportError: No module named atsd_client
 Execute `pip3 install` to upgrade client to the latest version.
 
 ```bash
-pip3 install atsd_client --upgrade --upgrade-strategy only-if-needed
+pip3 install atsd_client --upgrade
 ```
 
 Execute `pip3 list` to view currently installed modules.
