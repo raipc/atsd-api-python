@@ -16,7 +16,7 @@ python3 -V
 Python 3.5.2
 ```
 
-The reported Python version must be `3.4` or later and it must **the same** on both servers. The servers must also have the same processor architecture (both 64-bit).
+The reported Python version must be `3.5` or later and it must **the same** on both servers. The servers must also have the same processor architecture (both 64-bit).
 
 Check [`pip`](https://pypi.org/project/pip/) version. `pip3` is the package installer for Python `3`.
 
@@ -28,7 +28,7 @@ pip3 -V
 pip 8.1.1 from /usr/lib/python3/dist-packages (python 3.5)
 ```
 
-If the `pip3` command is not found, install `pip3` for Python `3.4` or later.
+If the `pip3` command is not found, install `pip3` for Python `3.5` or later.
 
 If necessary, upgrade the `pip3` program.
 
@@ -184,6 +184,7 @@ Install `tzlocal-1.5.1.tar.gz` module from sources.
 ```sh
 pip3 install --no-deps /tmp/modules/tzlocal-1.5.1.tar.gz
 ```
+> If this command fails with message `sudo: pip: command not found`, execute `python3 -m pip install --no-deps /tmp/modules/tzlocal-1.5.1.tar.gz`
 
 Check that the modules are successfully installed.
 
