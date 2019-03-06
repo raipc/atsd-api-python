@@ -146,7 +146,7 @@ Check the contents of the directory.
 ls $(python3 -m site --user-site)
 ```
 
-The directory may not exist. Create it if needed.
+The directory can be nonexistent. Create it if needed.
 
 ```txt
 ls: cannot access '/home/axibase/.local/lib/python3.5/site-packages: No such file or directory
@@ -184,6 +184,7 @@ Install `tzlocal-1.5.1.tar.gz` module from sources.
 ```sh
 pip3 install --no-deps /tmp/modules/tzlocal-1.5.1.tar.gz
 ```
+
 > If this command fails with message `sudo: pip: command not found`, execute `python3 -m pip install --no-deps /tmp/modules/tzlocal-1.5.1.tar.gz`
 
 Check that the modules are successfully installed.
