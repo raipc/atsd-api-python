@@ -38,13 +38,13 @@ df = pandas.read_csv(StringIO(response), dtype=str, sep=',')
 for index, row in df.where(pandas.notnull(df), None).iterrows():
     row_dict = row.to_dict()
     # stores fixed series fields
-    series = {k: v for k, v in row_dict.iteritems()
+    series = {k: v for k, v in row_dict.items()
               if not k.startswith('tags.')}
     # stores series tags
     tags = dict(map(lambda kv: (kv[0].replace("tags.", ""), kv[1]),
-                    {k: v for k, v in row_dict.iteritems() if k.startswith('tags.')}.iteritems()))
+                    {k: v for k, v in row_dict.items() if k.startswith('tags.')}.items()))
 
-    filter_tags = {k: v for k, v in tags.iteritems()
+    filter_tags = {k: v for k, v in tags.items()
                    if not (k in tags_names_to_remove or
                            v in tags_values_to_remove or
                            (default_tags_to_remove.has_key(k) and default_tags_to_remove[k] == v))}
