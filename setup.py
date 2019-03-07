@@ -24,7 +24,7 @@ with open('atsd_client/__init__.py', 'r') as fd:
 sys.stdout.write('atsd_client version: {}'.format(version))
 
 CURRENT_PYTHON = sys.version_info[:2]
-REQUIRED_PYTHON = (3, 4)
+REQUIRED_PYTHON = (3, 5)
 
 if CURRENT_PYTHON < REQUIRED_PYTHON:
     sys.stderr.write("""
@@ -74,7 +74,6 @@ setup(
         'Natural Language :: English',
         'License :: OSI Approved :: Apache Software License',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',

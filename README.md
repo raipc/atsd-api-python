@@ -38,7 +38,7 @@ Check Python version.
 python3 -V
 ```
 
-The ATSD client supports Python &ge; `3.4.0`.
+The ATSD client supports Python &ge; `3.5.0`.
 
 > If necessary, install `pip3` (`pip` for Python `3`) with `apt-get install python-pip3` on Ubuntu.
 
@@ -261,7 +261,7 @@ Use the service to insert and query particular types of records in the database,
 Initialize a `Series` object and populate the object with timestamped values.
 
 ```python
-from atsd_client.models import Series
+from atsd_client.models import Series, Sample
 
 series = Series(entity='sensor123', metric='temperature')
 series.add_samples(
