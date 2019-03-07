@@ -11,7 +11,7 @@ def read_csv(path):
 
 # Connect to ATSD
 
-# connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
+#connection = connect_url('https://atsd_hostname:8443', 'username', 'password')
 connection = connect('/path/to/connection.properties')
 metric_service = MetricsService(connection)
 
@@ -54,7 +54,7 @@ for index, row in df.where(pd.notnull(df), None).iterrows():
     tag_name = row_dict['tag_name']
     if tag_name is not None:
         if "%" in tag_name:
-            print 'Metric {metric} contains illegal character and will be ignored.'.format(metric=tag_name)
+            print('Metric {metric} contains illegal character and will be ignored.'.format(metric=tag_name))
             continue
         fields_columns = {k: v for k, v in row_dict.iteritems()
                           if k in fields_dict and row_dict[k] is not None}
@@ -66,5 +66,5 @@ for index, row in df.where(pd.notnull(df), None).iterrows():
              and row_dict[k] is not None})
 
         metric = Metric(**metric_params)
-        print metric
+        print(metric)
         # metric_service.create_or_replace(metric)
