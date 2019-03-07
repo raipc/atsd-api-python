@@ -43,5 +43,5 @@ for index, row in df.where(pd.notnull(df), None).iterrows():
         {k: v for k, v in row_dict.iteritems() if k not in fields_dict
          and row_dict[k] is not None})
     entity = Entity(**entity_params)
-    print(entity)
+    print entity
     # entities_service.create_or_replace(entity)
