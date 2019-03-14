@@ -1,7 +1,7 @@
 from __future__ import print_function
 from atsd_client import connect, connect_url
-from atsd_client.models import Message
-from atsd_client.services import MessageService, Severity
+from atsd_client.models import Message, Severity
+from atsd_client.services import MessageService
 import socket
 from datetime import datetime
 # Install sh module separately
