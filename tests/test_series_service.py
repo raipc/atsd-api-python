@@ -7,7 +7,7 @@ from datetime import timedelta
 from atsd_client import models
 from atsd_client.exceptions import DataParseException
 from atsd_client.models import AggregateType, SeriesFilter, EntityFilter, DateFilter, VersioningFilter, Aggregate, \
-    TransformationFilter, Group, Rate, ValueFilter
+    TransformationFilter, Group, Rate, SampleFilter
 from atsd_client.models import Series
 from atsd_client.models import SeriesQuery
 from atsd_client.models import TimeUnit, Sample
@@ -192,8 +192,8 @@ class TestSeriesService(ServiceTestBase):
         sf = SeriesFilter(metric=METRIC, tags={TAG: TAG_VALUE}, exact_match=True)
         ef = EntityFilter(entity=ENTITY)
         df = DateFilter(start_date='now - 1 * MINUTE', end_date="now")
-        vf = ValueFilter('Float.isNaN(value) OR value=2')
-        query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, value_filter=vf)
+        vf = SampleFilter('Float.isNaN(value) OR value=2')
+        query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, sample_filter=vf)
         series = self.service.query(query)
         # print(series)
         self.assertIsNotNone(series)

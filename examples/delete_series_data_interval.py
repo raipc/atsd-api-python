@@ -1,5 +1,5 @@
 from atsd_client import connect, connect_url
-from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, ValueFilter
+from atsd_client.models import SeriesFilter, EntityFilter, DateFilter, SeriesQuery, SampleFilter
 from atsd_client.services import SeriesService
 
 '''
@@ -29,8 +29,8 @@ series_service = SeriesService(connection)
 sf = SeriesFilter(metric=metric, tags=tags, exact_match=True)
 ef = EntityFilter(entity=entity)
 df = DateFilter(start_date=startDate, end_date=endDate)
-vf = ValueFilter(expr)
-query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, value_filter=vf)
+vf = SampleFilter(expr)
+query = SeriesQuery(series_filter=sf, entity_filter=ef, date_filter=df, sample_filter=vf)
 series_list = series_service.query(query)
 
 if len(series_list) > 1:
