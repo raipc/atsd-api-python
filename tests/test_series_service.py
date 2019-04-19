@@ -182,9 +182,9 @@ class TestSeriesService(ServiceTestBase):
         series = self.service.query(query)
         self.assertEqual(series[0].get_last_value(), 1)
 
-    def test_value_filter(self):
+    def test_sample_filter(self):
         """
-        Check value filter.
+        Check sample filter.
         """
         insert_series_sample(self.service, None, 2, 3)
         time.sleep(WAIT_TIME)
