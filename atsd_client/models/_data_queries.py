@@ -196,7 +196,7 @@ class SeriesQuery:
     """
 
     def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None,
-                 control_filter=None, transformation_filter=None, value_filter=None):
+                 control_filter=None, transformation_filter=None, sample_filter=None):
         copy_not_empty_attrs(series_filter, self)
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
@@ -204,7 +204,7 @@ class SeriesQuery:
         copy_not_empty_attrs(versioning_filter, self)
         copy_not_empty_attrs(transformation_filter, self)
         copy_not_empty_attrs(control_filter, self)
-        copy_not_empty_attrs(value_filter, self)
+        copy_not_empty_attrs(sample_filter, self)
 
     def set_series_filter(self, value):
         copy_not_empty_attrs(value, self)
@@ -227,7 +227,7 @@ class SeriesQuery:
     def set_transformation_filter(self, value):
         copy_not_empty_attrs(value, self)
 
-    def set_value_filter(self, value):
+    def set_sample_filter(self, value):
         copy_not_empty_attrs(value, self)
 
 
@@ -363,12 +363,12 @@ class ControlFilter:
 
 
 # ------------------------------------------------------------------------------
-class ValueFilter:
-    def __init__(self, value_filter=""):
-        # : `bool` expression applied to detailed samples. Samples that satisfy the condition are included,
-        # for example, value > 100. Value filter is applied before series transformations (interpolation,
-        # aggregation, grouping or the rate calculation). The value field in the expression refers to the sample value
-        self.valueFilter = "" if value_filter is None else value_filter
+class SampleFilter:
+    def __init__(self, sampleFilter=""):
+        # Boolean expression applied to each time:value sample.
+        # Samples that satisfy the condition are included in the result.
+        # Docs: https://axibase.com/docs/atsd/api/data/series/query.html#sample-filter
+        self.sampleFilter = "" if sampleFilter is None else sampleFilter
 
 
 # =======================================================================

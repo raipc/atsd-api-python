@@ -22,7 +22,7 @@ from . import services
 
 __all__ = ['services', 'models']
 
-__version__ = '3.0.3'
+__version__ = '3.0.4'
 
 try:
     logging.debug("Checking 'python-requests' version...")
