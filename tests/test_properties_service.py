@@ -64,9 +64,11 @@ class TestPropertiesService(ServiceTestBase):
     
     def test_url_query(self):
         result = self.service.url_query(ENTITY, TYPE)
-        print(result)
+        # print(result)
         self.assertIsNotNone(result)
-        self.common_checks(result)
+        self.assertGreater(len(result), 0)
+        p = result[0]
+        self.common_checks(p)
 
     def common_checks(self, prop):
         self.assertEqual(TYPE, prop.type)

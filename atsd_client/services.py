@@ -133,11 +133,11 @@ class PropertiesService(_Service):
         return response
 
     def url_query(self, entity_name, property_type):
-        """Retrieves Property of the given type for the given entity
+        """Retrieves Properties of the given type for the given entity
         
         :param entity_name: :class: `str`
         :param property_type: :class: `str`
-        :return: :class: `.Property`
+        :return: list of :class: `.Property`
         """
         response = self.conn.get(properties_url_query_url.format(entity=entity_name, type=property_type))
         return _jsonutil.deserialize(response, Property)
