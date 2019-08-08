@@ -132,11 +132,15 @@ class PropertiesService(_Service):
         response = self.conn.get(properties_types_url.format(entity=quote(entity_name, '')))
         return response
 
-    def url_query(self, *queries):
+    def url_query(self, entity_name, property_type):
+        """Retrieves Properties of the given type for the given entity
+        
+        :param entity_name: :class: `str`
+        :param property_type: :class: `str`
+        :return: list of :class: `.Property`
         """
-        Unimplemented
-        """
-        raise NotImplementedError
+        response = self.conn.get(properties_url_query_url.format(entity=entity_name, type=property_type))
+        return _jsonutil.deserialize(response, Property)
 
     def delete(self, *filters):
         """Delete properties for each query
