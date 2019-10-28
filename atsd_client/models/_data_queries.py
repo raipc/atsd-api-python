@@ -266,7 +266,7 @@ class SeriesDeleteQuery:
 
 # ------------------------------------------------------------------------------
 class SeriesFilter:
-    def __init__(self, metric, tags=None, type="HISTORY", tag_expression=None, exact_match=None):
+    def __init__(self, metric, tags=None, type="HISTORY", tag_expression=None, exact_match=None, metrics=None):
         if not metric:
             raise ValueError("Metric is required.")
         #: `str` metric name
@@ -279,6 +279,8 @@ class SeriesFilter:
         self.tagExpression = tag_expression
         # : `bool` tags match operator: exact match if true, partial match if false
         self.exactMatch = False if exact_match is None else exact_match
+        if metrics is not None:
+            self.metrics = metrics
 
     def set_metric(self, value):
         self.metric = value
@@ -294,6 +296,9 @@ class SeriesFilter:
 
     def set_exact_match(self, value):
         self.exactMatch = value
+    
+    def set_metrics(self, value):
+        self.metrics = value
 
 
 # ------------------------------------------------------------------------------
