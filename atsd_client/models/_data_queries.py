@@ -288,7 +288,7 @@ class SeriesDeleteQuery:
 # ------------------------------------------------------------------------------
 class SeriesFilter:
     def __init__(self, metric=None, tags=None, type="HISTORY", tag_expression=None, exact_match=None, metrics=None):
-        if not metric:
+        if ( not metric ) and ( not metrics ):
             raise ValueError("Metric is required.")
         #: `str` metric name
         self.metric = metric
