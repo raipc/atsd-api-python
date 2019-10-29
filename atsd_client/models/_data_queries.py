@@ -595,6 +595,73 @@ class Interpolate:
         self.fill = fill
 
 
+# =======================================================================
+# Forecast Transformation
+# =======================================================================
+class ForecastTransformation:
+
+    def __init__(self, autoAggregate=None, aggregationFunction=None, include=None, scoreInterval=None, forecastRange=None,
+                    holtwinters=None, arima=None, ssa=None):
+        if autoAggregate is not None:
+            self.autoAggregate = autoAggregate
+        if aggregationFunction is not None:
+            self.aggregationFunction = aggregationFunction
+        if include is not None:
+            self.include =[include] if not isinstance(include, list) else include
+        if scoreInterval is not None:
+            self.scoreInterval = scoreInterval
+        if forecastRange is not None:
+            self.range = forecastRange
+        if holtwinters is not None:
+            self.hw = holtwinters
+        if arima is not None:
+            self.arima = arima
+        if ssa is not None:
+            self.ssa = ssa
+        
+    def set_auto_aggregate(self, autoAggregate):
+        if not isinstance(autoAggregate, bool):
+            raise ValueError('AutoAggregate expected to be bool, found: ' + unicode(type(autoAggregate)))
+        self.autoAggregate = autoAggregate
+    
+    def set_aggregation_function(self, aggregationFunction):
+        if not hasattr(AggregateType, aggregationFunction):
+            raise ValueError('Expected one of AggregateType attributes, found: ' + str(aggregationFunction))
+        self.aggregationFunction= aggregationFunction
+    
+    def set_include(self, include):
+        self.include =[include] if not isinstance(include, list) else include
+
+    def set_score_interval(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Score Interval count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid score interval unit, found: ' + str(unit))
+        self.scoreInterval = {'count': count, 'unit': unit}
+
+    def set_range(self, minRange, maxRange):
+        if not isinstance(minRange, numbers.Number):
+            raise ValueError('Expected min to be a number, found: ' + unicode(type(minRange)))
+        if not isinstance(minRange, numbers.Number):
+            raise ValueError('Expected max to be a number, found: ' + unicode(type(maxRange)))
+        self.range = {'min': minRange, 'max': maxRange}
+
+    def set_holtwinters(self, holtwinters):
+        if not isinstance(holtwinters, object): #TODO replace with HoltWinters
+            raise ValueError('Expected HolwWinters class instance, found: ' + unicode(type(holtwinters)))
+        self.hw = holtwinters
+
+    def set_arima(self, arima):
+        if not isinstance(arima, object): #TODO replace with Arima
+            raise ValueError('Expected Arima class instance, found: ' + unicode(type(arima)))
+        self.arima = arima
+
+    def set_ssa(self, ssa):
+        if not isinstance(ssa, object): #TODO replace with SSA
+            raise ValueError('Expected SSA class instance, found: ' + unicode(type(ssa)))
+        self.ssa = ssa
+
+
 # ===============================================================================
 # Properties
 # ===============================================================================
