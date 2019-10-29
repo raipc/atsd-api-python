@@ -708,8 +708,8 @@ class Downsample:
             self.gap = gap
 
     def set_algorithm(self, algorithm):
-        if not isinstance(algorithm, DownsampleAlgorithm):
-            raise ValueError('Invalid algorithm parameter, expected DownsampleAlgorithm, found: ' + unicode(type(algorithm)))
+        if not hasattr(DownsampleAlgorithm, algorithm):
+            raise ValueError('Invalid algorithm parameter, expected DownsampleAlgorithm, found: ' + str(algorithm))
         self.algorithm = algorithm
 
     def set_difference(self, difference):
