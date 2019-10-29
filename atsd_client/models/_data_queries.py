@@ -196,7 +196,7 @@ class SeriesQuery:
     """
 
     def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None,
-                 control_filter=None, transformation_filter=None, sample_filter=None):
+                 control_filter=None, transformation_filter=None, sample_filter=None, subseries_filter=None):
         copy_not_empty_attrs(series_filter, self)
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
@@ -205,6 +205,8 @@ class SeriesQuery:
         copy_not_empty_attrs(transformation_filter, self)
         copy_not_empty_attrs(control_filter, self)
         copy_not_empty_attrs(sample_filter, self)
+        if subseries_filter is not None:
+            self.series = [subseries_filter] if not isinstance(subseries_filter, list) else subseries_filter
 
     def set_series_filter(self, value):
         copy_not_empty_attrs(value, self)
@@ -375,6 +377,27 @@ class SampleFilter:
         # Docs: https://axibase.com/docs/atsd/api/data/series/query.html#sample-filter
         self.sampleFilter = "" if sampleFilter is None else sampleFilter
 
+
+# ------------------------------------------------------------------------------
+class SubseriesFilter:
+    def __init__(self, name="A", seriesFilter=None, entityFilter=None):
+        self.name = name
+        if seriesFilter is not None:
+            copy_not_empty_attrs(seriesFilter, self)
+            self.type = None
+        if entityFilter is not None:
+            copy_not_empty_attrs(entityFilter, self)
+
+    def set_series_filter(self, seriesFilter):
+        if not isinstance(seriesFilter, SeriesFilter):
+            raise ValueError('Incorrect series filter, expected instance of SeriesFilter class, found: ' + unicode(type(seriesFilter)))
+        copy_not_empty_attrs(seriesFilter, self)
+        self.type = None
+    
+    def set_entity_filter(self, entityFilter):
+        if not isinstance(entityFilter, EntityFilter):
+            raise ValueError('Incorrect series filter, expected instance of EntityFilter class, found: ' + unicode(type(entityFilter)))
+        copy_not_empty_attrs(entityFilter, self)
 
 # =======================================================================
 # Transformations 
