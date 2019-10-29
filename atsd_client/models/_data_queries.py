@@ -652,7 +652,7 @@ class ForecastTransformation:
         self.hw = holtwinters
 
     def set_arima(self, arima):
-        if not isinstance(arima, object): #TODO replace with Arima
+        if not isinstance(arima, Arima):
             raise ValueError('Expected Arima class instance, found: ' + unicode(type(arima)))
         self.arima = arima
 
@@ -690,7 +690,32 @@ class HoltWinters:
 
     def set_start_date(self, startDate):
         self.startDate = startDate
-        
+
+class Arima:
+
+    def __init__(self, auto=None, p=None, d=None):
+        if auto is not None:
+            self.auto = auto
+        if p is not None:
+            self.p = p
+        if d is not None:
+            self.d = d
+
+    def set_auto(self, auto):
+        if not isinstance(auto, bool):
+            raise ValueError('Auto parameter must be bool, but found: ' + unicode(type(auto)))
+        self.auto = auto
+
+    def set_p(self, p):
+        if not isinstance(p, numbers.Number):
+            raise ValueError('P must be a number, but found: ' + unicode(type(p)))
+        self.p = p
+
+    def set_d(self, d):
+        if not isinstance(d, numbers.Number):
+            raise ValueError('D must be a number, but found: ' + unicode(type(d)))
+        self.d = d
+
 
 # ===============================================================================
 # Properties
