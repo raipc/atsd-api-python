@@ -130,6 +130,12 @@ class DownsampleAlgorithm(object):
     DETAIL = "DETAIL"
     INTERPOLATE = "INTERPOLATE"
 
+# ------------------------------------------------------------------------------
+class EvaluateMode(object):
+    STRICT = "STRICT"
+    NOT_STRICT = "NOT_STRICT"
+
+
 # ===============================================================================
 # General Filters
 # ===============================================================================
@@ -209,7 +215,7 @@ class SeriesQuery:
     """
 
     def __init__(self, series_filter, entity_filter, date_filter, forecast_filter=None, versioning_filter=None,
-                 control_filter=None, transformation_filter=None, sample_filter=None):
+                 control_filter=None, transformation_filter=None, sample_filter=None, subseries_filter=None):
         copy_not_empty_attrs(series_filter, self)
         copy_not_empty_attrs(entity_filter, self)
         copy_not_empty_attrs(date_filter, self)
@@ -218,6 +224,10 @@ class SeriesQuery:
         copy_not_empty_attrs(transformation_filter, self)
         copy_not_empty_attrs(control_filter, self)
         copy_not_empty_attrs(sample_filter, self)
+        if subseries_filter is not None:
+            self.series = [subseries_filter] if not isinstance(subseries_filter, list) else subseries_filter
+        if (not self.metric) and (not self.metrics) and (not self.series):
+            raise ValueError('One of the followind params required: metric, metrics or series')
 
     def set_series_filter(self, value):
         copy_not_empty_attrs(value, self)
@@ -279,9 +289,9 @@ class SeriesDeleteQuery:
 
 # ------------------------------------------------------------------------------
 class SeriesFilter:
-    def __init__(self, metric, tags=None, type="HISTORY", tag_expression=None, exact_match=None):
-        if not metric:
-            raise ValueError("Metric is required.")
+    def __init__(self, metric=None, tags=None, type="HISTORY", tag_expression=None, exact_match=None, metrics=None):
+        #if ( not metric ) and ( not metrics ):
+        #   raise ValueError("Metric is required.")
         #: `str` metric name
         self.metric = metric
         #: `dict`
@@ -292,6 +302,8 @@ class SeriesFilter:
         self.tagExpression = tag_expression
         # : `bool` tags match operator: exact match if true, partial match if false
         self.exactMatch = False if exact_match is None else exact_match
+        if metrics is not None:
+            self.metrics = metrics
 
     def set_metric(self, value):
         self.metric = value
@@ -307,6 +319,9 @@ class SeriesFilter:
 
     def set_exact_match(self, value):
         self.exactMatch = value
+    
+    def set_metrics(self, value):
+        self.metrics = value
 
 
 # ------------------------------------------------------------------------------
@@ -384,11 +399,32 @@ class SampleFilter:
         self.sampleFilter = "" if sampleFilter is None else sampleFilter
 
 
+# ------------------------------------------------------------------------------
+class SubseriesFilter:
+    def __init__(self, name, seriesFilter=None, entityFilter=None):
+        self.name = name
+        if seriesFilter is not None:
+            copy_not_empty_attrs(seriesFilter, self)
+            self.type = None
+        if entityFilter is not None:
+            copy_not_empty_attrs(entityFilter, self)
+
+    def set_series_filter(self, seriesFilter):
+        if not isinstance(seriesFilter, SeriesFilter):
+            raise ValueError('Incorrect series filter, expected instance of SeriesFilter class, found: ' + unicode(type(seriesFilter)))
+        copy_not_empty_attrs(seriesFilter, self)
+        self.type = None
+    
+    def set_entity_filter(self, entityFilter):
+        if not isinstance(entityFilter, EntityFilter):
+            raise ValueError('Incorrect series filter, expected instance of EntityFilter class, found: ' + unicode(type(entityFilter)))
+        copy_not_empty_attrs(entityFilter, self)
+
 # =======================================================================
 # Transformations 
 # =======================================================================
 class TransformationFilter:
-    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None, smooth=None, downsample=None):
+    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None, smooth=None, downsample=None, evaluate=None):
 
         # : :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating
         # statistics for each period. Default: DETAIL
@@ -401,6 +437,7 @@ class TransformationFilter:
         self.interpolate = interpolate
         self.smooth = smooth
         self.downsample = downsample
+        self.evaluate = evaluate
 
     def set_aggregate(self, value):
         self.aggregate = value
@@ -419,7 +456,9 @@ class TransformationFilter:
         
     def set_downsample(self, value):
         self.downsample = value
-
+    
+    def set_evaluate(self, value):
+        self.evaluate = value
 
 
 # ------------------------------------------------------------------------------
@@ -680,8 +719,8 @@ class Downsample:
             self.gap = gap
 
     def set_algorithm(self, algorithm):
-        if not isinstance(algorithm, DownsampleAlgorithm):
-            raise ValueError('Invalid algorithm parameter, expected DownsampleAlgorithm, found: ' + unicode(type(algorithm)))
+        if not hasattr(DownsampleAlgorithm, algorithm):
+            raise ValueError('Invalid algorithm parameter, expected DownsampleAlgorithm, found: ' + str(algorithm))
         self.algorithm = algorithm
 
     def set_difference(self, difference):
@@ -700,6 +739,48 @@ class Downsample:
         if not hasattr(TimeUnit, unit):
             raise ValueError('Invalid gap unit ' + str(unit))
         self.gap = {'count': count, 'unit': unit} 
+
+
+class Evaluate:
+    """
+    Class representing aggregate param 'evaluate'
+    """
+
+    def __init__(self, mode=None, libs=None, expression=None, script=None, order=None, timezone=None):
+        if mode is not None:
+            self.mode = mode
+        if libs is not None:
+            self.libs = [libs] if not isinstance(libs, list) else libs
+        if expression is not None:
+            self.expression = expression
+        if script is not None:
+            self.script = script
+        if order is not None:
+            self.order = order
+        if timezone is not None:
+            self.timezone = timezone
+    
+    def set_mode(self, mode):
+        if not hasattr(EvaluateMode, mode):
+            raise ValueError('Mode must be one of EvaluateMode attributes, found: ' + str(mode))
+        self.mode = mode
+    
+    def set_libs(self, libs):
+        self.libs = [libs] if not isinstance(libs, list) else libs
+    
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def set_script(self, script):
+        self.script = script
+
+    def set_order(self, order):
+        if not isinstance(order, numbers.Number):
+            raise ValueError('Order must be a number, found: ' + unicode(type(order)))
+        self.order = order
+
+    def set_timezone(self, timezone):
+        self.timezone = timezone
 
 
 # ===============================================================================
