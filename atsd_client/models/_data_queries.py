@@ -117,6 +117,15 @@ class Severity(object):
     FATAL = 7
 
 # ------------------------------------------------------------------------------
+class SmoothType(object):
+    AVG = "AVG"
+    COUNT = "COUNT"
+    SUM = "SUM"
+    WAVG = "WAVG"
+    WTAVG = "WTAVG"
+    EMA = "EMA"
+
+# ------------------------------------------------------------------------------
 class DownsampleAlgorithm(object):
     DETAIL = "DETAIL"
     INTERPOLATE = "INTERPOLATE"
@@ -379,7 +388,8 @@ class SampleFilter:
 # Transformations 
 # =======================================================================
 class TransformationFilter:
-    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None, downsample=None):
+    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None, smooth=None, downsample=None):
+
         # : :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating
         # statistics for each period. Default: DETAIL
         self.aggregate = aggregate
@@ -389,6 +399,7 @@ class TransformationFilter:
         # rate period)
         self.rate = rate
         self.interpolate = interpolate
+        self.smooth = smooth
         self.downsample = downsample
 
     def set_aggregate(self, value):
@@ -403,8 +414,12 @@ class TransformationFilter:
     def set_interpolate(self, value):
         self.interpolate = value
 
+    def set_smooth(self, value):
+        self.smooth = value
+        
     def set_downsample(self, value):
         self.downsample = value
+
 
 
 # ------------------------------------------------------------------------------
@@ -602,6 +617,53 @@ class Interpolate:
             raise ValueError('Invalid fill parameter, expected bool or number, found: ' + unicode(type(fill)))
         self.fill = fill
 
+
+class Smooth:
+    """
+    Class representing transformation param 'smooth'
+    """
+
+    def __init__(self, smoothType, count=None, interval=None, minimumCount=None, incompleteValue=None):
+        if not hasattr(SmoothType, smoothType):
+            raise ValueError('Invalid type parameter, expected SmoothType, found: ' + unicode(type(smoothType)))
+        self.type = smoothType
+        if count is not None:
+            self.count = count
+        if interval is not None:
+            self.interval = interval
+        if minimumCount is not None:
+            self.minimumCount = minimumCount
+        if incompleteValue is not None:
+            self.incompleteValue = incompleteValue
+
+    def set_type(self, smoothType):
+        if not hasattr(SmoothType, smoothType):
+            raise ValueError('Invalid type parameter, expected SmoothType, found: ' + unicode(type(smoothType)))
+        self.type = smoothType
+
+    def set_count(self, count):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Count must be a number, found: ' + unicode(type(count)))
+        self.count = count
+
+    def set_interval(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Interval count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid interval unit')
+        self.interval = {'count': count, 'unit': unit}
+
+    def set_minimumCount(self, minimumCount):
+        if not isinstance(minimumCount, numbers.Number):
+            raise ValueError('Minimum count must be a value, found: ' + unicode(type(minimumCount)))
+        self.minimumCount = minimumCount
+
+    def set_incompleteValue(self, incompleteValue):
+        if not isinstance(incompleteValue, str):
+            raise ValueError('Incomplete value must be string, found: ' + unicode(type(incompleteValue)))
+        self.incompleteValue = incompleteValue
+
+        
 class Downsample:
     """
     Class representing aggregate param 'downsample'
@@ -638,6 +700,7 @@ class Downsample:
         if not hasattr(TimeUnit, unit):
             raise ValueError('Invalid gap unit ' + str(unit))
         self.gap = {'count': count, 'unit': unit} 
+
 
 # ===============================================================================
 # Properties
