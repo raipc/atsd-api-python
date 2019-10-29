@@ -226,6 +226,8 @@ class SeriesQuery:
         copy_not_empty_attrs(sample_filter, self)
         if subseries_filter is not None:
             self.series = [subseries_filter] if not isinstance(subseries_filter, list) else subseries_filter
+        if (not self.metric) and (not self.metrics) and (not self.series):
+            raise ValueError('One of the followind params required: metric, metrics or series')
 
     def set_series_filter(self, value):
         copy_not_empty_attrs(value, self)
@@ -288,8 +290,8 @@ class SeriesDeleteQuery:
 # ------------------------------------------------------------------------------
 class SeriesFilter:
     def __init__(self, metric=None, tags=None, type="HISTORY", tag_expression=None, exact_match=None, metrics=None):
-        if ( not metric ) and ( not metrics ):
-            raise ValueError("Metric is required.")
+        #if ( not metric ) and ( not metrics ):
+        #   raise ValueError("Metric is required.")
         #: `str` metric name
         self.metric = metric
         #: `dict`
@@ -399,7 +401,7 @@ class SampleFilter:
 
 # ------------------------------------------------------------------------------
 class SubseriesFilter:
-    def __init__(self, name="A", seriesFilter=None, entityFilter=None):
+    def __init__(self, name, seriesFilter=None, entityFilter=None):
         self.name = name
         if seriesFilter is not None:
             copy_not_empty_attrs(seriesFilter, self)
@@ -741,7 +743,7 @@ class Downsample:
 
 class Evaluate:
     """
-    Class representing aggregate param 'downsample'
+    Class representing aggregate param 'evaluate'
     """
 
     def __init__(self, mode=None, libs=None, expression=None, script=None, order=None, timezone=None):
