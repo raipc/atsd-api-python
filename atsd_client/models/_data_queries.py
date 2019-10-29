@@ -116,6 +116,10 @@ class Severity(object):
     CRITICAL = 6  # ERROR
     FATAL = 7
 
+# ------------------------------------------------------------------------------
+class DownsampleAlgorithm(object):
+    DETAIL = "DETAIL"
+    INTERPOLATE = "INTERPOLATE"
 
 # ===============================================================================
 # General Filters
@@ -403,7 +407,7 @@ class SubseriesFilter:
 # Transformations 
 # =======================================================================
 class TransformationFilter:
-    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None):
+    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None, downsample=None):
         # : :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating
         # statistics for each period. Default: DETAIL
         self.aggregate = aggregate
@@ -413,6 +417,7 @@ class TransformationFilter:
         # rate period)
         self.rate = rate
         self.interpolate = interpolate
+        self.downsample = downsample
 
     def set_aggregate(self, value):
         self.aggregate = value
@@ -425,6 +430,9 @@ class TransformationFilter:
 
     def set_interpolate(self, value):
         self.interpolate = value
+
+    def set_downsample(self, value):
+        self.downsample = value
 
 
 # ------------------------------------------------------------------------------
@@ -622,6 +630,42 @@ class Interpolate:
             raise ValueError('Invalid fill parameter, expected bool or number, found: ' + unicode(type(fill)))
         self.fill = fill
 
+class Downsample:
+    """
+    Class representing aggregate param 'downsample'
+    """
+
+    def __init__(self, algorithm=None, difference=None, ratio=None, gap=None):
+        if algorithm is not None:
+            self.algorithm = algorithm
+        if difference is not None:
+            self.difference = difference
+        if ratio is not None:
+            self.ratio = ratio
+        if gap is not None:
+            self.gap = gap
+
+    def set_algorithm(self, algorithm):
+        if not isinstance(algorithm, DownsampleAlgorithm):
+            raise ValueError('Invalid algorithm parameter, expected DownsampleAlgorithm, found: ' + unicode(type(algorithm)))
+        self.algorithm = algorithm
+
+    def set_difference(self, difference):
+        if not isinstance(difference, numbers.Number):
+            raise ValueError('Invalid difference parameter, expected number, found: ' + unicode(type(difference)))
+        self.difference = difference
+
+    def set_ratio(self, ratio):
+        if not isinstance(ratio, numbers.Number):
+            raise ValueError('Invalid ratio parameter, expected number, found: ' + unicode(type(difference)))
+        self.ratio = ratio
+
+    def set_gap(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Gap count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid gap unit ' + str(unit))
+        self.gap = {'count': count, 'unit': unit} 
 
 # ===============================================================================
 # Properties
