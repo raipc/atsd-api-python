@@ -130,6 +130,12 @@ class DownsampleAlgorithm(object):
     DETAIL = "DETAIL"
     INTERPOLATE = "INTERPOLATE"
 
+# ------------------------------------------------------------------------------
+class EvaluateMode(object):
+    STRICT = "STRICT"
+    NOT_STRICT = "NOT_STRICT"
+
+
 # ===============================================================================
 # General Filters
 # ===============================================================================
@@ -416,7 +422,7 @@ class SubseriesFilter:
 # Transformations 
 # =======================================================================
 class TransformationFilter:
-    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None, smooth=None, downsample=None):
+    def __init__(self, aggregate=None, group=None, rate=None, interpolate=None, smooth=None, downsample=None, evaluate=None):
 
         # : :class:`.Aggregate` object responsible for grouping detailed values into periods and calculating
         # statistics for each period. Default: DETAIL
@@ -429,6 +435,7 @@ class TransformationFilter:
         self.interpolate = interpolate
         self.smooth = smooth
         self.downsample = downsample
+        self.evaluate = evaluate
 
     def set_aggregate(self, value):
         self.aggregate = value
@@ -447,7 +454,9 @@ class TransformationFilter:
         
     def set_downsample(self, value):
         self.downsample = value
-
+    
+    def set_evaluate(self, value):
+        self.evaluate = value
 
 
 # ------------------------------------------------------------------------------
@@ -728,6 +737,48 @@ class Downsample:
         if not hasattr(TimeUnit, unit):
             raise ValueError('Invalid gap unit ' + str(unit))
         self.gap = {'count': count, 'unit': unit} 
+
+
+class Evaluate:
+    """
+    Class representing aggregate param 'downsample'
+    """
+
+    def __init__(self, mode=None, libs=None, expression=None, script=None, order=None, timezone=None):
+        if mode is not None:
+            self.mode = mode
+        if libs is not None:
+            self.libs = [libs] if not isinstance(libs, list) else libs
+        if expression is not None:
+            self.expression = expression
+        if script is not None:
+            self.script = script
+        if order is not None:
+            self.order = order
+        if timezone is not None:
+            self.timezone = timezone
+    
+    def set_mode(self, mode):
+        if not hasattr(EvaluateMode, mode):
+            raise ValueError('Mode must be one of EvaluateMode attributes, found: ' + str(mode))
+        self.mode = mode
+    
+    def set_libs(self, libs):
+        self.libs = [libs] if not isinstance(libs, list) else libs
+    
+    def set_expression(self, expression):
+        self.expression = expression
+
+    def set_script(self, script):
+        self.script = script
+
+    def set_order(self, order):
+        if not isinstance(order, numbers.Number):
+            raise ValueError('Order must be a number, found: ' + unicode(type(order)))
+        self.order = order
+
+    def set_timezone(self, timezone):
+        self.timezone = timezone
 
 
 # ===============================================================================
