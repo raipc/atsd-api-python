@@ -647,7 +647,7 @@ class ForecastTransformation:
         self.range = {'min': minRange, 'max': maxRange}
 
     def set_holtwinters(self, holtwinters):
-        if not isinstance(holtwinters, object): #TODO replace with HoltWinters
+        if not isinstance(holtwinters, HoltWinters):
             raise ValueError('Expected HolwWinters class instance, found: ' + unicode(type(holtwinters)))
         self.hw = holtwinters
 
@@ -661,6 +661,36 @@ class ForecastTransformation:
             raise ValueError('Expected SSA class instance, found: ' + unicode(type(ssa)))
         self.ssa = ssa
 
+class HoltWinters:
+
+    def __init__(self, interval=None, length=None, endDate=None, startDate=None):
+        if interval is not None:
+            self.interval = None
+        if length is not None:
+            self.length = length
+        if endDate is not None:
+            self.endDate = endDate
+        if startDate is not None:
+            self.startDate = startDate
+
+    def set_interval(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Interval count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid interval unit, found: ' + str(unit))
+        self.scoreInterval = {'count': count, 'unit': unit}
+
+    def set_length(self, length):
+        if not isinstance(length, numbers.Number):
+            raise ValueError('Length expected to be a number, found: ' + unicode(type(length)))
+        self.length = length
+
+    def set_end_date(self, endDate):
+        self.endDate = endDate
+
+    def set_start_date(self, startDate):
+        self.startDate = startDate
+        
 
 # ===============================================================================
 # Properties
