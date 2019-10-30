@@ -252,7 +252,7 @@ class SeriesQuery:
         copy_not_empty_attrs(sample_filter, self)
         if subseries_filter is not None:
             self.series = [subseries_filter] if not isinstance(subseries_filter, list) else subseries_filter
-        if (not self.metric) and (not self.metrics) and (not self.series):
+        if (not hasattr(self, "metric")) and (not hasattr(self, "metrics")) and (not hasattr(self, "series")):
             raise ValueError('One of the followind params required: metric, metrics or series')
 
     def set_series_filter(self, value):
