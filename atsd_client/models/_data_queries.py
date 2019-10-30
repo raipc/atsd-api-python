@@ -735,7 +735,7 @@ class Smooth:
 
 class Downsample:
     """
-    Class representing aggregate param 'downsample'
+    Class representing transformation param 'downsample'
     """
 
     def __init__(self, algorithm=None, difference=None, ratio=None, gap=None):
@@ -773,7 +773,7 @@ class Downsample:
 
 class Evaluate:
     """
-    Class representing aggregate param 'evaluate'
+    Class representing transformation param 'evaluate'
     """
 
     def __init__(self, mode=None, libs=None, expression=None, script=None, order=None, timezone=None):
@@ -915,17 +915,17 @@ class HoltWinters:
 
     def set_alpha(self, alpha):
         if not isinstance(alpha, numbers.Number):
-            raise ValueError("Alpha expected to be a nu,ber, found: " + unicode(type(alpha)))
+            raise ValueError("Alpha expected to be a number, found: " + unicode(type(alpha)))
         self.alpha = alpha
 
     def set_beta(self, beta):
         if not isinstance(beta, numbers.Number):
-            raise ValueError("Beta expected to be a nu,ber, found: " + unicode(type(beta)))
+            raise ValueError("Beta expected to be a number, found: " + unicode(type(beta)))
         self.beta = beta
 
     def set_gamma(self, gamma):
         if not isinstance(gamma, numbers.Number):
-            raise ValueError("Gamma expected to be a nu,ber, found: " + unicode(type(gamma)))
+            raise ValueError("Gamma expected to be a number, found: " + unicode(type(gamma)))
         self.gamma = gamma
 
 
