@@ -1027,6 +1027,7 @@ class Baseline:
     def set_function(self, function):
         self.function = function
 
+
 class Ssa:
 
     def __init__(self, decompose=None, group=None, reconstruct=None, ssaForecast=None):
