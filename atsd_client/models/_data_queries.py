@@ -819,7 +819,7 @@ class Evaluate:
 class ForecastTransformation:
 
     def __init__(self, autoAggregate=None, aggregationFunction=None, include=None, scoreInterval=None, forecastRange=None,
-                    holtwinters=None, arima=None, ssa=None):
+                    holtwinters=None, arima=None, ssa=None, horizon=None):
         if autoAggregate is not None:
             self.autoAggregate = autoAggregate
         if aggregationFunction is not None:
@@ -836,6 +836,8 @@ class ForecastTransformation:
             self.arima = arima
         if ssa is not None:
             self.ssa = ssa
+        if horizon is not None:
+            self.horizon = horizon
 
     def set_auto_aggregate(self, autoAggregate):
         if not isinstance(autoAggregate, bool):
@@ -876,11 +878,58 @@ class ForecastTransformation:
 
     def set_ssa(self, ssa):
         if not isinstance(ssa, Ssa):
-            raise ValueError('Expected SSA class instance, found: ' + unicode(type(ssa)))
+            raise ValueError('Expected Ssa class instance, found: ' + unicode(type(ssa)))
         self.ssa = ssa
+
+    def set_horizon(self, horizon):
+        if not isinstance(horizon, Horizon):
+            raise ValueError('Expected Horizon class instance, found: ' + unicode(type(horizon)))
+        self.horizon = horizon
 
 
 class HoltWinters:
+
+    def __init__(self, auto=None, period=None, alpha=None, beta=None, gamma=None):
+        if auto is not None:
+            self.auto = auto
+        if period is not None:
+            self.period = period
+        if alpha is not None:
+            self.alpha = alpha
+        if beta is not None:
+            self.beta = beta
+        if gamma is not None:
+            self.gamma = gamma
+
+    def set_auto(self, auto):
+        if not isinstance(auto, bool):
+            raise ValueError('Auto expected to be a bool, found: ' + unicode(type(auto)))
+        self.auto = auto
+
+    def set_period(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid period unit ' + str(unit))
+        self.period = {'count': count, 'unit': unit}
+
+    def set_alpha(self, alpha):
+        if not isinstance(alpha, numbers.Number):
+            raise ValueError("Alpha expected to be a nu,ber, found: " + unicode(type(alpha)))
+        self.alpha = alpha
+
+    def set_beta(self, beta):
+        if not isinstance(beta, numbers.Number):
+            raise ValueError("Beta expected to be a nu,ber, found: " + unicode(type(beta)))
+        self.beta = beta
+
+    def set_gamma(self, gamma):
+        if not isinstance(gamma, numbers.Number):
+            raise ValueError("Gamma expected to be a nu,ber, found: " + unicode(type(gamma)))
+        self.gamma = gamma
+
+
+class Horizon:
 
     def __init__(self, interval=None, length=None, endDate=None, startDate=None):
         if interval is not None:
@@ -897,7 +946,7 @@ class HoltWinters:
             raise ValueError('Interval count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
             raise ValueError('Invalid interval unit, found: ' + str(unit))
-        self.scoreInterval = {'count': count, 'unit': unit}
+        self.interval = {'count': count, 'unit': unit}
 
     def set_length(self, length):
         if not isinstance(length, numbers.Number):
