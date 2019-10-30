@@ -127,6 +127,8 @@ class StatisticalFunction:
     THRESHOLD_PERCENT = 'THRESHOLD_PERCENT'
     MIN_VALUE_TIME = "MIN_VALUE_TIME"
     MAX_VALUE_TIME = "MAX_VALUE_TIME"
+    VARIANCE = "VARIANCE"
+    POPULATION_VARIANCE = "POPULATION_VARIANCE"
 
 
 # ------------------------------------------------------------------------------
