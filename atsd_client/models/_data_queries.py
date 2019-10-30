@@ -105,6 +105,30 @@ class AggregateType(object):
     THRESHOLD_PERCENT = 'THRESHOLD_PERCENT'
 
 
+class StatisticalFunction:
+    MIN = "MIN"
+    MAX = "MAX"
+    AVG = "AVG"
+    SUM = "SUM"
+    COUNT = "COUNT"
+    FIRST = "FIRST"
+    LAST = "LAST"
+    DELTA = "DELTA"
+    COUNTER = "COUNTER"
+    MEDIAN = "MEDIAN"
+    STANDARD_DEVIATION = "STANDARD_DEVIATION"
+    MEDIAN_ABS_DEV = "MEDIAN_ABS_DEV"
+    SLOPE = "SLOPE"
+    INTERCEPT = "INTERCEPT"
+    WAVG = "WAVG"
+    WTAVG = "WTAVG"
+    THRESHOLD_COUNT = "THRESHOLD_COUNT"
+    THRESHOLD_DURATION = 'THRESHOLD_DURATION'
+    THRESHOLD_PERCENT = 'THRESHOLD_PERCENT'
+    MIN_VALUE_TIME = "MIN_VALUE_TIME"
+    MAX_VALUE_TIME = "MAX_VALUE_TIME"
+
+
 # ------------------------------------------------------------------------------
 class Severity(object):
     UNDEFINED = 0
@@ -847,8 +871,8 @@ class ForecastTransformation:
         self.autoAggregate = autoAggregate
 
     def set_aggregation_function(self, aggregationFunction):
-        if not hasattr(AggregateType, aggregationFunction):
-            raise ValueError('Expected one of AggregateType attributes, found: ' + str(aggregationFunction))
+        if not (hasattr(StatisticalFunction, aggregationFunction) or aggregationFunction.upper().startswith("PERCENTILE")):
+            raise ValueError('Expected one of StatisticalFunction attributes or PERCENTILE, found: ' + str(aggregationFunction))
         self.aggregationFunction= aggregationFunction
 
     def set_include(self, include):
@@ -1025,6 +1049,8 @@ class Baseline:
         self.count = count
 
     def set_function(self, function):
+        if not (hasattr(StatisticalFunction, function) or function.upper().startswith("PERCENTILE")):
+            raise ValueError('Function expected to be one of StatisticalFunction attributes or PERCENTILE, but found: ' + function)
         self.function = function
 
 
