@@ -105,6 +105,7 @@ class AggregateType(object):
     THRESHOLD_PERCENT = 'THRESHOLD_PERCENT'
 
 
+# ------------------------------------------------------------------------------
 class StatisticalFunction:
     MIN = "MIN"
     MAX = "MAX"
