@@ -962,9 +962,11 @@ class Horizon:
 
 class Arima:
 
-    def __init__(self, auto=None, p=None, d=None):
+    def __init__(self, auto=None, autoRegressionInterval=None, p=None, d=None):
         if auto is not None:
             self.auto = auto
+        if autoRegressionInterval is not None:
+            self.autoRegressionInterval = autoRegressionInterval
         if p is not None:
             self.p = p
         if d is not None:
@@ -974,6 +976,13 @@ class Arima:
         if not isinstance(auto, bool):
             raise ValueError('Auto parameter must be bool, but found: ' + unicode(type(auto)))
         self.auto = auto
+
+    def set_auto_regression_interval(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Interval count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid interval unit, found: ' + str(unit))
+        self.autoRegressionInterval = {'count': count, 'unit': unit}
 
     def set_p(self, p):
         if not isinstance(p, numbers.Number):
