@@ -819,7 +819,7 @@ class Evaluate:
 class ForecastTransformation:
 
     def __init__(self, autoAggregate=None, aggregationFunction=None, include=None, scoreInterval=None, forecastRange=None,
-                    holtwinters=None, arima=None, ssa=None, horizon=None):
+                    holtwinters=None, arima=None, ssa=None, horizon=None, baseline=None):
         if autoAggregate is not None:
             self.autoAggregate = autoAggregate
         if aggregationFunction is not None:
@@ -838,6 +838,8 @@ class ForecastTransformation:
             self.ssa = ssa
         if horizon is not None:
             self.horizon = horizon
+        if baseline is not None:
+            self.baseline = baseline
 
     def set_auto_aggregate(self, autoAggregate):
         if not isinstance(autoAggregate, bool):
@@ -885,6 +887,11 @@ class ForecastTransformation:
         if not isinstance(horizon, Horizon):
             raise ValueError('Expected Horizon class instance, found: ' + unicode(type(horizon)))
         self.horizon = horizon
+
+    def set_baseline(self, baseline):
+        if not isinstance(baseline, Baseline):
+            raise ValueError('Expected Baseline class instance, found: ' + unicode(type(baseline)))
+        self.baseline = baseline
 
 
 class HoltWinters:
@@ -994,6 +1001,31 @@ class Arima:
             raise ValueError('D must be a number, but found: ' + unicode(type(d)))
         self.d = d
 
+
+class Baseline:
+
+    def __init__(self, period=None, count=None, function=None):
+        if period is not None:
+            self.period = period
+        if count is not None:
+            self.count = count
+        if function is not None:
+            self.function = function
+
+    def set_period(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid period unit ' + str(unit))
+        self.period = {'count': count, 'unit': unit}
+
+    def set_count(self, count):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Count must be a number, found: ' + unicode(type(count)))
+        self.count = count
+
+    def set_function(self, function):
+        self.function = function
 
 class Ssa:
 
