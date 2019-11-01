@@ -197,7 +197,7 @@ class EntityFilter():
 class DateFilter:
     def _validate(self):
         return (self.startDate is not None and self.endDate is not None) or \
-               (self.interval is not None) and all(key in self.interval for key in ("count", "unit"))
+               is_interval(self.interval)
 
     def __init__(self, start_date=None, end_date=None, interval=None):
         #: :class:`datetime` object | `long` milliseconds | `str` ISO 8601 date. Start of the selection interval.

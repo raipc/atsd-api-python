@@ -133,16 +133,10 @@ class Smooth:
         self.count = count
 
     def set_interval(self, count, unit):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Interval count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid interval unit')
-        self.interval = {'count': count, 'unit': unit}
+        self.set_interval({'count': count, 'unit': unit})
 
     def set_interval(self, interval):
-        if not is_interval(interval):
-            raise ValueError('Interval expected to be of Interval instance, found: ' + unicode(type(interval)))
-        self.interval = interval
+        set_if_interval(self, "interval", interval)
 
     def set_minimumCount(self, minimumCount):
         if not isinstance(minimumCount, numbers.Number):
@@ -186,16 +180,10 @@ class Downsample:
         self.ratio = ratio
 
     def set_gap(self, count, unit):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Gap count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid gap unit ' + str(unit))
-        self.gap = {'count': count, 'unit': unit}
+        self.set_gap({'count': count, 'unit': unit})
 
     def set_gap(self, gap):
-        if not is_interval(gap):
-            raise ValueError("Gap expected to be an Interval, found: " + unicode(type(gap)))
-        self.gap = gap
+        set_if_interval(self, "gap", gap)
 
 
 class Evaluate:
@@ -282,16 +270,10 @@ class ForecastTransformation:
         self.include =[include] if not isinstance(include, list) else include
 
     def set_score_interval(self, count, unit):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Score Interval count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid score interval unit, found: ' + str(unit))
-        self.scoreInterval = {'count': count, 'unit': unit}
+        self.set_score_interval({'count': count, 'unit': unit})
 
     def set_score_interval(self, score_interval):
-        if not is_interval(score_interval):
-            raise ValueError("Score Interval expected to be an Interval instance, found: " + unicode(type(score_interval)))
-        self.scoreInterval = score_interval
+        set_if_interval(self, "scoreInterval", score_interval)
 
     def set_range(self, minRange, maxRange):
         if not isinstance(minRange, numbers.Number):
@@ -346,16 +328,10 @@ class HoltWinters:
         self.auto = auto
 
     def set_period(self, count, unit):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid period unit ' + str(unit))
-        self.period = {'count': count, 'unit': unit}
+        self.set_period({'count': count, 'unit': unit})
 
     def set_period(self, period):
-        if not is_interval(period):
-            raise ValueError('Period expected to be an interval, found: ' + unicode(type(period)))
-        self.period = period
+        set_if_interval(self, "period", period)
 
     def set_alpha(self, alpha):
         if not isinstance(alpha, numbers.Number):
@@ -386,11 +362,10 @@ class Horizon:
             self.startDate = startDate
 
     def set_interval(self, count, unit):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Interval count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid interval unit, found: ' + str(unit))
-        self.interval = {'count': count, 'unit': unit}
+        self.set_interval({'count': count, 'unit': unit})
+
+    def set_interval(self, interval):
+        set_if_interval(self, "interval", interval)
 
     def set_length(self, length):
         if not isinstance(length, numbers.Number):
@@ -422,11 +397,10 @@ class Arima:
         self.auto = auto
 
     def set_auto_regression_interval(self, count, unit):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Interval count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid interval unit, found: ' + str(unit))
-        self.autoRegressionInterval = {'count': count, 'unit': unit}
+        self.set_auto_regression_interval({'count': count, 'unit': unit})
+
+    def set_auto_regression_interval(self, auto_regression_interval):
+        set_if_interval(self, "autoRegressionInterval", auto_regression_interval)
 
     def set_p(self, p):
         if not isinstance(p, numbers.Number):
@@ -450,11 +424,10 @@ class Baseline:
             self.function = function
 
     def set_period(self, count, unit):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid period unit ' + str(unit))
-        self.period = {'count': count, 'unit': unit}
+        self.set_period({'count': count, 'unit': unit})
+
+    def set_period(self, period):
+        set_if_interval(self, "period", period)
 
     def set_count(self, count):
         if not isinstance(count, numbers.Number):
