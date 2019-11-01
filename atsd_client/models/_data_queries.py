@@ -189,6 +189,62 @@ class SsaGroupAutoClusteringMethod(object):
     XMEANS = "XMEANS"
     NOVOSIBIRSK = "NOVOSIBIRSK"
 
+
+class Interval:
+
+    def __init__(self, count, unit):
+        if not isinstance(count, numbers.Number):
+            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
+        if not hasattr(TimeUnit, unit):
+            raise ValueError('Invalid period unit ' + str(unit))
+        self.count = count
+        self.unit = unit
+
+    def __contains__(self, item):
+        return hasattr(self, item)
+
+    def __getattr__(self, item):
+        return getattr(self, item)
+
+    def __setattr__(self, key, value):
+        if key.upper() == "count":
+            set_if_type_is_valid(self, key, value, numbers.Number)
+        elif key.upper() == "period":
+            set_if_has_attr(self, key, value, TimeUnit)
+        else:
+            raise ValueError("Invalid name of Interval key: " + str(key))
+
+    def __delattr__(self, item):
+        delattr(self, item)
+
+
+def is_interval(obj):
+    if not (obj is not None) and all(key in obj for key in ("count", "unit")):
+        return False
+    if not isinstance(obj["count"], numbers.Number):
+        raise ValueError("Interval count must be a number, found: " + unicode(type(obj["count"])))
+    if not hasattr(TimeUnit, obj["unit"]):
+        raise ValueError("Interval unit must be one of TimeUnit, found: " + str(obj["unit"]))
+    return True
+
+
+def set_if_type_is_valid(obj, name, value, expected_type):
+    if not isinstance(value, expected_type):
+        raise ValueError(name + " expected to be a " + str(expected_type) + " found: " + unicode(type(value)))
+    setattr(obj, name, value)
+
+
+def set_if_has_attr(obj, name, value, expected_attr_owner):
+    if not hasattr((expected_attr_owner, value)):
+        raise ValueError(name + " expected to be one of " + expected_attr_owner + " attributes, found: " + str(value))
+    setattr(obj, name, value)
+
+
+def set_if_interval(obj, name, value):
+    if not is_interval(value):
+        raise ValueError(name + " expected to be an Interval instance, found: " + unicode(type(value)))
+    setattr(obj, name, value)
+
 # ===============================================================================
 # General Filters
 # ===============================================================================
@@ -526,6 +582,8 @@ class Rate:
 
     def __init__(self, period=None, counter=True):
         self.counter = counter
+        if not is_interval(period):
+            raise ValueError("Period expected to be an Interval, found: " + unicode(type(period)))
         self.period = period
 
     def set_period(self, count, unit=TimeUnit.SECOND):
@@ -749,6 +807,11 @@ class Smooth:
             raise ValueError('Invalid interval unit')
         self.interval = {'count': count, 'unit': unit}
 
+    def set_interval(self, interval):
+        if not is_interval(interval):
+            raise ValueError('Interval expected to be of Interval instance, found: ' + unicode(type(interval)))
+        self.interval = interval
+
     def set_minimumCount(self, minimumCount):
         if not isinstance(minimumCount, numbers.Number):
             raise ValueError('Minimum count must be a value, found: ' + unicode(type(minimumCount)))
@@ -796,6 +859,11 @@ class Downsample:
         if not hasattr(TimeUnit, unit):
             raise ValueError('Invalid gap unit ' + str(unit))
         self.gap = {'count': count, 'unit': unit}
+
+    def set_gap(self, gap):
+        if not is_interval(gap):
+            raise ValueError("Gap expected to be an Interval, found: " + unicode(type(gap)))
+        self.gap = gap
 
 
 class Evaluate:
@@ -888,6 +956,11 @@ class ForecastTransformation:
             raise ValueError('Invalid score interval unit, found: ' + str(unit))
         self.scoreInterval = {'count': count, 'unit': unit}
 
+    def set_score_interval(self, score_interval):
+        if not is_interval(score_interval):
+            raise ValueError("Score Interval expected to be an Interval instance, found: " + unicode(type(score_interval)))
+        self.scoreInterval = score_interval
+
     def set_range(self, minRange, maxRange):
         if not isinstance(minRange, numbers.Number):
             raise ValueError('Expected min to be a number, found: ' + unicode(type(minRange)))
@@ -946,6 +1019,11 @@ class HoltWinters:
         if not hasattr(TimeUnit, unit):
             raise ValueError('Invalid period unit ' + str(unit))
         self.period = {'count': count, 'unit': unit}
+
+    def set_period(self, period):
+        if not is_interval(period):
+            raise ValueError('Period expected to be an interval, found: ' + unicode(type(period)))
+        self.period = period
 
     def set_alpha(self, alpha):
         if not isinstance(alpha, numbers.Number):
