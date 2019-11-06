@@ -124,7 +124,7 @@ def set_if_type_is_valid(obj, name, value, expected_type):
 
 
 def set_if_has_attr(obj, name, value, expected_attr_owner):
-    if not hasattr((expected_attr_owner, value)):
+    if not hasattr(expected_attr_owner, value):
         raise ValueError(name + " expected to be one of " + expected_attr_owner + " attributes, found: " + str(value))
     setattr(obj, name, value)
 
@@ -141,26 +141,23 @@ class Interval:
         if not isinstance(count, numbers.Number):
             raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
         if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid period unit ' + str(unit))
+            raise ValueError('Invalid unit ' + str(unit))
         self.count = count
         self.unit = unit
 
     def __contains__(self, item):
         return hasattr(self, item)
 
-    def __getattr__(self, item):
-        return getattr(self, item)
+    def __getitem__(self, item):
+        return self.__getattribute__(item)
 
-    def __setattr__(self, key, value):
-        if key.upper() == "count":
-            set_if_type_is_valid(self, key, value, numbers.Number)
-        elif key.upper() == "period":
-            set_if_has_attr(self, key, value, TimeUnit)
+    def __setitem__(self, key, value):
+        if key.lower() == "count":
+            set_if_type_is_valid(self, key.lower(), value, numbers.Number)
+        elif key.lower() == "unit":
+            set_if_has_attr(self, key.lower(), value, TimeUnit)
         else:
             raise ValueError("Invalid name of Interval key: " + str(key))
-
-    def __delattr__(self, item):
-        delattr(self, item)
 
 
 def is_interval(obj):
@@ -171,6 +168,7 @@ def is_interval(obj):
     if not hasattr(TimeUnit, obj["unit"]):
         raise ValueError("Interval unit must be one of TimeUnit, found: " + str(obj["unit"]))
     return True
+
 
 # ===============================================================================
 # General Filters
