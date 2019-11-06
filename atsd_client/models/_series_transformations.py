@@ -110,17 +110,17 @@ class Smooth:
     """
 
     def __init__(self, smoothType, count=None, interval=None, minimumCount=None, incompleteValue=None):
-        if not hasattr(SmoothType, smoothType):
-            raise ValueError('Invalid type parameter, expected SmoothType, found: ' + unicode(type(smoothType)))
-        self.type = smoothType
+        if smoothType is None:
+            raise ValueError("Type is required parameter for Smooth")
+        self.set_type(smoothType)
         if count is not None:
-            self.count = count
+            self.set_count(count)
         if interval is not None:
-            self.interval = interval
+            self.set_interval(interval)
         if minimumCount is not None:
-            self.minimumCount = minimumCount
+            self.set_minimum_count(minimumCount)
         if incompleteValue is not None:
-            self.incompleteValue = incompleteValue
+            self.set_incomplete_value(incompleteValue)
 
     def set_type(self, smooth_type):
         set_if_has_attr(self, "type", smooth_type, SmoothType)
@@ -134,10 +134,10 @@ class Smooth:
     def set_interval(self, interval):
         set_if_interval(self, "interval", interval)
 
-    def set_minimumCount(self, minimum_count):
+    def set_minimum_count(self, minimum_count):
         set_if_type_is_valid(self, "minimumCount", minimum_count, numbers.Number)
 
-    def set_incompleteValue(self, incomplete_value):
+    def set_incomplete_value(self, incomplete_value):
         set_if_type_is_valid(self, "incompleteValue", incomplete_value, str)
 
 
@@ -148,13 +148,13 @@ class Downsample:
 
     def __init__(self, algorithm=None, difference=None, ratio=None, gap=None):
         if algorithm is not None:
-            self.algorithm = algorithm
+            self.set_algorithm(algorithm)
         if difference is not None:
-            self.difference = difference
+            self.set_difference(difference)
         if ratio is not None:
-            self.ratio = ratio
+            self.set_ratio(ratio)
         if gap is not None:
-            self.gap = gap
+            self.set_gap(gap)
 
     def set_algorithm(self, algorithm):
         set_if_has_attr(self, "algorithm", algorithm, DownsampleAlgorithm)
@@ -179,17 +179,17 @@ class Evaluate:
 
     def __init__(self, mode=None, libs=None, expression=None, script=None, order=None, timezone=None):
         if mode is not None:
-            self.mode = mode
+            self.set_mode(mode)
         if libs is not None:
-            self.libs = [libs] if not isinstance(libs, list) else libs
+            self.set_libs(libs)
         if expression is not None:
-            self.expression = expression
+            self.set_expression(expression)
         if script is not None:
-            self.script = script
+            self.set_script(script)
         if order is not None:
-            self.order = order
+            self.set_order(order)
         if timezone is not None:
-            self.timezone = timezone
+            self.set_timezone(timezone)
 
     def set_mode(self, mode):
         set_if_has_attr(self, "mode", mode, )
@@ -218,25 +218,25 @@ class ForecastTransformation:
     def __init__(self, autoAggregate=None, aggregationFunction=None, include=None, scoreInterval=None, forecastRange=None,
                     holtwinters=None, arima=None, ssa=None, horizon=None, baseline=None):
         if autoAggregate is not None:
-            self.autoAggregate = autoAggregate
+            self.set_auto_aggregate(autoAggregate)
         if aggregationFunction is not None:
-            self.aggregationFunction = aggregationFunction
+            self.set_aggregation_function(aggregationFunction)
         if include is not None:
-            self.include = [include] if not isinstance(include, list) else include
+            self.set_include(include)
         if scoreInterval is not None:
-            self.scoreInterval = scoreInterval
+            self.set_score_interval(scoreInterval)
         if forecastRange is not None:
-            self.range = forecastRange
+            self.set_range(forecastRange)
         if holtwinters is not None:
-            self.hw = holtwinters
+            self.set_holtwinters(holtwinters)
         if arima is not None:
-            self.arima = arima
+            self.set_arima(arima)
         if ssa is not None:
-            self.ssa = ssa
+            self.set_ssa(ssa)
         if horizon is not None:
-            self.horizon = horizon
+            self.set_horizon(horizon)
         if baseline is not None:
-            self.baseline = baseline
+            self.set_baseline(baseline)
 
     def set_auto_aggregate(self, auto_aggregate):
         set_if_type_is_valid(self, "autoAggregate", auto_aggregate, bool)
@@ -282,15 +282,15 @@ class HoltWinters:
 
     def __init__(self, auto=None, period=None, alpha=None, beta=None, gamma=None):
         if auto is not None:
-            self.auto = auto
+            self.set_auto(auto)
         if period is not None:
-            self.period = period
+            self.set_period(period)
         if alpha is not None:
-            self.alpha = alpha
+            self.set_alpha(alpha)
         if beta is not None:
-            self.beta = beta
+            self.set_beta(beta)
         if gamma is not None:
-            self.gamma = gamma
+            self.set_gamma(gamma)
 
     def set_auto(self, auto):
         set_if_type_is_valid(self, "auto", auto, bool)
@@ -315,13 +315,13 @@ class Horizon:
 
     def __init__(self, interval=None, length=None, endDate=None, startDate=None):
         if interval is not None:
-            self.interval = None
+            self.set_interval(interval)
         if length is not None:
-            self.length = length
+            self.set_length(length)
         if endDate is not None:
-            self.endDate = endDate
+            self.set_end_date(endDate)
         if startDate is not None:
-            self.startDate = startDate
+            self.set_start_date(startDate)
 
     def set_interval(self, count, unit):
         self.set_interval({'count': count, 'unit': unit})
@@ -343,13 +343,13 @@ class Arima:
 
     def __init__(self, auto=None, autoRegressionInterval=None, p=None, d=None):
         if auto is not None:
-            self.auto = auto
+            self.set_auto(auto)
         if autoRegressionInterval is not None:
-            self.autoRegressionInterval = autoRegressionInterval
+            self.set_auto_regression_interval(autoRegressionInterval)
         if p is not None:
-            self.p = p
+            self.set_p(p)
         if d is not None:
-            self.d = d
+            self.set_d(d)
 
     def set_auto(self, auto):
         set_if_type_is_valid(self, "auto", auto, bool)
@@ -371,11 +371,11 @@ class Baseline:
 
     def __init__(self, period=None, count=None, function=None):
         if period is not None:
-            self.period = period
+            self.set_period(period)
         if count is not None:
-            self.count = count
+            self.set_count(count)
         if function is not None:
-            self.function = function
+            self.set_function(function)
 
     def set_period(self, count, unit):
         self.set_period({'count': count, 'unit': unit})
@@ -396,13 +396,13 @@ class Ssa:
 
     def __init__(self, decompose=None, group=None, reconstruct=None, ssaForecast=None):
         if decompose is not None:
-            self.decompose = decompose
+            self.set_decompose(decompose)
         if group is not None:
-            self.group = group
+            self.set_group(group)
         if reconstruct is not None:
-            self.reconstruct = reconstruct
+            self.set_reconstruct(reconstruct)
         if ssaForecast is not None:
-            self.forecast = ssaForecast
+            self.set_forecast(ssaForecast)
 
     def set_decompose(self, decompose):
         set_if_type_is_valid(self, "decompose", decompose, Decompose)
@@ -421,13 +421,13 @@ class Decompose:
 
     def __init__(self, eigentripleLimit=None, method=None, windowLength=None, singularValueThreshold=None):
         if eigentripleLimit is not None:
-            self.eigentripleLimit = eigentripleLimit
+            self.set_eigentriple_limit(eigentripleLimit)
         if method is not None:
-            self.method = method
+            self.set_method(method)
         if windowLength is not None:
-            self.windowLength = windowLength
+            self.set_window_length(windowLength)
         if singularValueThreshold is not None:
-            self.singularValueThreshold = singularValueThreshold
+            self.set_singular_value_threshold(singularValueThreshold)
 
     def set_eigentriple_limit(self, eigentripleLimit):
         set_if_type_is_valid(self, "eigentripleLimit", eigentripleLimit, numbers.Number)
@@ -446,9 +446,9 @@ class Reconstruct:
 
     def __init__(self, averagingFunction=None, fourier=None):
         if averagingFunction is not None:
-            self.averagingFunction = averagingFunction
+            self.set_averaging_function(averagingFunction)
         if fourier is not None:
-            self.fourier = fourier
+            self.set_fourier(fourier)
 
     def set_averaging_function(self, averagingFunction):
         set_if_has_attr(self, "averagingFunction", averagingFunction, ReconstructAveragingFunction)
@@ -461,9 +461,9 @@ class SsaForecast:
 
     def __init__(self, method=None, base=None):
         if method is not None:
-            self.method = method
+            self.set_method(method)
         if base is not None:
-            self.base = base
+            self.set_base(base)
 
     def set_method(self, method):
         set_if_has_attr(self, "method", method, SsaForecastMethod)
@@ -476,9 +476,9 @@ class SsaGroup:
 
     def __init__(self, auto=None, manual=None):
         if auto is not None:
-            self.auto = auto
+            self.set_auto(auto)
         if manual is not None:
-            self.manual = manual
+            self.set_manual(manual)
 
     def set_auto(self, auto):
         set_if_has_attr(self, "auto", auto, SsaGroupAuto)
@@ -491,13 +491,13 @@ class SsaGroupAuto:
 
     def __init__(self, count=None, stack=None, union=None, clustering=None):
         if count is not None:
-            self.count = count
+            self.set_count(count)
         if stack is not None:
-            self.stack = stack
+            self.set_stack(stack)
         if union is not None:
-            self.union = union
+            self.set_union(union)
         if clustering is not None:
-            self.clustering = clustering
+            self.set_clustering(clustering)
 
     def set_count(self, count):
         set_if_type_is_valid(self, "count", count, numbers.Number)
@@ -516,9 +516,9 @@ class SsaGroupAutoClustering:
 
     def __init__(self, method=None, params=None):
         if method is not None:
-            self.method = method
+            self.set_method(method)
         if params is not None:
-            self.params = params
+            self.set_params(params)
 
     def set_method(self, method):
         set_if_has_attr(self, "method", method, SsaGroupAutoClusteringMethod)
@@ -531,7 +531,7 @@ class SsaGroupManual:
 
     def __init__(self, groups=None):
         if groups is not None:
-            self.groups = groups
+            self.set_groups(groups)
 
     def set_groups(self, groups):
         set_if_type_is_valid(self, "groups", groups, list)
