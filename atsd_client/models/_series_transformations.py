@@ -122,15 +122,11 @@ class Smooth:
         if incompleteValue is not None:
             self.incompleteValue = incompleteValue
 
-    def set_type(self, smoothType):
-        if not hasattr(SmoothType, smoothType):
-            raise ValueError('Invalid type parameter, expected SmoothType, found: ' + unicode(type(smoothType)))
-        self.type = smoothType
+    def set_type(self, smooth_type):
+        set_if_has_attr(self, "type", smooth_type, SmoothType)
 
     def set_count(self, count):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Count must be a number, found: ' + unicode(type(count)))
-        self.count = count
+        set_if_type_is_valid(self, "count", count, numbers.Number)
 
     def set_interval(self, count, unit):
         self.set_interval({'count': count, 'unit': unit})
@@ -138,15 +134,11 @@ class Smooth:
     def set_interval(self, interval):
         set_if_interval(self, "interval", interval)
 
-    def set_minimumCount(self, minimumCount):
-        if not isinstance(minimumCount, numbers.Number):
-            raise ValueError('Minimum count must be a value, found: ' + unicode(type(minimumCount)))
-        self.minimumCount = minimumCount
+    def set_minimumCount(self, minimum_count):
+        set_if_type_is_valid(self, "minimumCount", minimum_count, numbers.Number)
 
-    def set_incompleteValue(self, incompleteValue):
-        if not isinstance(incompleteValue, str):
-            raise ValueError('Incomplete value must be string, found: ' + unicode(type(incompleteValue)))
-        self.incompleteValue = incompleteValue
+    def set_incompleteValue(self, incomplete_value):
+        set_if_type_is_valid(self, "incompleteValue", incomplete_value, str)
 
 
 class Downsample:
@@ -165,19 +157,13 @@ class Downsample:
             self.gap = gap
 
     def set_algorithm(self, algorithm):
-        if not hasattr(DownsampleAlgorithm, algorithm):
-            raise ValueError('Invalid algorithm parameter, expected DownsampleAlgorithm, found: ' + str(algorithm))
-        self.algorithm = algorithm
+        set_if_has_attr(self, "algorithm", algorithm, DownsampleAlgorithm)
 
     def set_difference(self, difference):
-        if not isinstance(difference, numbers.Number):
-            raise ValueError('Invalid difference parameter, expected number, found: ' + unicode(type(difference)))
-        self.difference = difference
+        set_if_type_is_valid(self, "difference", difference, numbers.Number)
 
     def set_ratio(self, ratio):
-        if not isinstance(ratio, numbers.Number):
-            raise ValueError('Invalid ratio parameter, expected number, found: ' + unicode(type(ratio)))
-        self.ratio = ratio
+        set_if_type_is_valid(self, "ratio", ratio, numbers.Number)
 
     def set_gap(self, count, unit):
         self.set_gap({'count': count, 'unit': unit})
@@ -206,26 +192,22 @@ class Evaluate:
             self.timezone = timezone
 
     def set_mode(self, mode):
-        if not hasattr(EvaluateMode, mode):
-            raise ValueError('Mode must be one of EvaluateMode attributes, found: ' + str(mode))
-        self.mode = mode
+        set_if_has_attr(self, "mode", mode, )
 
     def set_libs(self, libs):
         self.libs = [libs] if not isinstance(libs, list) else libs
 
     def set_expression(self, expression):
-        self.expression = expression
+        set_if_type_is_valid(self, "expression", expression, str)
 
     def set_script(self, script):
-        self.script = script
+        set_if_type_is_valid(self, "script", script, str)
 
     def set_order(self, order):
-        if not isinstance(order, numbers.Number):
-            raise ValueError('Order must be a number, found: ' + unicode(type(order)))
-        self.order = order
+        set_if_type_is_valid(self, "order", order, numbers.Number)
 
     def set_timezone(self, timezone):
-        self.timezone = timezone
+        set_if_type_is_valid(self, "timezone", timezone, str)
 
 
 # =======================================================================
@@ -240,7 +222,7 @@ class ForecastTransformation:
         if aggregationFunction is not None:
             self.aggregationFunction = aggregationFunction
         if include is not None:
-            self.include =[include] if not isinstance(include, list) else include
+            self.include = [include] if not isinstance(include, list) else include
         if scoreInterval is not None:
             self.scoreInterval = scoreInterval
         if forecastRange is not None:
@@ -256,18 +238,16 @@ class ForecastTransformation:
         if baseline is not None:
             self.baseline = baseline
 
-    def set_auto_aggregate(self, autoAggregate):
-        if not isinstance(autoAggregate, bool):
-            raise ValueError('AutoAggregate expected to be bool, found: ' + unicode(type(autoAggregate)))
-        self.autoAggregate = autoAggregate
+    def set_auto_aggregate(self, auto_aggregate):
+        set_if_type_is_valid(self, "autoAggregate", auto_aggregate, bool)
 
-    def set_aggregation_function(self, aggregationFunction):
-        if not (hasattr(StatisticalFunction, aggregationFunction) or aggregationFunction.upper().startswith("PERCENTILE")):
-            raise ValueError('Expected one of StatisticalFunction attributes or PERCENTILE, found: ' + str(aggregationFunction))
-        self.aggregationFunction= aggregationFunction
+    def set_aggregation_function(self, aggregation_function):
+        if not (hasattr(StatisticalFunction, aggregation_function) or aggregation_function.upper().startswith("PERCENTILE")):
+            raise ValueError('Expected one of StatisticalFunction attributes or PERCENTILE, found: ' + str(aggregation_function))
+        self.aggregationFunction = aggregation_function
 
     def set_include(self, include):
-        self.include =[include] if not isinstance(include, list) else include
+        self.include = [include] if not isinstance(include, list) else include
 
     def set_score_interval(self, count, unit):
         self.set_score_interval({'count': count, 'unit': unit})
@@ -283,29 +263,19 @@ class ForecastTransformation:
         self.range = {'min': minRange, 'max': maxRange}
 
     def set_holtwinters(self, holtwinters):
-        if not isinstance(holtwinters, HoltWinters):
-            raise ValueError('Expected HolwWinters class instance, found: ' + unicode(type(holtwinters)))
-        self.hw = holtwinters
+        set_if_type_is_valid(self, "hw", holtwinters, HoltWinters)
 
     def set_arima(self, arima):
-        if not isinstance(arima, Arima):
-            raise ValueError('Expected Arima class instance, found: ' + unicode(type(arima)))
-        self.arima = arima
+        set_if_type_is_valid(self, "arima", arima, Arima)
 
     def set_ssa(self, ssa):
-        if not isinstance(ssa, Ssa):
-            raise ValueError('Expected Ssa class instance, found: ' + unicode(type(ssa)))
-        self.ssa = ssa
+        set_if_type_is_valid(self, "ssa", ssa, Ssa)
 
     def set_horizon(self, horizon):
-        if not isinstance(horizon, Horizon):
-            raise ValueError('Expected Horizon class instance, found: ' + unicode(type(horizon)))
-        self.horizon = horizon
+        set_if_type_is_valid(self, "horizon", horizon, Horizon)
 
     def set_baseline(self, baseline):
-        if not isinstance(baseline, Baseline):
-            raise ValueError('Expected Baseline class instance, found: ' + unicode(type(baseline)))
-        self.baseline = baseline
+        set_if_type_is_valid(self, "baseline", baseline, Baseline)
 
 
 class HoltWinters:
@@ -323,9 +293,7 @@ class HoltWinters:
             self.gamma = gamma
 
     def set_auto(self, auto):
-        if not isinstance(auto, bool):
-            raise ValueError('Auto expected to be a bool, found: ' + unicode(type(auto)))
-        self.auto = auto
+        set_if_type_is_valid(self, "auto", auto, bool)
 
     def set_period(self, count, unit):
         self.set_period({'count': count, 'unit': unit})
@@ -334,19 +302,13 @@ class HoltWinters:
         set_if_interval(self, "period", period)
 
     def set_alpha(self, alpha):
-        if not isinstance(alpha, numbers.Number):
-            raise ValueError("Alpha expected to be a number, found: " + unicode(type(alpha)))
-        self.alpha = alpha
+        set_if_type_is_valid(self, "alpha", alpha, numbers.Number)
 
     def set_beta(self, beta):
-        if not isinstance(beta, numbers.Number):
-            raise ValueError("Beta expected to be a number, found: " + unicode(type(beta)))
-        self.beta = beta
+        set_if_type_is_valid(self, "beta", beta, numbers.Number)
 
     def set_gamma(self, gamma):
-        if not isinstance(gamma, numbers.Number):
-            raise ValueError("Gamma expected to be a number, found: " + unicode(type(gamma)))
-        self.gamma = gamma
+        set_if_type_is_valid(self, "gamma", gamma, numbers.Number)
 
 
 class Horizon:
@@ -368,9 +330,7 @@ class Horizon:
         set_if_interval(self, "interval", interval)
 
     def set_length(self, length):
-        if not isinstance(length, numbers.Number):
-            raise ValueError('Length expected to be a number, found: ' + unicode(type(length)))
-        self.length = length
+        set_if_type_is_valid(self, "length", length, numbers.Number)
 
     def set_end_date(self, endDate):
         self.endDate = endDate
@@ -392,9 +352,7 @@ class Arima:
             self.d = d
 
     def set_auto(self, auto):
-        if not isinstance(auto, bool):
-            raise ValueError('Auto parameter must be bool, but found: ' + unicode(type(auto)))
-        self.auto = auto
+        set_if_type_is_valid(self, "auto", auto, bool)
 
     def set_auto_regression_interval(self, count, unit):
         self.set_auto_regression_interval({'count': count, 'unit': unit})
@@ -403,14 +361,10 @@ class Arima:
         set_if_interval(self, "autoRegressionInterval", auto_regression_interval)
 
     def set_p(self, p):
-        if not isinstance(p, numbers.Number):
-            raise ValueError('P must be a number, but found: ' + unicode(type(p)))
-        self.p = p
+        set_if_type_is_valid(self, "p", p, numbers.Number)
 
     def set_d(self, d):
-        if not isinstance(d, numbers.Number):
-            raise ValueError('D must be a number, but found: ' + unicode(type(d)))
-        self.d = d
+        set_if_type_is_valid(self, "d", d, numbers.Number)
 
 
 class Baseline:
@@ -430,9 +384,7 @@ class Baseline:
         set_if_interval(self, "period", period)
 
     def set_count(self, count):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Count must be a number, found: ' + unicode(type(count)))
-        self.count = count
+        set_if_type_is_valid(self, "count", count, numbers.Number)
 
     def set_function(self, function):
         if not (hasattr(StatisticalFunction, function) or function.upper().startswith("PERCENTILE")):
@@ -453,24 +405,16 @@ class Ssa:
             self.forecast = ssaForecast
 
     def set_decompose(self, decompose):
-        if not isinstance(decompose, Decompose):
-            raise ValueError('Expected Decompose class instance, found: ' + unicode(type(decompose)))
-        self.decompose = decompose
+        set_if_type_is_valid(self, "decompose", decompose, Decompose)
 
     def set_reconstruct(self, reconstruct):
-        if not isinstance(reconstruct, Reconstruct):
-            raise ValueError('Expected Reconstruct class instance, found: ' + unicode(type(reconstruct)))
-        self.reconstruct = reconstruct
+        set_if_type_is_valid(self, "reconstruct", reconstruct, Reconstruct)
 
     def set_forecast(self, ssaForecast):
-        if not isinstance(ssaForecast, SsaForecast):
-            raise ValueError('Expected SsaForecast class instance, found: ' + unicode(type(ssaForecast)))
-        self.forecast = ssaForecast
+        set_if_type_is_valid(self, "forecast", ssaForecast, SsaForecast)
 
     def set_group(self, group):
-        if not isinstance(group, SsaGroup):
-            raise ValueError('Expected SsaGroup class instance, found: ' + unicode(type(group)))
-        self.group = group
+        set_if_type_is_valid(self, "group", group, SsaGroup)
 
 
 class Decompose:
@@ -486,24 +430,16 @@ class Decompose:
             self.singularValueThreshold = singularValueThreshold
 
     def set_eigentriple_limit(self, eigentripleLimit):
-        if not isinstance(eigentripleLimit, numbers.Number):
-            raise ValueError('Expected a number on eigentripleLimit, but found: ' + unicode(type(eigentripleLimit)))
-        self.eigentripleLimit = eigentripleLimit
+        set_if_type_is_valid(self, "eigentripleLimit", eigentripleLimit, numbers.Number)
 
     def set_method(self, method):
-        if not hasattr(DecomposeMethod, method):
-            raise ValueError('Expected attribute from DecomposeMethod, but found' + str(method))
-        self.method = method
+        set_if_has_attr(self, "method", method, DecomposeMethod)
 
     def set_window_length(self, windowLength):
-        if not isinstance(windowLength, numbers.Number):
-            raise ValueError('Expected a number on windowLength, but found: ' + unicode(type(windowLength)))
-        self.windowLength = windowLength
+        set_if_type_is_valid(self, "windowLength", windowLength, numbers.Number)
 
     def set_singular_value_threshold(self, singularValueThreshold):
-        if not isinstance(singularValueThreshold, numbers.Number):
-            raise ValueError('Expected a number on singularValueThreshold, but found: ' + unicode(type(singularValueThreshold)))
-        self.singularValueThreshold = singularValueThreshold
+        set_if_type_is_valid(self, "singularValueThreshold", singularValueThreshold, numbers.Number)
 
 
 class Reconstruct:
@@ -515,14 +451,10 @@ class Reconstruct:
             self.fourier = fourier
 
     def set_averaging_function(self, averagingFunction):
-        if not hasattr(ReconstructAveragingFunction, averagingFunction):
-            raise ValueError('Expected attribute of ReconstructAveragingFunction, found: ' + str(averagingFunction))
-        self.averagingFunction = averagingFunction
+        set_if_has_attr(self, "averagingFunction", averagingFunction, ReconstructAveragingFunction)
 
     def set_fourier(self, fourier):
-        if not isinstance(fourier, bool):
-            raise ValueError('Expected fourier to be bool, found: ' + unicode(type(fourier)))
-        self.fourier = fourier
+        set_if_type_is_valid(self, "fourier", fourier, bool)
 
 
 class SsaForecast:
@@ -534,14 +466,10 @@ class SsaForecast:
             self.base = base
 
     def set_method(self, method):
-        if not hasattr(SsaForecastMethod, method):
-            raise ValueError('Expected attribute of SsaForecastMethod, found: ' + str(method))
-        self.method = method
+        set_if_has_attr(self, "method", method, SsaForecastMethod)
 
     def set_base(self, base):
-        if not hasattr(SsaForecastBase, base):
-            raise ValueError('Expected attribute of SsaForecastBase, found: ' + str(base))
-        self.base = base
+        set_if_has_attr(self, "base", base, SsaForecastBase)
 
 
 class SsaGroup:
@@ -553,14 +481,10 @@ class SsaGroup:
             self.manual = manual
 
     def set_auto(self, auto):
-        if not isinstance(auto, SsaGroupAuto):
-            raise ValueError('Expected SsaGroupAuto class instance, found: ' + unicode(type(auto)))
-        self.auto = auto
+        set_if_has_attr(self, "auto", auto, SsaGroupAuto)
 
     def set_manual(self, manual):
-        if not isinstance(manual, SsaGroupManual):
-            raise ValueError('Expected SsaGroupManual class instance, found: ' + unicode(type(manual)))
-        self.manual = manual
+        set_if_has_attr(self, "manual", manual, SsaGroupManual)
 
 
 class SsaGroupAuto:
@@ -576,24 +500,16 @@ class SsaGroupAuto:
             self.clustering = clustering
 
     def set_count(self, count):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Expected count to be a number, found: ' + unicode(type(count)))
-        self.count = count
+        set_if_type_is_valid(self, "count", count, numbers.Number)
 
     def set_stack(self, stack):
-        if not isinstance(stack, bool):
-            raise ValueError('Expected stack to be bool, found: ' + unicode(type(stack)))
-        self.stack = stack
+        set_if_type_is_valid(self, "stack", stack, bool)
 
     def set_union(self, union):
-        if not isinstance(union, list):
-            raise ValueError('Expected union to be list, found: ' + unicode(type(union)))
-        self.union = union
+        set_if_type_is_valid(self, "union", union, list)
 
     def set_clustering(self, clustering):
-        if not isinstance(clustering, SsaGroupAutoClustering):
-            raise ValueError('Expected stack to be SsaGroupAutoClustering, found: ' + unicode(type(clustering)))
-        self.clustering = clustering
+        set_if_type_is_valid(self, "clustering", clustering, SsaGroupAutoClustering)
 
 
 class SsaGroupAutoClustering:
@@ -605,14 +521,10 @@ class SsaGroupAutoClustering:
             self.params = params
 
     def set_method(self, method):
-        if not hasattr(SsaGroupAutoClusteringMethod, method):
-            raise ValueError('Expected attribute of SsaGroupAutoClusteringMethod, found: ' + str(method))
-        self.method = method
+        set_if_has_attr(self, "method", method, SsaGroupAutoClusteringMethod)
 
     def set_params(self, params):
-        if not isinstance(params, dict):
-            raise ValueError('Expected params to be a dictionary, found: ' + unicode(type(params)))
-        self.params = params
+        set_if_type_is_valid(self, "params", params, dict)
 
 
 class SsaGroupManual:
@@ -622,6 +534,4 @@ class SsaGroupManual:
             self.groups = groups
 
     def set_groups(self, groups):
-        if not isinstance(groups, list):
-            raise ValueError('Expected groups to be a list, found: ' + unicode(type(groups)))
-        self.groups = groups
+        set_if_type_is_valid(self, "groups", groups, list)
