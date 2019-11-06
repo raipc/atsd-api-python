@@ -1,5 +1,5 @@
 import numbers
-from ._data_queries import Interval, is_interval, TimeUnit
+from ._data_queries import set_if_type_is_valid, set_if_has_attr, set_if_interval
 
 
 unicode = str
@@ -84,24 +84,6 @@ class SsaGroupAutoClusteringMethod:
     HIERARCHICAL = "HIERARCHICAL"
     XMEANS = "XMEANS"
     NOVOSIBIRSK = "NOVOSIBIRSK"
-
-
-def set_if_type_is_valid(obj, name, value, expected_type):
-    if not isinstance(value, expected_type):
-        raise ValueError(name + " expected to be a " + str(expected_type) + " found: " + unicode(type(value)))
-    setattr(obj, name, value)
-
-
-def set_if_has_attr(obj, name, value, expected_attr_owner):
-    if not hasattr((expected_attr_owner, value)):
-        raise ValueError(name + " expected to be one of " + expected_attr_owner + " attributes, found: " + str(value))
-    setattr(obj, name, value)
-
-
-def set_if_interval(obj, name, value):
-    if not is_interval(value):
-        raise ValueError(name + " expected to be an Interval instance, found: " + unicode(type(value)))
-    setattr(obj, name, value)
 
 
 class Smooth:
