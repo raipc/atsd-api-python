@@ -240,7 +240,7 @@ class ForecastTransformation:
     def set_range(self, minRange, maxRange):
         if not isinstance(minRange, numbers.Number):
             raise ValueError('Expected min to be a number, found: ' + unicode(type(minRange)))
-        if not isinstance(minRange, numbers.Number):
+        if not isinstance(maxRange, numbers.Number):
             raise ValueError('Expected max to be a number, found: ' + unicode(type(maxRange)))
         self.range = {'min': minRange, 'max': maxRange}
 

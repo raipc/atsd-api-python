@@ -9,6 +9,8 @@ COUNT = 1
 MINIMUM_COUNT = 1
 INCOMPLETE_VALUE = "null"
 
+INCORRECT_VALUE = "INCORRECT_VALUE"
+
 
 class TestSmooth(TestCase):
 
@@ -24,19 +26,20 @@ class TestSmooth(TestCase):
         smooth = Smooth(TYPE)
         smooth.set_type(SmoothType.COUNT)
         self.assertEqual(SmoothType.COUNT, smooth.type)
-        self.assertRaises(ValueError, smooth.set_type, "INCORRECT_TYPE")
+        self.assertRaises(ValueError, smooth.set_type, INCORRECT_VALUE)
 
     def test_set_count(self):
         smooth = Smooth(TYPE)
         smooth.set_count(COUNT)
         self.assertEqual(COUNT, smooth.count)
-        self.assertRaises(ValueError, smooth.set_count, "STRING")
+        self.assertRaises(ValueError, smooth.set_count, INCORRECT_VALUE)
 
     def test_set_interval(self):
         smooth = Smooth(TYPE)
         smooth.set_interval(1, TimeUnit.DAY)
         self.assertEqual(DICT_INTERVAL, smooth.interval)
-        self.assertRaises(ValueError, smooth.set_interval, 1, "INVALID_UNIT")
+        self.assertRaises(ValueError, smooth.set_interval, 1, INCORRECT_VALUE)
+        self.assertRaises(ValueError, smooth.set_interval, INCORRECT_VALUE, TimeUnit.DAY)
 
     def test_set_interval_dict(self):
         smooth = Smooth(TYPE)
@@ -45,12 +48,14 @@ class TestSmooth(TestCase):
         smooth.set_interval_dict(DICT_INTERVAL)
         self.assertEqual(DICT_INTERVAL, smooth.interval)
         self.assertRaises(ValueError, smooth.set_interval_dict, {'count': 1, 'incorrect_param': TimeUnit.DAY})
+        self.assertRaises(ValueError, smooth.set_interval_dict, {'count': INCORRECT_VALUE, 'unit': TimeUnit.DAY})
+        self.assertRaises(ValueError, smooth.set_interval_dict, {'count': 1, 'unit': INCORRECT_VALUE})
 
     def test_set_minimum_count(self):
         smooth = Smooth(TYPE)
         smooth.set_minimum_count(MINIMUM_COUNT)
         self.assertEqual(MINIMUM_COUNT, smooth.minimumCount)
-        self.assertRaises(ValueError, smooth.set_minimum_count, "STRING")
+        self.assertRaises(ValueError, smooth.set_minimum_count, INCORRECT_VALUE)
 
     def test_set_incomplete_value(self):
         smooth = Smooth(TYPE)
