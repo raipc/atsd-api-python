@@ -125,7 +125,7 @@ def set_if_type_is_valid(obj, name, value, expected_type):
 
 def set_if_has_attr(obj, name, value, expected_attr_owner):
     if not hasattr(expected_attr_owner, value):
-        raise ValueError(name + " expected to be one of " + expected_attr_owner + " attributes, found: " + str(value))
+        raise ValueError(name + " expected to be one of " + str(expected_attr_owner) + " attributes, found: " + str(value))
     setattr(obj, name, value)
 
 
@@ -161,7 +161,7 @@ class Interval:
 
 
 def is_interval(obj):
-    if not (obj is not None) and all(key in obj for key in ("count", "unit")):
+    if not ((obj is not None) and all(key in obj for key in ("count", "unit"))):
         return False
     if not isinstance(obj["count"], numbers.Number):
         raise ValueError("Interval count must be a number, found: " + unicode(type(obj["count"])))

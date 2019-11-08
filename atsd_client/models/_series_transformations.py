@@ -98,7 +98,7 @@ class Smooth:
         if count is not None:
             self.set_count(count)
         if interval is not None:
-            self.set_interval(interval)
+            self.set_interval_dict(interval)
         if minimumCount is not None:
             self.set_minimum_count(minimumCount)
         if incompleteValue is not None:
@@ -111,9 +111,9 @@ class Smooth:
         set_if_type_is_valid(self, "count", count, numbers.Number)
 
     def set_interval(self, count, unit):
-        self.set_interval({'count': count, 'unit': unit})
+        self.set_interval_dict({'count': count, 'unit': unit})
 
-    def set_interval(self, interval):
+    def set_interval_dict(self, interval):
         set_if_interval(self, "interval", interval)
 
     def set_minimum_count(self, minimum_count):
@@ -315,10 +315,10 @@ class Horizon:
         set_if_type_is_valid(self, "length", length, numbers.Number)
 
     def set_end_date(self, endDate):
-        self.endDate = endDate
+        set_if_type_is_valid(self, "endDate", endDate, str)
 
     def set_start_date(self, startDate):
-        self.startDate = startDate
+        set_if_type_is_valid(self, "startDate", startDate, str)
 
 
 class Arima:
