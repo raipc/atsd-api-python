@@ -136,7 +136,7 @@ class Downsample:
         if ratio is not None:
             self.set_ratio(ratio)
         if gap is not None:
-            self.set_gap(gap)
+            self.set_gap_dict(gap)
 
     def set_algorithm(self, algorithm):
         set_if_has_attr(self, "algorithm", algorithm, DownsampleAlgorithm)
@@ -148,9 +148,9 @@ class Downsample:
         set_if_type_is_valid(self, "ratio", ratio, numbers.Number)
 
     def set_gap(self, count, unit):
-        self.set_gap({'count': count, 'unit': unit})
+        self.set_gap_dict({'count': count, 'unit': unit})
 
-    def set_gap(self, gap):
+    def set_gap_dict(self, gap):
         set_if_interval(self, "gap", gap)
 
 
@@ -174,7 +174,7 @@ class Evaluate:
             self.set_timezone(timezone)
 
     def set_mode(self, mode):
-        set_if_has_attr(self, "mode", mode, )
+        set_if_has_attr(self, "mode", mode, EvaluateMode)
 
     def set_libs(self, libs):
         self.libs = [libs] if not isinstance(libs, list) else libs
@@ -197,7 +197,7 @@ class Evaluate:
 # =======================================================================
 class ForecastTransformation:
 
-    def __init__(self, autoAggregate=None, aggregationFunction=None, include=None, scoreInterval=None, forecastRange=None,
+    def __init__(self, autoAggregate=None, aggregationFunction=None, include=None, scoreInterval=None, min_range=None, max_range=None,
                     holtwinters=None, arima=None, ssa=None, horizon=None, baseline=None):
         if autoAggregate is not None:
             self.set_auto_aggregate(autoAggregate)
@@ -206,9 +206,9 @@ class ForecastTransformation:
         if include is not None:
             self.set_include(include)
         if scoreInterval is not None:
-            self.set_score_interval(scoreInterval)
-        if forecastRange is not None:
-            self.set_range(forecastRange)
+            self.set_score_interval_dict(scoreInterval)
+        if min_range is not None and max_range is not None:
+            self.set_range(min_range, max_range)
         if holtwinters is not None:
             self.set_holtwinters(holtwinters)
         if arima is not None:
@@ -232,9 +232,9 @@ class ForecastTransformation:
         self.include = [include] if not isinstance(include, list) else include
 
     def set_score_interval(self, count, unit):
-        self.set_score_interval({'count': count, 'unit': unit})
+        self.set_score_interval_dict({'count': count, 'unit': unit})
 
-    def set_score_interval(self, score_interval):
+    def set_score_interval_dict(self, score_interval):
         set_if_interval(self, "scoreInterval", score_interval)
 
     def set_range(self, minRange, maxRange):
@@ -266,7 +266,7 @@ class HoltWinters:
         if auto is not None:
             self.set_auto(auto)
         if period is not None:
-            self.set_period(period)
+            self.set_period_dict(period)
         if alpha is not None:
             self.set_alpha(alpha)
         if beta is not None:
@@ -278,9 +278,9 @@ class HoltWinters:
         set_if_type_is_valid(self, "auto", auto, bool)
 
     def set_period(self, count, unit):
-        self.set_period({'count': count, 'unit': unit})
+        self.set_period_dict({'count': count, 'unit': unit})
 
-    def set_period(self, period):
+    def set_period_dict(self, period):
         set_if_interval(self, "period", period)
 
     def set_alpha(self, alpha):
@@ -297,7 +297,7 @@ class Horizon:
 
     def __init__(self, interval=None, length=None, endDate=None, startDate=None):
         if interval is not None:
-            self.set_interval(interval)
+            self.set_interval_dict(interval)
         if length is not None:
             self.set_length(length)
         if endDate is not None:
@@ -306,9 +306,9 @@ class Horizon:
             self.set_start_date(startDate)
 
     def set_interval(self, count, unit):
-        self.set_interval({'count': count, 'unit': unit})
+        self.set_interval_dict({'count': count, 'unit': unit})
 
-    def set_interval(self, interval):
+    def set_interval_dict(self, interval):
         set_if_interval(self, "interval", interval)
 
     def set_length(self, length):
@@ -327,7 +327,7 @@ class Arima:
         if auto is not None:
             self.set_auto(auto)
         if autoRegressionInterval is not None:
-            self.set_auto_regression_interval(autoRegressionInterval)
+            self.set_auto_regression_interval_dict(autoRegressionInterval)
         if p is not None:
             self.set_p(p)
         if d is not None:
@@ -337,9 +337,9 @@ class Arima:
         set_if_type_is_valid(self, "auto", auto, bool)
 
     def set_auto_regression_interval(self, count, unit):
-        self.set_auto_regression_interval({'count': count, 'unit': unit})
+        self.set_auto_regression_interval_dict({'count': count, 'unit': unit})
 
-    def set_auto_regression_interval(self, auto_regression_interval):
+    def set_auto_regression_interval_dict(self, auto_regression_interval):
         set_if_interval(self, "autoRegressionInterval", auto_regression_interval)
 
     def set_p(self, p):
@@ -353,16 +353,16 @@ class Baseline:
 
     def __init__(self, period=None, count=None, function=None):
         if period is not None:
-            self.set_period(period)
+            self.set_period_dict(period)
         if count is not None:
             self.set_count(count)
         if function is not None:
             self.set_function(function)
 
     def set_period(self, count, unit):
-        self.set_period({'count': count, 'unit': unit})
+        self.set_period_dict({'count': count, 'unit': unit})
 
-    def set_period(self, period):
+    def set_period_dict(self, period):
         set_if_interval(self, "period", period)
 
     def set_count(self, count):
