@@ -117,22 +117,22 @@ class Severity(object):
     FATAL = 7
 
 
-def set_if_type_is_valid(obj, name, value, expected_type):
+def set_if_type_is_valid(value, expected_type):
     if not isinstance(value, expected_type):
-        raise ValueError(name + " expected to be a " + str(expected_type) + " found: " + unicode(type(value)))
-    setattr(obj, name, value)
+        raise ValueError("Expected a " + str(expected_type) + " found: " + unicode(type(value)))
+    return value
 
 
-def set_if_has_attr(obj, name, value, expected_attr_owner):
+def set_if_has_attr(value, expected_attr_owner):
     if not hasattr(expected_attr_owner, value):
-        raise ValueError(name + " expected to be one of " + str(expected_attr_owner) + " attributes, found: " + str(value))
-    setattr(obj, name, value)
+        raise ValueError("Expected one of " + str(expected_attr_owner) + " attributes, found: " + str(value))
+    return value
 
 
-def set_if_interval(obj, name, value):
+def set_if_interval(value):
     if not is_interval(value):
-        raise ValueError(name + " expected to be an Interval instance, found: " + unicode(type(value)))
-    setattr(obj, name, value)
+        raise ValueError("Expected an Interval instance, found: " + unicode(type(value)))
+    return value
 
 
 class Interval:
@@ -153,9 +153,9 @@ class Interval:
 
     def __setitem__(self, key, value):
         if key.lower() == "count":
-            set_if_type_is_valid(self, key.lower(), value, numbers.Number)
+            self.count = set_if_type_is_valid(value, numbers.Number)
         elif key.lower() == "unit":
-            set_if_has_attr(self, key.lower(), value, TimeUnit)
+            self.unit = set_if_has_attr(value, TimeUnit)
         else:
             raise ValueError("Invalid name of Interval key: " + str(key))
 

@@ -105,22 +105,22 @@ class Smooth:
             self.set_incomplete_value(incompleteValue)
 
     def set_type(self, smooth_type):
-        set_if_has_attr(self, "type", smooth_type, SmoothType)
+        self.type = set_if_has_attr(smooth_type, SmoothType)
 
     def set_count(self, count):
-        set_if_type_is_valid(self, "count", count, numbers.Number)
+        self.count = set_if_type_is_valid(count, numbers.Number)
 
     def set_interval(self, count, unit):
         self.set_interval_dict({'count': count, 'unit': unit})
 
     def set_interval_dict(self, interval):
-        set_if_interval(self, "interval", interval)
+        self.interval = set_if_interval(interval)
 
     def set_minimum_count(self, minimum_count):
-        set_if_type_is_valid(self, "minimumCount", minimum_count, numbers.Number)
+        self.minimumCount = set_if_type_is_valid(minimum_count, numbers.Number)
 
     def set_incomplete_value(self, incomplete_value):
-        set_if_type_is_valid(self, "incompleteValue", incomplete_value, str)
+        self.incompleteValue = set_if_type_is_valid(incomplete_value, str)
 
 
 class Downsample:
@@ -139,19 +139,19 @@ class Downsample:
             self.set_gap_dict(gap)
 
     def set_algorithm(self, algorithm):
-        set_if_has_attr(self, "algorithm", algorithm, DownsampleAlgorithm)
+        self.algorithm = set_if_has_attr(algorithm, DownsampleAlgorithm)
 
     def set_difference(self, difference):
-        set_if_type_is_valid(self, "difference", difference, numbers.Number)
+        self.difference = set_if_type_is_valid(difference, numbers.Number)
 
     def set_ratio(self, ratio):
-        set_if_type_is_valid(self, "ratio", ratio, numbers.Number)
+        self.ratio = set_if_type_is_valid(ratio, numbers.Number)
 
     def set_gap(self, count, unit):
         self.set_gap_dict({'count': count, 'unit': unit})
 
     def set_gap_dict(self, gap):
-        set_if_interval(self, "gap", gap)
+        self.gap = set_if_interval(gap)
 
 
 class Evaluate:
@@ -174,22 +174,22 @@ class Evaluate:
             self.set_timezone(timezone)
 
     def set_mode(self, mode):
-        set_if_has_attr(self, "mode", mode, EvaluateMode)
+        self.mode = set_if_has_attr(mode, EvaluateMode)
 
     def set_libs(self, libs):
         self.libs = [libs] if not isinstance(libs, list) else libs
 
     def set_expression(self, expression):
-        set_if_type_is_valid(self, "expression", expression, str)
+        self.expression = set_if_type_is_valid(expression, str)
 
     def set_script(self, script):
-        set_if_type_is_valid(self, "script", script, str)
+        self.script = set_if_type_is_valid(script, str)
 
     def set_order(self, order):
-        set_if_type_is_valid(self, "order", order, numbers.Number)
+        self.order = set_if_type_is_valid(order, numbers.Number)
 
     def set_timezone(self, timezone):
-        set_if_type_is_valid(self, "timezone", timezone, str)
+        self.timezone = set_if_type_is_valid(timezone, str)
 
 
 # =======================================================================
@@ -221,7 +221,7 @@ class ForecastTransformation:
             self.set_baseline(baseline)
 
     def set_auto_aggregate(self, auto_aggregate):
-        set_if_type_is_valid(self, "autoAggregate", auto_aggregate, bool)
+        self.autoAggregate = set_if_type_is_valid(auto_aggregate, bool)
 
     def set_aggregation_function(self, aggregation_function):
         if not (hasattr(StatisticalFunction, aggregation_function) or aggregation_function.upper().startswith("PERCENTILE")):
@@ -235,7 +235,7 @@ class ForecastTransformation:
         self.set_score_interval_dict({'count': count, 'unit': unit})
 
     def set_score_interval_dict(self, score_interval):
-        set_if_interval(self, "scoreInterval", score_interval)
+        self.scoreInterval = set_if_interval(score_interval)
 
     def set_range(self, minRange, maxRange):
         if not isinstance(minRange, numbers.Number):
@@ -245,19 +245,19 @@ class ForecastTransformation:
         self.range = {'min': minRange, 'max': maxRange}
 
     def set_holtwinters(self, holtwinters):
-        set_if_type_is_valid(self, "hw", holtwinters, HoltWinters)
+        self.hw = set_if_type_is_valid(holtwinters, HoltWinters)
 
     def set_arima(self, arima):
-        set_if_type_is_valid(self, "arima", arima, Arima)
+        self.arima = set_if_type_is_valid(arima, Arima)
 
     def set_ssa(self, ssa):
-        set_if_type_is_valid(self, "ssa", ssa, Ssa)
+        self.ssa = set_if_type_is_valid(ssa, Ssa)
 
     def set_horizon(self, horizon):
-        set_if_type_is_valid(self, "horizon", horizon, Horizon)
+        self.horizon = set_if_type_is_valid(horizon, Horizon)
 
     def set_baseline(self, baseline):
-        set_if_type_is_valid(self, "baseline", baseline, Baseline)
+        self.baseline = set_if_type_is_valid(baseline, Baseline)
 
 
 class HoltWinters:
@@ -275,22 +275,22 @@ class HoltWinters:
             self.set_gamma(gamma)
 
     def set_auto(self, auto):
-        set_if_type_is_valid(self, "auto", auto, bool)
+        self.auto = set_if_type_is_valid(auto, bool)
 
     def set_period(self, count, unit):
         self.set_period_dict({'count': count, 'unit': unit})
 
     def set_period_dict(self, period):
-        set_if_interval(self, "period", period)
+        self.period = set_if_interval(period)
 
     def set_alpha(self, alpha):
-        set_if_type_is_valid(self, "alpha", alpha, numbers.Number)
+        self.alpha = set_if_type_is_valid(alpha, numbers.Number)
 
     def set_beta(self, beta):
-        set_if_type_is_valid(self, "beta", beta, numbers.Number)
+        self.beta = set_if_type_is_valid(beta, numbers.Number)
 
     def set_gamma(self, gamma):
-        set_if_type_is_valid(self, "gamma", gamma, numbers.Number)
+        self.gamma = set_if_type_is_valid(gamma, numbers.Number)
 
 
 class Horizon:
@@ -309,16 +309,16 @@ class Horizon:
         self.set_interval_dict({'count': count, 'unit': unit})
 
     def set_interval_dict(self, interval):
-        set_if_interval(self, "interval", interval)
+        self.interval = set_if_interval(interval)
 
     def set_length(self, length):
-        set_if_type_is_valid(self, "length", length, numbers.Number)
+        self.length = set_if_type_is_valid(length, numbers.Number)
 
     def set_end_date(self, endDate):
-        set_if_type_is_valid(self, "endDate", endDate, str)
+        self.endDate = set_if_type_is_valid(endDate, str)
 
     def set_start_date(self, startDate):
-        set_if_type_is_valid(self, "startDate", startDate, str)
+        self.startDate = set_if_type_is_valid(startDate, str)
 
 
 class Arima:
@@ -334,19 +334,19 @@ class Arima:
             self.set_d(d)
 
     def set_auto(self, auto):
-        set_if_type_is_valid(self, "auto", auto, bool)
+        self.auto = set_if_type_is_valid(auto, bool)
 
     def set_auto_regression_interval(self, count, unit):
         self.set_auto_regression_interval_dict({'count': count, 'unit': unit})
 
     def set_auto_regression_interval_dict(self, auto_regression_interval):
-        set_if_interval(self, "autoRegressionInterval", auto_regression_interval)
+        self.autoRegressionInterval = set_if_interval(auto_regression_interval)
 
     def set_p(self, p):
-        set_if_type_is_valid(self, "p", p, numbers.Number)
+        self.p = set_if_type_is_valid(p, numbers.Number)
 
     def set_d(self, d):
-        set_if_type_is_valid(self, "d", d, numbers.Number)
+        self.d = set_if_type_is_valid(d, numbers.Number)
 
 
 class Baseline:
@@ -363,10 +363,10 @@ class Baseline:
         self.set_period_dict({'count': count, 'unit': unit})
 
     def set_period_dict(self, period):
-        set_if_interval(self, "period", period)
+        self.period = set_if_interval(period)
 
     def set_count(self, count):
-        set_if_type_is_valid(self, "count", count, numbers.Number)
+        self.count = set_if_type_is_valid(count, numbers.Number)
 
     def set_function(self, function):
         if not (hasattr(StatisticalFunction, function) or function.upper().startswith("PERCENTILE")):
@@ -387,16 +387,16 @@ class Ssa:
             self.set_forecast(ssaForecast)
 
     def set_decompose(self, decompose):
-        set_if_type_is_valid(self, "decompose", decompose, Decompose)
+        self.decompose = set_if_type_is_valid(decompose, Decompose)
 
     def set_reconstruct(self, reconstruct):
-        set_if_type_is_valid(self, "reconstruct", reconstruct, Reconstruct)
+        self.reconstruct = set_if_type_is_valid(reconstruct, Reconstruct)
 
     def set_forecast(self, ssaForecast):
-        set_if_type_is_valid(self, "forecast", ssaForecast, SsaForecast)
+        self.forecast = set_if_type_is_valid(ssaForecast, SsaForecast)
 
     def set_group(self, group):
-        set_if_type_is_valid(self, "group", group, SsaGroup)
+        self.group = set_if_type_is_valid(group, SsaGroup)
 
 
 class Decompose:
@@ -412,16 +412,16 @@ class Decompose:
             self.set_singular_value_threshold(singularValueThreshold)
 
     def set_eigentriple_limit(self, eigentripleLimit):
-        set_if_type_is_valid(self, "eigentripleLimit", eigentripleLimit, numbers.Number)
+        self.eigentripleLimit = set_if_type_is_valid(eigentripleLimit, numbers.Number)
 
     def set_method(self, method):
-        set_if_has_attr(self, "method", method, DecomposeMethod)
+        self.method = set_if_has_attr(method, DecomposeMethod)
 
     def set_window_length(self, windowLength):
-        set_if_type_is_valid(self, "windowLength", windowLength, numbers.Number)
+        self.windowLength = set_if_type_is_valid(windowLength, numbers.Number)
 
     def set_singular_value_threshold(self, singularValueThreshold):
-        set_if_type_is_valid(self, "singularValueThreshold", singularValueThreshold, numbers.Number)
+        self.singularValueThreshold = set_if_type_is_valid(singularValueThreshold, numbers.Number)
 
 
 class Reconstruct:
@@ -433,10 +433,10 @@ class Reconstruct:
             self.set_fourier(fourier)
 
     def set_averaging_function(self, averagingFunction):
-        set_if_has_attr(self, "averagingFunction", averagingFunction, ReconstructAveragingFunction)
+        self.averagingFunction = set_if_has_attr(averagingFunction, ReconstructAveragingFunction)
 
     def set_fourier(self, fourier):
-        set_if_type_is_valid(self, "fourier", fourier, bool)
+        self.fourier = set_if_type_is_valid(fourier, bool)
 
 
 class SsaForecast:
@@ -448,10 +448,10 @@ class SsaForecast:
             self.set_base(base)
 
     def set_method(self, method):
-        set_if_has_attr(self, "method", method, SsaForecastMethod)
+        self.method = set_if_has_attr(method, SsaForecastMethod)
 
     def set_base(self, base):
-        set_if_has_attr(self, "base", base, SsaForecastBase)
+        self.base = set_if_has_attr(base, SsaForecastBase)
 
 
 class SsaGroup:
@@ -463,10 +463,10 @@ class SsaGroup:
             self.set_manual(manual)
 
     def set_auto(self, auto):
-        set_if_has_attr(self, "auto", auto, SsaGroupAuto)
+        self.auto = set_if_has_attr(auto, SsaGroupAuto)
 
     def set_manual(self, manual):
-        set_if_has_attr(self, "manual", manual, SsaGroupManual)
+        self.manual = set_if_has_attr(manual, SsaGroupManual)
 
 
 class SsaGroupAuto:
@@ -482,16 +482,16 @@ class SsaGroupAuto:
             self.set_clustering(clustering)
 
     def set_count(self, count):
-        set_if_type_is_valid(self, "count", count, numbers.Number)
+        self.count = set_if_type_is_valid(count, numbers.Number)
 
     def set_stack(self, stack):
-        set_if_type_is_valid(self, "stack", stack, bool)
+        self.stack = set_if_type_is_valid(stack, bool)
 
     def set_union(self, union):
-        set_if_type_is_valid(self, "union", union, list)
+        self.union = set_if_type_is_valid(union, list)
 
     def set_clustering(self, clustering):
-        set_if_type_is_valid(self, "clustering", clustering, SsaGroupAutoClustering)
+        self.clustering = set_if_type_is_valid(clustering, SsaGroupAutoClustering)
 
 
 class SsaGroupAutoClustering:
@@ -503,10 +503,10 @@ class SsaGroupAutoClustering:
             self.set_params(params)
 
     def set_method(self, method):
-        set_if_has_attr(self, "method", method, SsaGroupAutoClusteringMethod)
+        self.method = set_if_has_attr(method, SsaGroupAutoClusteringMethod)
 
     def set_params(self, params):
-        set_if_type_is_valid(self, "params", params, dict)
+        self.params = set_if_type_is_valid(params, dict)
 
 
 class SsaGroupManual:
@@ -516,4 +516,4 @@ class SsaGroupManual:
             self.set_groups(groups)
 
     def set_groups(self, groups):
-        set_if_type_is_valid(self, "groups", groups, list)
+        self.groups = set_if_type_is_valid(groups, list)

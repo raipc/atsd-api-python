@@ -40,4 +40,4 @@ class TestDecompose(TestCase):
         decompose = Decompose()
         decompose.set_singular_value_threshold(SINGULAR_VALUE_THRESHOLD)
         self.assertEqual(SINGULAR_VALUE_THRESHOLD, decompose.singularValueThreshold)
-        self.assertRaises(ValueError, decompose.set_singular_value_threshold(SINGULAR_VALUE_THRESHOLD), INCORRECT_VALUE)
+        self.assertRaises(ValueError, decompose.set_singular_value_threshold, INCORRECT_VALUE)
