@@ -504,17 +504,16 @@ class Rate:
     """
 
     def __init__(self, period=None, counter=True):
-        self.counter = counter
-        if not is_interval(period):
-            raise ValueError("Period expected to be an Interval, found: " + unicode(type(period)))
-        self.period = period
+        if period is not None:
+            self.set_period(period)
+        if counter is not None:
+            self.set_counter(counter)
 
     def set_period(self, count, unit=TimeUnit.SECOND):
-        if not isinstance(count, numbers.Number):
-            raise ValueError('Period count must be a number, found: ' + unicode(type(count)))
-        if not hasattr(TimeUnit, unit):
-            raise ValueError('Invalid period unit')
-        self.period = {'count': count, 'unit': unit}
+        self.set_period_dict({'count': count, 'unit': unit})
+
+    def set_period_dict(self, period):
+        self.period = set_if_interval(period)
 
     def set_counter(self, counter):
         if isinstance(counter, bool):
