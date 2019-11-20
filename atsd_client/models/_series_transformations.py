@@ -463,10 +463,10 @@ class SsaGroup:
             self.set_manual(manual)
 
     def set_auto(self, auto):
-        self.auto = set_if_has_attr(auto, SsaGroupAuto)
+        self.auto = set_if_type_is_valid(auto, SsaGroupAuto)
 
     def set_manual(self, manual):
-        self.manual = set_if_has_attr(manual, SsaGroupManual)
+        self.manual = set_if_type_is_valid(manual, SsaGroupManual)
 
 
 class SsaGroupAuto:
