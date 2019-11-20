@@ -25,6 +25,7 @@ script:
   - python -m unittest discover -v tests
   - pip install pandas
   - python -m unittest discover -v -s tests/pandas
+  - python -m unittest discover -v -s tests/transformations
   - spellcheck
   - linkcheck
   - stylecheck
