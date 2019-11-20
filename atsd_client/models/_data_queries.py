@@ -25,14 +25,14 @@ unicode = str
 # ===============================================================================
 # ###################################### Constants
 # ===============================================================================
-class SeriesType(object):
+class SeriesType:
     HISTORY = 'HISTORY'
     FORECAST = 'FORECAST'
     FORECAST_DEVIATION = 'FORECAST_DEVIATION'
 
 
 # ------------------------------------------------------------------------------
-class InterpolateType(object):
+class InterpolateType:
     NONE = 'NONE'
     PREVIOUS = 'PREVIOUS'
     NEXT = 'NEXT'
@@ -41,20 +41,20 @@ class InterpolateType(object):
 
 
 # ------------------------------------------------------------------------------
-class InterpolateFunction(object):
+class InterpolateFunction:
     AUTO = 'AUTO'
     LINEAR = 'LINEAR'
     PREVIOUS = 'PREVIOUS'
 
 
 # ------------------------------------------------------------------------------
-class InterpolateBoundary(object):
+class InterpolateBoundary:
     INNER = 'INNER'
     OUTER = 'OUTER'
 
 
 # ------------------------------------------------------------------------------
-class TimeUnit(object):
+class TimeUnit:
     NANOSECOND = 'NANOSECOND'
     MILLISECOND = 'MILLISECOND'
     SECOND = 'SECOND'
@@ -68,7 +68,7 @@ class TimeUnit(object):
 
 
 # ------------------------------------------------------------------------------
-class PeriodAlign(object):
+class PeriodAlign:
     CALENDAR = "CALENDAR"
     START_TIME = "START_TIME"
     FIRST_VALUE_TIME = "FIRST_VALUE_TIME"
@@ -76,7 +76,7 @@ class PeriodAlign(object):
 
 
 # ------------------------------------------------------------------------------
-class AggregateType(object):
+class AggregateType:
     DETAIL = 'DETAIL'
     COUNT = 'COUNT'
     COUNTER = 'COUNTER'
@@ -106,7 +106,7 @@ class AggregateType(object):
 
 
 # ------------------------------------------------------------------------------
-class Severity(object):
+class Severity:
     UNDEFINED = 0
     UNKNOWN = 1
     NORMAL = 2  # INFO
@@ -261,7 +261,7 @@ class SeriesQuery:
         if subseries_filter is not None:
             self.series = [subseries_filter] if not isinstance(subseries_filter, list) else subseries_filter
         if (not hasattr(self, "metric")) and (not hasattr(self, "metrics")) and (not hasattr(self, "series")):
-            raise ValueError('One of the followind params required: metric, metrics or series')
+            raise ValueError('At least one of parameters is required: metric, metrics or series.')
 
     def set_series_filter(self, value):
         copy_not_empty_attrs(value, self)
@@ -324,8 +324,6 @@ class SeriesDeleteQuery:
 # ------------------------------------------------------------------------------
 class SeriesFilter:
     def __init__(self, metric=None, tags=None, type="HISTORY", tag_expression=None, exact_match=None, metrics=None):
-        #if ( not metric ) and ( not metrics ):
-        #   raise ValueError("Metric is required.")
         #: `str` metric name
         self.metric = metric
         #: `dict`
