@@ -1,13 +1,12 @@
 import logging
 import argparse
-from math import isnan
 from atsd_client import connect
 from atsd_client.services import SeriesService, EntitiesService, MetricsService
-from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter
+from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, SampleFilter
 
 
 def no_data(series_list):
-    return len(series_list[0].data) == 0
+    return (len(series_list[0].data) == 0) and (len(series_list) == 1)
 
 
 def get_series_with_tags(series_list, tags):
@@ -40,7 +39,7 @@ if args.dry_run is not None:
     dry_run = True
 
 
-connection = connect('/path/to/connection.properties')
+connection = connect('./connection.properties')
 
 entity_service = EntitiesService(connection)
 
@@ -64,12 +63,13 @@ dst_entity_filter = EntityFilter(dst_entity)
 dst_date_filter = DateFilter(start_date, 'now')
 series_filter = SeriesFilter(metric, tag_expression=tag_expression)
 limit_control = ControlFilter(limit=1, direction="ASC")
+sample_filter = SampleFilter("!Double.isNaN(value)")
 dst_series_query = SeriesQuery(series_filter, dst_entity_filter, dst_date_filter,
-                               control_filter=limit_control)
+                               control_filter=limit_control, sample_filter=sample_filter)
 dst_series = series_service.query(dst_series_query)
 
 if no_data(dst_series):
-    logging.warning('No destination series found for these parameters')
+    logging.warning("No destination series found for '%s' entity, '%s' metric" % (dst_entity, metric))
     exit(1)
 
 
@@ -83,15 +83,18 @@ def err(tags, time=None, entity=source_entity):
 source_entity_filter = EntityFilter(source_entity)
 used_tags = []
 for series in dst_series:
-    first_dst_time = series.times()[0]  # get first time from sorted collection
     logging.info("Destination series is '%s' entity, '%s' metric, '%s' tags" % (series.entity, series.metric,
                                                                                   series.tags))
+    if len(series.data) == 0:
+        logging.warning("No data found for this series, or all samples are NaN")
+        continue
+    first_dst_time = series.times()[0]
     logging.info("First datetime for destination series: %s" % (first_dst_time))
-    if series.values()[0] is None or isnan(series.values()[0]):
-        logging.warning("First value is NaN")
     source_date_filter = DateFilter(start_date, first_dst_time)
     source_series_filter = SeriesFilter(metric, series.tags)
     source_query = SeriesQuery(source_series_filter, source_entity_filter, source_date_filter)
+    logging.info("Source series is: '%s' entity, '%s' metric, '%s' tags" % (source_entity, metric,
+                                                                            series.tags))
     source_series = series_service.query(source_query)
     used_tags.append(series.tags)
 
@@ -111,9 +114,18 @@ for series in dst_series:
 
     logging.info("Sent series with '%s' entity, '%s' metric, '%s' tags" % (target_series.entity,
                                                                           target_series.metric, target_series.tags))
-    for sample in target_series.data:
-        logging.info("Sample: %s : %s " % (sample.get_date(), sample.v))
-
+    sample_count = len(target_series.data)
+    samples_to_log = 5
+    logging.info("Sample count: %d" % sample_count)
+    for i in range(min(samples_to_log, sample_count)):
+        sample = target_series.data[i]
+        logging.info("Sample: %s : %s" % (sample.get_date(), sample.v))
+    if sample_count - samples_to_log > 0:
+        logging.info("...")
+        tail = min(samples_to_log, sample_count - samples_to_log)
+        for i in range(tail):
+            sample = target_series.data[sample_count - tail + i]
+            logging.info("Sample: %s : %s" % (sample.get_date(), sample.v))
 
 source_query = SeriesQuery(source_entity_filter, series_filter, dst_date_filter, control_filter=limit_control)
 source_series = series_service.query(source_query)
