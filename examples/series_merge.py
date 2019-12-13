@@ -39,7 +39,7 @@ if args.dry_run is not None:
     dry_run = True
 
 
-connection = connect('./connection.properties')
+connection = connect('/path/to/connection.properties')
 
 entity_service = EntitiesService(connection)
 
