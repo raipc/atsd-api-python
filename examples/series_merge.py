@@ -1,8 +1,9 @@
 import logging
 import argparse
+from math import isnan
 from atsd_client import connect
 from atsd_client.services import SeriesService, EntitiesService, MetricsService
-from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter
+from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter
 
 
 def no_data(series_list):
@@ -39,22 +40,22 @@ if args.dry_run is not None:
     dry_run = True
 
 
-connection = connect('./connection.properties')
+connection = connect('/path/to/connection.properties')
 
 entity_service = EntitiesService(connection)
 
 if entity_service.get(source_entity) is None:
-    print("'" + source_entity + "' entity does not exist")
+    logging.warning("'" + source_entity + "' entity does not exist")
     exit(1)
 
 if entity_service.get(dst_entity) is None:
-    print("'" + dst_entity + "' entity does not exist")
+    logging.warning("'" + dst_entity + "' entity does not exist")
     exit(1)
 
 metric_service = MetricsService(connection)
 
 if metric_service.get(metric) is None:
-    print("'" + metric + "' metric does not exist")
+    logging.warning("'" + metric + "' metric does not exist")
     exit(1)
 
 series_service = SeriesService(connection)
@@ -62,35 +63,46 @@ series_service = SeriesService(connection)
 dst_entity_filter = EntityFilter(dst_entity)
 dst_date_filter = DateFilter(start_date, 'now')
 series_filter = SeriesFilter(metric, tag_expression=tag_expression)
-dst_series_query = SeriesQuery(series_filter, dst_entity_filter, dst_date_filter)
+limit_control = ControlFilter(limit=1, direction="ASC")
+dst_series_query = SeriesQuery(series_filter, dst_entity_filter, dst_date_filter,
+                               control_filter=limit_control)
 dst_series = series_service.query(dst_series_query)
 
 if no_data(dst_series):
-    print('No destination series found for these parameters')
+    logging.warning('No destination series found for these parameters')
     exit(1)
 
 
-def err(tags, time):
-    return ("No series found for '" + source_entity + "' entity, '" + metric + "' metric and '" +
-          str(tags) + "' tags before " + time)
+def err(tags, time=None, entity=source_entity):
+    error_msg = "No series found for '" + entity + "' entity, '" + metric + "' metric and '" + str(tags) + "'"
+    if time is not None:
+        error_msg += " before " + str(time)
+    return error_msg
 
 
 source_entity_filter = EntityFilter(source_entity)
+used_tags = []
 for series in dst_series:
     first_dst_time = series.times()[0]  # get first time from sorted collection
+    logging.info("Destination series is '%s' entity, '%s' metric, '%s' tags" % (series.entity, series.metric,
+                                                                                  series.tags))
+    logging.info("First datetime for destination series: %s" % (first_dst_time))
+    if series.values()[0] is None or isnan(series.values()[0]):
+        logging.warning("First value is NaN")
     source_date_filter = DateFilter(start_date, first_dst_time)
     source_series_filter = SeriesFilter(metric, series.tags)
     source_query = SeriesQuery(source_series_filter, source_entity_filter, source_date_filter)
     source_series = series_service.query(source_query)
+    used_tags.append(series.tags)
 
     if no_data(source_series):
-        logging.info(err(series.tags, first_dst_time))
+        logging.warning(err(series.tags, first_dst_time))
         continue
 
     target_series = get_series_with_tags(source_series, series.tags)
 
     if target_series is None:
-        logging.info(err(series.tags, first_dst_time))
+        logging.warning(err(series.tags, first_dst_time))
         continue
 
     target_series.entity = dst_entity
@@ -100,5 +112,12 @@ for series in dst_series:
     logging.info("Sent series with '%s' entity, '%s' metric, '%s' tags" % (target_series.entity,
                                                                           target_series.metric, target_series.tags))
     for sample in target_series.data:
-        logging.info("Sample: %s : %d " % (sample.get_date(), sample.v))
+        logging.info("Sample: %s : %s " % (sample.get_date(), sample.v))
 
+
+source_query = SeriesQuery(source_entity_filter, series_filter, dst_date_filter, control_filter=limit_control)
+source_series = series_service.query(source_query)
+
+for series in source_series:
+    if series.tags not in used_tags:
+        logging.warning(err(series.tags, entity=dst_entity))
