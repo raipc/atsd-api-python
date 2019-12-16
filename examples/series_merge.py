@@ -22,7 +22,7 @@ parser = argparse.ArgumentParser(description="Copy metric values for series with
 parser.add_argument('--tag_expression', '-te', required=False, help='Tag expression to match source series')
 parser.add_argument('--dry_run', '-dr', required=False, help='Run script without sending series to ATSD',
                     action='store_const', const=True)
-parser.add_argument('--start_time', '-st', required=False, help='Set start date for query',
+parser.add_argument('--start_datetime', '-sdt', required=False, help='Set start date for query',
                     default='1970-01-01T00:00:00Z')
 requiredArguments = parser.add_argument_group('required arguments')
 requiredArguments.add_argument('--src_entity', '-se', required=True, help='Source entity')
