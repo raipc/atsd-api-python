@@ -35,7 +35,7 @@ metric = args.metric_name
 tag_expression = None
 if args.tag_expression is not None:
     tag_expression = args.tag_expression
-start_date = args.start_time
+start_date = args.start_datetime
 dry_run = False
 if args.dry_run is not None:
     dry_run = True
