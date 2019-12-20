@@ -2,7 +2,7 @@ import logging
 import argparse
 from atsd_client import connect
 from atsd_client.services import SeriesService, EntitiesService, MetricsService
-from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, SampleFilter
+from atsd_client.models import SeriesQuery, SeriesFilter, EntityFilter, DateFilter, ControlFilter, SampleFilter, Series
 
 
 def no_data(series_list):
@@ -22,6 +22,9 @@ parser = argparse.ArgumentParser(description="Copy metric values for series with
 parser.add_argument('--tag_expression', '-te', required=False, help='Tag expression to match source series')
 parser.add_argument('--dry_run', '-dr', required=False, help='Run script without sending series to ATSD',
                     action='store_const', const=True)
+parser.add_argument('--batch_size', '-bs', required=False, help='Set size of sent batch of samples, '
+                                                                'if not set, series will be sent by one batch',
+                    default=0)
 parser.add_argument('--start_datetime', '-sdt', required=False, help='Set start date for query',
                     default='1970-01-01T00:00:00Z')
 requiredArguments = parser.add_argument_group('required arguments')
@@ -39,6 +42,7 @@ start_date = args.start_datetime
 dry_run = False
 if args.dry_run is not None:
     dry_run = True
+batch_size = int(args.batch_size)
 
 
 connection = connect('/path/to/connection.properties')
@@ -111,8 +115,25 @@ for series in dst_series:
         continue
 
     target_series.entity = dst_entity
-    if not dry_run:
-        series_service.insert(target_series)
+    if batch_size == 0:
+        if not dry_run:
+            series_service.insert(target_series)
+    else:
+        size = len(target_series.data)
+        start_position = 0
+        itearaion = 1
+        while size > 0:
+            batch_len = min(size, batch_size)
+            batch_data = [target_series.data[i] for i in range(start_position, start_position + batch_len, 1)]
+            batch = Series(target_series.entity, target_series.metric, tags=target_series.tags,
+                           data=batch_data)
+            logging.info("Iteration %s: Sending %s series to ATSD" % (itearaion, batch_len))
+            start_position += batch_len
+            itearaion += 1
+            size -= batch_len
+            if not dry_run:
+                series_service.insert(batch)
+            logging.info("Pending %s samples to send" % (size))
 
     logging.info("Sent series with '%s' entity, '%s' metric, '%s' tags" % (target_series.entity,
                                                                           target_series.metric, target_series.tags))
