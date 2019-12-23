@@ -65,6 +65,14 @@ if metric_service.get(metric) is None:
 
 series_service = SeriesService(connection)
 
+
+def insert_or_warning(series_to_insert):
+    if not dry_run:
+        series_service.insert(series_to_insert)
+    else:
+        logging.warning("Dry run enabled, series are not inserted.")
+
+
 dst_entity_filter = EntityFilter(dst_entity)
 dst_date_filter = DateFilter(start_date, 'now')
 series_filter = SeriesFilter(metric, tag_expression=tag_expression)
@@ -116,10 +124,7 @@ for series in dst_series:
 
     target_series.entity = dst_entity
     if batch_size == 0:
-        if not dry_run:
-            series_service.insert(target_series)
-        else:
-            logging.warning("Dry run enabled, series are not inserted.")
+        insert_or_warning(target_series)
     else:
         size = len(target_series.data)
         start_position = 0
@@ -133,10 +138,7 @@ for series in dst_series:
             start_position += batch_len
             iteration += 1
             size -= batch_len
-            if not dry_run:
-                series_service.insert(batch)
-            else:
-                logging.warning("Dry run enabled, series are not inserted.")
+            insert_or_warning(batch)
             logging.info("Pending %s samples to send" % (size))
 
     logging.info("Sent series with '%s' entity, '%s' metric, '%s' tags" % (target_series.entity,
