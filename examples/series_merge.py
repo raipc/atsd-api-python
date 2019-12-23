@@ -121,15 +121,15 @@ for series in dst_series:
     else:
         size = len(target_series.data)
         start_position = 0
-        itearaion = 1
+        iteration = 1
         while size > 0:
             batch_len = min(size, batch_size)
             batch_data = [target_series.data[i] for i in range(start_position, start_position + batch_len, 1)]
             batch = Series(target_series.entity, target_series.metric, tags=target_series.tags,
                            data=batch_data)
-            logging.info("Iteration %s: Sending %s series to ATSD" % (itearaion, batch_len))
+            logging.info("Iteration %s: Sending %s series to ATSD" % (iteration, batch_len))
             start_position += batch_len
-            itearaion += 1
+            iteration += 1
             size -= batch_len
             if not dry_run:
                 series_service.insert(batch)
