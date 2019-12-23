@@ -118,6 +118,8 @@ for series in dst_series:
     if batch_size == 0:
         if not dry_run:
             series_service.insert(target_series)
+        else:
+            logging.warning("Dry run enabled, series are not inserted.")
     else:
         size = len(target_series.data)
         start_position = 0
@@ -133,6 +135,8 @@ for series in dst_series:
             size -= batch_len
             if not dry_run:
                 series_service.insert(batch)
+            else:
+                logging.warning("Dry run enabled, series are not inserted.")
             logging.info("Pending %s samples to send" % (size))
 
     logging.info("Sent series with '%s' entity, '%s' metric, '%s' tags" % (target_series.entity,
