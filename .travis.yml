@@ -22,7 +22,7 @@ install:
 script:
   - pip list
   - python -m unittest discover -v tests
-  - pip install pandas
+  - pip install pandas --no-build-isolation
   - python -m unittest discover -v -s tests/pandas
   - spellcheck
   - linkcheck
