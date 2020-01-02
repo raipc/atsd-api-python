@@ -6,13 +6,14 @@ python:
   - "3.6"
   - "3.7"
   - "3.8"
-  - "pypy3"
+  - "pypy3.5"
 before_install:
   - export ATSD_LOGIN=axibase
   - export ATSD_PASSWORD=axibase
   - export VERSION_URL=http://localhost:8088/version
 install:
   - docker run -d --name="atsd-api-test-python" -e axiname="$ATSD_LOGIN" -e axipass="$ATSD_PASSWORD" -e timezone="Asia/Kathmandu" -e DEPLOYMENT_TYPE="python-client-test" -p8443:8443 -p8088:8088 axibase/atsd:api_test
+  - python -m pip install --upgrade pip
   - python -m pip install .
   - wget https://raw.githubusercontent.com/axibase/atsd/master/.travis-functions.sh && source .travis-functions.sh
   - install_checkers_in_non_doc_project
