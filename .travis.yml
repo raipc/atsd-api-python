@@ -13,6 +13,7 @@ before_install:
   - export VERSION_URL=http://localhost:8088/version
 install:
   - docker run -d --name="atsd-api-test-python" -e axiname="$ATSD_LOGIN" -e axipass="$ATSD_PASSWORD" -e timezone="Asia/Kathmandu" -e DEPLOYMENT_TYPE="python-client-test" -p8443:8443 -p8088:8088 axibase/atsd:api_test
+  - pip install --upgrade pip setuptools
   - pip install .
   - wget https://raw.githubusercontent.com/axibase/atsd/master/.travis-functions.sh && source .travis-functions.sh
   - install_checkers_in_non_doc_project
@@ -21,7 +22,7 @@ install:
 script:
   - pip list
   - python -m unittest discover -v tests
-  - pip install pandas
+  - pip install pandas --no-build-isolation
   - python -m unittest discover -v -s tests/pandas
   - spellcheck
   - linkcheck
